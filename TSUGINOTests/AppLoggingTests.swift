@@ -1,3 +1,4 @@
+import os
 import Testing
 @testable import TSUGINO
 
@@ -36,6 +37,34 @@ struct AppLoggingTests {
         let message = LogEvent.configurationValidated(buildMode: .test, enabledFlagCount: 2).message
 
         #expect(message == "configuration validated (buildMode=test, enabledFlags=2)")
+    }
+
+    @Test func liveActivityBootstrapEventsUseTheLiveActivityCategoryAndFixedMessages() {
+        let events: [(LogEvent, String)] = [
+            (.liveActivityBootstrapStartRequested, "live activity bootstrap start requested"),
+            (.liveActivityBootstrapStartSucceeded, "live activity bootstrap start succeeded"),
+            (.liveActivityBootstrapStartRejected(reason: .alreadyActive), "live activity bootstrap start rejected (reason=alreadyActive)"),
+            (.liveActivityBootstrapStartRejected(reason: .activitiesDisabled), "live activity bootstrap start rejected (reason=activitiesDisabled)"),
+            (.liveActivityBootstrapStartFailed, "live activity bootstrap start failed"),
+            (.liveActivityBootstrapUpdateRequested, "live activity bootstrap update requested"),
+            (.liveActivityBootstrapUpdateSucceeded, "live activity bootstrap update succeeded"),
+            (.liveActivityBootstrapUpdateIgnored(reason: .noActiveActivity), "live activity bootstrap update ignored (reason=noActiveActivity)"),
+            (.liveActivityBootstrapEndRequested, "live activity bootstrap end requested"),
+            (.liveActivityBootstrapEndSucceeded, "live activity bootstrap end succeeded"),
+            (.liveActivityBootstrapEndIgnored(reason: .noActiveActivity), "live activity bootstrap end ignored (reason=noActiveActivity)"),
+        ]
+
+        for (event, message) in events {
+            #expect(event.category == .liveActivity)
+            #expect(event.message == message)
+        }
+    }
+
+    @Test func liveActivityBootstrapStartFailureLogsAtErrorLevelWithoutDetail() {
+        // The only failable ActivityKit operation is `request`; its failure event
+        // carries no associated value, so nothing about the error can leak.
+        #expect(LogEvent.liveActivityBootstrapStartFailed.level == .error)
+        #expect(LogEvent.liveActivityBootstrapStartFailed.category == .liveActivity)
     }
 
     @Test func categoriesAreStableIdentifiers() {

@@ -19,16 +19,43 @@ nonisolated enum LogEvent: Sendable, Equatable {
     /// A configuration passed validation.
     case configurationValidated(buildMode: BuildMode, enabledFlagCount: Int)
 
+    // Debug Live Activity bootstrap (Phase 0 Step A3). Reasons are closed enums; no
+    // activity identifiers, tokens, or error descriptions are ever carried.
+    case liveActivityBootstrapStartRequested
+    case liveActivityBootstrapStartSucceeded
+    case liveActivityBootstrapStartRejected(reason: BootstrapRejectionReason)
+    case liveActivityBootstrapStartFailed
+    case liveActivityBootstrapUpdateRequested
+    case liveActivityBootstrapUpdateSucceeded
+    case liveActivityBootstrapUpdateIgnored(reason: BootstrapIgnoreReason)
+    case liveActivityBootstrapEndRequested
+    case liveActivityBootstrapEndSucceeded
+    case liveActivityBootstrapEndIgnored(reason: BootstrapIgnoreReason)
+
     var category: LogCategory {
         switch self {
-        case .environmentComposed: .app
-        case .configurationValidated: .configuration
+        case .environmentComposed:
+            .app
+        case .configurationValidated:
+            .configuration
+        case .liveActivityBootstrapStartRequested, .liveActivityBootstrapStartSucceeded,
+             .liveActivityBootstrapStartRejected, .liveActivityBootstrapStartFailed,
+             .liveActivityBootstrapUpdateRequested, .liveActivityBootstrapUpdateSucceeded,
+             .liveActivityBootstrapUpdateIgnored,
+             .liveActivityBootstrapEndRequested, .liveActivityBootstrapEndSucceeded,
+             .liveActivityBootstrapEndIgnored:
+            .liveActivity
         }
     }
 
     var level: OSLogType {
         switch self {
-        case .environmentComposed, .configurationValidated: .info
+        case .liveActivityBootstrapStartFailed:
+            .error
+        case .liveActivityBootstrapStartRequested, .liveActivityBootstrapUpdateRequested, .liveActivityBootstrapEndRequested:
+            .debug
+        default:
+            .info
         }
     }
 
@@ -39,6 +66,26 @@ nonisolated enum LogEvent: Sendable, Equatable {
             "environment composed (buildMode=\(buildMode.rawValue))"
         case .configurationValidated(let buildMode, let enabledFlagCount):
             "configuration validated (buildMode=\(buildMode.rawValue), enabledFlags=\(enabledFlagCount))"
+        case .liveActivityBootstrapStartRequested:
+            "live activity bootstrap start requested"
+        case .liveActivityBootstrapStartSucceeded:
+            "live activity bootstrap start succeeded"
+        case .liveActivityBootstrapStartRejected(let reason):
+            "live activity bootstrap start rejected (reason=\(reason.rawValue))"
+        case .liveActivityBootstrapStartFailed:
+            "live activity bootstrap start failed"
+        case .liveActivityBootstrapUpdateRequested:
+            "live activity bootstrap update requested"
+        case .liveActivityBootstrapUpdateSucceeded:
+            "live activity bootstrap update succeeded"
+        case .liveActivityBootstrapUpdateIgnored(let reason):
+            "live activity bootstrap update ignored (reason=\(reason.rawValue))"
+        case .liveActivityBootstrapEndRequested:
+            "live activity bootstrap end requested"
+        case .liveActivityBootstrapEndSucceeded:
+            "live activity bootstrap end succeeded"
+        case .liveActivityBootstrapEndIgnored(let reason):
+            "live activity bootstrap end ignored (reason=\(reason.rawValue))"
         }
     }
 }

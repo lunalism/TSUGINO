@@ -5,8 +5,8 @@ import ActivityKit
 /// This type exists only to prove that the Widget Extension target builds and can
 /// present a Live Activity. It carries a synthetic value and no Journey semantics.
 /// The production `LiveActivityPresentationState` is a Phase 9 concern (ARCHITECTURE.md §28).
-struct TSUGINOLiveActivityAttributes: ActivityAttributes {
-    struct ContentState: Codable, Hashable {
+nonisolated struct TSUGINOLiveActivityAttributes: ActivityAttributes {
+    nonisolated struct ContentState: Codable, Hashable {
         /// Synthetic presentation value; has no product meaning.
         var syntheticValue: Int
     }

@@ -113,9 +113,9 @@ Living documents touched by the 2026-09-17 baseline repair (minimal, current-tru
 - `docs/FEATURES.md` — duplicate §4.3 heading removed; §2.1 Station Search covers Japanese / English / Korean + canonical aliases
 - `docs/DESIGN.md` §12 — Station Search covers Japanese / English / Korean; §34 — criterion 8 includes Korean
 
-### 5.2 Track A project structure (Steps A1–A2 — as on disk)
+### 5.2 Track A project structure (Steps A1–A3 — as on disk)
 
-Step A1 (native Xcode project bootstrap) is complete and GUI-validated; Step A2 (application infrastructure foundation) is implemented. The tree below is the **actual** structure, using the real filenames on disk; it follows `ARCHITECTURE.md` §4 ownership (`App/`, `Features/`, `Shared/`, `Resources/`) with only the folders that received a file.
+Step A1 (native Xcode project bootstrap) is complete and GUI-validated; Step A2 (application infrastructure foundation) and Step A3 (Debug Live Activity bootstrap control) are implemented. The tree below is the **actual** structure, using the real filenames on disk; it follows `ARCHITECTURE.md` §4 ownership (`App/`, `Features/`, `Shared/`, `Resources/`) with only the folders that received a file.
 
 ```text
 TSUGINO.xcodeproj/
@@ -127,19 +127,23 @@ TSUGINO/                                     (app target, com.lunalism.TSUGINO)
 │   ├── TSUGINOApp.swift                     (@main SwiftUI App; composition root builds AppEnvironment.live() once and injects it)
 │   ├── Environment/
 │   │   └── AppEnvironment.swift             (A2 — immutable composition root: configuration, clock, logging; SwiftUI @Entry)
-│   └── Configuration/
-│       ├── AppConfiguration.swift           (A2 — BuildMode debug/release/test, typed AppConfigurationError, live() = single #if DEBUG site)
-│       └── FeatureFlags.swift               (A2 — FeatureFlag enum w/ owner/purpose/removal criteria; FeatureFlags set; Release defaults all-off)
+│   ├── Configuration/
+│   │   ├── AppConfiguration.swift           (A2 — BuildMode debug/release/test, typed AppConfigurationError, live() = single #if DEBUG site)
+│   │   └── FeatureFlags.swift               (A2 — FeatureFlag enum w/ owner/purpose/removal criteria; FeatureFlags set; Release defaults all-off)
+│   └── Debug/
+│       ├── BootstrapActivityRequesting.swift        (A3 — smallest ActivityKit boundary mirroring real semantics: throwing request, non-throwing async update/end; ActivityKitBootstrapActivities is the app's only ActivityKit call site, pushType nil)
+│       └── DebugLiveActivityBootstrapController.swift (A3 — @MainActor @Observable controller: typed Status, start/update/end, one retained handle; only `request` can fail, matching ActivityKit; visibility policy)
 ├── Features/
 │   └── AppShell/
-│       └── AppShellView.swift               (root screen: "TSUGINO", no product UI)
+│       ├── AppShellView.swift               (root screen: "TSUGINO"; shows the debug section only when AppConfiguration says so)
+│       └── DebugLiveActivityBootstrapSection.swift (A3 — engineering control: Start/Update/End + typed status, accessibility IDs; not product UI)
 ├── Shared/
 │   ├── LiveActivity/
 │   │   └── TSUGINOLiveActivityAttributes.swift  (single ActivityAttributes type; also a member of the extension target)
 │   ├── Time/
 │   │   └── AppClock.swift                   (A2 — AppClock protocol, SystemAppClock, FixedAppClock; no timers/sleep)
 │   └── Logging/
-│       └── AppLogging.swift                 (A2 — LogCategory app/configuration/liveActivity, fixed LogEvent vocabulary, AppLogSink, os.Logger sink)
+│       └── AppLogging.swift                 (A2/A3 — LogCategory app/configuration/liveActivity, fixed LogEvent vocabulary incl. 10 bootstrap events, AppLogSink, os.Logger sink)
 ├── Resources/
 │   └── Assets.xcassets/                     (AppIcon, AccentColor)
 └── Info.plist                               (NSSupportsLiveActivities = YES; merged with generated plist)
@@ -155,10 +159,12 @@ TSUGINOTests/                                (unit-test bundle, com.lunalism.TSU
 ├── AppClockTests.swift                      (A2)
 ├── AppConfigurationTests.swift              (A2)
 ├── AppEnvironmentTests.swift                (A2)
-├── AppLoggingTests.swift                    (A2 — no unified-log assertions)
+├── AppLoggingTests.swift                    (A2/A3 — no unified-log assertions)
 ├── FeatureFlagsTests.swift                  (A2)
+├── DebugLiveActivityBootstrapTests.swift    (A3 — visibility policy, status labels, lifecycle policy via fakes)
 └── Support/
-    └── RecordingLogSink.swift               (A2 — test-only AppLogSink; not in the app target)
+    ├── RecordingLogSink.swift               (A2 — test-only AppLogSink; not in the app target)
+    └── FakeBootstrapActivities.swift        (A3 — test-only BootstrapActivityRequesting/Handle fakes)
 ```
 
 Accepted Step A1 implementation decisions:
@@ -179,8 +185,8 @@ Track A status:
 
 - **Implemented (A1):** Xcode project, app shell, Live Activity extension shell, test target.
 - **Implemented (A2):** `AppEnvironment`, `AppConfiguration`, clock abstraction (`AppClock`, as named in ARCHITECTURE.md §38), typed feature flags (one placeholder Debug-only flag `debugLiveActivityBootstrapControl`, off in Release and test), privacy-safe `os.Logger` logging foundation, and 25 deterministic tests. No `project.pbxproj` change was needed (synchronized folders).
-- **Not implemented:** the Debug-only manual Live Activity trigger (Step A3) — the flag exists, its UI and any ActivityKit start/update/end do not.
-- **Pending:** physical-device build/install and the §6.2 device test (AC4, AC5); signing / `DEVELOPMENT_TEAM` not configured.
+- **Implemented (A3):** the Debug-only manual Live Activity bootstrap control — visible only for `buildMode == .debug` with `debugLiveActivityBootstrapControl` enabled (Release configurations reject the flag, so Release can never show it); start/update/end of a synthetic activity through `ActivityKitBootstrapActivities` (`pushType: nil`, no App Group, no tokens, no persisted IDs); 18 deterministic tests using fakes (the boundary has no artificial update/end failure paths). `TSUGINOLiveActivityAttributes` is declared `nonisolated` so its `ActivityAttributes` conformance is usable from ActivityKit's nonisolated APIs under the app target's MainActor default isolation. Simulator-only so far.
+- **Pending:** physical-device build/install and the §6.2 device test (AC4, AC5 — start/end the bootstrap activity, observe Dynamic Island on device); signing / `DEVELOPMENT_TEAM` not configured.
 
 Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain/Realtime`, `Domain/Transfer`, `Application/*`, `Data/*`, other `Features/*`, `DesignSystem/*`, `Resources/RailData`, `Resources/PixelArt`, `Resources/Localization`.
 
