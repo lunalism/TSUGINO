@@ -185,8 +185,9 @@ Track A status:
 
 - **Implemented (A1):** Xcode project, app shell, Live Activity extension shell, test target.
 - **Implemented (A2):** `AppEnvironment`, `AppConfiguration`, clock abstraction (`AppClock`, as named in ARCHITECTURE.md §38), typed feature flags (one placeholder Debug-only flag `debugLiveActivityBootstrapControl`, off in Release and test), privacy-safe `os.Logger` logging foundation, and 25 deterministic tests. No `project.pbxproj` change was needed (synchronized folders).
-- **Implemented (A3):** the Debug-only manual Live Activity bootstrap control — visible only for `buildMode == .debug` with `debugLiveActivityBootstrapControl` enabled (Release configurations reject the flag, so Release can never show it); start/update/end of a synthetic activity through `ActivityKitBootstrapActivities` (`pushType: nil`, no App Group, no tokens, no persisted IDs); 18 deterministic tests using fakes (the boundary has no artificial update/end failure paths). `TSUGINOLiveActivityAttributes` is declared `nonisolated` so its `ActivityAttributes` conformance is usable from ActivityKit's nonisolated APIs under the app target's MainActor default isolation. Simulator-only so far.
-- **Pending:** physical-device build/install and the §6.2 device test (AC4, AC5 — start/end the bootstrap activity, observe Dynamic Island on device); signing / `DEVELOPMENT_TEAM` not configured.
+- **Implemented (A3):** the Debug-only manual Live Activity bootstrap control — visible only for `buildMode == .debug` with `debugLiveActivityBootstrapControl` enabled (Release configurations reject the flag, so Release can never show it); start/update/end of a synthetic activity through `ActivityKitBootstrapActivities` (`pushType: nil`, no App Group, no tokens, no persisted IDs); 18 deterministic tests using fakes (the boundary has no artificial update/end failure paths). `TSUGINOLiveActivityAttributes` is declared `nonisolated` so its `ActivityAttributes` conformance is usable from ActivityKit's nonisolated APIs under the app target's MainActor default isolation. Validated on simulator and on a physical iPhone 12 (Lock Screen lifecycle; see A4).
+- **Completed (A4 — physical-device validation, 2026-09-17):** Debug build for a physical iPhone 12 (iOS 27.0) with automatic development signing; the Team ID was supplied only as an ephemeral command-line override and **no `DEVELOPMENT_TEAM` value was written to the project**. App and Live Activity extension both signed; extension embedded under `PlugIns/`; `NSSupportsLiveActivities = true`, `MinimumOSVersion = 18.0`, `UIDeviceFamily = [1]` verified on the built products. Install and launch on the device succeeded. Manual §6.2 Lock Screen lifecycle passed in full (see §6.3).
+- **Pending (Dynamic Island-capable device):** the Dynamic Island portion of AC5 / §6.2. The iPhone 12 has no Dynamic Island, so that portion is **N/A on this device, not a failure**; Lock Screen Live Activities remain enabled on such hardware — iOS simply does not present the Dynamic Island UI. No device-model detection or app-level disabling behavior is required. Physical Dynamic Island validation is deferred until an iPhone 14 Pro (or later Dynamic Island-capable iPhone) is available and must cover: compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, and end dismissal.
 
 Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain/Realtime`, `Domain/Transfer`, `Application/*`, `Data/*`, other `Features/*`, `DesignSystem/*`, `Resources/RailData`, `Resources/PixelArt`, `Resources/Localization`.
 
@@ -199,8 +200,8 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 | AC1 | iPad is not part of the v1 QA matrix or supported-device configuration | `TARGETED_DEVICE_FAMILY = 1` and `IPHONEOS_DEPLOYMENT_TARGET = 18.0` on all targets; `xcodebuild -showBuildSettings` output recorded |
 | AC2 | Clean build | `xcodebuild build` for app + extension, zero errors |
 | AC3 | Clean test run | `xcodebuild test` on iPhone simulator, all smoke tests pass |
-| AC4 | App installs and launches | Physical iPhone install + launch (Rule 30) |
-| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed |
+| AC4 | App installs and launches | Physical iPhone install + launch (Rule 30) — **PASS** (iPhone 12, iOS 27.0, 2026-09-17; §6.3) |
+| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed — **PARTIAL**: extension functional and Lock Screen start/update/end lifecycle passed on a physical iPhone 12 (§6.3); Dynamic Island rendering **pending** on a Dynamic Island-capable device (N/A on iPhone 12) |
 | AC6 | Provider evaluation document exists | `docs/PROVIDER_FEASIBILITY_AUDIT.md` |
 | AC7 | No production feature depends on an unverified provider assumption | Trivially true in Phase 0 (no production features); registry rows all `Pending verification` and none referenced from configuration |
 
@@ -214,13 +215,53 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 
 ### 6.2 Physical Device Test (ROADMAP)
 
-- install app
-- launch app
-- start minimal test Live Activity
-- end test Live Activity
-- confirm Dynamic Island rendering on supported device
+- install app — done (iPhone 12)
+- launch app — done (iPhone 12)
+- start minimal test Live Activity — done (iPhone 12, Lock Screen)
+- end test Live Activity — done (iPhone 12, Lock Screen)
+- confirm Dynamic Island rendering on supported device — **pending** (requires a Dynamic Island-capable iPhone; N/A on iPhone 12)
 
 Simulator success alone does not satisfy AC4/AC5 (Rule 30, AGENTS §22).
+
+### 6.3 Physical Device Validation Record (2026-09-17)
+
+Device class: iPhone 12 (no Dynamic Island) · OS: iOS 27.0 · Deployment target: iOS 18.0 · Device family: iPhone-only. No device identifiers, signing identities, or local paths are recorded here by design.
+
+Build / sign / install:
+
+| Check | Result |
+|---|---|
+| Physical Debug build (app + extension) | PASS |
+| Automatic development signing via ephemeral command-line team override | PASS |
+| `DEVELOPMENT_TEAM` written to the project | No (verified; project unchanged) |
+| App and Live Activity extension signing | PASS |
+| Extension embedded in the app (`PlugIns/`) | PASS |
+| `NSSupportsLiveActivities` / `MinimumOSVersion = 18.0` / `UIDeviceFamily = [1]` | PASS |
+| Physical install and launch | PASS |
+
+Manual Live Activity lifecycle (Lock Screen):
+
+| Step | Result |
+|---|---|
+| Debug bootstrap controls visible (TSUGINO · DEBUG · Live Activity bootstrap · Start / Update / End) | PASS |
+| Initial state `Idle` | PASS |
+| Start → app state `Active · 1` | PASS |
+| Live Activity appeared on the Lock Screen | PASS |
+| Update → app state and Lock Screen value `2` | PASS |
+| End → app state `Ended` | PASS |
+| Live Activity disappeared from the Lock Screen | PASS |
+| Start again → value reset to `Active · 1` | PASS |
+| Final End completed cleanup; no TSUGINO Live Activity remained active | PASS |
+
+Dynamic Island:
+
+| Item | Status |
+|---|---|
+| Dynamic Island rendering on iPhone 12 | N/A — hardware has no Dynamic Island (not a failure) |
+| Physical Dynamic Island validation | **Pending** — deferred until an iPhone 14 Pro is available |
+| Required future coverage | compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, end dismissal |
+
+Validation split: **iPhone 12 Lock Screen lifecycle — completed; Dynamic Island-capable device — pending.** Dynamic Island has **not** been physically validated. Lock Screen Live Activities are not disabled on iPhones without Dynamic Island.
 
 ---
 
@@ -274,6 +315,6 @@ Both tracks must reach this state. A buildable project with an unexamined provid
 1. Create the Xcode project and targets per §5.2 (Track A), iPhone-only, iOS 18.0, dependency-free.
 2. Add `Clock`, logging, `AppConfiguration`, feature-flag skeleton, smoke tests.
 3. Add Live Activity extension shell with throwaway test activity.
-4. Build, test, install on device, run §6.2, record results.
+4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3); Dynamic Island portion pending on capable hardware.
 5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit.
 6. Run §9 drift checklist and the AGENTS §24 phase audit; report.
