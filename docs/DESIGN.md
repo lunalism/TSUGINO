@@ -483,13 +483,13 @@ Station search should be:
 
 - fast
 - forgiving
-- bilingual
+- usable in Japanese, English, and Korean
 - easy to scan
 
 Each result may show:
 
-- Japanese name
-- English name
+- station name in the resolved app language
+- secondary Japanese name where it aids traveler confidence (§27.4)
 - line badges
 - operator
 - nearby indicator
@@ -1382,7 +1382,7 @@ A design is acceptable only if:
 5. realtime confidence is not overstated,
 6. Dynamic Island remains legible at a glance,
 7. Live Activity remains useful without opening the app,
-8. Japanese and English both fit without breaking hierarchy,
+8. Japanese, English, and Korean all fit without breaking hierarchy,
 9. pixel art never reduces information clarity,
 10. unsupported data is omitted rather than faked,
 11. journey recovery is understandable,

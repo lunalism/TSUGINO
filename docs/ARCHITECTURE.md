@@ -155,7 +155,7 @@ Architecture should prevent avoidable work by default:
 
 ### 2.8 iPhone-Only v1 Architecture Boundary
 
-TSUGINO v1 targets iPhone only.
+TSUGINO v1 targets iPhone only, with a minimum deployment target of **iOS 18.0** (DEC-045). All targets — app, Live Activity extension, tests — share this floor, and v1 code does not carry `@available` branching below it.
 
 Architecture must not add complexity solely to preserve hypothetical iPad support.
 
@@ -299,9 +299,7 @@ TSUGINO/
 │   │   └── Client/
 │   │
 │   ├── RouteProviders/
-│   │   ├── Jorudan/
-│   │   ├── NAVITIME/
-│   │   └── Ekispert/
+│   │   └── <SelectedProvider>/   (candidates: Jorudan, NAVITIME, Ekispert — see note below)
 │   │
 │   ├── Persistence/
 │   │   ├── JourneyRepository/
@@ -353,6 +351,8 @@ TSUGINO/
     ├── LiveActivityTests/
     └── Fixtures/
 ```
+
+**RouteProviders note:** the provider names listed above are *candidates/examples* only (DEC-004 is Provisional). A `Data/RouteProviders/<Provider>/` folder is created only for a provider that has actually been selected and is being integrated. Do not pre-create folders for unselected candidates (AGENTS §5.1).
 
 ### 4.1 Folder Ownership Rules
 
@@ -597,9 +597,12 @@ RailwayLine
 - operatorID
 - nameJapanese
 - nameEnglish
+- nameKorean
 - color
 - stationSequence
 ```
+
+Line names follow the same canonical localization principle as `Station` (§39.1, DEC-042): Japanese, English, and Korean are held canonically; provider-supplied names are inputs, not the sole source of truth.
 
 ---
 

@@ -78,7 +78,7 @@ Create a clean iOS project and validate the highest-risk external dependencies b
 - Xcode project bootstrap
 - bundle identifier
 - signing
-- deployment target
+- deployment target (iOS 18.0 minimum, DEC-045)
 - basic app shell
 - basic Widget / Live Activity extension shell
 - test targets
@@ -160,7 +160,7 @@ Phase 0 is complete when the project is structurally ready and major provider ri
 
 Before Phase 1, confirm:
 
-- deployment target
+- deployment target — decided: iOS 18.0 minimum (DEC-045)
 - primary route-search provider direction
 - primary realtime provider direction
 - canonical ID strategy
@@ -333,7 +333,7 @@ Integrate a replaceable route-search provider without leaking provider models in
 - Mapping
 - `RouteCandidate`
 - route alternatives
-- bilingual route content
+- Japanese / English / Korean route content
 - basic route-search diagnostics
 
 ## Explicitly Excluded

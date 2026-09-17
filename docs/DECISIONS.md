@@ -1614,9 +1614,10 @@ Revisit if automatic train detection is later implemented.
 
 # DEC-041 — Japanese, English, and Korean Are First-Class Languages
 
-**Status:** Superseded by DEC-042  
+**Status:** Accepted (language-resolution details superseded by DEC-042)\
 **Date:** 2026-09-16  
-**Supersedes:** DEC-002
+**Supersedes:** DEC-002\
+**Partially superseded by:** DEC-042 — only the device-language resolution/fallback behavior. The three-language product decision itself remains in force.
 
 ## Context
 
@@ -1861,6 +1862,51 @@ This keeps v1 focused on the product's primary use case and prevents tablet supp
 ## Revisit Triggers
 
 Revisit only for a future major release or an explicit product decision to add iPad support.
+
+
+# DEC-045 — TSUGINO v1 Minimum Deployment Target Is iOS 18.0
+
+**Status:** Accepted\
+**Date:** 2026-09-17\
+**Related:** DEC-044 (iPhone-only v1)
+
+## Context
+
+Phase 0 bootstrap (`ROADMAP.md`) requires a deployment target before the Xcode project can be created, and `PROVIDER_FEASIBILITY_AUDIT.md` / `PHASE_0_SCOPE_LOCK.md` identified it as an undecided Decision Gate item.
+
+The only hard platform constraint from the product is ActivityKit (Dynamic Island, Lock Screen Live Activity), which is available from iOS 16.1. Choosing the lowest technically possible version would maximize nominal device reach but would force the codebase to avoid or shim newer SwiftUI, Observation, Swift Testing, and concurrency capabilities for the entire v1 lifetime.
+
+## Decision
+
+TSUGINO v1 has a **minimum deployment target of iOS 18.0**.
+
+- Platform: iPhone only (DEC-044).
+- iPad is excluded from implementation, QA, the supported device family, and App Store release.
+- The target is **not** lowered to iOS 16.1 merely because ActivityKit would permit it.
+- Modern SwiftUI, Observation, and testing foundations and long-term maintainability take priority over nominal backward reach.
+- Any future change to the minimum supported iOS version — up or down — is made **only through a new decision record** that supersedes this one.
+
+## Rationale
+
+- iOS 18 gives the app, the Live Activity extension, and the test targets a single modern baseline without availability branching.
+- The Journey domain, concurrency ownership rules (ARCH §21–§22), and deterministic testing strategy benefit from current language and framework features rather than compatibility shims.
+- The realistic v1 audience (iPhone users on Dynamic Island / Live Activity-capable devices) is served by iOS 18-capable hardware.
+- A single, explicit floor is easier to audit in release configuration (Rule 52).
+
+## Consequences
+
+- `IPHONEOS_DEPLOYMENT_TARGET = 18.0` on the app target, the Live Activity extension target, and all test targets.
+- No `@available` branching below iOS 18 is written in v1.
+- `PRODUCT.md`, `ARCHITECTURE.md`, `ROADMAP.md`, and the Phase 0 documents state iOS 18.0 as current truth.
+- Phase 0 acceptance includes verifying the deployment target on every target.
+
+## Revisit Triggers
+
+- A new major iOS release makes a higher floor clearly beneficial for v1 or v2.
+- Verified user data shows a material iOS 18-incompatible audience that the product must serve.
+- App Store or framework requirements change the constraint.
+
+Any such revisit produces a new decision record; this record is then marked `Superseded`.
 
 
 ## 3. Decision Maintenance Rules

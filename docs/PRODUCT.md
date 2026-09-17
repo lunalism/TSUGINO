@@ -174,7 +174,9 @@ Additional languages may be considered later.
 
 ## 7.1 Platform Scope
 
-TSUGINO v1 is **iPhone-only**.
+TSUGINO v1 is **iPhone-only** with a **minimum deployment target of iOS 18.0** (DEC-044, DEC-045).
+
+The minimum iOS version is not lowered merely because ActivityKit would permit an earlier version; changes to it require a new decision record.
 
 iPad is explicitly excluded from:
 

@@ -25,16 +25,19 @@ Users can search for stations by:
 
 - Japanese station name
 - English station name
-- supported aliases where available
+- Korean station name
+- canonical aliases where available (see §11.3)
+
+Equivalent Japanese, English, and Korean names resolve to the same canonical station (DEC-041, DEC-042).
 
 The search result should show enough context to distinguish stations with similar names.
 
 Minimum information:
 
-- station name
+- station name in the resolved app language
 - operator
 - line(s)
-- Japanese / English labels
+- Japanese / English / Korean labels as the context requires
 
 ---
 
@@ -255,10 +258,6 @@ On resume, TSUGINO should reconcile the persisted Journey with current realtime 
 If the journey can no longer be reconciled safely, the app should enter a recoverable interrupted state rather than inventing progress.
 
 ---
-
-### 4.3 Current Journey Leg
-
-The app shows the currently active leg.
 
 ### 4.3 Current Journey Leg
 
