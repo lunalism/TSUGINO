@@ -97,7 +97,7 @@ If any of the above appears necessary during Phase 0: **stop, explain, propose t
 
 ## 5. Files / Subsystems Expected to Change
 
-### 5.1 Documentation changes so far (no Xcode project)
+### 5.1 Documentation changes (Phase 0 baseline; project bootstrap is recorded in §5.2)
 
 New:
 
@@ -113,33 +113,55 @@ Living documents touched by the 2026-09-17 baseline repair (minimal, current-tru
 - `docs/FEATURES.md` — duplicate §4.3 heading removed; §2.1 Station Search covers Japanese / English / Korean + canonical aliases
 - `docs/DESIGN.md` §12 — Station Search covers Japanese / English / Korean; §34 — criterion 8 includes Korean
 
-### 5.2 Subsequent Phase 0 changes (Track A, after this document is accepted)
+### 5.2 Track A project structure (Step A1 — accepted, as on disk)
 
-Expected new paths, following `ARCHITECTURE.md` §4:
+Step A1 (native Xcode project bootstrap) is complete and GUI-validated. The tree below is the **actual** structure, using the real filenames on disk; it follows `ARCHITECTURE.md` §4 ownership (`App/`, `Features/`, `Shared/`, `Resources/`) with only the folders that received a file.
 
 ```text
 TSUGINO.xcodeproj/
-TSUGINO/
+├── project.pbxproj                          (objectVersion 77, file-system-synchronized groups)
+└── xcshareddata/xcschemes/TSUGINO.xcscheme  (shared scheme: build app + extension, test TSUGINOTests)
+
+TSUGINO/                                     (app target, com.lunalism.TSUGINO)
 ├── App/
-│   ├── TsuginoApp.swift
-│   ├── AppEnvironment.swift
-│   └── AppConfiguration.swift
+│   └── TSUGINOApp.swift                     (@main SwiftUI App)
+├── Features/
+│   └── AppShell/
+│       └── AppShellView.swift               (root screen: "TSUGINO", no product UI)
 ├── Shared/
-│   ├── Logging/
-│   └── Time/                  (Clock, SystemClock, ManualClock)
+│   └── LiveActivity/
+│       └── TSUGINOLiveActivityAttributes.swift  (single ActivityAttributes type; also a member of the extension target)
 ├── Resources/
-│   └── Assets.xcassets
-LiveActivityExtension/
-├── <extension entry point>
-└── Views/                     (throwaway test activity view only)
-Tests/
-├── DomainTests/               (smoke: clock injection)
-└── ApplicationTests/          (smoke: configuration loads)
+│   └── Assets.xcassets/                     (AppIcon, AccentColor)
+└── Info.plist                               (NSSupportsLiveActivities = YES; merged with generated plist)
+
+TSUGINOLiveActivity/                         (Widget Extension target, com.lunalism.TSUGINO.LiveActivity)
+├── TSUGINOLiveActivityBundle.swift          (@main WidgetBundle)
+├── TSUGINOLiveActivity.swift                (ActivityConfiguration: Lock Screen + Dynamic Island, synthetic value only)
+├── Assets.xcassets/                         (AccentColor, WidgetBackground)
+└── Info.plist                               (NSExtension → com.apple.widgetkit-extension)
+
+TSUGINOTests/                                (unit-test bundle, com.lunalism.TSUGINOTests, hosted by TSUGINO.app)
+└── TSUGINOTests.swift                       (Swift Testing smoke test)
 ```
 
-Feature-flag skeleton location: `App/` (as part of `AppConfiguration`) unless implementation shows a better owner; any deviation is noted in the phase report.
+Accepted Step A1 implementation decisions:
 
-Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain/Realtime`, `Domain/Transfer`, `Application/*`, `Data/*`, `Features/*`, `DesignSystem/*`, `Resources/RailData`, `Resources/PixelArt`, `Resources/Localization`.
+- `.gitignore` includes `xcuserdata/`, `DerivedData/`, `*.xcuserstate`.
+- Explicit `Info.plist` files for app and extension (with `GENERATE_INFOPLIST_FILE = YES`).
+- Extension links `WidgetKit` / `SwiftUI` explicitly, mirroring Xcode's widget template.
+- No App Group, no entitlements, no persistence, no `#Preview` blocks.
+- Every target: `IPHONEOS_DEPLOYMENT_TARGET = 18.0`, `TARGETED_DEVICE_FAMILY = 1`, `SUPPORTS_MACCATALYST = NO`, `SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO`, `SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO`, automatic signing.
+
+Test-target note:
+
+- An **extension-specific unit-test target is deferred**: Xcode provides no natural native test-host structure for a widget/app extension, and adding one would introduce artificial project complexity.
+- Shared `ActivityAttributes` behavior is currently covered through `TSUGINOTests` (the attributes file is a member of the app target).
+- This deferral does **not** waive the Live Activity state-mapping tests required later (`ARCHITECTURE.md` §44.5, `ROADMAP.md` Phase 9); those will need their own ownership decision when the mapper exists.
+
+Still to be added in later Phase 0 steps (Track A, not Step A1): `App/AppEnvironment.swift`, `App/AppConfiguration.swift` (with feature-flag skeleton unless implementation shows a better owner), `Shared/Logging/`, `Shared/Time/` (`Clock`, `SystemClock`, `ManualClock`), corresponding smoke tests, and the Debug-only manual Live Activity trigger for device verification.
+
+Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain/Realtime`, `Domain/Transfer`, `Application/*`, `Data/*`, other `Features/*`, `DesignSystem/*`, `Resources/RailData`, `Resources/PixelArt`, `Resources/Localization`.
 
 ---
 
