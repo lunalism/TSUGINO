@@ -1517,16 +1517,18 @@ This makes field bugs reproducible.
 
 Domain logic must not call `Date()` directly everywhere.
 
-Introduce:
+Introduce a project-owned clock abstraction:
 
 ```text
-Clock
+AppClock
 - now
 ```
 
-Production uses system time.
+The `App` prefix avoids collision and confusion with Swift's standard-library `Clock` protocol; the concept is unchanged.
 
-Tests use deterministic time.
+Production uses system time (`SystemAppClock`).
+
+Tests use deterministic time (`FixedAppClock`).
 
 This is essential for:
 
