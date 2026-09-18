@@ -908,7 +908,9 @@ Make Japanese, English, and Korean first-class and ensure the app remains access
 
 - review all strings
 - verify unsupported device languages fall back to English
-- project-owned Korean route/station/headsign names and search aliases (provider feeds carry no Korean — DEC-046, DEC-041/042)
+- ingest and review provider-supplied Korean labels where they exist (audited Tokyo Metro `odpt:Railway` titles for 9/10 lines and station-order titles; none in the audited Toei or Tokyo Metro static GTFS, none for `MarunouchiBranch`, none in static headsigns, none in retained dynamic status text) — reviewed inputs, never automatically canonical
+- fill uncovered canonical Korean route/station/headsign names, search aliases, reading aliases, romanization variants, line-code aliases, and cross-operator identity normalization as project-owned data; never treat partial provider localization as complete canonical coverage (DEC-041/042, DEC-046)
+- dynamic status/incident text localization remains a separate unresolved item (retained Tokyo Metro TrainInformation text was Japanese-only)
 - review railway terminology
 - review Korean naturalness
 - review English clarity
