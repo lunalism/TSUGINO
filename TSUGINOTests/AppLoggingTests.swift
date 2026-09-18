@@ -52,6 +52,10 @@ struct AppLoggingTests {
             (.liveActivityBootstrapEndRequested, "live activity bootstrap end requested"),
             (.liveActivityBootstrapEndSucceeded, "live activity bootstrap end succeeded"),
             (.liveActivityBootstrapEndIgnored(reason: .noActiveActivity), "live activity bootstrap end ignored (reason=noActiveActivity)"),
+            (.liveActivityBootstrapReconcileStarted, "live activity bootstrap reconcile started"),
+            (.liveActivityBootstrapReconcileFoundNone, "live activity bootstrap reconcile found none"),
+            (.liveActivityBootstrapReconcileAdopted(syntheticValue: 3), "live activity bootstrap reconcile adopted (syntheticValue=3)"),
+            (.liveActivityBootstrapReconcileCleanedUp(count: 2), "live activity bootstrap reconcile cleaned up (count=2)"),
         ]
 
         for (event, message) in events {
@@ -65,6 +69,25 @@ struct AppLoggingTests {
         // carries no associated value, so nothing about the error can leak.
         #expect(LogEvent.liveActivityBootstrapStartFailed.level == .error)
         #expect(LogEvent.liveActivityBootstrapStartFailed.category == .liveActivity)
+    }
+
+    @Test func liveActivityBootstrapRequestEventsAreDebugLevelAndOutcomesAreInfo() {
+        let debugLevel: [LogEvent] = [
+            .liveActivityBootstrapStartRequested, .liveActivityBootstrapUpdateRequested,
+            .liveActivityBootstrapEndRequested, .liveActivityBootstrapReconcileStarted,
+        ]
+        let infoLevel: [LogEvent] = [
+            .liveActivityBootstrapStartSucceeded, .liveActivityBootstrapUpdateSucceeded,
+            .liveActivityBootstrapEndSucceeded, .liveActivityBootstrapEndIgnored(reason: .noActiveActivity),
+            .liveActivityBootstrapReconcileFoundNone, .liveActivityBootstrapReconcileAdopted(syntheticValue: 1),
+            .liveActivityBootstrapReconcileCleanedUp(count: 2),
+        ]
+        for event in debugLevel {
+            #expect(event.level == .debug)
+        }
+        for event in infoLevel {
+            #expect(event.level == .info)
+        }
     }
 
     @Test func categoriesAreStableIdentifiers() {

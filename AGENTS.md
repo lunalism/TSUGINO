@@ -590,6 +590,14 @@ Required areas include:
 
 Simulator success alone is insufficient for these features.
 
+### Simulator-First Development Workflow (operational rule)
+
+- Routine TSUGINO development, builds, tests, installs, launches, and runtime validation use an iPhone Simulator by default, selected with an explicit Simulator destination (never a generic device destination).
+- Do not discover, select, build for, install to, launch on, inspect, or otherwise interact with a connected physical iPhone or iPad unless the user explicitly authorizes a specific physical-device step.
+- The physical device `LunaTestphone` is reserved for another app project and must not be touched by TSUGINO work.
+- This is a development workflow rule, not an app capability restriction: do not add runtime hardware detection and do not remove iPhone device support, signing, entitlements, or supported platforms because of it.
+- The historical physical iPhone 12 validation record remains valid; physical Dynamic Island validation remains **Pending** until a physical-device step is separately authorized.
+
 ---
 
 ## 23. Build and Test Discipline

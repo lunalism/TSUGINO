@@ -12,6 +12,10 @@ protocol BootstrapActivityRequesting {
 
     /// Requests a synthetic bootstrap activity. `pushType` is always `nil`.
     func request(title: String, syntheticValue: Int) throws -> any BootstrapActivityHandle
+
+    /// Handles for every TSUGINO activity the system currently owns, in system order.
+    /// Lets a freshly created controller reconcile after process or view recreation.
+    func existingHandles() -> [any BootstrapActivityHandle]
 }
 
 /// A handle to one live bootstrap activity. Production wraps `Activity`; tests use a fake.
@@ -19,6 +23,9 @@ protocol BootstrapActivityRequesting {
 /// `end(_:dismissalPolicy:)` are async and non-throwing.
 @MainActor
 protocol BootstrapActivityHandle: AnyObject {
+    /// The synthetic value the system currently presents for this activity.
+    var syntheticValue: Int { get }
+
     func update(syntheticValue: Int) async
     func end() async
 }
@@ -44,6 +51,10 @@ struct ActivityKitBootstrapActivities: BootstrapActivityRequesting {
         )
         return ActivityKitBootstrapHandle(activity: activity)
     }
+
+    func existingHandles() -> [any BootstrapActivityHandle] {
+        Activity<TSUGINOLiveActivityAttributes>.activities.map(ActivityKitBootstrapHandle.init(activity:))
+    }
 }
 
 @MainActor
@@ -52,6 +63,10 @@ private final class ActivityKitBootstrapHandle: BootstrapActivityHandle {
 
     init(activity: Activity<TSUGINOLiveActivityAttributes>) {
         self.activity = activity
+    }
+
+    var syntheticValue: Int {
+        activity.content.state.syntheticValue
     }
 
     func update(syntheticValue: Int) async {

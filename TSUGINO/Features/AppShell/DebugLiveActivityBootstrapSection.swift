@@ -42,7 +42,11 @@ struct DebugLiveActivityBootstrapSection: View {
                     .accessibilityIdentifier(AccessibilityID.end)
             }
             .buttonStyle(.bordered)
+            .disabled(!controller.areControlsAvailable)
         }
         .padding()
+        // Runs once per view identity (not on ordinary body updates); a rebuilt
+        // section gets a new controller and reconciles again. Idempotent anyway.
+        .task { await controller.reconcile() }
     }
 }

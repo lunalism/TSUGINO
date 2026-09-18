@@ -31,6 +31,11 @@ nonisolated enum LogEvent: Sendable, Equatable {
     case liveActivityBootstrapEndRequested
     case liveActivityBootstrapEndSucceeded
     case liveActivityBootstrapEndIgnored(reason: BootstrapIgnoreReason)
+    // Reconciliation with system-owned activities. Carries only counts/values.
+    case liveActivityBootstrapReconcileStarted
+    case liveActivityBootstrapReconcileFoundNone
+    case liveActivityBootstrapReconcileAdopted(syntheticValue: Int)
+    case liveActivityBootstrapReconcileCleanedUp(count: Int)
 
     var category: LogCategory {
         switch self {
@@ -43,7 +48,9 @@ nonisolated enum LogEvent: Sendable, Equatable {
              .liveActivityBootstrapUpdateRequested, .liveActivityBootstrapUpdateSucceeded,
              .liveActivityBootstrapUpdateIgnored,
              .liveActivityBootstrapEndRequested, .liveActivityBootstrapEndSucceeded,
-             .liveActivityBootstrapEndIgnored:
+             .liveActivityBootstrapEndIgnored,
+             .liveActivityBootstrapReconcileStarted, .liveActivityBootstrapReconcileFoundNone,
+             .liveActivityBootstrapReconcileAdopted, .liveActivityBootstrapReconcileCleanedUp:
             .liveActivity
         }
     }
@@ -52,7 +59,8 @@ nonisolated enum LogEvent: Sendable, Equatable {
         switch self {
         case .liveActivityBootstrapStartFailed:
             .error
-        case .liveActivityBootstrapStartRequested, .liveActivityBootstrapUpdateRequested, .liveActivityBootstrapEndRequested:
+        case .liveActivityBootstrapStartRequested, .liveActivityBootstrapUpdateRequested, .liveActivityBootstrapEndRequested,
+             .liveActivityBootstrapReconcileStarted:
             .debug
         default:
             .info
@@ -86,6 +94,14 @@ nonisolated enum LogEvent: Sendable, Equatable {
             "live activity bootstrap end succeeded"
         case .liveActivityBootstrapEndIgnored(let reason):
             "live activity bootstrap end ignored (reason=\(reason.rawValue))"
+        case .liveActivityBootstrapReconcileStarted:
+            "live activity bootstrap reconcile started"
+        case .liveActivityBootstrapReconcileFoundNone:
+            "live activity bootstrap reconcile found none"
+        case .liveActivityBootstrapReconcileAdopted(let syntheticValue):
+            "live activity bootstrap reconcile adopted (syntheticValue=\(syntheticValue))"
+        case .liveActivityBootstrapReconcileCleanedUp(let count):
+            "live activity bootstrap reconcile cleaned up (count=\(count))"
         }
     }
 }

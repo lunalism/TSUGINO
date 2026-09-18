@@ -14,4 +14,9 @@ final class RecordingLogSink: AppLogSink {
     func emit(_ event: LogEvent, subsystem: String) {
         storage.withLock { $0.append((event, subsystem)) }
     }
+
+    /// Drops everything recorded so far (e.g. setup-phase events).
+    func clear() {
+        storage.withLock { $0.removeAll() }
+    }
 }

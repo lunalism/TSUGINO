@@ -68,7 +68,7 @@ Concretely for Phase 0:
 
 ### 3.3 Documentation
 
-- Living documents are updated **only** if Phase 0 reveals something that changes current truth. The deployment-target decision (DEC-045) and the 2026-09-17 documentation baseline repair are the Phase 0 document changes to date. Otherwise they are not touched.
+- Living documents are updated **only** if Phase 0 reveals something that changes current truth. The deployment-target decision (DEC-045), the 2026-09-17 documentation baseline repair, and the 2026-09-18 Simulator-first workflow rule (`AGENTS.md` §22) are the Phase 0 document changes to date. Otherwise they are not touched.
 
 ---
 
@@ -113,7 +113,7 @@ Living documents touched by the 2026-09-17 baseline repair (minimal, current-tru
 - `docs/FEATURES.md` — duplicate §4.3 heading removed; §2.1 Station Search covers Japanese / English / Korean + canonical aliases
 - `docs/DESIGN.md` §12 — Station Search covers Japanese / English / Korean; §34 — criterion 8 includes Korean
 
-### 5.2 Track A project structure (Steps A1–A3 — as on disk)
+### 5.2 Track A project structure (Steps A1–A5 — as on disk)
 
 Step A1 (native Xcode project bootstrap) is complete and GUI-validated; Step A2 (application infrastructure foundation) and Step A3 (Debug Live Activity bootstrap control) are implemented. The tree below is the **actual** structure, using the real filenames on disk; it follows `ARCHITECTURE.md` §4 ownership (`App/`, `Features/`, `Shared/`, `Resources/`) with only the folders that received a file.
 
@@ -131,19 +131,19 @@ TSUGINO/                                     (app target, com.lunalism.TSUGINO)
 │   │   ├── AppConfiguration.swift           (A2 — BuildMode debug/release/test, typed AppConfigurationError, live() = single #if DEBUG site)
 │   │   └── FeatureFlags.swift               (A2 — FeatureFlag enum w/ owner/purpose/removal criteria; FeatureFlags set; Release defaults all-off)
 │   └── Debug/
-│       ├── BootstrapActivityRequesting.swift        (A3 — smallest ActivityKit boundary mirroring real semantics: throwing request, non-throwing async update/end; ActivityKitBootstrapActivities is the app's only ActivityKit call site, pushType nil)
-│       └── DebugLiveActivityBootstrapController.swift (A3 — @MainActor @Observable controller: typed Status, start/update/end, one retained handle; only `request` can fail, matching ActivityKit; visibility policy)
+│       ├── BootstrapActivityRequesting.swift        (A3/A5 — smallest ActivityKit boundary mirroring real semantics: throwing request, non-throwing async update/end, existingHandles() over the public `Activity.activities` collection, handle exposes current syntheticValue; ActivityKitBootstrapActivities is the app's only ActivityKit call site, pushType nil)
+│       └── DebugLiveActivityBootstrapController.swift (A3/A5 — @MainActor @Observable controller: typed Status incl. `reconciling`, idempotent reconcile(), start/update/end, one retained handle; only `request` can fail, matching ActivityKit; visibility policy)
 ├── Features/
 │   └── AppShell/
 │       ├── AppShellView.swift               (root screen: "TSUGINO"; shows the debug section only when AppConfiguration says so)
-│       └── DebugLiveActivityBootstrapSection.swift (A3 — engineering control: Start/Update/End + typed status, accessibility IDs; not product UI)
+│       └── DebugLiveActivityBootstrapSection.swift (A3/A5 — engineering control: Start/Update/End + typed status, accessibility IDs; runs reconcile() once per view identity and disables controls until it completes; not product UI)
 ├── Shared/
 │   ├── LiveActivity/
 │   │   └── TSUGINOLiveActivityAttributes.swift  (single ActivityAttributes type; also a member of the extension target)
 │   ├── Time/
 │   │   └── AppClock.swift                   (A2 — AppClock protocol, SystemAppClock, FixedAppClock; no timers/sleep)
 │   └── Logging/
-│       └── AppLogging.swift                 (A2/A3 — LogCategory app/configuration/liveActivity, fixed LogEvent vocabulary incl. 10 bootstrap events, AppLogSink, os.Logger sink)
+│       └── AppLogging.swift                 (A2/A3/A5 — LogCategory app/configuration/liveActivity, fixed LogEvent vocabulary incl. 14 bootstrap events (4 reconciliation), AppLogSink, os.Logger sink)
 ├── Resources/
 │   └── Assets.xcassets/                     (AppIcon, AccentColor)
 └── Info.plist                               (NSSupportsLiveActivities = YES; merged with generated plist)
@@ -161,10 +161,10 @@ TSUGINOTests/                                (unit-test bundle, com.lunalism.TSU
 ├── AppEnvironmentTests.swift                (A2)
 ├── AppLoggingTests.swift                    (A2/A3 — no unified-log assertions)
 ├── FeatureFlagsTests.swift                  (A2)
-├── DebugLiveActivityBootstrapTests.swift    (A3 — visibility policy, status labels, lifecycle policy via fakes)
+├── DebugLiveActivityBootstrapTests.swift    (A3/A5 — visibility policy, status labels, lifecycle policy and reconciliation policy via fakes)
 └── Support/
     ├── RecordingLogSink.swift               (A2 — test-only AppLogSink; not in the app target)
-    └── FakeBootstrapActivities.swift        (A3 — test-only BootstrapActivityRequesting/Handle fakes)
+    └── FakeBootstrapActivities.swift        (A3/A5 — test-only BootstrapActivityRequesting/Handle fakes; scripts zero/one/many pre-existing handles)
 ```
 
 Accepted Step A1 implementation decisions:
@@ -188,6 +188,18 @@ Track A status:
 - **Implemented (A3):** the Debug-only manual Live Activity bootstrap control — visible only for `buildMode == .debug` with `debugLiveActivityBootstrapControl` enabled (Release configurations reject the flag, so Release can never show it); start/update/end of a synthetic activity through `ActivityKitBootstrapActivities` (`pushType: nil`, no App Group, no tokens, no persisted IDs); 18 deterministic tests using fakes (the boundary has no artificial update/end failure paths). `TSUGINOLiveActivityAttributes` is declared `nonisolated` so its `ActivityAttributes` conformance is usable from ActivityKit's nonisolated APIs under the app target's MainActor default isolation. Validated on simulator and on a physical iPhone 12 (Lock Screen lifecycle; see A4).
 - **Completed (A4 — physical-device validation, 2026-09-17):** Debug build for a physical iPhone 12 (iOS 27.0) with automatic development signing; the Team ID was supplied only as an ephemeral command-line override and **no `DEVELOPMENT_TEAM` value was written to the project**. App and Live Activity extension both signed; extension embedded under `PlugIns/`; `NSSupportsLiveActivities = true`, `MinimumOSVersion = 18.0`, `UIDeviceFamily = [1]` verified on the built products. Install and launch on the device succeeded. Manual §6.2 Lock Screen lifecycle passed in full (see §6.3).
 - **Pending (Dynamic Island-capable device):** the Dynamic Island portion of AC5 / §6.2. The iPhone 12 has no Dynamic Island, so that portion is **N/A on this device, not a failure**; Lock Screen Live Activities remain enabled on such hardware — iOS simply does not present the Dynamic Island UI. No device-model detection or app-level disabling behavior is required. Physical Dynamic Island validation is deferred until an iPhone 14 Pro (or later Dynamic Island-capable iPhone) is available and must cover: compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, and end dismissal.
+- **Completed (A5 — Simulator Dynamic Island validation and reconciliation fix, 2026-09-18):** on the iPhone 17 Simulator (iOS 26.3), the Lock Screen and Dynamic Island compact/expanded presentations were exercised manually (§6.4). The first End after an App Switcher kill/relaunch failed: the relaunched process built a fresh controller with no retained handle, so End was logged as `end ignored (reason=noActiveActivity)` while the system-owned activity stayed active. Diagnosed from SpringBoard process-lifecycle records and the app's fixed-vocabulary log; fixed by adding reconciliation with the public `Activity<TSUGINOLiveActivityAttributes>.activities` collection inside the existing Debug bootstrap boundary (see "Reconciliation" below). After the fix, kill/relaunch restored `Active (value 2)` automatically and End dismissed both presentations. 54 deterministic tests. Simulator evidence only — it does not replace the pending physical Dynamic Island validation.
+
+Reconciliation (A5, Debug bootstrap only):
+
+- A new controller starts in `reconciling`; the Debug section runs `reconcile()` once per view identity and keeps Start/Update/End disabled until it completes, so controls cannot race the existing-activity check.
+- Exactly one existing TSUGINO activity is adopted with its current synthetic value; Update and End then route to it and a duplicate Start is rejected by the existing retained-handle rule.
+- More than one existing Debug bootstrap activity is an ambiguous state: all are ended immediately (none is arbitrarily selected), nothing is retained, and the status becomes `ended`, from which Start creates a fresh activity at value 1.
+- Reconciliation is idempotent per controller instance (a repeated call is a no-op and never rewinds adopted state).
+- Four fixed log events (`reconcile started / found none / adopted (syntheticValue=N) / cleaned up (count=N)`) carry integers only; no activity identifiers are persisted, displayed, or logged; no App Group, push token, or general persistence was added.
+- This is scoped to the Phase 0 Debug bootstrap; it is **not** the Phase 9 `LiveActivityCoordinator` (`ARCHITECTURE.md` §30), which remains unimplemented.
+
+Workflow rule (2026-09-18): further Phase 0 development and validation use an explicitly selected iPhone Simulator by default; any physical-device step requires explicit user authorization (`AGENTS.md` §22). The physical iPhone 12 record in §6.3 is retained unchanged.
 
 Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain/Realtime`, `Domain/Transfer`, `Application/*`, `Data/*`, other `Features/*`, `DesignSystem/*`, `Resources/RailData`, `Resources/PixelArt`, `Resources/Localization`.
 
@@ -201,7 +213,7 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 | AC2 | Clean build | `xcodebuild build` for app + extension, zero errors |
 | AC3 | Clean test run | `xcodebuild test` on iPhone simulator, all smoke tests pass |
 | AC4 | App installs and launches | Physical iPhone install + launch (Rule 30) — **PASS** (iPhone 12, iOS 27.0, 2026-09-17; §6.3) |
-| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed — **PARTIAL**: extension functional and Lock Screen start/update/end lifecycle passed on a physical iPhone 12 (§6.3); Dynamic Island rendering **pending** on a Dynamic Island-capable device (N/A on iPhone 12) |
+| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed — **PARTIAL**: extension functional and Lock Screen start/update/end lifecycle passed on a physical iPhone 12 (§6.3); Dynamic Island compact/expanded, update propagation, end dismissal, and process-relaunch reconciliation passed on the iPhone 17 **Simulator** (§6.4, Simulator evidence only); physical Dynamic Island rendering **pending** on a Dynamic Island-capable device (N/A on iPhone 12) |
 | AC6 | Provider evaluation document exists | `docs/PROVIDER_FEASIBILITY_AUDIT.md` |
 | AC7 | No production feature depends on an unverified provider assumption | Trivially true in Phase 0 (no production features); registry rows all `Pending verification` and none referenced from configuration |
 
@@ -219,7 +231,7 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 - launch app — done (iPhone 12)
 - start minimal test Live Activity — done (iPhone 12, Lock Screen)
 - end test Live Activity — done (iPhone 12, Lock Screen)
-- confirm Dynamic Island rendering on supported device — **pending** (requires a Dynamic Island-capable iPhone; N/A on iPhone 12)
+- confirm Dynamic Island rendering on supported device — **pending** (requires a Dynamic Island-capable iPhone; N/A on iPhone 12). Simulator rendering exercised — see §6.4.
 
 Simulator success alone does not satisfy AC4/AC5 (Rule 30, AGENTS §22).
 
@@ -262,6 +274,49 @@ Dynamic Island:
 | Required future coverage | compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, end dismissal |
 
 Validation split: **iPhone 12 Lock Screen lifecycle — completed; Dynamic Island-capable device — pending.** Dynamic Island has **not** been physically validated. Lock Screen Live Activities are not disabled on iPhones without Dynamic Island.
+
+### 6.4 Simulator Runtime Validation Record (2026-09-18)
+
+Environment: iPhone 17 Simulator (Dynamic Island-capable model), iOS 26.3, Debug build, no signing. **Simulator runtime evidence only** — nothing in this section is physical-device evidence, and it does not change AC5 from PARTIAL. No device identifiers, activity identifiers, or local paths are recorded here by design.
+
+Manual sequence (user-performed, before the reconciliation fix):
+
+| Step | Result |
+|---|---|
+| Start → app `Active (value 1)`; Lock Screen Live Activity displayed value 1 | PASS |
+| Update → value 2 propagated to the Lock Screen | PASS |
+| Dynamic Island compact presentation rendered (leading/trailing visible, no clipping) | PASS |
+| Dynamic Island expanded presentation rendered (leading/trailing/bottom, no clipping or overlap) | PASS |
+| Update → value 3 propagated to the Dynamic Island presentation | PASS |
+| End after an App Switcher kill and relaunch | **FAIL** (app showed `Idle`; activity remained at value 3 on Lock Screen and Dynamic Island) |
+
+Diagnosis: SpringBoard recorded the app process as "killed from app switcher" and relaunched; the new process logged `environment composed` followed by `live activity bootstrap end ignored (reason=noActiveActivity)` for each End tap, and the ActivityKit daemon recorded no end for the activity. Root cause: the controller's handle existed only in memory and nothing reconciled with the public activities collection. Fixed as described in §5.2 (A5).
+
+Manual sequence (user-performed, after the fix — Path B):
+
+| Step | Result |
+|---|---|
+| Start → `Active (value 1)` | PASS |
+| Update → `Active (value 2)`; Dynamic Island displayed value 2 | PASS |
+| App killed from the App Switcher, relaunched from the Home Screen → app automatically showed `Active (value 2)` (not `Idle`) | PASS |
+| End → `Ended`; activity disappeared from both the Dynamic Island and the Lock Screen | PASS |
+| Start again → value reset to `Active (value 1)` | PASS |
+| Final End removed the remaining activity | PASS |
+
+Evidence classification:
+
+| Item | Status |
+|---|---|
+| Physical iPhone 12 Lock Screen lifecycle (§6.3) | PASS — historical evidence retained |
+| Simulator Lock Screen lifecycle | PASS |
+| Simulator Dynamic Island compact | PASS |
+| Simulator Dynamic Island expanded | PASS |
+| Simulator update propagation | PASS |
+| Simulator end dismissal | PASS (after the reconciliation fix) |
+| Simulator process-relaunch reconciliation | PASS |
+| Dynamic Island minimal | NOT EXERCISED — system-selected multi-activity state (the bootstrap retains one activity; not a failure) |
+| Physical Dynamic Island validation | **Pending** |
+| AC5 | **PARTIAL** — physical Dynamic Island validation not completed |
 
 ---
 
@@ -315,6 +370,6 @@ Both tracks must reach this state. A buildable project with an unexamined provid
 1. Create the Xcode project and targets per §5.2 (Track A), iPhone-only, iOS 18.0, dependency-free.
 2. Add `Clock`, logging, `AppConfiguration`, feature-flag skeleton, smoke tests.
 3. Add Live Activity extension shell with throwaway test activity.
-4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3); Dynamic Island portion pending on capable hardware.
+4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3) and for the iPhone 17 Simulator Dynamic Island/Lock Screen sequence incl. relaunch reconciliation (§6.4); physical Dynamic Island portion pending on capable hardware, to be separately authorized.
 5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit.
 6. Run §9 drift checklist and the AGENTS §24 phase audit; report.
