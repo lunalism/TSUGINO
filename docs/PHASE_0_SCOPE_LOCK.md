@@ -66,6 +66,14 @@ Concretely for Phase 0:
 - verification actions A1–A6 from the audit §9, executed as **research without code in the app**
 - Decision Gate inputs recorded (audit §10)
 
+Track B status (2026-09-18):
+
+- **B1 — transport and static acquisition: completed.** The four official Toei resources (GTFS Static; GTFS-RT TripUpdate, VehiclePosition, Alert) were acquired once from `api.odpt.org` with the Keychain-held developer token; GTFS Static arrived through a validated redirect to ODPT-operated storage without the credential. Static ZIP structure, CRCs, required files, identifier uniqueness, and internal references verified (audit §6.1.1).
+- **B2 — semantic join proof: completed — PASS WITH LIMITATIONS.** Decoded against the canonical GTFS-Realtime 2.0 schema with temporary external tooling: Toei exact `trip_id` join static ↔ TripUpdate ↔ VehiclePosition was **116/116** in one snapshot, one-to-one, no collisions; static stop resolution from realtime `stop_sequence` succeeded for all observed records (3,200/3,200 stop-time updates; 116/116 vehicle positions).
+- No source code, dependency, fixture, or project-setting was added; no raw payload, credential, signed URL, or scratch path was committed. **DEC-004 remains Provisional**; Toei is not selected as a provider.
+- Main pending items: one snapshot only; route 5 absent from realtime; freshness cadence/uptime; missing-`trip_id` fallback; `STOPPED_AT`-only vehicle status unexplained; Alert content unobserved; through-service not assessed; Tokyo Metro degraded path untested; JP/EN/KO coverage (A4); commercial terms (A2); production decoder decision (RK-11).
+- Next Track B evidence work: repeated temporal sampling, route-coverage investigation (route 5), real Alert observation when available, degraded-path evaluation on Tokyo Metro, and commercial confirmation.
+
 ### 3.3 Documentation
 
 - Living documents are updated **only** if Phase 0 reveals something that changes current truth. The deployment-target decision (DEC-045), the 2026-09-17 documentation baseline repair, and the 2026-09-18 Simulator-first workflow rule (`AGENTS.md` §22) are the Phase 0 document changes to date. Otherwise they are not touched.
@@ -326,7 +334,7 @@ Evidence classification:
 |---|---|---|---|
 | Deployment target | Decided | **iOS 18.0 minimum (DEC-045)** | None — verify on all targets at bootstrap (AC1) |
 | Primary route-search provider direction | Human approval after audit A2/A3 | Open (DEC-004 Provisional) | Audit §10 updated; not required for Track A to proceed |
-| Primary realtime provider direction | Human approval after audit A1/A3 | Leaning ODPT-native | Audit §10 updated |
+| Primary realtime provider direction | Human approval after audit A1/A3 | ODPT platform, GTFS static + GTFS-RT first (audit §8.2); Toei single-snapshot join proof PASS WITH LIMITATIONS (audit §6.1.1); no provider selected | Audit §14 updated |
 | Canonical ID strategy | Already decided | DEC-021 | None |
 | Licensing viability for initial Tokyo scope | Human approval after audit A1/A2 | Unknown | Registry rows verified |
 
@@ -371,5 +379,5 @@ Both tracks must reach this state. A buildable project with an unexamined provid
 2. Add `Clock`, logging, `AppConfiguration`, feature-flag skeleton, smoke tests.
 3. Add Live Activity extension shell with throwaway test activity.
 4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3) and for the iPhone 17 Simulator Dynamic Island/Lock Screen sequence incl. relaunch reconciliation (§6.4); physical Dynamic Island portion pending on capable hardware, to be separately authorized.
-5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit.
+5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit — Toei single-snapshot proof done (B1/B2, §3.2); repeated sampling, Tokyo Metro degraded path, and commercial confirmation remain.
 6. Run §9 drift checklist and the AGENTS §24 phase audit; report.
