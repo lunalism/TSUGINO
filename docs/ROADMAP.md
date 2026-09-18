@@ -420,6 +420,9 @@ Normalize realtime railway data into provider-independent snapshots.
 - snapshot generation
 - freshness policy
 - stale/unavailable states
+- per-service capability declarations (service/feed scope, incl. the Toei Nippori-Toneri Liner: no TU/VP — DEC-046)
+- Liner Alert/status payload verification (identifiers, semantics)
+- promotion gate for a service whose TU/VP later becomes officially available (DEC-046 evidence gates)
 - centralized refresh coordinator
 - cancellation support
 
@@ -431,6 +434,7 @@ Normalize realtime railway data into provider-independent snapshots.
 - stale feed
 - missing fields
 - vehicle position absent
+- trip updates absent for a service (per-service capability; no schedule-derived synthetic progress)
 - service alert
 - malformed payload
 - mapping mismatch
@@ -706,6 +710,7 @@ Implement the complete foreground user flow from route setup through active jour
 - update current/next station
 - animate pixel environment
 - surface freshness state
+- degraded-mode UI states for services without trip-level realtime (scheduled / status-Alert / unavailable provenance — DEC-046)
 - surface recovery actions
 
 ## Tests
@@ -774,6 +779,7 @@ Make the journey useful when the main app is closed or locked.
 - remaining stops
 - transfer state
 - arrival resolution
+- Live Activity behaviour for legs without trip-level realtime (schedule/status-only presentation if designed; otherwise do not start — DEC-046)
 
 ## Tests
 
@@ -782,6 +788,7 @@ Make the journey useful when the main app is closed or locked.
 - arrival
 - cancelled journey
 - stale realtime
+- leg without TU/VP capability (no synthetic progress; honest or no Live Activity)
 - English text expansion
 - Korean text expansion
 - no transfer guidance
@@ -901,6 +908,7 @@ Make Japanese, English, and Korean first-class and ensure the app remains access
 
 - review all strings
 - verify unsupported device languages fall back to English
+- project-owned Korean route/station/headsign names and search aliases (provider feeds carry no Korean — DEC-046, DEC-041/042)
 - review railway terminology
 - review Korean naturalness
 - review English clarity

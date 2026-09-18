@@ -582,6 +582,8 @@ TSUGINO should feel distinct from conventional utility-style transit apps.
 
 The product must clearly handle cases where realtime, transfer, or boarding-position data is unavailable.
 
+Feature richness may vary by **verified service capability** (DEC-022, DEC-046): a service whose provider publishes schedule, status, and Alert information but no trip-level realtime remains a supported product experience in an honest degraded mode. TSUGINO never presents synthetic realtime. Example: the Toei Nippori-Toneri Liner is in v1 scope with schedule plus status/Alert-level information under currently verified provider capabilities.
+
 ---
 
 ## 19. MVP Scope

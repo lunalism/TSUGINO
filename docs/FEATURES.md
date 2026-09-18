@@ -560,6 +560,8 @@ Expected lifecycle:
 
 TSUGINO should prevent stale Live Activities from remaining visible after the journey has ended.
 
+Live Activity presentation must match the leg's verified capability (DEC-046): scheduled times are shown as scheduled, status/Alert information with its provenance, and live current-stop or vehicle progression only with verified trip-level realtime. If no honest presentation is defined for a leg's available capabilities, the Live Activity does not start for that leg.
+
 ---
 
 ## 8. Journey-State Presentation
@@ -668,6 +670,16 @@ The app should internally distinguish:
 - unavailable data
 
 The user-facing UI may simplify these states, but must not claim realtime precision when it does not exist.
+
+Availability is evaluated **per service/feed**, not per operator (DEC-022, DEC-046). For a service without verified Trip Update / Vehicle Position capability:
+
+- route search and static journey information remain available;
+- scheduled departure/arrival information is shown and **labelled as scheduled**;
+- verified service-status and Alert information may supplement it, with its actual provenance;
+- live vehicle, current-stop, and progress UI (§4.4, §4.7 realtime estimates, §4.8 realtime delay) requires verified Trip Update / Vehicle Position capability and is otherwise omitted or replaced by an "unavailable" state — never derived from the schedule and presented as live;
+- unsupported live affordances degrade independently; the whole service is not removed.
+
+Current concrete case: the Toei **Nippori-Toneri Liner** follows schedule + status/Alert-level behaviour (its Trip Update and Vehicle Position feeds are officially excluded); actual Liner Alert/status semantics remain pending verification.
 
 ---
 

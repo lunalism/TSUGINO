@@ -1023,6 +1023,8 @@ Persistence should distinguish between:
 - realtime freshness
 - last reconciliation time
 
+Persisted progress carries its provenance; persistence must never convert a schedule-derived estimate into an observed realtime fact (DEC-024, DEC-046).
+
 ### Transient UI State
 - animation frame
 - scroll position
@@ -1887,6 +1889,8 @@ if capabilities.supportsRecommendedCar
 ```
 
 This is critical for expanding beyond Tokyo.
+
+Capability is scoped to the **service/feed**, not the operator: provider identity alone cannot determine UI behaviour, because one operator may publish trip-level realtime for some services and not others (verified case: Toei Subway and Tokyo Sakura Tram have Trip Update / Vehicle Position; the Nippori-Toneri Liner has static, status, and Alert coverage only — DEC-046). Adapters expose capability and **provenance** (realtime / scheduled / status / unavailable) rather than synthesized state; Application and UI layers select behaviour from the capability set; no layer synthesizes progress from a schedule. A service is promoted to a richer capability set only through the evidence gates in DEC-046 (catalog/license, payload/schema, identity join, freshness/coverage, UI state).
 
 ---
 

@@ -916,6 +916,8 @@ Suggested states:
 ### Unavailable
 > Realtime unavailable
 
+Provenance states must be visually distinct — **live**, **scheduled**, **service status/Alert**, and **unavailable** — so that scheduled information can never masquerade as realtime, and a status/Alert notice is never read as vehicle progress (DEC-038, DEC-046). Final styling and localized copy are defined during implementation.
+
 Avoid overexposing technical provider details to ordinary users.
 
 ---

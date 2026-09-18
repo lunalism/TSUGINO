@@ -1908,6 +1908,94 @@ TSUGINO v1 has a **minimum deployment target of iOS 18.0**.
 
 Any such revisit produces a new decision record; this record is then marked `Superseded`.
 
+---
+
+# DEC-046 — TSUGINO v1 Includes the Nippori-Toneri Liner in Honest Degraded Mode
+
+**Status:** Accepted\
+**Date:** 2026-09-18\
+**Related:** DEC-004 (Provisional — unchanged), DEC-005, DEC-006, DEC-022, DEC-024, DEC-038, DEC-041, DEC-042, DEC-044, DEC-045
+
+## Context
+
+Phase 0 Track B produced the following verified evidence (`PROVIDER_FEASIBILITY_AUDIT.md` §6.1.3–§6.1.4):
+
+- B4 identified sanitized static route R5 as the **Nippori-Toneri Liner** (日暮里・舎人ライナー), and showed from the static schedule that its absence from all seven observed Toei GTFS-RT snapshots was **not** caused by a lack of scheduled service (11 and 23 scheduled trips overlapped the observations) — `NOT SCHEDULE-EXPLAINED`.
+- B5 found explicit official ODPT catalog evidence that the current Toei GTFS-RT **Trip Update** and **Vehicle Position** resources exclude the Liner — `EXPLICITLY EXCLUDED`.
+- The current official catalog includes the Liner in **static GTFS**, the **timetable** dataset, **train-status** information, and **GTFS-RT Alerts**.
+- Actual Liner Alert/status payload identifiers and semantics remain **pending verification** (all observed Alert payloads were empty).
+- DEC-022 requires capability-based behaviour rather than provider-name branching; DEC-038 forbids inventing unsupported precision; DEC-024 makes freshness explicit.
+- DEC-004 (route-search provider) remains **Provisional**.
+
+The product owner decided that the Liner stays in v1 scope rather than being dropped because one capability is absent.
+
+## Decision
+
+1. The Nippori-Toneri Liner is **included in TSUGINO v1 product scope**.
+2. Capability is evaluated **per service/feed**, not inferred from the operator name. Toei Subway, Tokyo Sakura Tram, and the Nippori-Toneri Liner each carry their own verified capability set even though they share an operator.
+3. Under currently verified capabilities the Liner operates in **degraded mode**.
+4. Permitted information for the Liner:
+   - canonical route and station identity;
+   - static stop sequence;
+   - scheduled departure and arrival information;
+   - service-status information when verified and available;
+   - Alerts when verified and available.
+5. Prohibited representation for the Liner (and for any service without verified trip-level realtime):
+   - fabricated vehicle location;
+   - fabricated current station;
+   - fabricated delay;
+   - fabricated live next-stop progression;
+   - schedule-derived state presented as realtime;
+   - stale or absent Trip Update / Vehicle Position data presented as an active live feed.
+6. Missing Trip Update and Vehicle Position capability is a **service capability state**. It is not a device limitation, not a user-setting failure, and not, by itself, a transient provider error.
+7. The UI must distinguish, by provenance: realtime vehicle/progress information; schedule-based information; status/Alert information; temporarily unavailable information.
+8. When a capability is unavailable, hide or replace **only** the unsupported live affordance; preserve supported route, schedule, and status/Alert functionality; do not disable the entire service.
+9. Live Activity and journey-progress surfaces may show the Liner only in a presentation whose provenance is truthful: scheduled times shown as scheduled; status/Alert information shown with its actual provenance; live current-stop or vehicle progression never shown without verified trip-level realtime. If no honest Live Activity presentation is defined for the available capabilities, the Live Activity **must not start** for that leg.
+10. Korean canonical route/station/headsign names and Korean search aliases remain **TSUGINO-owned data** under DEC-041/DEC-042 (the audited Toei feed carries Japanese and English only).
+11. A later official Trip Update / Vehicle Position capability may promote the Liner from degraded to trip-level realtime **only after** catalog/license verification, payload/schema verification, identity-join verification, freshness/coverage verification, and UI-state verification.
+12. Such a promotion does not reopen whether the Liner belongs in product scope; it changes only the service's verified capability set.
+13. This Decision does **not**: select the final provider; resolve DEC-004; claim verified Liner Alert/status payload semantics; claim SLA or uptime; authorize synthetic progress; alter the iPhone-only scope (DEC-044); or alter the Simulator-first development workflow (`AGENTS.md` §22).
+
+Capability-state behaviour (documentation matrix, not code):
+
+| Capability state | Route/schedule | Status/Alert | Live position/progress | Live Activity |
+|---|---|---|---|---|
+| TU/VP verified | available | when available | allowed | live presentation allowed |
+| TU/VP absent, status/Alert available (Liner today) | available | allowed | prohibited | schedule/status-only if explicitly designed; otherwise do not start |
+| Status/Alert temporarily unavailable | available | unavailable state | prohibited without TU/VP | never fabricate |
+| All provider data unavailable | cached/static policy only | unavailable | prohibited | do not start, or end safely per lifecycle policy |
+
+## Rationale
+
+Dropping a legitimate Tokyo transit service because one feed is absent would narrow coverage for no user benefit, while showing invented progress would violate DEC-038 and erode trust. The capability model of DEC-022 already exists precisely so that features follow what a service can do; the Liner is its first concrete degraded case.
+
+## Consequences
+
+Benefits:
+
+- preserves useful route coverage;
+- avoids excluding a legitimate Tokyo transit service;
+- communicates data provenance honestly;
+- exercises the capability-based architecture required by DEC-022;
+- supports future capability promotion without redesigning product scope.
+
+Costs:
+
+- requires explicit degraded-mode UI states (`DESIGN.md` §20);
+- requires per-service capability metadata (`ARCHITECTURE.md` §51);
+- requires tests preventing synthetic progress;
+- may require different Live Activity behaviour by service capability (`FEATURES.md` §7.1, `ARCHITECTURE.md` §28);
+- requires project-owned Korean localization;
+- requires future Alert/status payload verification.
+
+Relationship to earlier decisions: this Decision **uses** DEC-022's capability model and **confirms** DEC-041/DEC-042 localization ownership. DEC-005 ("realtime wherever supported") and DEC-006 (Vehicle Position optional) are **clarified, not superseded**: neither requires every in-scope service to have trip-level realtime; a service with schedule plus status/Alert information is a supported degraded case, with fallback made explicit as DEC-005 and DEC-024 already require. DEC-004 is neither superseded nor resolved.
+
+## Revisit Triggers
+
+- Official Toei/ODPT Trip Update or Vehicle Position coverage for the Liner appears (promotion via the evidence gates in point 11 — no new scope decision needed).
+- Verified Liner Alert/status payloads prove unusable, making even the degraded presentation dishonest.
+- A product decision changes v1 geographic or operator scope (DEC-001).
+
 
 ## 3. Decision Maintenance Rules
 
@@ -2044,6 +2132,14 @@ Car/door/exit guidance depends on future data-source evaluation.
 Related:
 - DEC-019
 - DEC-037
+
+### Nippori-Toneri Liner Capability Promotion
+
+The Liner is in v1 scope in degraded mode (DEC-046). Promotion to trip-level realtime depends on future official Trip Update / Vehicle Position coverage and the evidence gates in DEC-046; Liner Alert/status payload semantics are still unverified.
+
+Related:
+- DEC-046
+- DEC-022
 
 ---
 
