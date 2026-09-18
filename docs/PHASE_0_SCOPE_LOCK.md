@@ -70,9 +70,10 @@ Track B status (2026-09-18):
 
 - **B1 — transport and static acquisition: completed.** The four official Toei resources (GTFS Static; GTFS-RT TripUpdate, VehiclePosition, Alert) were acquired once from `api.odpt.org` with the Keychain-held developer token; GTFS Static arrived through a validated redirect to ODPT-operated storage without the credential. Static ZIP structure, CRCs, required files, identifier uniqueness, and internal references verified (audit §6.1.1).
 - **B2 — semantic join proof: completed — PASS WITH LIMITATIONS.** Decoded against the canonical GTFS-Realtime 2.0 schema with temporary external tooling: Toei exact `trip_id` join static ↔ TripUpdate ↔ VehiclePosition was **116/116** in one snapshot, one-to-one, no collisions; static stop resolution from realtime `stop_sequence` succeeded for all observed records (3,200/3,200 stop-time updates; 116/116 vehicle positions).
-- No source code, dependency, fixture, or project-setting was added; no raw payload, credential, signed URL, or scratch path was committed. **DEC-004 remains Provisional**; Toei is not selected as a provider.
-- Main pending items: one snapshot only; route 5 absent from realtime; freshness cadence/uptime; missing-`trip_id` fallback; `STOPPED_AT`-only vehicle status unexplained; Alert content unobserved; through-service not assessed; Tokyo Metro degraded path untested; JP/EN/KO coverage (A4); commercial terms (A2); production decoder decision (RK-11).
-- Next Track B evidence work: repeated temporal sampling, route-coverage investigation (route 5), real Alert observation when available, degraded-path evaluation on Tokyo Metro, and commercial confirmation.
+- **B3 — short temporal study: completed — PASS WITH LIMITATIONS.** Six additional observation sets at ≈5-minute intervals over ≈25 minutes (19:15–19:40 JST, Friday weekday service); 18/18 requests succeeded, no retries or redirects. Exact TripUpdate ↔ VehiclePosition `trip_id` joins stayed **100%** in every snapshot; static trip and `stop_sequence` resolution stayed **100%**; headers advanced normally; no timestamp stale beyond 60 s and none future-dated; clean trip-set churn between snapshots; R5 absent in all six; Alerts empty in all six; vehicle status overwhelmingly `STOPPED_AT` with one `IN_TRANSIT_TO`. B2 + B3 = seven observed snapshots during one evening (audit §6.1.2) — not a multi-day or uptime study.
+- No source code, dependency, fixture, or project-setting was added; no raw payload, credential, signed URL, or scratch path was committed. **DEC-004 remains Provisional**; no provider is selected.
+- Main pending items: all seven snapshots from one evening (no multi-day/rush-hour/long-duration study); route R5 absent from realtime; missing-`trip_id` fallback; `STOPPED_AT`-dominant vehicle status unexplained; Alert content unobserved; through-service not assessed; Tokyo Metro degraded path untested; JP/EN/KO coverage (A4); commercial terms (A2); production decoder decision (RK-11).
+- Next Track B evidence work: route R5 investigation, a later multi-window or multi-day observation if required by the decision gate, real Alert-content observation when naturally available, targeted VehiclePosition status investigation, Tokyo Metro alerts-only degraded-path evaluation, language-field coverage analysis, and commercial confirmation.
 
 ### 3.3 Documentation
 
@@ -334,7 +335,7 @@ Evidence classification:
 |---|---|---|---|
 | Deployment target | Decided | **iOS 18.0 minimum (DEC-045)** | None — verify on all targets at bootstrap (AC1) |
 | Primary route-search provider direction | Human approval after audit A2/A3 | Open (DEC-004 Provisional) | Audit §10 updated; not required for Track A to proceed |
-| Primary realtime provider direction | Human approval after audit A1/A3 | ODPT platform, GTFS static + GTFS-RT first (audit §8.2); Toei single-snapshot join proof PASS WITH LIMITATIONS (audit §6.1.1); no provider selected | Audit §14 updated |
+| Primary realtime provider direction | Human approval after audit A1/A3 | ODPT platform, GTFS static + GTFS-RT first (audit §8.2); Toei join proof PASS WITH LIMITATIONS across seven snapshots of one evening — B2 single snapshot + B3 six-snapshot study (audit §6.1.1–§6.1.2); no provider selected | Audit §14 updated |
 | Canonical ID strategy | Already decided | DEC-021 | None |
 | Licensing viability for initial Tokyo scope | Human approval after audit A1/A2 | Unknown | Registry rows verified |
 
@@ -379,5 +380,5 @@ Both tracks must reach this state. A buildable project with an unexamined provid
 2. Add `Clock`, logging, `AppConfiguration`, feature-flag skeleton, smoke tests.
 3. Add Live Activity extension shell with throwaway test activity.
 4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3) and for the iPhone 17 Simulator Dynamic Island/Lock Screen sequence incl. relaunch reconciliation (§6.4); physical Dynamic Island portion pending on capable hardware, to be separately authorized.
-5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit — Toei single-snapshot proof done (B1/B2, §3.2); repeated sampling, Tokyo Metro degraded path, and commercial confirmation remain.
+5. In parallel (Track B), execute audit actions A1–A3 (Toei full-realtime proof, Tokyo Metro degraded proof) and update the audit — Toei single-snapshot proof (B1/B2) and six-snapshot short temporal study (B3) done (§3.2); multi-window sampling if required, route R5, Tokyo Metro degraded path, and commercial confirmation remain.
 6. Run §9 drift checklist and the AGENTS §24 phase audit; report.

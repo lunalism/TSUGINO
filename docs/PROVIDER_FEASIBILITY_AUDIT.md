@@ -1,7 +1,7 @@
 # TSUGINO — PROVIDER_FEASIBILITY_AUDIT.md
 
 **Phase:** 0 — Project Bootstrap + Feasibility Baseline
-**Status:** Provisional — catalog and license-text verification complete; Toei payload verified from one snapshot (B1/B2, 2026-09-18); repeated sampling and commercial confirmation pending
+**Status:** Provisional — catalog and license-text verification complete; Toei payload verified from seven snapshots during one evening (B1/B2 single snapshot + B3 six-snapshot short temporal study, 2026-09-18); longer-window sampling and commercial confirmation pending
 **Date:** 2026-09-17 (payload evidence added 2026-09-18)
 **Baseline:** `main` == `origin/main` == `9867038` (parent `24cd610`), branch `phase/00-bootstrap-feasibility`
 **Platform:** iPhone only, iOS 18.0 minimum (DEC-044, DEC-045)
@@ -64,10 +64,11 @@ Each operator/dataset row in §7 and §9 receives exactly one verdict:
 - **License text:** the four official sources named in §3 plus the ODPT Center Use Rules and Developer Guideline, which the `/terms` overview links and which the Basic License incorporates by reference (Art. 1(12), Art. 3(1)).
 - **Not performed:** API payload capture, provider commercial contact, legal review.
 
-### 2.3 Payload basis (2026-09-18, Toei only — B1/B2)
+### 2.3 Payload basis (2026-09-18, Toei only — B1/B2/B3)
 
 - **B1 transport:** the four official Toei resources named in §4.1 row 1 (GTFS Static; GTFS-RT TripUpdate, VehiclePosition, Alert) were acquired once from `api.odpt.org` with the developer token held in the macOS Keychain. GTFS Static was served through a validated HTTPS redirect to ODPT-operated Azure Blob storage; the ODPT credential was not sent to that host. `api-challenge.odpt.org` was not contacted.
 - **B2 decode:** the three GTFS-RT payloads were decoded against the canonical `gtfs-realtime.proto` (GTFS-Realtime 2.0) using temporary external research tooling only; nothing entered the repository. Findings are recorded in §6.1, §8.1, §9, §12.
+- **B3 short temporal study:** six further observation sets (TripUpdate, VehiclePosition, Alert each) at ≈5-minute intervals over ≈25 minutes, 19:15–19:40 JST Friday weekday service — exactly 18 requests, all HTTP 200, no retries, no redirects, no static re-download, no transport/decoding/structural errors. Together with B2 this gives **seven snapshots from one evening**; it is not continuous monitoring, multi-day evidence, or an uptime study. Findings in §6.1.2.
 - **Retained:** aggregate counts, hashes, and field-presence facts only. No credential, signed URL, raw record, identifier, coordinate, payload, or scratch path is recorded here.
 
 ---
@@ -227,10 +228,10 @@ Verification targets, not production scope decisions. DEC-001 and DEC-004 unchan
 | GTFS-RT TripUpdate + VehiclePosition + Alert | VERIFIED_CATALOG |
 | License: CC BY 4.0 — commercial use, attribution, adaptation, no downstream restrictions | VERIFIED_LICENSE_TEXT (§3.5) |
 | API access token + due-care obligation (Center Use Rules) | VERIFIED_LICENSE_TEXT (§3.2) |
-| Static ↔ realtime `trip_id` integrity, join key | **VERIFIED_PAYLOAD (1 snapshot, 2026-09-18)** — see B1/B2 record below |
-| Freshness cadence, uptime, coverage over time | PENDING_PAYLOAD_VERIFICATION (single-snapshot freshness observed only) |
+| Static ↔ realtime `trip_id` integrity, join key | **VERIFIED_PAYLOAD (7 snapshots, one evening, 2026-09-18: B2 ×1 + B3 ×6 at ≈5-min spacing)** — see §6.1.1 and §6.1.2 |
+| Freshness cadence, uptime, coverage over time | PENDING_PAYLOAD_VERIFICATION (short-window freshness observed only: seven snapshots over ≈55 minutes of one evening; no multi-day, overnight, rush-hour, or long-duration study) |
 | Rate limits (numeric) | PENDING_PAYLOAD_VERIFICATION |
-| **Verdict** | **production-license-viable, full realtime**; the Phase 0 candidate for proving the full-realtime path (static → trip identity → TripUpdate → optional VehiclePosition → Alert → `RealtimeSnapshot`). **B2 outcome: PASS WITH LIMITATIONS.** This is not a provider selection; DEC-004 remains Provisional. |
+| **Verdict** | **production-license-viable, full realtime**; the Phase 0 candidate for proving the full-realtime path (static → trip identity → TripUpdate → optional VehiclePosition → Alert → `RealtimeSnapshot`). **B2 outcome: PASS WITH LIMITATIONS. B3 outcome: PASS WITH LIMITATIONS** (§6.1.2). This is not a provider selection; DEC-004 remains Provisional. |
 
 #### 6.1.1 B1/B2 payload record (one snapshot, 2026-09-18)
 
@@ -264,7 +265,45 @@ Freshness (single-snapshot observation only — not cadence, uptime, or SLA evid
 
 Alert: the zero-entity payload was structurally valid. "No active alerts at that instant" is a plausible interpretation only; incident content shape and multilingual coverage were not observed.
 
-Limitations (all preserved as open): one snapshot only; route 5 absent although static scheduled trips exist for it; no repeated cadence, uptime, or availability study; no independent fallback key if `trip_id` is absent; all VehiclePositions `STOPPED_AT` is unexplained; actual Alert incident content unobserved; through-service continuity not assessed; Tokyo Metro alerts-only degraded path not tested; JP/EN/KO name coverage not analyzed (A4); commercial and operational terms pending; no production decoder dependency selected (RK-11).
+Limitations (as recorded after B2; see §6.1.2 for what B3 reduced or preserved): one snapshot only; route 5 absent although static scheduled trips exist for it; no repeated cadence, uptime, or availability study; no independent fallback key if `trip_id` is absent; all VehiclePositions `STOPPED_AT` is unexplained; actual Alert incident content unobserved; through-service continuity not assessed; Tokyo Metro alerts-only degraded path not tested; JP/EN/KO name coverage not analyzed (A4); commercial and operational terms pending; no production decoder dependency selected (RK-11).
+
+#### 6.1.2 B3 short temporal study (six snapshots, 2026-09-18, 19:15–19:40 JST)
+
+Scope: six observation sets at ≈5-minute intervals (actual 299.7–300.5 s), each fetching TripUpdate, VehiclePosition, and Alert once; 18/18 requests HTTP 200; no retries, redirects, static re-download, or transport/decoding/structural errors. Static references were checked against the B1-verified archive. B2 + B3 = seven snapshots from one evening.
+
+Header and transport stability (all six observations):
+
+| Item | Observation |
+|---|---|
+| Version / incrementality / header timestamp | 2.0 / FULL_DATASET / present in every feed |
+| Header timestamps between observations | advanced on 5/5 transitions for all three feeds; none unchanged, none backward |
+| Payload hashes between observations | changed on 5/5 transitions |
+| Future-dated headers / headers older than 60 s | 0 / 0 |
+| Duplicate entity IDs / deleted / mixed or unknown types / unknown fields | 0 / 0 / 0 / 0 |
+| Header age at retrieval | TripUpdate and VehiclePosition min 25 s · median 30 s · max 33 s; Alert 27 / 27 / 28 s |
+| VehiclePosition entity age | minimum of minima 37 s · median of snapshot medians 40 s · maximum of maxima 53 s; 0 older than 60 s; 0 future |
+| Entity vs. header timestamps | entity timestamps trailed the feed header by ≈7–10 s — an observed publication characteristic, not a guaranteed cadence |
+
+Entity and static-reference integrity (totals across the six snapshots):
+
+| Item | Observation |
+|---|---|
+| Entities | TripUpdate 620 · VehiclePosition 620 · StopTimeUpdates 17,156 |
+| Static `trips.txt` match | 100% in every snapshot for both feeds; 0 unresolved trip references |
+| StopTimeUpdate `stop_sequence` → static stop | 100% in every snapshot; VehiclePosition `current_stop_sequence` → static stop 100%; 0 unresolved stop references |
+| Field behaviour (unchanged from B2) | `trip_id` present 100%; realtime `route_id`/`direction_id` absent, recoverable from static for 100%; StopTimeUpdate `stop_id` absent, `stop_sequence` present 100%; explicit trip/StopTimeUpdate `delay` absent; vehicle descriptor ID present and unique 100%; VehiclePosition timestamp present 100%, `stop_id` absent, `current_stop_sequence` present 100%, lat/lon present 100%, bearing absent; all matched trips on the active weekday service |
+
+Cross-feed join stability: exact TripUpdate ↔ VehiclePosition `trip_id` join **100% in both directions in every snapshot**, one-to-one 100%, 0 collisions, 0 TripUpdate-only, 0 VehiclePosition-only. Per-snapshot entity counts fell from 107 to 101 across the window while every snapshot kept a complete cross-feed match. Between successive snapshots 10–12 trips were added, 9–14 removed, 90–93 retained — clean observed set churn consistent with trips entering and leaving the active set; not a formal lifecycle guarantee. Entity ID and vehicle descriptor ID equalled `trip_id` for all 620 entities: **coincidental observed behaviour — entity ID is not a designed cross-feed join key, and no independent fallback key was demonstrated for the case where `trip_id` is absent.**
+
+Route coverage: sanitized static routes R1, R2, R3, R4, R6 appeared in 6/6 snapshots; **R5 appeared in 0/6**. The cause is unknown; this does not show that R5 is unsupported, omitted from the feed, or incapable of realtime reporting. Route-coverage investigation stays open.
+
+Vehicle `current_status` per snapshot: `STOPPED_AT` 106, 104, 103, 102, 103, 101; `IN_TRANSIT_TO` 1 (first observation only); `INCOMING_AT` 0; missing 0. This corrects the B2 wording: the field is **not constant** (one `IN_TRANSIT_TO` value was observed) but the distribution remained overwhelmingly `STOPPED_AT`; the reason is unexplained. A station-centric or provider-specific publication model is a hypothesis only, not a conclusion.
+
+Alerts: 0 entities in all six observations; every payload a valid header-only feed with normally advancing header timestamps; no selector, informed-entity, active-period, cause, effect, or translation content observed. This records only that no Alert entities were present at those six instants — not absence of disruption, and not verified incident semantics, multilingual content, or Alert-to-route matching.
+
+**B3 result: PASS WITH LIMITATIONS.** All six observation sets succeeded; cross-feed joins and static resolution remained complete; timestamps advanced normally; freshness stayed within the observed range; trip-set churn was clean; no structural inconsistency occurred.
+
+Limitations after B3 — *reduced:* "one snapshot only" (now seven from one evening; structure and 100% joins identical across all); short-window freshness consistency observed. *Preserved:* six observations over ≈25 minutes only, all seven snapshots from one evening; no multi-day, overnight, rush-hour comparison, or long-duration study; R5 absent; no independent fallback join key; Alert content unobserved; VehiclePosition status overwhelmingly `STOPPED_AT`; through-service continuity not assessed; Tokyo Metro degraded behaviour not tested; JP/EN/KO name coverage not analyzed; commercial terms pending; production decoder/dependency decision open; explicit delay fields absent; no SLA, uptime, or production-operations claim. *Newly observed:* `current_status` is not constant; entity timestamps trail headers by ≈7–10 s.
 
 ### 6.2 Tokyo Metro — partial / degraded-mode proof candidate
 
@@ -311,7 +350,7 @@ Challenge-entry only / production-blocked operators (JR East, Keio, Tobu, Sotets
 |---|---|
 | Rail datasets for Group A exist with license labels | VERIFIED_CATALOG (§4.1) |
 | Realtime rail data on ODPT is distributed as **GTFS-RT protobuf** (TripUpdate / VehiclePosition / Alert) for GTFS-based operators, plus operator JSON (train status, train location) for some Challenge operators | VERIFIED_CATALOG |
-| Realtime position model is trip-progress / stop-sequence based (GTFS-RT TripUpdate) — GPS-free journey tracking possible (DEC-006) | VERIFIED_PAYLOAD (Toei, 1 snapshot): TripUpdate stop-time updates and VehiclePosition `current_stop_sequence` populated and resolvable to static stops (§6.1.1); field population under disruption PENDING_PAYLOAD_VERIFICATION |
+| Realtime position model is trip-progress / stop-sequence based (GTFS-RT TripUpdate) — GPS-free journey tracking possible (DEC-006) | VERIFIED_PAYLOAD (Toei, 7 snapshots, one evening): TripUpdate stop-time updates and VehiclePosition `current_stop_sequence` populated and resolvable to static stops in every snapshot (§6.1.1, §6.1.2); field population under disruption PENDING_PAYLOAD_VERIFICATION |
 | Station titles JP/EN (GTFS `stops.txt` translations, or ODPT JSON `odpt:stationTitle`); KO coverage | PENDING_PAYLOAD_VERIFICATION (A4) |
 | Access token required for API (all tiers) | VERIFIED_LICENSE_TEXT (S1, S5) |
 
@@ -334,8 +373,8 @@ Required by `ROADMAP.md` Phase 0, DEC-037, Rule 40. Fields follow `FEATURES.md` 
 
 | ID | Provider / Dataset | Use | Catalog | License label | License terms | Payload | Commercial (pricing/SLA/caching/App Store contract) | Term / expiration | Verdict (§2.1) | Registry status | Evidence |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| DS-01 | ODPT — Toei rail static (GTFS, GTFS-Pathways, train timetable) | N2, N5 | VERIFIED_CATALOG | CC BY 4.0 | VERIFIED_LICENSE_TEXT (§3.5) | **VERIFIED_PAYLOAD (GTFS Static structure, 1 snapshot 2026-09-18, §6.1.1)**; GTFS-Pathways and train timetable JSON still PENDING_PAYLOAD_VERIFICATION | N/A (open data); API token due-care | none in license (irrevocable); ODPT provision may change (S5) | production-license-viable, static only (Toei static datasets) | Not yet production-eligible (repeated sampling, attribution/notice implementation pending) | ckan.odpt.org `train-toei`, `r_train_timetable-toei`; S4; 2026-09-17; B1 2026-09-18 |
-| DS-02 | ODPT — Toei GTFS-RT TripUpdate + VehiclePosition + Alert | N3, N4 | VERIFIED_CATALOG | CC BY 4.0 | VERIFIED_LICENSE_TEXT (§3.5) | **VERIFIED_PAYLOAD (TripUpdate/VehiclePosition `trip_id` integrity and cross-feed join, 1 snapshot 2026-09-18, §6.1.1)**; Alert content, cadence, coverage over time PENDING_PAYLOAD_VERIFICATION | N/A | as DS-01 | production-license-viable, full realtime | Not yet production-eligible (repeated sampling, route-5 coverage, Alert observation pending) | `r_train_gtfs_rt-odpt_train-toei`; 2026-09-17; B2 2026-09-18 |
+| DS-01 | ODPT — Toei rail static (GTFS, GTFS-Pathways, train timetable) | N2, N5 | VERIFIED_CATALOG | CC BY 4.0 | VERIFIED_LICENSE_TEXT (§3.5) | **VERIFIED_PAYLOAD (GTFS Static structure, 1 archive 2026-09-18, §6.1.1; its references resolved from all 7 realtime snapshots, §6.1.2)**; GTFS-Pathways and train timetable JSON still PENDING_PAYLOAD_VERIFICATION | N/A (open data); API token due-care | none in license (irrevocable); ODPT provision may change (S5) | production-license-viable, static only (Toei static datasets) | Not yet production-eligible (longer-window sampling, attribution/notice implementation pending) | ckan.odpt.org `train-toei`, `r_train_timetable-toei`; S4; 2026-09-17; B1 2026-09-18; B3 2026-09-18 |
+| DS-02 | ODPT — Toei GTFS-RT TripUpdate + VehiclePosition + Alert | N3, N4 | VERIFIED_CATALOG | CC BY 4.0 | VERIFIED_LICENSE_TEXT (§3.5) | **VERIFIED_PAYLOAD (TripUpdate/VehiclePosition `trip_id` integrity and cross-feed join, 7 snapshots during one evening 2026-09-18 — B2 ×1 + B3 ×6 at ≈5-min spacing, §6.1.1, §6.1.2)**; Alert content, longer-window cadence, coverage over time PENDING_PAYLOAD_VERIFICATION | N/A | as DS-01 | production-license-viable, full realtime | Not yet production-eligible (multi-window sampling, route R5 coverage, Alert observation pending) | `r_train_gtfs_rt-odpt_train-toei`; 2026-09-17; B2 2026-09-18; B3 2026-09-18 |
 | DS-03 | ODPT — Tokyo Metro rail static (GTFS, station, route, timetables, fare) | N2, N5 | VERIFIED_CATALOG | Basic License | VERIFIED_LICENSE_TEXT (§3.2) | PENDING_PAYLOAD_VERIFICATION | N/A; registration; guideline freshness | may be terminated at any time (Art. 13(2)); delete on termination | production-license-viable, static only | Not yet production-eligible | `train-tokyometro`, `r_station-tokyometro`; 2026-09-17 |
 | DS-04 | ODPT — Tokyo Metro GTFS-RT Alert + Train status JSON | N3 (alerts) | VERIFIED_CATALOG | Basic License | VERIFIED_LICENSE_TEXT | PENDING_PAYLOAD_VERIFICATION | N/A | as DS-03 | production-license-viable, alerts only | Not yet production-eligible | `r_train_gtfs_rt-odpt_train-tokyometro`, `r_train_status-tokyometro` |
 | DS-05 | ODPT — Tokyo Metro TripUpdate / VehiclePosition | N3, N4 | UNAVAILABLE_IN_AUDITED_CATALOG | — | — | — | — | — | — | Not found; re-check A1 | 2026-09-17 |
@@ -396,7 +435,7 @@ Consistent with DEC-019 / FEATURES §17. No change to current documents.
 
 | ID | Risk | Impact | Evidence status | Mitigation in docs | Closes via |
 |---|---|---|---|---|---|
-| RK-1 | Route provider and Toei GTFS-RT share no deterministic join key (N4) | Core promise weakened | **Partially reduced:** Toei static ↔ TripUpdate ↔ VehiclePosition `trip_id` join VERIFIED_PAYLOAD (1 snapshot, §6.1.1). **Still open:** route-provider ↔ GTFS `trip_id` identity (§10), repeated observations, uncovered route 5, missing-`trip_id` fallback, other providers, degraded/fallback behaviour — PENDING_PAYLOAD_VERIFICATION | selected trip stored separately (ARCH §11); recovery (DEC-031) | A2, A3 (repeated sampling) |
+| RK-1 | Route provider and Toei GTFS-RT share no deterministic join key (N4) | Core promise weakened | **Partially reduced:** Toei static ↔ TripUpdate ↔ VehiclePosition `trip_id` join VERIFIED_PAYLOAD across 7 snapshots of one evening (§6.1.1, §6.1.2) — short-window temporal uncertainty for the exact-`trip_id` path is reduced. **Still open (RK-1 remains open globally):** route-provider ↔ GTFS `trip_id` identity (§10), missing-`trip_id` fallback, route R5, other providers, degraded/fallback behaviour, longer-duration/multi-day behaviour — PENDING_PAYLOAD_VERIFICATION | selected trip stored separately (ARCH §11); recovery (DEC-031) | A2, A3 (multi-window sampling if required by the decision gate) |
 | RK-2 | **Private railways + JR East are Challenge-entry only / production-blocked** → unavailable for production; Tokyo-core trip-level realtime = Toei only | Launch coverage materially narrower than "Tokyo" implies | VERIFIED_CATALOG + VERIFIED_LICENSE_TEXT | DEC-001 "as many as reliably supported"; capability model (DEC-022); degraded modes | Product decision at Decision Gate; A6 for operator-direct |
 | RK-3 | Tokyo Metro has no trip-level realtime in the audited catalog | Largest subway operator in degraded mode | UNAVAILABLE_IN_AUDITED_CATALOG | FEATURES §10.3, DEC-024 | A1 re-check; §6.2 proof |
 | RK-4 | Challenge data leaks into production/fixtures; or evaluation use without Challenge entry | License breach (S3 Art. 4(1), 13(3)) | VERIFIED_LICENSE_TEXT | §7 rule; DEC-037; Rule 40 | registry discipline |
@@ -405,8 +444,8 @@ Consistent with DEC-019 / FEATURES §17. No change to current documents.
 | RK-7 | Route provider forbids caching / re-display | Network cost | PENDING_COMMERCIAL_CONFIRMATION | ARCH §18 tolerates "no cache" | A2 |
 | RK-8 | Through service split by provider or unsupported at Group B / Challenge boundary | DEC-009 violation | PENDING / Group B | adapter continuity (Phase 3) | A3, A6 |
 | RK-9 | Korean names absent from feeds | Extra dataset work | PENDING_PAYLOAD_VERIFICATION | canonical localization (DEC-042) | A4 |
-| RK-10 | Numeric rate limits unknown (S5 Art. 4(4) discretionary) | Refresh cadence risk | PENDING_PAYLOAD_VERIFICATION (B1 made one request per resource; no limit behaviour observed) | `RealtimeRefreshPolicy` (ARCH §20) | A1, A3 |
-| RK-11 | GTFS-RT protobuf decoding needed without dependency | Implementation cost | design constraint — **decoding feasibility demonstrated** (B2): the Toei feeds decode against the canonical schema with no unknown fields using temporary external research tooling. This does not endorse a handwritten parser in the app; the production decoder design and dependency decision remain open | Rule 14, Rule 34 | Phase 4 |
+| RK-10 | Numeric rate limits unknown (S5 Art. 4(4) discretionary) | Refresh cadence risk | PENDING_PAYLOAD_VERIFICATION (B1 one request per resource; B3 18 requests at ≈5-min spacing — no limit behaviour observed, which says nothing about limits at product refresh rates) | `RealtimeRefreshPolicy` (ARCH §20) | A1, A3 |
+| RK-11 | GTFS-RT protobuf decoding needed without dependency | Implementation cost | design constraint — **decoding feasibility demonstrated** (B2, reconfirmed on all 18 B3 payloads): the Toei feeds decode against the canonical schema with no unknown fields using temporary external research tooling. This does not endorse a handwritten parser in the app; the production decoder design and dependency decision remain open | Rule 14, Rule 34 | Phase 4 |
 | RK-12 | No car/door dataset | Feature omitted at most stations | UNAVAILABLE_IN_AUDITED_CATALOG | DEC-019 | accepted |
 
 ---
@@ -419,7 +458,7 @@ These are verification actions, not implementation: no code, SDK, or dependency 
 |---|---|---|---|
 | A1 | Register ODPT developer account (Basic License tier only; **no Challenge token**); confirm S1–S6 unchanged; record any Specific Terms attached to DS-03/04/08/09; re-check catalog for Tokyo Metro TU/VP | RK-3, RK-10 (portal-side); DS-05 | §4.1, §9 updated |
 | A2 | Obtain evaluation access to ≥2 of DS-11..13; confirm pricing, SLA, App Store consumer use, caching, re-display, termination | PENDING_COMMERCIAL_CONFIRMATION; RK-7 | §10 filled |
-| A3 | **N4 join test on Toei (CC BY 4.0):** capture static GTFS + GTFS-RT TripUpdate/VehiclePosition/Alert for ~10 routes incl. one 直通 pattern, one express pattern, one Toei↔Tokyo Metro transfer; verify `trip_id` referential integrity, freshness (`header.timestamp`), coverage, rate behavior. Repeat static + Alert on Tokyo Metro (Basic License; degraded path). Optionally full path on Yokohama Municipal Subway (Basic License) for a second fixture set, kept internal and deletable. **Progress (2026-09-18):** Toei single-snapshot capture and join proof done (B1/B2, §6.1.1) — PASS WITH LIMITATIONS. **Remaining:** repeated temporal sampling (cadence, coverage, route 5), real Alert observation when available, 直通/through-service assessment, Tokyo Metro degraded path, Yokohama optional | PENDING_PAYLOAD_VERIFICATION for DS-01..04, 09; RK-1 | findings + fixtures (documentation, not app code) |
+| A3 | **N4 join test on Toei (CC BY 4.0):** capture static GTFS + GTFS-RT TripUpdate/VehiclePosition/Alert for ~10 routes incl. one 直通 pattern, one express pattern, one Toei↔Tokyo Metro transfer; verify `trip_id` referential integrity, freshness (`header.timestamp`), coverage, rate behavior. Repeat static + Alert on Tokyo Metro (Basic License; degraded path). Optionally full path on Yokohama Municipal Subway (Basic License) for a second fixture set, kept internal and deletable. **Progress (2026-09-18):** Toei single-snapshot capture and join proof done (B1/B2, §6.1.1) — PASS WITH LIMITATIONS; six-snapshot short temporal study done (B3, §6.1.2) — PASS WITH LIMITATIONS. **Remaining:** route R5 investigation; a later multi-window or multi-day observation if required by the decision gate; real Alert-content observation when naturally available; targeted VehiclePosition `current_status` investigation; 直通/through-service assessment; Tokyo Metro alerts-only degraded path; language-field coverage analysis (A4); commercial confirmation (A2); Yokohama optional | PENDING_PAYLOAD_VERIFICATION for DS-01..04, 09; RK-1 | findings + fixtures (documentation, not app code) |
 | A4 | Sample station names for Toei / Tokyo Metro / Basic-License operators; measure JP/EN/KO coverage | RK-9 | coverage table |
 | A5 | Confirm whether any provider exposes car/door/transfer-time data with a license permitting display | RK-12 | §11 note |
 | A6 | Operator-direct investigation for Group B and for the Challenge-licensed private railways' own developer programs (if any) | DS-10; RK-2 | rows updated; none moved to "no API" without evidence |
@@ -433,7 +472,7 @@ These are verification actions, not implementation: no code, SDK, or dependency 
 |---|---|---|
 | Deployment target | **Decided: iOS 18.0 minimum, iPhone only (DEC-045, DEC-044)** | No |
 | Primary route-search provider direction | **Open** — DEC-004 Provisional; requires A2 + A3 | Yes — before Phase 3 |
-| Primary realtime provider direction | **ODPT platform, GTFS static + GTFS-RT as first adapter format**; Toei = full-realtime proof (**single-snapshot join proof passed with limitations, §6.1.1**); Tokyo Metro = degraded proof (untested). Production direction still requires the remaining A3 work; no provider is selected | Yes — before Phase 4 |
+| Primary realtime provider direction | **ODPT platform, GTFS static + GTFS-RT as first adapter format**; Toei = full-realtime proof (**join proof passed with limitations across seven snapshots of one evening, §6.1.1–§6.1.2**); Tokyo Metro = degraded proof (untested). Production direction still requires the remaining A3 work; no provider is selected | Yes — before Phase 4 |
 | Canonical ID strategy | Decided (DEC-021, Rule 9) | No |
 | Licensing viability for initial Tokyo scope | **License text verified (§3).** Production-license-viable: Toei (CC BY 4.0, full realtime); Tokyo Metro / TWR / MIR / Tama Monorail (Basic License, alerts only); Yurikamome (Basic License, static only); Yokohama (Basic License, full realtime, fixture-only scope). **Challenge-entry only / production-blocked:** JR East and the seven Challenge-licensed private railways. **Product decision needed:** whether a Toei-full-realtime + Metro-degraded launch scope is acceptable (RK-2) | Yes — product decision |
 
@@ -453,7 +492,7 @@ Checked against all eight living documents. **No conflict found.** Observations 
 
 ## 16. Maintenance
 
-- Update in place when A1–A7 produce evidence; record evidence + date (B1/B2 Toei payload evidence recorded 2026-09-18, §2.3, §6.1.1).
+- Update in place when A1–A7 produce evidence; record evidence + date (B1/B2 Toei payload evidence recorded 2026-09-18, §2.3, §6.1.1; B3 temporal sampling recorded 2026-09-18, §6.1.2).
 - Re-verify S1–S6 if ODPT announces changes (S2 Art. 13(4), S3 Art. 13(4)); re-check the Challenge end date if the Challenge is extended.
 - When a provider direction is decided, record it in `DECISIONS.md` and revise `PRODUCT.md` §9–§10 / `ROADMAP.md` Phase 3–4 if scope changes.
 - Do not create versioned or dated copies of this file.
