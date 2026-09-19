@@ -1618,6 +1618,8 @@ Provider mapping belongs in Data infrastructure.
 
 Do not spread mapping logic across features.
 
+For cross-operator stations, each canonical station carries **every** provider station identifier and station code, **each provider's original name strings unmodified**, and any orthographic or presentation alias as an **explicit, reversible** mapping entry — never by rewriting a provider string (DEC-048). Station identity must not be established from display names or coordinates alone, and no parent-station or transfer relationship may be synthesized where the provider feed publishes none. Stations whose identity is unresolved stay **separate** until authoritative evidence supports a merge; such a merge is a schema/identity migration (§41, Rule 39), not an in-place edit.
+
 ---
 
 ## 41. Schema Versioning

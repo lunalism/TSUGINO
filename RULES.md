@@ -861,3 +861,28 @@ For v1:
 > **Not supported: iPad**
 
 A release must not accidentally advertise support for an untested device family.
+
+---
+
+# Rule 53 — Cross-Operator Station Identity Requires Structural Evidence
+
+Two stations operated by different companies must not be treated as one canonical station on the strength of their names or their coordinates.
+
+Display-name equality and spatial proximity generate **candidates**. They do not establish identity.
+
+Establishing that two operators' stations are the same canonical station requires converging structural evidence, such as:
+
+- provider station identifiers
+- station codes and their code systems
+- line membership and station order
+- adjacent-station topology
+- multi-line occurrence structure
+- a provider-published transfer, parent-station, or station-complex relation
+
+Where a provider feed publishes no parent-station hierarchy and no transfer relationship, none may be invented.
+
+Every provider's original name strings are preserved. An orthographic or presentation alias must be recorded as an explicit, reversible mapping entry, never by rewriting a provider string.
+
+When the evidence cannot justify a merge, the stations remain **separate** and the relationship is recorded as explicitly ambiguous.
+
+A later merge, once authoritative evidence supports it, is an identity migration (Rule 39) — not an in-place data edit.

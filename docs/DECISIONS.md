@@ -2141,6 +2141,131 @@ The Tokyo subway network is Toei and Tokyo Metro together; a launch without Toky
 
 ---
 
+# DEC-048 — Cross-Operator Canonical Station Identity for the Toei and Tokyo Metro Launch Set
+
+**Status:** Accepted\
+**Date:** 2026-09-19\
+**Closes:** `PROVIDER_FEASIBILITY_AUDIT.md` A4 cross-operator canonical station identity (the Toei + Tokyo Metro launch set only)\
+**Related:** DEC-021, DEC-026, DEC-041, DEC-042, DEC-047; RK-9, RK-14, RK-17, RK-18
+
+## Context
+
+DEC-047 put **all 13 Tokyo subway lines** in the initial release, so a user journey routinely crosses the Toei ↔ Tokyo Metro boundary. Wrong interchange identity would corrupt route results, transfer guidance, and station search before any realtime feature is involved, which made cross-operator canonical station identity the highest remaining launch risk in Phase 0.
+
+Audit action A4 was executed **offline** on 2026-09-19 against the two retained static snapshots only (`PROVIDER_FEASIBILITY_AUDIT.md` §6.5). Both feeds are flat — `location_type = 0` and empty `parent_station` on every stop row, and neither archive contains `transfers.txt` or `pathways.txt`. Neither operator publishes a shared cross-operator identifier, and `odpt:Railway` carries no connecting-railway field. A4 therefore had to resolve identity from converging structural evidence, with no provider-published transfer relation available anywhere in the launch set.
+
+## Scope
+
+- This Decision covers the initial launch set defined by **DEC-047** — Toei and Tokyo Metro cross-operator canonical station identity.
+- It does **not** define the final production canonical ID string format. The analysis group keys were an analysis artifact and carry no implementation commitment.
+- Provider station IDs and station codes remain **aliases / source mappings**, never TSUGINO-owned canonical identifiers (Rule 9, DEC-021, ARCHITECTURE §40).
+- It does **not** define route-provider transfer edges.
+- It does **not** implement any runtime behaviour, adapter, screen, or dataset.
+
+## Accepted aggregate result
+
+| Quantity | Value |
+|---|---|
+| Toei operator-level identities | 141 |
+| Tokyo Metro operator-level identities | 144 |
+| Total input identities | 285 |
+| Analyzed cross-operator candidates | 54 |
+| `resolved_same_station` | 27 |
+| `resolved_distinct_station` | 26 |
+| `explicitly_ambiguous` | 1 |
+| Cross-operator merged groups | 27 |
+| Toei-only groups | 114 |
+| Tokyo-Metro-only groups | 117 |
+| **Proposed canonical station groups** | **258** |
+| Duplicate assignments | 0 |
+| Unmapped identities | 0 |
+| Unexplained collisions | 0 |
+| Analysis status | **PASS WITH AMBIGUITIES** |
+
+Reconciliation: 141 + 144 = 285; 27 + 26 + 1 = 54; 114 + 117 + 27 = 258.
+
+## Accepted identity rules
+
+1. **Names generate candidates but never establish identity alone.** Display-name equality is a candidate signal only.
+2. **Coordinates corroborate but never establish identity alone.** Spatial proximity may support or contradict a candidate; it may not resolve one by itself.
+3. **Structural evidence** means the converging use of: provider station identifiers, station codes and their code systems, line membership, station order, adjacent-station topology, multi-line occurrence structure, original names, and coordinates.
+4. **A missing provider-published transfer relationship is an evidence limitation, not a licence to infer one.**
+5. **Original provider strings are preserved** for every operator, in every form the provider publishes.
+6. **Aliases must be explicit and reversible at the source-mapping layer** — never applied by silently rewriting a provider string.
+7. **No parent hierarchy and no transfer relationship may be invented** from the flat feeds.
+
+## Accepted named outcomes
+
+### 市ヶ谷 / 市ケ谷 — one canonical station identity
+
+- Toei publishes 市ヶ谷 (small ヶ, U+30F6); Tokyo Metro publishes 市ケ谷 (full-size ケ, U+30B1). **Both original strings are preserved.**
+- ヶ / ケ equivalence is accepted **only as an explicit provider-orthography alias rule**, applied as a separate comparison key. The primary normalized key never collapses the two characters.
+- Supporting evidence: both providers give English `Ichigaya`; the candidate is one-to-one with no competitor on either side; the station codes belong to disjoint, internally consistent systems; adjacency stays within each operator's own line; the separation is small relative to spans both operators already accept inside their own interchanges.
+- The operator-level orthographic convention behind the alias rule (Toei uses ヶ throughout, Tokyo Metro uses ケ throughout, with no crossover in the retained snapshots) is **derived evidence from the analysis, not a provider statement**.
+
+### 押上 / 押上〈スカイツリー前〉 — one canonical station identity
+
+- Toei publishes 押上; Tokyo Metro publishes 押上〈スカイツリー前〉. **The Tokyo Metro subtitle form is preserved** as the provider's original string.
+- Subtitle-aware matching is accepted: a bracketed 〈…〉 subtitle is treated as an explicit provider-presentation variant for candidate generation, again as a separate key that does not rewrite the original.
+- This candidate is **not** visible to exact name matching and was missed by the earlier count of 27 exact JA+EN candidates; the recorded candidate total is corrected accordingly.
+
+### 新宿 — remains two separate canonical groups
+
+- Toei 新宿 and Tokyo Metro 新宿 **remain separate canonical station groups**.
+- Their relationship is recorded as **`explicitly_ambiguous`**, not as an unresolved merge waiting to happen.
+- **No inter-station transfer edge is inferred or recorded** for Shinjuku.
+- The names match exactly, but the structural evidence contradicts a merge: the separation exceeds the span either operator accepts inside its own interchanges, and a **different, nearer Toei identity (新宿西口) competes** for the same Tokyo Metro identity. Name evidence and spatial evidence point at different Toei stations, and the retained evidence cannot say which is right.
+- **The 258-group total reflects this separate treatment.** An authoritative future merge would reduce the total to **257** and would require a controlled identity migration (Rule 39, DEC-026), not an in-place edit.
+- Shinjuku is not merged until authoritative evidence exists — see *Revisit Triggers*.
+
+## The 320 m analytical envelope
+
+- 320 m was **derived** from the maximum observed intra-operator station-complex span in the retained snapshots (Tokyo Metro 大手町).
+- It was used **only as corroborating evidence inside the A4 analysis**, never as the sole basis for any classification.
+- It is **not** product policy.
+- It is **not** a production canonicalization threshold.
+- It is **not** a runtime invariant.
+- It **must not** be implemented as a hard-coded merge rule, a distance-based auto-merge, or any runtime comparison constant.
+
+## Licensing and non-restorability
+
+- Only **aggregate results and the named exceptions above** are recorded in this repository.
+- The 285-row mapping is **not** recorded. The full 54-row candidate table is **not** recorded.
+- No raw provider data enters the repository, and no repository artifact makes the Tokyo Metro dataset restorable (S2 Art. 8(4); audit §3.6.3; DS-15).
+- The retained static evidence stays **outside** the repository in owner-only research storage.
+
+## Consequences
+
+- Phase 2 static-data work inherits 258 proposed canonical station groups as a **planning input**, not as an accepted identifier set.
+- The provider-mapping layer must carry, per canonical station: every provider station identifier and code, each provider's original name strings, and any alias rule applied — explicitly and reversibly.
+- Search and routing must treat Toei 新宿 and Tokyo Metro 新宿 as two stations until this Decision is revisited.
+- A future Shinjuku merge is a **migration event**, not a data correction.
+
+## Scope statement
+
+This is a **data-identity analysis decision**. It does not claim that any mapping table, importer, repository, search index, screen, or localization is implemented, and it does not close Phase 0 (DEC-004 and the remaining Track A/Track B items stay open).
+
+## Rationale
+
+Merging two stations that are not the same corrupts routing and transfer guidance in a way users experience directly and cannot diagnose; keeping two genuinely identical stations apart degrades results more visibly but far more honestly, and is trivially reversible once evidence arrives. With no provider-published transfer relation anywhere in the launch set, the conservative treatment of the one contradictory case is the choice that preserves trust (DEC-038, Rule 50) and keeps the error correctable.
+
+## Revisit Triggers
+
+Revisit the Shinjuku relationship — and only with one of the following in hand:
+
+- A provider-published transfer relation.
+- A station-complex or parent-station relation published by either operator.
+- An official station-code cross-reference between the two operators.
+- Validated GTFS-Pathways evidence (Toei Pathways availability is constrained — RK-17).
+- An authoritative operator or ODPT response.
+- Equivalent authoritative route-provider evidence whose permitted use has been verified (Rule 40).
+
+**No such evidence exists today.** Absence of a revisit trigger is not a reason to merge.
+
+Also revisit this Decision if either operator's static feed revision changes station names, codes, or counts, or if a further operator enters the launch set.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
