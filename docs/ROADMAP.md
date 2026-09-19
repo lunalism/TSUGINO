@@ -255,7 +255,7 @@ Create a reliable local railway topology foundation.
 - canonical/provider ID mappings
 - static data versioning
 - station search index
-- Tokyo baseline dataset
+- Tokyo baseline dataset — Toei + Tokyo Metro (the 13 subway lines plus Tokyo Sakura Tram and the Nippori-Toneri Liner; DEC-047)
 
 ## Explicitly Excluded
 
@@ -268,7 +268,7 @@ Create a reliable local railway topology foundation.
 
 - build static data importer
 - normalize provider IDs
-- generate canonical mappings
+- generate canonical mappings — including cross-operator canonical station identity for Toei ↔ Tokyo Metro interchanges resolved by station codes/topology, not names alone (audit A4, RK-14; launch-relevant under DEC-047)
 - choose measured storage format
 - implement `RailwayDataRepository`
 - implement local station search
@@ -419,7 +419,7 @@ Normalize realtime railway data into provider-independent snapshots.
 
 - realtime clients
 - DTO/protobuf decoding
-- provider adapters
+- provider adapters — GTFS-RT adapter (Toei, Realtime Journey Tracking tier) and ODPT JSON status adapter (`odpt:TrainInformation` + Alert for the Tokyo Metro Scheduled Journey Guidance tier; DEC-047)
 - canonical trip mapping
 - snapshot generation
 - freshness policy
@@ -723,6 +723,7 @@ Implement the complete foreground user flow from route setup through active jour
 - animate pixel environment
 - surface freshness state
 - degraded-mode UI states for services without trip-level realtime (scheduled / status-Alert / unavailable provenance — DEC-046)
+- Scheduled Journey Guidance presentation for the nine Tokyo Metro lines and the Liner (DEC-047): scheduled timeline, clock-based scheduled progress labelled as scheduled, scheduled next stop, status/Alert notices that are never concealed by scheduled progression; no live badge or physical-train claim
 - Legal/Data Sources screen (FEATURES §15): Toei CC BY 4.0 attribution fields (provider, content title, source link, license name + link, modification indication, supplied notices — audit §3.5.2) and the Tokyo Metro three-part source / accuracy-not-guaranteed / developer-contact notice (audit §3.6.2); machine-translation disclosure where used
 - surface recovery actions
 
@@ -735,6 +736,7 @@ Implement the complete foreground user flow from route setup through active jour
 - missed train
 - transfer journey
 - through service
+- mixed-tier journey (Toei realtime leg + Tokyo Metro scheduled leg): scheduled progress never renders as live (DEC-047)
 - Dynamic Type
 
 ## Physical Device Test
@@ -792,7 +794,7 @@ Make the journey useful when the main app is closed or locked.
 - remaining stops
 - transfer state
 - arrival resolution
-- Live Activity behaviour for legs without trip-level realtime (schedule/status-only presentation if designed; otherwise do not start — DEC-046)
+- Live Activity behaviour for legs without trip-level realtime (schedule/status-only presentation if designed; otherwise do not start — DEC-046); Scheduled Journey Guidance presentation explicitly labelled timetable-based for Tokyo Metro legs (DEC-047)
 - system surfaces use textual line codes and unmodified colour values only; no official provider marks in Live Activity, Dynamic Island, or widgets until the ODPT written confirmation (audit §3.7, §3.12 item 3)
 
 ## Tests
@@ -1070,7 +1072,7 @@ Validate TSUGINO on real Tokyo railway journeys.
 
 ## Included
 
-- selected supported operators
+- selected supported operators — the DEC-047 launch set: Toei Subway and Tokyo Sakura Tram (Realtime Journey Tracking), the nine Tokyo Metro lines and the Nippori-Toneri Liner (Scheduled Journey Guidance)
 - real route searches
 - real train selection
 - realtime tracking
@@ -1091,6 +1093,7 @@ Include:
 - long journey
 - express/local
 - through service
+- Toei ↔ Tokyo Metro transfer (mixed capability tiers)
 - delays where safely testable
 - weak network
 - unsupported guidance stations
@@ -1136,6 +1139,7 @@ Prepare the initial App Store release.
 - support/legal pages
 - final release build
 - release checklist
+- launch-copy check: App Store text and screenshots must not claim realtime tracking for all 13 subway lines; tier wording per DEC-047
 - pre-release ODPT written-confirmation gate: any official Tokyo Metro mark, App Store screenshot/preview containing Basic-License data, offline-bundled Basic-License static data, or other ambiguous surface ships only after the corresponding audit §3.12 question is answered in writing; otherwise the release uses the text/colour fallback and omits the surface
 
 ## Explicitly Excluded

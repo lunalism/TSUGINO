@@ -1892,6 +1892,8 @@ This is critical for expanding beyond Tokyo.
 
 Capability is scoped to the **service/feed**, not the operator: provider identity alone cannot determine UI behaviour, because one operator may publish trip-level realtime for some services and not others (verified case: Toei Subway and Tokyo Sakura Tram have Trip Update / Vehicle Position; the Nippori-Toneri Liner has static, status, and Alert coverage only — DEC-046). Adapters expose capability and **provenance** (realtime / scheduled / status / unavailable) rather than synthesized state; Application and UI layers select behaviour from the capability set; no layer synthesizes progress from a schedule. A service is promoted to a richer capability set only through the evidence gates in DEC-046 (catalog/license, payload/schema, identity join, freshness/coverage, UI state).
 
+Capability **tiers** (DEC-047) are derived from the declared capability set, never from the operator name: `tripUpdates` (with optional `vehiclePosition`) verified → **Realtime Journey Tracking**; `staticSchedule` plus optional `alerts`/service status without trip-level realtime → **Scheduled Journey Guidance**; otherwise **Deferred / Unsupported**. The tier is a property of the journey leg's service and is carried with provenance into `JourneyState`, the Live Activity mapper, and notifications. In the scheduled tier, progress is computed from the user-selected schedule and the clock and is typed as *scheduled*; no layer may convert it into observed progress, a delay figure, or a vehicle position.
+
 ---
 
 ## 52. Offline and Degraded Mode

@@ -141,6 +141,8 @@ The train candidate should show, where available:
 
 The selected train becomes the authoritative trip reference for the active journey leg.
 
+Journey-selection model (DEC-047): the user selects the **boarding station**, the **intended departure time or scheduled train**, and the **destination or exit station**; TSUGINO then follows the selected journey with the best verified capability tier for that service — **Realtime Journey Tracking** where trip-level realtime is verified, otherwise **Scheduled Journey Guidance**. On a scheduled-tier service the candidate list shows scheduled departures only, labelled as scheduled, with available status/Alert information.
+
 ---
 
 ### 3.2 Realtime Train Candidates
@@ -560,7 +562,7 @@ Expected lifecycle:
 
 TSUGINO should prevent stale Live Activities from remaining visible after the journey has ended.
 
-Live Activity presentation must match the leg's verified capability (DEC-046): scheduled times are shown as scheduled, status/Alert information with its provenance, and live current-stop or vehicle progression only with verified trip-level realtime. If no honest presentation is defined for a leg's available capabilities, the Live Activity does not start for that leg.
+Live Activity presentation must match the leg's verified capability tier (DEC-046, DEC-047): scheduled times are shown as scheduled, status/Alert information with its provenance, and live current-stop or vehicle progression only with verified trip-level realtime. A Scheduled Journey Guidance leg may have a Live Activity that is explicitly labelled as timetable-based (scheduled times, scheduled next stop, clock-based scheduled progress) and never implies physical train position. If no honest presentation is defined for a leg's available capabilities, the Live Activity does not start for that leg. A multi-leg journey may mix tiers; each leg presents its own tier.
 
 ---
 
@@ -679,7 +681,9 @@ Availability is evaluated **per service/feed**, not per operator (DEC-022, DEC-0
 - live vehicle, current-stop, and progress UI (§4.4, §4.7 realtime estimates, §4.8 realtime delay) requires verified Trip Update / Vehicle Position capability and is otherwise omitted or replaced by an "unavailable" state — never derived from the schedule and presented as live;
 - unsupported live affordances degrade independently; the whole service is not removed.
 
-Current concrete case: the Toei **Nippori-Toneri Liner** follows schedule + status/Alert-level behaviour (its Trip Update and Vehicle Position feeds are officially excluded); actual Liner Alert/status semantics remain pending verification.
+Capability tiers (DEC-047): **Realtime Journey Tracking** (verified trip-level realtime — Toei Subway, Tokyo Sakura Tram); **Scheduled Journey Guidance** (user-selected scheduled journey + timetable + available status/Alert — the nine Tokyo Metro lines and the Nippori-Toneri Liner); **Deferred / Unsupported** (no journey guidance). The scheduled tier may show time to scheduled departure, scheduled departure/arrival, scheduled next stop, a scheduled timeline, clock-based scheduled progress, and disruption notices; it must not claim actual train location, station passage, departure, arrival, elapsed-time-derived delay, onboard confirmation, or realtime progress, and timetable-based animation never represents the physical train. A disruption status/Alert is never overridden or concealed by scheduled progression.
+
+Current concrete cases: the Toei **Nippori-Toneri Liner** follows schedule + status/Alert-level behaviour (its Trip Update and Vehicle Position feeds are officially excluded); **Tokyo Metro** has no Trip Update / Vehicle Position in the audited catalog and launches in the scheduled tier; actual Liner and Tokyo Metro Alert/status semantics across incidents remain pending verification.
 
 ---
 

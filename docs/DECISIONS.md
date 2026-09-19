@@ -1996,6 +1996,150 @@ Relationship to earlier decisions: this Decision **uses** DEC-022's capability m
 - Verified Liner Alert/status payloads prove unusable, making even the degraded presentation dishonest.
 - A product decision changes v1 geographic or operator scope (DEC-001).
 
+---
+
+# DEC-047 — Initial Release Covers All 13 Tokyo Subway Lines with Capability-Aware Journey Guidance
+
+**Status:** Accepted\
+**Date:** 2026-09-19\
+**Closes:** `PROVIDER_FEASIBILITY_AUDIT.md` RK-2 (launch-scope product decision)\
+**Related:** DEC-001, DEC-004 (Provisional — unchanged), DEC-005, DEC-007, DEC-022, DEC-024, DEC-032, DEC-037, DEC-038, DEC-041, DEC-042, DEC-046
+
+## Context
+
+Phase 0 Track B established (`PROVIDER_FEASIBILITY_AUDIT.md` §3, §4.1, §6, §12 RK-2):
+
+- Production-usable **trip-level realtime** (GTFS-RT Trip Update / Vehicle Position) exists in Tokyo core for **Toei Subway and Tokyo Sakura Tram only** (VERIFIED_PAYLOAD, seven snapshots of one evening).
+- **Tokyo Metro** publishes static GTFS, `odpt:Railway`, line-level `odpt:TrainInformation`, and GTFS-RT Alert under the Basic License; **no Trip Update / Vehicle Position** exists in the audited catalog. Its schedule + status + Alert path is payload-supported — PASS WITH LIMITATIONS (audit §6.2).
+- Both licenses expressly allow commercial use and mobile-app release under different compliance regimes (audit §3.5–§3.11); the core route/status path is not blocked by licensing evidence. An ODPT written inquiry on six boundary questions is **awaiting official response** (audit §3.12) — nothing is approved.
+- JR East and the seven Challenge-licensed private railways are production-blocked (DEC-037); TWR, MIR, Tama Monorail, and Yurikamome are license-viable but **payload-unverified** (DS-08).
+- DEC-046 already accepted an honest degraded-mode product model for a service without trip-level realtime (the Nippori-Toneri Liner) and DEC-022 requires per-service capability behaviour.
+
+RK-2 asked whether a launch in which the largest subway operator runs without trip-level realtime is acceptable. The product owner decided it is, provided the capability difference is explicit and never deceptive.
+
+## User journey-selection model
+
+The interaction model (consistent with DEC-007 explicit train selection) is:
+
+1. the user selects the **boarding station**;
+2. the user selects the **intended departure time or scheduled train**;
+3. the user selects the **destination or exit station**;
+4. TSUGINO follows the selected journey using the **best verified capability available for that service**.
+
+The model is the same for every service; only the capability tier applied in step 4 differs.
+
+## Decision
+
+1. TSUGINO's initial App Store release includes **all 13 Tokyo subway lines** operated by Toei Subway and Tokyo Metro.
+2. Capability differs honestly by verified data: the four Toei Subway lines provide **Realtime Journey Tracking**; the nine Tokyo Metro lines provide **Scheduled Journey Guidance** — user-selected, timetable-based journey guidance supplemented by available service-status and Alert information.
+3. Timetable-based guidance is **never** presented as actual train location or realtime train progress.
+4. The two additional Toei services already evaluated keep their evidence-based classification: Tokyo Sakura Tram (Realtime Journey Tracking, verified) and the Nippori-Toneri Liner (DEC-046 degraded model, which is the Scheduled Journey Guidance tier). They are in scope but are **not** part of the "13 subway lines" statement.
+5. All other operators are **Deferred / Unsupported** for initial journey guidance.
+
+## Service-by-service launch matrix
+
+| Service | Operator | Line code | Initial capability tier | Evidence |
+|---|---|---|---|---|
+| Asakusa Line | Toei Subway | A | **Realtime Journey Tracking** | TU/VP VERIFIED_PAYLOAD (audit §6.1) |
+| Mita Line | Toei Subway | I | **Realtime Journey Tracking** | same |
+| Shinjuku Line | Toei Subway | S | **Realtime Journey Tracking** | same |
+| Oedo Line | Toei Subway | E | **Realtime Journey Tracking** | same |
+| Ginza Line | Tokyo Metro | G | **Scheduled Journey Guidance** | static + TrainInformation + Alert (audit §6.2); no TU/VP in catalog |
+| Marunouchi Line (incl. branch) | Tokyo Metro | M / Mb | **Scheduled Journey Guidance** | same; branch provenance retained (audit §6.2.4) |
+| Hibiya Line | Tokyo Metro | H | **Scheduled Journey Guidance** | same |
+| Tozai Line | Tokyo Metro | T | **Scheduled Journey Guidance** | same |
+| Chiyoda Line | Tokyo Metro | C | **Scheduled Journey Guidance** | same |
+| Yurakucho Line | Tokyo Metro | Y | **Scheduled Journey Guidance** | same |
+| Hanzomon Line | Tokyo Metro | Z | **Scheduled Journey Guidance** | same |
+| Namboku Line | Tokyo Metro | N | **Scheduled Journey Guidance** | same |
+| Fukutoshin Line | Tokyo Metro | F | **Scheduled Journey Guidance** | same |
+| *Additional Toei services (not subway lines)* | | | | |
+| Tokyo Sakura Tram (Toden Arakawa Line) | Toei | — | **Realtime Journey Tracking** | TU/VP VERIFIED_PAYLOAD (audit §6.1.4) |
+| Nippori-Toneri Liner | Toei | — | **Scheduled Journey Guidance** (DEC-046 model; TU/VP officially excluded) | audit §6.1.4; Liner Alert/status semantics still pending |
+| *Deferred / Unsupported at initial release* | | | | |
+| TWR Rinkai Line, MIR Tsukuba Express, Tama Monorail, Yurikamome | various | — | **Deferred** — license-viable, payload-unverified (DS-08) | promotable via Post-Launch Track A after audit §9.1 |
+| JR East, Keio, Odakyu, Seibu, Tobu, Tokyu, Keikyu, Sotetsu | various | — | **Unsupported** — Challenge-only / production-blocked (DEC-037) | audit §3.3, §7 |
+| Group B operators (Keisei, Tokyo Monorail, etc.) | various | — | **Unsupported** — not in the audited catalog | audit §4.2, A6 |
+
+## Capability-tier definitions
+
+| Tier | Backed by | May represent | Must not represent |
+|---|---|---|---|
+| **Realtime Journey Tracking** | verified, production-usable trip-level realtime (Trip Update; Vehicle Position where available) joined to the user-selected trip | actual journey progress within the freshness and precision limits of DEC-024, DEC-038, `ARCHITECTURE.md` §51 | precision beyond the feed (e.g., GPS-grade position from stop-sequence data) |
+| **Scheduled Journey Guidance** | the user-selected boarding station, scheduled departure/train, and destination; verified timetable data; available service-status and Alert information | time remaining until scheduled departure; scheduled departure and arrival; scheduled next stop; scheduled journey timeline; clock-based scheduled progress; relevant disruption/status notices; a Live Activity explicitly labelled as timetable-based, if otherwise technically permitted | actual train location; actual station passage; actual departure or arrival; a delay amount derived only from elapsed clock time; onboard confirmation; realtime progress; Trip Update / Vehicle Position coverage that does not exist; that timetable-based animation represents the physical train |
+| **Deferred / Unsupported** | — | that the service is not available for journey guidance, with the reason category (evidence, licensing, payload verification, or product support incomplete) | any journey guidance |
+
+The generic word "supported" must not be used where it would hide the tier difference; use the tier label or equivalent wording. Provisional three-language labels (to be reviewed in Phase 11 under DEC-041/DEC-042; not final marketing copy): Realtime Journey Tracking — リアルタイム追跡 — 실시간 추적; Scheduled Journey Guidance — 時刻表ベース案内 — 시간표 기반 안내; Deferred / Unsupported — 未対応 — 미지원.
+
+## Presentation and honesty rules
+
+- Provenance is always explicit and visually distinct (`DESIGN.md` §20): live, scheduled, service status/Alert, unavailable.
+- Scheduled progress is clock-derived from the selected schedule and is labelled as scheduled everywhere it appears (main app, Live Activity, Dynamic Island, notifications).
+- No scheduled element may use the live badge, live styling, or copy implying observation.
+- Delay is shown only when a provider states it; elapsed time alone never produces a delay figure.
+- Launch and App Store copy must not claim that all 13 subway lines have realtime tracking.
+
+## Live Activity and Dynamic Island implications
+
+- Tier is a per-service capability state; the Live Activity mapper selects a tier-specific presentation (`FEATURES.md` §7.1, `ARCHITECTURE.md` §28).
+- Realtime tier: live presentation as designed.
+- Scheduled tier: a timetable-based presentation, explicitly labelled, showing scheduled times, scheduled next stop, and clock-based scheduled progress; no physical-train progression claim. If no honest presentation is defined for the available capabilities, the Live Activity does not start for that leg (DEC-046 point 9 applies).
+- A multi-leg journey may mix tiers; each leg presents its own tier.
+
+## Disruption handling
+
+When a provider status or Alert indicates a disruption on a Scheduled-tier service, the scheduled progression must not override or conceal it: the status/Alert is surfaced with its provenance, scheduled times are shown as scheduled-but-possibly-affected, and the user is offered manual correction/recovery (`FEATURES.md` §3.5–§3.6, §16). Japanese-only provider text is presented as provider text, not as a TSUGINO translation, until translation policy is settled (audit §3.12 Q4).
+
+## Consequences
+
+- Phase 2 Tokyo baseline dataset = Toei + Tokyo Metro static data; **cross-operator canonical station identity is launch-relevant** (audit A4, RK-14).
+- Phase 4 needs both the GTFS-RT adapter (Toei) and the ODPT JSON status adapter (Tokyo Metro `odpt:TrainInformation` + Alert).
+- DEC-032 fixtures must include a Toei↔Tokyo Metro transfer and a mixed-tier journey; tests must prove scheduled progress never renders as live.
+- Korean canonical data covers both operators (DEC-041/042); provider Korean in `odpt:Railway` is reviewable input only.
+- Attribution/notice screen carries both regimes (CC BY; Basic License three-part notice).
+- Basic-License obligations apply to every Tokyo Metro cache: freshness enforcement, deletion capability, no raw or restorable export.
+- Marketing and screenshots are constrained by the pending ODPT answers.
+
+## Deferred operators
+
+TWR, MIR, Tama Monorail, and Yurikamome may be promoted through Post-Launch Track A once payload-verified and production-eligible (audit §9.1). JR East and the private railways stay excluded under DEC-037. Nothing in this Decision promotes a payload-unverified or Challenge-only source.
+
+## Relationship to existing decisions
+
+- **DEC-001** — applied, not changed: "as many Tokyo-area lines as can be supported reliably through legally usable data" resolves to the 13 subway lines plus the two evaluated Toei services.
+- **DEC-004** — untouched and still **Provisional**; this Decision selects operators for journey guidance, not a route-search provider.
+- **DEC-005 / DEC-006** — clarified as in DEC-046: realtime wherever supported; not every in-scope service has it.
+- **DEC-007** — the journey-selection model is the explicit-selection rule extended to boarding station and destination.
+- **DEC-022** — tiers are derived from declared service capability sets, never from operator names.
+- **DEC-032** — fixture list gains cross-operator transfer and mixed-tier scenarios.
+- **DEC-037** — Challenge-only data remains production-prohibited.
+- **DEC-041 / DEC-042** — three-language rule applies to tier labels and all guidance copy.
+- **DEC-046** — **reused, not superseded.** Its degraded-mode model is the Scheduled Journey Guidance tier; the Liner keeps its DEC-046 classification. DEC-046 point 5 forbids schedule-derived state *presented as realtime*; clock-based progress that is explicitly labelled scheduled is permitted by this Decision and does not conflict with it. No accepted decision is contradicted, so nothing is superseded.
+
+## Remaining ODPT licensing gates (not resolved by this Decision)
+
+The inquiry sent 2026-09-19 (audit §3.12) is unanswered. Still pending: App Store screenshots/previews containing Basic-License data; offline bundling of static GTFS in the binary; the non-restorable canonical-data interpretation; Korean translation of Tokyo Metro strings and incident text and its notices; official line colours as standalone tokens; installed-device cache deletion on termination. Official Tokyo Metro logos, station-number icons, and line symbols remain outside the v1 UI. Silence is not approval.
+
+## Criteria for upgrading a service from Scheduled Journey Guidance to Realtime Journey Tracking
+
+Promotion requires, in order (the DEC-046 point 11 gates): catalog/license verification of an official Trip Update (and optionally Vehicle Position) resource; payload/schema verification; identity-join verification against the static feed; freshness/coverage verification across repeated snapshots; UI-state verification. Promotion changes only the service's verified capability set; it does not reopen scope.
+
+## Scope statement
+
+This is a **product-scope decision**. It does not claim that any tier, adapter, screen, Live Activity, fixture, or localization is implemented, and it does not close Phase 0 (remaining A3/A4 work, Track A hardware validation, and DEC-004 stay open).
+
+## Rationale
+
+The Tokyo subway network is Toei and Tokyo Metro together; a launch without Tokyo Metro would make most realistic journeys unsupported and would retrofit cross-operator identity after release. Honest tiers preserve trust (DEC-038) while delivering the coverage users expect (DEC-001).
+
+## Revisit Triggers
+
+- Official Tokyo Metro Trip Update / Vehicle Position coverage appears (promotion via the gates above; no new scope decision).
+- The ODPT reply restricts a Scheduled-tier presentation (e.g., screenshots or translation), requiring narrower presentation rules.
+- A DS-08 operator becomes production-eligible (Post-Launch Track A, not a scope reopening).
+- Verified Tokyo Metro status/Alert payloads prove unusable, making the Scheduled tier dishonest on those lines.
+
+---
 
 ## 3. Decision Maintenance Rules
 
@@ -2140,6 +2284,23 @@ The Liner is in v1 scope in degraded mode (DEC-046). Promotion to trip-level rea
 Related:
 - DEC-046
 - DEC-022
+
+### Tokyo Metro Capability Promotion
+
+The nine Tokyo Metro lines launch in the Scheduled Journey Guidance tier (DEC-047). Promotion to Realtime Journey Tracking depends on an official Trip Update / Vehicle Position resource passing the DEC-046/DEC-047 evidence gates. The ODPT written inquiry on presentation boundaries is awaiting response.
+
+Related:
+- DEC-047
+- DEC-046
+
+### Device Location Assistance (research candidate — not accepted)
+
+Candidate for later evaluation only: device location might assist boarding-station proximity, journey-start assistance, direction sanity checking, and destination-area arrival assistance. Constraints if ever evaluated: GPS/device location must not substitute for train realtime data or claim underground train position; underground accuracy is not assumed; journey guidance must continue to work when location permission is denied; no "Always" location authorization requirement is accepted; location permission, background behaviour, battery impact, privacy disclosure, and App Store implications require a separate technical/product decision. No implementation is authorized.
+
+Related:
+- DEC-026
+- DEC-040
+- DEC-047
 
 ---
 

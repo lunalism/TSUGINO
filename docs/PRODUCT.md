@@ -132,6 +132,17 @@ Expansion must be based on:
 
 Nationwide coverage is a long-term objective, not an MVP requirement.
 
+### Initial Release Coverage (DEC-047)
+
+The initial App Store release covers **all 13 Tokyo subway lines** with an explicit capability tier per service:
+
+- **Toei Subway** — Asakusa, Mita, Shinjuku, Oedo: **Realtime Journey Tracking** (verified trip-level realtime).
+- **Tokyo Metro** — Ginza, Marunouchi (incl. branch), Hibiya, Tozai, Chiyoda, Yurakucho, Hanzomon, Namboku, Fukutoshin: **Scheduled Journey Guidance** (user-selected scheduled journey, timetable data, and available service-status/Alert information; never presented as actual train location or realtime progress).
+- **Tokyo Sakura Tram** (realtime tier) and the **Nippori-Toneri Liner** (scheduled tier, DEC-046) are also included; they are not subway lines.
+- Other operators are **Deferred / Unsupported** for journey guidance until verified (DEC-037, audit DS-08).
+
+Product and marketing copy must not describe all 13 lines as having realtime tracking; the generic word "supported" must not hide the tier difference.
+
 ---
 
 ## 7. Language Strategy
@@ -582,13 +593,13 @@ TSUGINO should feel distinct from conventional utility-style transit apps.
 
 The product must clearly handle cases where realtime, transfer, or boarding-position data is unavailable.
 
-Feature richness may vary by **verified service capability** (DEC-022, DEC-046): a service whose provider publishes schedule, status, and Alert information but no trip-level realtime remains a supported product experience in an honest degraded mode. TSUGINO never presents synthetic realtime. Example: the Toei Nippori-Toneri Liner is in v1 scope with schedule plus status/Alert-level information under currently verified provider capabilities.
+Feature richness may vary by **verified service capability** (DEC-022, DEC-046, DEC-047): a service whose provider publishes schedule, status, and Alert information but no trip-level realtime remains a first-class product experience in the **Scheduled Journey Guidance** tier, while services with verified trip-level realtime use the **Realtime Journey Tracking** tier. TSUGINO never presents synthetic realtime, and scheduled progress is always labelled as scheduled. Current cases: the nine Tokyo Metro lines and the Toei Nippori-Toneri Liner are in v1 scope in the scheduled tier; Toei Subway and Tokyo Sakura Tram are in the realtime tier.
 
 ---
 
 ## 19. MVP Scope
 
-The MVP targets Tokyo.
+The MVP targets Tokyo — the 13 Toei and Tokyo Metro subway lines plus the two evaluated Toei services, each in its capability tier (§6, DEC-047). The user selects the boarding station, the intended departure time or scheduled train, and the destination; TSUGINO follows the selected journey with the best verified capability for that service.
 
 The MVP should include, where supported by reliable data:
 

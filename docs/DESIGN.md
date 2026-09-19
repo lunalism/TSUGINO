@@ -916,7 +916,7 @@ Suggested states:
 ### Unavailable
 > Realtime unavailable
 
-Provenance states must be visually distinct — **live**, **scheduled**, **service status/Alert**, and **unavailable** — so that scheduled information can never masquerade as realtime, and a status/Alert notice is never read as vehicle progress (DEC-038, DEC-046). Final styling and localized copy are defined during implementation.
+Provenance states must be visually distinct — **live**, **scheduled**, **service status/Alert**, and **unavailable** — so that scheduled information can never masquerade as realtime, and a status/Alert notice is never read as vehicle progress (DEC-038, DEC-046). Under DEC-047 the nine Tokyo Metro lines and the Liner run in the **Scheduled Journey Guidance** tier: their journey timeline, progress indicator, and Live Activity carry the scheduled provenance treatment throughout (no live badge, no live styling), timetable-based motion must read as a schedule position rather than a train being observed, and a disruption status/Alert is surfaced above the scheduled timeline rather than hidden by it. Provisional tier labels (Phase 11 review): リアルタイム追跡 / Realtime Journey Tracking / 실시간 추적 and 時刻表ベース案内 / Scheduled Journey Guidance / 시간표 기반 안내. Final styling and localized copy are defined during implementation.
 
 Avoid overexposing technical provider details to ordinary users.
 
