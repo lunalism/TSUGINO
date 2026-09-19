@@ -276,6 +276,10 @@ Create a reliable local railway topology foundation.
 - implement localized search aliases
 - implement data-version metadata
 - implement migration strategy
+- keep project-owned canonical data non-restorable: the canonical dataset must not be a copy from which all or most of a Basic-License provider feed (Tokyo Metro) can be reconstructed (audit §3.6.3, DS-15)
+- record obtained date/time and handle Center update notices for Basic-License static/reference data (Guideline §2.2 — Tokyo Metro; Toei needs no such license duty)
+- gate any offline bundling of normalized Basic-License static data in the shipped binary on the ODPT written confirmation (audit §3.12 item 5)
+- represent route/pathway data availability so contest-period-limited resources (Toei GTFS-Pathways, audit RK-17) can disappear without breaking route topology
 
 ## Performance Tasks
 
@@ -420,6 +424,9 @@ Normalize realtime railway data into provider-independent snapshots.
 - snapshot generation
 - freshness policy
 - stale/unavailable states
+- freshness and expiration enforcement for Basic-License dynamic data (Tokyo Metro status/Alert): surface `dc:date`, never display data outside `dct:valid`, refresh at `odpt:frequency` where supplied, never show superseded dynamic data (audit §3.6.2, §3.9)
+- Toei freshness as an engineering safeguard from GTFS-RT header/entity timestamps (DEC-024/038) — documented as product integrity, not a license duty (audit §3.5.3)
+- provider-cache deletion capability: every cached Basic-License payload (memory, disk, fixtures) can be purged on termination or license change (audit §3.6.2, RK-5)
 - per-service capability declarations (service/feed scope, incl. the Toei Nippori-Toneri Liner: no TU/VP — DEC-046)
 - Liner Alert/status payload verification (identifiers, semantics)
 - promotion gate for a service whose TU/VP later becomes officially available (DEC-046 evidence gates)
@@ -436,6 +443,8 @@ Normalize realtime railway data into provider-independent snapshots.
 - vehicle position absent
 - trip updates absent for a service (per-service capability; no schedule-derived synthetic progress)
 - service alert
+- expired dynamic data (`dct:valid` passed) is not displayed
+- provider-cache purge leaves no Basic-License payload
 - malformed payload
 - mapping mismatch
 
@@ -572,6 +581,8 @@ Make active journeys resilient to app/process/network interruption.
 - implement manual journey correction
 - implement safe journey termination
 - clean stale notifications/activities on end
+- provide a provider-data deletion path for persisted caches (Basic License Art. 13(3); installed-cache behaviour pending audit §3.12 item 9)
+- no raw or restorable export/share of Tokyo Metro (Basic-License) data in any persistence or sharing feature (audit §3.6.3)
 
 ## Tests
 
@@ -633,7 +644,8 @@ Build TSUGINO's reusable visual identity without coupling animation to journey t
 ## Implementation Tasks
 
 - implement tokens
-- line badge system
+- line badge system — safe interim v1 visual treatment (audit §3.7–§3.8, RK-15/16): no official operator logo; no official Tokyo Metro station-number/line-symbol marks; textual line codes; provider line-colour values as unmodified tokens with source provenance (DEC-018); neutral project-owned badges that do not imitate official mark geometry or typography
+- design review check that project badges are not confusingly similar to official marks and that provider colours are never presented as "official" after adjustment
 - typography hierarchy
 - reusable journey components
 - reusable pixel sprites
@@ -711,6 +723,7 @@ Implement the complete foreground user flow from route setup through active jour
 - animate pixel environment
 - surface freshness state
 - degraded-mode UI states for services without trip-level realtime (scheduled / status-Alert / unavailable provenance — DEC-046)
+- Legal/Data Sources screen (FEATURES §15): Toei CC BY 4.0 attribution fields (provider, content title, source link, license name + link, modification indication, supplied notices — audit §3.5.2) and the Tokyo Metro three-part source / accuracy-not-guaranteed / developer-contact notice (audit §3.6.2); machine-translation disclosure where used
 - surface recovery actions
 
 ## Tests
@@ -780,6 +793,7 @@ Make the journey useful when the main app is closed or locked.
 - transfer state
 - arrival resolution
 - Live Activity behaviour for legs without trip-level realtime (schedule/status-only presentation if designed; otherwise do not start — DEC-046)
+- system surfaces use textual line codes and unmodified colour values only; no official provider marks in Live Activity, Dynamic Island, or widgets until the ODPT written confirmation (audit §3.7, §3.12 item 3)
 
 ## Tests
 
@@ -789,6 +803,7 @@ Make the journey useful when the main app is closed or locked.
 - cancelled journey
 - stale realtime
 - leg without TU/VP capability (no synthetic progress; honest or no Live Activity)
+- review/regression check: no official provider mark asset is referenced from the extension target
 - English text expansion
 - Korean text expansion
 - no transfer guidance
@@ -910,7 +925,7 @@ Make Japanese, English, and Korean first-class and ensure the app remains access
 - verify unsupported device languages fall back to English
 - ingest and review provider-supplied Korean labels where they exist (audited Tokyo Metro `odpt:Railway` titles for 9/10 lines and station-order titles; none in the audited Toei or Tokyo Metro static GTFS, none for `MarunouchiBranch`, none in static headsigns, none in retained dynamic status text) — reviewed inputs, never automatically canonical
 - fill uncovered canonical Korean route/station/headsign names, search aliases, reading aliases, romanization variants, line-code aliases, and cross-operator identity normalization as project-owned data; never treat partial provider localization as complete canonical coverage (DEC-041/042, DEC-046)
-- dynamic status/incident text localization remains a separate unresolved item (retained Tokyo Metro TrainInformation text was Japanese-only)
+- dynamic status/incident text localization remains a separate unresolved item (retained Tokyo Metro TrainInformation text was Japanese-only); Korean translation of Tokyo Metro provider strings and incident text, and the required machine-translation disclosure, are gated on the ODPT written confirmation (audit §3.12 item 7) — Toei strings may be translated under CC BY with modification indicated
 - review railway terminology
 - review Korean naturalness
 - review English clarity
@@ -968,7 +983,9 @@ Harden the app before public beta/release.
 - static-data load audit
 - memory-pressure testing
 - offline/degraded-mode testing
-- data attribution verification
+- data attribution verification (Toei CC BY fields; Tokyo Metro three-part notice)
+- license-change monitoring: re-check the ODPT Basic License, Specific Terms, Center Use Rules, Developer Guideline, catalog license labels, and the Tokyo Metro image resource against the sources and hashes recorded in the audit (§2.5, §3.1); record changes in the audit
+- regression check that no official provider mark or raw provider payload ships in any target or export path (audit RK-15, §3.6.3)
 - provider rate-limit verification
 - logging privacy audit
 
@@ -1119,6 +1136,7 @@ Prepare the initial App Store release.
 - support/legal pages
 - final release build
 - release checklist
+- pre-release ODPT written-confirmation gate: any official Tokyo Metro mark, App Store screenshot/preview containing Basic-License data, offline-bundled Basic-License static data, or other ambiguous surface ships only after the corresponding audit §3.12 question is answered in writing; otherwise the release uses the text/colour fallback and omits the surface
 
 ## Explicitly Excluded
 
@@ -1129,6 +1147,7 @@ Prepare the initial App Store release.
 
 - release configuration
 - production endpoints
+- attribution/notice screens present and correct per provider (CC BY vs. Basic License)
 - clean install
 - upgrade path
 - permissions
