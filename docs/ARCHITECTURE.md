@@ -1577,6 +1577,8 @@ Provider IDs are aliases, not canonical product identity.
 
 This reduces migration pain when providers change.
 
+**Validity invariant (DEC-051):** a canonical identifier must contain at least one non-whitespace character; empty and whitespace-only values are rejected. Construction is failable and never traps, and decoding applies the same rule, failing with `DecodingError.dataCorrupted`. A value that passes is preserved **exactly** — no trimming, case folding, Unicode normalisation, or separator rewriting. Validity and losslessness are separate concerns: rejecting blanks does not authorise normalising what remains, and any stricter format rule requires a new decision.
+
 ---
 
 ## 39.1 Language Resolution Architecture

@@ -2,139 +2,172 @@ import Foundation
 import Testing
 @testable import TSUGINO
 
-/// Contract tests for the canonical domain identifiers (DEC-021, ARCHITECTURE.md §39).
+/// Contract tests for the canonical domain identifiers (DEC-021, DEC-051,
+/// ARCHITECTURE.md §39).
 struct CanonicalIdentifierTests {
 
-    // MARK: - Equality
+    // MARK: - Shared contract across all five types
 
-    @Test func sameRawValueComparesEqual() {
-        #expect(StationID("S-001") == StationID("S-001"))
-        #expect(LineID("L-001") == LineID("L-001"))
-        #expect(OperatorID("O-001") == OperatorID("O-001"))
-        #expect(TripID("T-001") == TripID("T-001"))
-        #expect(JourneyID("J-001") == JourneyID("J-001"))
+    /// Exercises the shared contract against one concrete identifier type without
+    /// erasing it: `Identifier` is bound to a single nominal type per call, so the
+    /// five types are never funnelled through one domain type.
+    private static func assertSharedContract<Identifier: CanonicalIdentifier>(
+        for type: Identifier.Type
+    ) throws {
+        // Valid values are accepted and preserved exactly.
+        for raw in ["A", "S-001", " A ", "駅-001", "aBc-01", "S/001#a", "\ta\n"] {
+            let identifier = try #require(Identifier(raw), "\(type) rejected a valid value: \(raw.debugDescription)")
+            #expect(identifier.rawValue == raw)
+        }
+
+        // Blank values are rejected (DEC-051).
+        for blank in ["", " ", "\t", "\n", "\t\n", "   \t\n", "\u{00A0}", "\u{3000}"] {
+            #expect(Identifier(blank) == nil, "\(type) accepted a blank value: \(blank.debugDescription)")
+        }
+
+        // Equality and hashing.
+        let a = try #require(Identifier("X-1"))
+        let sameAsA = try #require(Identifier("X-1"))
+        let b = try #require(Identifier("X-2"))
+        #expect(a == sameAsA)
+        #expect(a != b)
+        #expect(Set([a, sameAsA, b]).count == 2)
+
+        // Codable round trip preserves the raw value exactly, as a bare string.
+        let unicode = try #require(Identifier(" Mixed Case / 駅 #1 "))
+        let data = try JSONEncoder().encode(unicode)
+        let decoded = try JSONDecoder().decode(Identifier.self, from: data)
+        #expect(decoded == unicode)
+        #expect(decoded.rawValue == " Mixed Case / 駅 #1 ")
+
+        // Decoding applies the same validity rule as direct construction.
+        for invalid in ["\"\"", "\" \"", "\"\\t\\n\""] {
+            #expect(throws: DecodingError.self) {
+                try JSONDecoder().decode(Identifier.self, from: Data(invalid.utf8))
+            }
+        }
     }
 
-    @Test func differentRawValuesCompareUnequal() {
-        #expect(StationID("S-001") != StationID("S-002"))
-        #expect(LineID("L-001") != LineID("L-002"))
-        #expect(OperatorID("O-001") != OperatorID("O-002"))
-        #expect(TripID("T-001") != TripID("T-002"))
-        #expect(JourneyID("J-001") != JourneyID("J-002"))
+    @Test func stationIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: StationID.self)
     }
 
-    // MARK: - Hashing
-
-    @Test func hashBasedCollectionsTreatEqualValuesAsOneMember() {
-        let set: Set<StationID> = [StationID("S-001"), StationID("S-001"), StationID("S-002")]
-
-        #expect(set.count == 2)
-        #expect(set.contains(StationID("S-001")))
-        #expect(!set.contains(StationID("S-003")))
+    @Test func lineIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: LineID.self)
     }
 
-    @Test func identifiersAreUsableAsDictionaryKeys() {
-        // The provider mapping layer keys tables by canonical ID (ARCHITECTURE.md §40).
-        var table: [LineID: Int] = [:]
-        table[LineID("L-001")] = 1
-        table[LineID("L-001")] = 2 // same key, must overwrite rather than add
-        table[LineID("L-002")] = 3
-
-        #expect(table.count == 2)
-        #expect(table[LineID("L-001")] == 2)
+    @Test func operatorIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: OperatorID.self)
     }
 
-    // MARK: - Nominal distinctness
-
-    /// The compiler already rejects assigning one identifier type to another, so there is
-    /// nothing to assert at runtime about that. What is worth proving is the consequence
-    /// that actually bites: identical raw strings must not collapse into one another in
-    /// storage or lookup.
-    @Test func identicalRawStringsStayInSeparateTypedNamespaces() {
-        let shared = "1130"
-
-        var stations: Set<StationID> = []
-        var lines: Set<LineID> = []
-        stations.insert(StationID(shared))
-        lines.insert(LineID(shared))
-
-        #expect(stations.contains(StationID(shared)))
-        #expect(lines.contains(LineID(shared)))
-        #expect(StationID(shared).rawValue == LineID(shared).rawValue)
+    @Test func tripIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: TripID.self)
     }
 
-    @Test func eachIdentifierIsADistinctConcreteType() {
-        // Distinct metatypes: a single generic bucket would make these all the same type.
-        let types: [Any.Type] = [
-            StationID.self, LineID.self, OperatorID.self, TripID.self, JourneyID.self,
-        ]
-        let names = Set(types.map { String(describing: $0) })
-
-        #expect(names.count == 5)
+    @Test func journeyIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: JourneyID.self)
     }
 
-    // MARK: - Codable
+    // MARK: - Validity rule (DEC-051)
 
-    @Test func codableRoundTripPreservesRawValueExactly() throws {
-        let original = TripID("Toei.Asakusa.1234A")
-        let data = try JSONEncoder().encode(original)
-        let decoded = try JSONDecoder().decode(TripID.self, from: data)
-
-        #expect(decoded == original)
-        #expect(decoded.rawValue == original.rawValue)
+    @Test(arguments: ["", " ", "  ", "\t", "\n", "\r\n", "\t \n", "\u{00A0}", "\u{2028}", "\u{3000}"])
+    func blankValuesAreRejected(blank: String) {
+        #expect(StationID(blank) == nil)
     }
 
-    /// Encoding as a bare string keeps the persisted form stable and migration-legible
-    /// (ARCHITECTURE.md §41). A keyed object would be a silent schema change.
-    @Test func identifiersEncodeAsASingleStringValue() throws {
-        let data = try JSONEncoder().encode(JourneyID("J-42"))
+    @Test(arguments: ["A", "1", "-", " A", "A ", " A ", "\tA\n", "駅", "a b"])
+    func valuesWithANonWhitespaceCharacterAreAccepted(raw: String) throws {
+        let identifier = try #require(StationID(raw))
 
-        #expect(String(data: data, encoding: .utf8) == "\"J-42\"")
+        #expect(identifier.rawValue == raw)
     }
 
-    @Test func decodingAcceptsAnyStringBecauseNoValidationRuleIsAccepted() throws {
-        let data = Data("\"\"".utf8)
-        let decoded = try JSONDecoder().decode(StationID.self, from: data)
+    // MARK: - Losslessness (validity does not authorise normalisation)
 
-        #expect(decoded.rawValue.isEmpty)
-    }
-
-    // MARK: - Losslessness
-
-    /// No accepted document defines trimming, case folding, or any other normalisation
-    /// for canonical identifiers, so none may be applied (DEC-021, Rule 9).
     @Test(arguments: [
         "  S-001  ",
         "s-001",
         "S-001",
-        "",
         "駅-001",
         "S/001#a",
+        "\tS-001\n",
     ])
-    func constructionIsLosslessAndAppliesNoNormalisation(raw: String) {
-        #expect(StationID(raw).rawValue == raw)
+    func validValuesAreStoredWithoutNormalisation(raw: String) throws {
+        let identifier = try #require(StationID(raw))
+
+        #expect(identifier.rawValue == raw)
     }
 
-    @Test func caseAndWhitespaceRemainSignificant() {
-        #expect(StationID("S-001") != StationID("s-001"))
-        #expect(StationID("S-001") != StationID(" S-001"))
+    @Test func caseAndSurroundingWhitespaceRemainSignificant() throws {
+        let upper = try #require(StationID("S-001"))
+        let lower = try #require(StationID("s-001"))
+        let padded = try #require(StationID(" S-001"))
+
+        #expect(upper != lower)
+        #expect(upper != padded)
+        #expect(padded.rawValue == " S-001")
     }
 
-    @Test func losslessThroughCodable() throws {
-        let raw = "  Mixed Case / 駅 #1  "
-        let data = try JSONEncoder().encode(OperatorID(raw))
-        let decoded = try JSONDecoder().decode(OperatorID.self, from: data)
+    // MARK: - Nominal distinctness
 
-        #expect(decoded.rawValue == raw)
+    /// A regression guard for five separate concrete declarations. The compiler —
+    /// not this test — is what prevents assigning one identifier type to another;
+    /// collapsing them into a single generic or typealias would fail here.
+    @Test func theFiveIdentifiersAreSeparateConcreteDeclarations() {
+        let names = Set(
+            [StationID.self, LineID.self, OperatorID.self, TripID.self, JourneyID.self]
+                .map { String(describing: $0) }
+        )
+
+        #expect(names == ["StationID", "LineID", "OperatorID", "TripID", "JourneyID"])
+    }
+
+    @Test func identicalRawStringsDoNotCollideAcrossTypedCollections() throws {
+        let shared = "1130"
+        let station = try #require(StationID(shared))
+        let line = try #require(LineID(shared))
+
+        #expect(Set([station]).contains(station))
+        #expect(Set([line]).contains(line))
+        #expect(station.rawValue == line.rawValue)
+    }
+
+    // MARK: - Codable
+
+    @Test func identifiersEncodeAsASingleStringValue() throws {
+        let data = try JSONEncoder().encode(try #require(JourneyID("J-42")))
+
+        #expect(String(data: data, encoding: .utf8) == "\"J-42\"")
+    }
+
+    @Test func blankPayloadsFailAsDataCorrupted() throws {
+        for invalid in ["\"\"", "\" \"", "\"\\t\\n\""] {
+            let error = #expect(throws: DecodingError.self) {
+                try JSONDecoder().decode(StationID.self, from: Data(invalid.utf8))
+            }
+
+            guard case .dataCorrupted? = error else {
+                Issue.record("expected .dataCorrupted for \(invalid), got \(String(describing: error))")
+                continue
+            }
+        }
+    }
+
+    @Test(arguments: ["123", "null", "true", "{\"rawValue\":\"S-001\"}", "[\"S-001\"]"])
+    func nonStringPayloadsFailToDecode(payload: String) {
+        #expect(throws: DecodingError.self) {
+            try JSONDecoder().decode(StationID.self, from: Data(payload.utf8))
+        }
     }
 
     // MARK: - Concurrency
 
     /// The app target defaults to `MainActor` isolation, so domain values must be
     /// explicitly `nonisolated` and `Sendable` to cross actor boundaries
-    /// (ARCHITECTURE.md §21, §22).
-    @Test func identifiersAreSendable() async {
-        let id = StationID("S-001")
+    /// (ARCHITECTURE.md §21, §22). The guarantee is compile-time; this check simply
+    /// keeps the crossing exercised and deterministic.
+    @Test func identifiersCrossActorBoundaries() async throws {
+        let id = try #require(StationID("S-001"))
         let received = await Task.detached { id }.value
 
         #expect(received == id)

@@ -2353,6 +2353,64 @@ The engine is the highest-risk component in the product. Defining its boundary e
 
 ---
 
+# DEC-051 — Canonical Railway Identifiers Reject Blank Values and Preserve Valid Raw Values
+
+**Status:** Accepted\
+**Date:** 2026-09-20\
+**Related:** DEC-020, DEC-021, DEC-049, DEC-050; `RULES.md` Rule 9, Rule 39; `ARCHITECTURE.md` §39, §40, §41
+
+## Context
+
+Phase 1 slice S1 introduced the five canonical identifiers (`StationID`, `LineID`, `OperatorID`, `TripID`, `JourneyID`) as lossless typed wrappers around a `String`. No accepted document specified a character set or a normalisation rule, so the implementation applied none — correctly.
+
+An independent audit then found that the same reasoning had been extended one step too far: because no document *prohibited* an empty identifier either, construction accepted `""`. That conflates two separate questions. Losslessness is about whether a value may be **altered**; validity is about whether a value may **exist**. A blank identifier alters nothing and identifies nothing: every "unset" station would compare equal to every other, inside a type whose entire purpose is to make identity mistakes impossible.
+
+The cost of deciding is also asymmetric. Making construction failable later is a source-breaking change at every call site. At the time of this Decision the domain has **zero** call sites, so the cost is zero; it rises from S3 onward, when the first model consumes an identifier.
+
+## Decision
+
+1. A canonical railway identifier **must contain at least one non-whitespace character**.
+2. An **empty string is invalid**.
+3. A string consisting only of whitespace — spaces, tabs, newlines, or any other Unicode whitespace — **is invalid**.
+4. A **valid** identifier preserves its original raw value **exactly**.
+5. Valid values are **not trimmed**.
+6. Case is **not altered**.
+7. **No Unicode normalisation** is performed.
+8. Separators and provider-like syntax are **not rewritten**.
+9. Leading or trailing whitespace **remains preserved** when the value also contains at least one non-whitespace character.
+10. The rule is **identical** for `StationID`, `LineID`, `OperatorID`, `TripID`, and `JourneyID`.
+11. Direct construction **exposes failure without trapping** — a failable initialiser, never `precondition`, `fatalError`, force-unwrapping, a silent fallback, or a sentinel value.
+12. Decoding an invalid identifier **fails deterministically** with `DecodingError.dataCorrupted` rather than constructing an invalid value or crashing. Decoding applies exactly the same rule as direct construction.
+
+Whitespace is evaluated with the Swift standard library's `Character.isWhitespace`, so the rule covers every Unicode whitespace scalar without a Foundation dependency.
+
+## Consequences
+
+- The construction contract of all canonical identifiers changes from infallible to failable; call sites must handle `nil`.
+- The domain cannot hold an identifier that identifies nothing, so later slices need no defensive blank checks.
+- Validity and losslessness remain separable: a future formatting rule would be a **new** decision, not an extension of this one.
+- Persisted identifiers stay byte-identical to the values that produced them, so this Decision introduces no migration (Rule 39).
+
+## Scope statement
+
+This is a **domain identity invariant**. It does not define a provider syntax, a railway-wide identifier grammar, or any character-set rule. Provider-ID parsing and provider-to-canonical mapping remain outside this slice and stay with Phase 2 (`ARCHITECTURE.md` §40). It claims no model, adapter, screen, or dataset is implemented.
+
+**Refusing blank values does not authorise normalisation.** Anything stricter than "at least one non-whitespace character" — a character allowlist, a length bound, a structural format — requires a future explicit decision.
+
+## Rationale
+
+A typed identifier exists to make a whole class of mistakes unrepresentable. Permitting a value that identifies nothing leaves the most common instance of that class — the accidental default — representable, which quietly forfeits much of the type's value while keeping all of its cost.
+
+Blankness is also the one rule that can be stated without knowing anything about any provider's syntax, which is precisely why it can be accepted now while every formatting question stays open.
+
+## Revisit Triggers
+
+- An accepted provider mapping requires a canonical identifier that is legitimately blank.
+- A character-set, length, or structural format rule is proposed for canonical identifiers.
+- Persistence design (Phase 6) requires a different encoded representation.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

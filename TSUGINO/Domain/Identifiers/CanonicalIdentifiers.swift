@@ -1,43 +1,63 @@
-/// Canonical, TSUGINO-owned identifiers for the railway and journey domain
-/// (DEC-021, ARCHITECTURE.md §39, RULES.md Rule 9).
-///
-/// Provider identifiers — ODPT IDs, GTFS `stop_id`, route-provider station codes —
-/// are **aliases** resolved through the provider mapping layer (ARCHITECTURE.md §40).
-/// They are deliberately absent here: nothing in this file knows that any particular
-/// provider exists, which is what lets a provider be replaced without touching the
-/// domain (DEC-020).
-///
-/// The five identifiers are separate nominal types, so the compiler rejects passing a
-/// `StationID` where a `LineID` is expected. That mistake is otherwise easy to make and
-/// impossible to see in review, because every one of them wraps a `String`.
-///
-/// **Raw representation.** No accepted document specifies a raw-value type, a character
-/// set, or any normalisation, trimming, or case-folding rule for canonical identifiers.
-/// These wrappers are therefore deliberately **lossless**: the value handed in is the
-/// value stored and the value returned. Inventing validation here would be an
-/// undocumented architecture decision, and a canonicalisation rule adopted later would
-/// silently change the meaning of already-persisted identifiers.
+// Canonical, TSUGINO-owned identifiers for the railway and journey domain
+// (DEC-021, DEC-051, ARCHITECTURE.md §39, RULES.md Rule 9).
+//
+// Provider identifiers are aliases resolved through the provider mapping layer
+// (ARCHITECTURE.md §40). They are deliberately absent here: nothing in this file
+// knows that any particular provider exists, which is what lets a provider be
+// replaced without touching the domain (DEC-020).
+//
+// The five identifiers are separate nominal types, so the compiler rejects passing
+// a `StationID` where a `LineID` is expected. That mistake is otherwise easy to
+// make and impossible to see in review, because every one of them wraps a `String`.
+//
+// Validity and losslessness are separate concerns (DEC-051). A value must carry at
+// least one non-whitespace character to identify anything, so blank values are
+// rejected. A value that passes is then stored byte-for-byte: no trimming, no case
+// folding, no Unicode normalisation, no separator rewriting. Rejecting blanks does
+// not authorise normalising the values that remain.
 
-/// Shared shape for the canonical identifiers below.
+/// Shared invariant and `Codable` mechanics for the five canonical identifiers.
 ///
-/// It exists for one reason: to guarantee that every canonical identifier encodes as a
-/// bare string rather than as a keyed object. Five hand-written `Codable`
-/// implementations could drift apart, and a drifted encoding would only surface as a
-/// persistence migration problem long after Phase 1 (ARCHITECTURE.md §41).
+/// It exists only so that the blank-value rule (DEC-051) and the encoded
+/// representation are defined once instead of five times. Five hand-written copies
+/// could drift apart, and a drifted invariant or encoding would surface far from
+/// this file.
 ///
-/// This is an internal implementation detail, not a provider abstraction, and it does
-/// not weaken nominal typing: conforming types remain mutually unassignable.
+/// It is **not** a domain-level identifier abstraction. Do not use it as an erased
+/// identifier type, as existential storage (`any CanonicalIdentifier`), or as a
+/// generic substitute for naming the identifier a value actually is. Those uses
+/// would undo the nominal typing this file exists to provide.
 nonisolated protocol CanonicalIdentifier: Hashable, Codable, Sendable {
     /// The canonical value, stored exactly as supplied.
     var rawValue: String { get }
 
-    init(_ rawValue: String)
+    /// Fails when `rawValue` is blank; otherwise preserves it exactly (DEC-051).
+    init?(_ rawValue: String)
 }
 
 extension CanonicalIdentifier {
-    /// Decodes from a single string value, preserving it exactly.
+    /// Whether a candidate value can identify something.
+    ///
+    /// Uses the Swift standard library's `Character.isWhitespace`, so the rule holds
+    /// for every Unicode whitespace scalar without depending on Foundation.
+    static func isBlank(_ rawValue: String) -> Bool {
+        rawValue.allSatisfy(\.isWhitespace)
+    }
+
+    /// Decodes from a single string value, applying exactly the same validity rule
+    /// as direct construction and preserving a valid value exactly.
     init(from decoder: any Decoder) throws {
-        self.init(try decoder.singleValueContainer().decode(String.self))
+        let container = try decoder.singleValueContainer()
+        let rawValue = try container.decode(String.self)
+
+        guard let identifier = Self(rawValue) else {
+            throw DecodingError.dataCorruptedError(
+                in: container,
+                debugDescription: "A canonical identifier must contain at least one non-whitespace character."
+            )
+        }
+
+        self = identifier
     }
 
     /// Encodes as a single string value, preserving it exactly.
@@ -51,7 +71,8 @@ extension CanonicalIdentifier {
 nonisolated struct StationID: CanonicalIdentifier {
     let rawValue: String
 
-    init(_ rawValue: String) {
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
         self.rawValue = rawValue
     }
 }
@@ -60,7 +81,8 @@ nonisolated struct StationID: CanonicalIdentifier {
 nonisolated struct LineID: CanonicalIdentifier {
     let rawValue: String
 
-    init(_ rawValue: String) {
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
         self.rawValue = rawValue
     }
 }
@@ -69,7 +91,8 @@ nonisolated struct LineID: CanonicalIdentifier {
 nonisolated struct OperatorID: CanonicalIdentifier {
     let rawValue: String
 
-    init(_ rawValue: String) {
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
         self.rawValue = rawValue
     }
 }
@@ -78,7 +101,8 @@ nonisolated struct OperatorID: CanonicalIdentifier {
 nonisolated struct TripID: CanonicalIdentifier {
     let rawValue: String
 
-    init(_ rawValue: String) {
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
         self.rawValue = rawValue
     }
 }
@@ -87,7 +111,8 @@ nonisolated struct TripID: CanonicalIdentifier {
 nonisolated struct JourneyID: CanonicalIdentifier {
     let rawValue: String
 
-    init(_ rawValue: String) {
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
         self.rawValue = rawValue
     }
 }
