@@ -2217,6 +2217,7 @@ Reconciliation: 141 + 144 = 285; 27 + 26 + 1 = 54; 114 + 117 + 27 = 258.
 - The names match exactly, but the structural evidence contradicts a merge: the separation exceeds the span either operator accepts inside its own interchanges, and a **different, nearer Toei identity (新宿西口) competes** for the same Tokyo Metro identity. Name evidence and spatial evidence point at different Toei stations, and the retained evidence cannot say which is right.
 - **The 258-group total reflects this separate treatment.** An authoritative future merge would reduce the total to **257** and would require a controlled identity migration (Rule 39, DEC-026), not an in-place edit.
 - Shinjuku is not merged until authoritative evidence exists — see *Revisit Triggers*.
+- **Reviewed evidence added 2026-09-20 (no change to this outcome):** the Toei GTFS-Pathways archive was acquired and analysed offline (audit §6.6). Toei models 新宿 (`stop_id` `428`, `E-27`) and 新宿西口 (`stop_id` `402`, `E-01`) as two separate `location_type = 1` station structures with no shared parent and **zero** pathway edges between them — but the feed contains **zero** edges between *any* two station structures, so this is a property of the dataset, not a finding about Shinjuku. No Tokyo Metro identifier, Marunouchi reference, `M08` code, cross-operator transfer, or shared cross-operator parent occurs anywhere in it. The evidence therefore supports keeping the existing conservative treatment and **changes none of this Decision's conclusions**.
 
 ## The 320 m analytical envelope
 
@@ -2256,11 +2257,11 @@ Revisit the Shinjuku relationship — and only with one of the following in hand
 - A provider-published transfer relation.
 - A station-complex or parent-station relation published by either operator.
 - An official station-code cross-reference between the two operators.
-- Validated GTFS-Pathways evidence (Toei Pathways availability is constrained — RK-17).
+- ~~Validated GTFS-Pathways evidence~~ — **path completed and exhausted for this question (2026-09-20).** The Toei GTFS-Pathways archive was acquired and inspected offline (`PROVIDER_FEASIBILITY_AUDIT.md` §6.6): it carries **no cross-operator identifier and no cross-structure topology edge**, and the feed models no inter-station connectivity at all, so it can establish neither sameness nor distinctness. It does **not** justify a merge and does **not** prove the stations distinct. The remaining paths below stay open.
 - An authoritative operator or ODPT response.
 - Equivalent authoritative route-provider evidence whose permitted use has been verified (Rule 40).
 
-**No such evidence exists today.** Absence of a revisit trigger is not a reason to merge.
+**No such evidence exists today** (re-confirmed 2026-09-20 after the GTFS-Pathways path was inspected and exhausted). Absence of a revisit trigger is not a reason to merge, and the absence of cross-operator evidence in a dataset that models no inter-station connectivity is not evidence that the stations are distinct.
 
 Also revisit this Decision if either operator's static feed revision changes station names, codes, or counts, or if a further operator enters the launch set.
 
