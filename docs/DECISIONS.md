@@ -2411,6 +2411,172 @@ Blankness is also the one rule that can be stated without knowing anything about
 
 ---
 
+# DEC-053 — Canonical Railway Models Share a Validated LocalizedRailName; Operator Identity Is OperatorID
+
+**Status:** Accepted\
+**Date:** 2026-09-20\
+**Related:** DEC-020, DEC-021, DEC-026, DEC-041, DEC-042, DEC-049, DEC-051; `RULES.md` Rule 9, Rule 26; `ARCHITECTURE.md` §5.1, §5.2, §5.7, §39.1, §40
+
+## Context
+
+`ARCHITECTURE.md` §39.1 recommended a `LocalizedRailName` value with `japanese` / `english` / `korean`, while §5.1 `Station`, §5.2 `RailwayLine`, and §5.7 `Operator` each listed three flat `nameJapanese` / `nameEnglish` / `nameKorean` properties. Two representations of the same concept were therefore documented at once, and a contract audit before Phase 1 slice S2 found that two implementers could reasonably build incompatible models from them.
+
+The three names are never meaningful individually — they always travel together, are governed by one language-resolution rule (§39.1), and appear identically in all three canonical models. DEC-051 has already established that a blank canonical **identifier** cannot exist; the same question for canonical **names** was open.
+
+Separately, `Operator` had no stated identity semantics. Whether two `Operator` values with the same `OperatorID` but different display names were the same operator was undefined — a question that decides equality, hashing, deduplication, and every future mapping table.
+
+## Decision
+
+### `LocalizedRailName`
+
+A shared, provider-neutral canonical name value used by `Operator` (S2) and by `Station` and `RailwayLine` (S3). Conceptual properties: `japanese`, `english`, `korean`.
+
+1. **All three canonical names are required.**
+2. Each name **must contain at least one non-whitespace character**.
+3. **Empty and whitespace-only names are invalid.**
+4. Valid names are **preserved exactly**.
+5. **No trimming.**
+6. **No case change.**
+7. **No Unicode normalisation.**
+8. Leading or trailing whitespace **remains preserved** when a non-whitespace character exists.
+9. The Japanese, English, and Korean values **may be identical** — some operator and station names are written the same way in more than one language.
+10. Provider-supplied names are **normalisation inputs**, not themselves the sole canonical source (§39.1, Rule 26).
+11. Missing canonical Korean data is supplied by **TSUGINO's canonical dataset**, never represented as a blank string (DEC-041, DEC-042).
+12. Language selection and device-language fallback **do not mutate stored canonical names** — resolution is a read-time concern (§39.1).
+13. This Decision does **not** implement `LanguageResolver`, UI localization, provider mapping, or any canonical railway data.
+
+This supersedes the flat three-property depiction in §5.1, §5.2, and §5.7, which are updated to reference `LocalizedRailName`. Only one representation remains.
+
+### `Operator`
+
+Stored domain identity: **`OperatorID`**. Stored canonical name: **`LocalizedRailName`**. Nothing else — **no** provider ID, **no** capability set, **no** provider metadata, **no** logo, colour, abbreviation, URL, or UI metadata, and **no** actual Tokyo Metro or Toei data.
+
+1. **`OperatorID` is the sole identity source.**
+2. **Equality is based only on `OperatorID`.**
+3. **Hashing is based only on `OperatorID`.**
+4. Canonical names **may change without changing Operator identity** — a renamed operator is the same operator.
+5. Two `Operator` values with the same ID but different canonical names **represent the same Operator identity**.
+6. The `Codable` representation may carry both ID and name, but **payload equality is not the definition of domain identity**.
+7. Construction accepts an **already valid** `OperatorID` and `LocalizedRailName`.
+8. `Operator` **does not repeat** the name validation already enforced by `LocalizedRailName`.
+
+## Consequences
+
+- One canonical name representation exists, so S3's `Station` and `RailwayLine` inherit a settled contract instead of reopening it.
+- Blank canonical names are unrepresentable, matching DEC-051's treatment of identifiers; the two rules are deliberately consistent but remain separate decisions.
+- ID-only equality means a set or dictionary of operators deduplicates by identity, not by display text — which is what every mapping table needs (§40).
+- Because equality ignores names, a caller that genuinely needs to compare display text must compare the names explicitly. That is intentional.
+
+## Scope statement
+
+This is a **domain model contract**. It implements nothing, defines no provider syntax, and adds no data. Provider-to-canonical mapping stays in Phase 2 (§40); language resolution and UI localization stay in Phase 11 (§39.1, DEC-042). Validity and losslessness remain separate concerns: rejecting blank names does not authorise normalising the names that remain.
+
+## Rationale
+
+Keeping two representations of the same concept in the architecture is how two correct-looking implementations become incompatible. Choosing the shared value is not about reducing repetition — it is that the three names share one invariant, one resolution rule, and one lifetime across three models, so they are one concept.
+
+ID-only identity follows from what an identifier is for. A name is display data that changes for editorial reasons; if it participated in equality, a renamed operator would silently become a different operator everywhere it had been stored.
+
+## Revisit Triggers
+
+- A canonical model needs a fourth language or a language-tagged name set beyond JP/EN/KO.
+- An accepted provider mapping requires a legitimately blank canonical name.
+- A canonical model needs identity that is not its canonical ID.
+
+---
+
+# DEC-054 — RailCapability Uses Nine Atomic Capabilities; Guidance Tier Is Derived from the Declared Set
+
+**Status:** Accepted\
+**Date:** 2026-09-20\
+**Related:** DEC-022, DEC-024, DEC-038, DEC-046, DEC-047, DEC-049, DEC-050; `RULES.md` Rule 10, Rule 12; `ARCHITECTURE.md` §51, §5.7
+
+## Context
+
+DEC-022 and `ARCHITECTURE.md` §51 list eight atomic capabilities. But §51's own tier rule and DEC-047's Scheduled tier both treat **service status** as an input alongside `alerts`, and the provider evidence records them as distinct resources — Tokyo Metro publishes line-level `odpt:TrainInformation` **and** GTFS-RT Alert as separate things (DEC-047 context). Service status was being used as a capability while not being one.
+
+§51 also still opened with "Each operator/provider should declare supported capabilities", which DEC-049 had already corrected: capability is declared at **service/feed scope** and is never a fixed `Operator` property. Two contradictory ownership statements sat in the same section.
+
+Finally, DEC-047 describes the Realtime tier as backed by "**verified**" trip-level realtime, while DEC-049 says tiers are "derived from the declared capability set". Whether a second verification flag was required was undefined, and that decides the signature of the derivation.
+
+## Decision
+
+### Vocabulary
+
+`RailCapability` is the **single canonical atomic capability type** (DEC-049) with **nine** cases:
+
+`staticSchedule` · `tripUpdates` · `vehiclePosition` · `alerts` · `serviceStatus` · `platform` · `recommendedCar` · `recommendedDoor` · `exitGuidance`
+
+**`serviceStatus` is separate from `alerts`.** Service-status information and alert resources are distinct data concepts, the scheduled-guidance rules already treat them separately, and conflating them would make a service's declared coverage unrepresentable. No provider name or provider resource identifier appears in the type contract.
+
+### Capability set
+
+The declared capability collection is conceptually `Set<RailCapability>`.
+
+1. **Atomic capability and derived guidance tier are different concepts.**
+2. **All combinations are representable** in Phase 1.
+3. Phase 1 **does not reject** unusual or incomplete combinations.
+4. **An empty capability set is representable.**
+5. Capability presence must **never** be inferred from Operator identity, Operator name, line identity, line name, or provider identity (DEC-022, Rule 10).
+6. Capabilities are declared **only after the applicable evidence gates have been satisfied** (DEC-046 point 11 gates).
+7. **Presence in the declared set therefore means that capability has passed the required verification gate.**
+8. Phase 1 defines **capability vocabulary and pure derivation only**.
+9. Phase 1 **does not create a service/feed carrier**.
+10. Phase 1 **does not attach** capabilities to `Operator`, `Station`, `RailwayLine`, `Trip`, or any invented `Service` type.
+11. Actual service/feed-scoped declaration, ingestion, and attachment remain **Phase 4** concerns (`ROADMAP.md` Phase 4).
+12. Do **not** introduce `ServiceID`, `FeedID`, `RailService`, `ServiceScope`, or another carrier merely to store the set.
+
+### Derived guidance tier
+
+A provider-neutral derived tier with three semantic cases — **Realtime Journey Tracking**, **Scheduled Journey Guidance**, **Deferred / Unsupported** (DEC-047). Swift case spelling follows the repository's lowerCamelCase convention: `realtimeJourneyTracking`, `scheduledJourneyGuidance`, `deferredOrUnsupported`.
+
+Derivation from the declared set:
+
+1. If the set contains **`tripUpdates`** → **Realtime Journey Tracking**.
+2. `vehiclePosition` is **optional** for Realtime Journey Tracking.
+3. `staticSchedule` is **not additionally required** when `tripUpdates` is declared.
+4. Otherwise, if the set contains **`staticSchedule`** → **Scheduled Journey Guidance**.
+5. `alerts` and `serviceStatus` are **optional supplements** to Scheduled Journey Guidance.
+6. Otherwise → **Deferred / Unsupported**.
+7. An **empty set** → Deferred / Unsupported.
+8. **Alerts-only** → Deferred / Unsupported.
+9. **Service-status-only** → Deferred / Unsupported.
+10. **Vehicle-position-only** → Deferred / Unsupported.
+11. **`staticSchedule` + `vehiclePosition` without `tripUpdates`** → Scheduled Journey Guidance.
+12. Other extra capabilities **do not promote a tier** by themselves.
+13. **Operator or provider identity never affects derivation.**
+14. **Provenance is not an input** to this pure derivation.
+15. **Realtime freshness is not an input** to this pure derivation.
+16. Declared capability presence already means the evidence gate was passed; **no second verification Boolean is introduced**.
+17. The tier **does not claim live data availability at a particular instant**.
+18. Runtime freshness, observed state, degraded state, and presentation behaviour remain **later** concerns (DEC-024, Rule 12, Phase 4 / Phase 7 / Phase 9).
+
+## Consequences
+
+- The derivation is a pure function of `Set<RailCapability>`, so it needs no type from a later slice and can be tested exhaustively.
+- A service declared with only `alerts` or only `serviceStatus` is honestly Deferred / Unsupported rather than quietly presented as guidance (DEC-038).
+- Because unusual combinations stay representable, a provider that publishes something the vocabulary did not anticipate is recorded rather than rejected — and any rule about such a combination remains a future decision.
+- `Operator` gains no capability member, so Rule 10's prohibition cannot be defeated by reaching through the operator.
+
+## Scope statement
+
+This is a **domain vocabulary and derivation contract**. It implements no adapter, dataset, carrier, or presentation, and it changes no accepted provider capability classification: Toei Subway and Tokyo Sakura Tram stay Realtime Journey Tracking and the nine Tokyo Metro lines and the Nippori-Toneri Liner stay Scheduled Journey Guidance exactly as DEC-046 and DEC-047 record. Adding `serviceStatus` to the vocabulary describes coverage those services already had; it promotes nothing.
+
+## Rationale
+
+Tiers must fall out of evidence, not out of a table of operator names, or the honesty rules in DEC-038 and DEC-047 become a matter of discipline rather than of structure. Making the derivation a pure function of the declared set is what makes that enforceable.
+
+Treating declaration as the verification record — rather than adding a second "verified" flag — keeps one source of truth. A flag that could disagree with the declared set would eventually disagree.
+
+## Revisit Triggers
+
+- A provider publishes a capability the nine-case vocabulary cannot express.
+- An accepted rule makes a currently representable combination invalid.
+- DEC-047's tier model changes.
+- Phase 4 finds that service/feed-scoped declaration needs a domain carrier defined earlier than planned.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

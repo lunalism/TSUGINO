@@ -199,6 +199,7 @@ Build a provider-independent railway and journey domain.
 - route-search API integration
 - realtime provider integration (Phase 4)
 - **JourneyEngine runtime behaviour — Phase 5 owns it (DEC-050)**
+- **capability carrier and attachment** — Phase 1 defines the `RailCapability` vocabulary and the pure tier derivation only; it creates no service/feed carrier and attaches capabilities to no model. Service/feed-scoped declaration, ingestion, and attachment are **Phase 4** (DEC-054)
 - production persistence and recovery implementation
 - Live Activity production UI
 - pixel animations

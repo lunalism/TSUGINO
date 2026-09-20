@@ -575,13 +575,13 @@ Structure exists to make changes easier, not to prevent change.
 Station
 - id
 - operatorID
-- nameJapanese
-- nameEnglish
-- nameKorean
+- name            (LocalizedRailName — §39.1, DEC-053)
 - latitude
 - longitude
 - lineIDs
 ```
+
+Canonical names are held as the shared `LocalizedRailName` value (§39.1, DEC-053), not as three flat properties: all three languages are required, blank names are rejected, and valid names are preserved exactly.
 
 Station identity must use a TSUGINO canonical ID rather than provider IDs directly.
 
@@ -595,14 +595,12 @@ Provider IDs are stored as mappings.
 RailwayLine
 - id
 - operatorID
-- nameJapanese
-- nameEnglish
-- nameKorean
+- name            (LocalizedRailName — §39.1, DEC-053)
 - color
 - stationSequence
 ```
 
-Line names follow the same canonical localization principle as `Station` (§39.1, DEC-042): Japanese, English, and Korean are held canonically; provider-supplied names are inputs, not the sole source of truth.
+Line names use the same shared `LocalizedRailName` value as `Station` and `Operator` (§39.1, DEC-042, DEC-053): Japanese, English, and Korean are held canonically; provider-supplied names are inputs, not the sole source of truth.
 
 ---
 
@@ -699,13 +697,13 @@ The UI renders this state.
 
 ```text
 Operator
-- id
-- nameJapanese
-- nameEnglish
-- nameKorean
+- id              (OperatorID)
+- name            (LocalizedRailName — §39.1, DEC-053)
 ```
 
-`Operator` is a **provider-neutral canonical identity model** (DEC-049). It owns its canonical `OperatorID` (DEC-021) and the canonical localized display names required by DEC-041 / DEC-042 / Rule 26; provider-supplied names are inputs, not the sole source of truth.
+`Operator` is a **provider-neutral canonical identity model** (DEC-049). It owns its canonical `OperatorID` (DEC-021) and the canonical localized names required by DEC-041 / DEC-042 / Rule 26, held as the shared `LocalizedRailName` value (DEC-053); provider-supplied names are inputs, not the sole source of truth.
+
+**Identity is the `OperatorID` alone (DEC-053):** equality and hashing use only the ID, so canonical names may change without changing which operator a value denotes. `Operator` carries no provider ID, no capability set, and no logo, colour, abbreviation, URL, or other UI metadata.
 
 `Operator` **does not own a capability set.** Railway capabilities are declared at the applicable **service/feed scope** (§51), because one operator may publish trip-level realtime for some services and only alerts for others (DEC-046, DEC-047). Capability-dependent behaviour is selected from the declared `RailCapability` value, never from the operator's name (DEC-022, Rule 10).
 
@@ -1601,7 +1599,7 @@ Railway display names must use canonical localized data.
 
 Provider-localized strings are inputs, not the sole source of truth.
 
-Recommended internal model:
+Canonical internal model (DEC-053) — the single representation used by `Station` (§5.1), `RailwayLine` (§5.2), and `Operator` (§5.7):
 
 ```text
 LocalizedRailName
@@ -1609,6 +1607,8 @@ LocalizedRailName
 - english
 - korean
 ```
+
+All three names are required and each must contain at least one non-whitespace character; empty and whitespace-only names are invalid. A valid name is preserved exactly — no trimming, case change, or Unicode normalisation — and leading or trailing whitespace survives when a non-whitespace character exists. The three values may be identical. Missing canonical Korean data is supplied from TSUGINO's canonical dataset rather than stored as a blank string, and language selection never mutates the stored canonical names.
 
 Rules:
 
@@ -1880,9 +1880,9 @@ Adding a new pixel environment should not modify JourneyEngine.
 
 ## 51. Capability Model
 
-Each operator/provider should declare supported capabilities.
+Capabilities are declared at the applicable **service/feed scope** — never as a fixed property of an operator or provider (DEC-049, DEC-054).
 
-Example:
+`RailCapability` is the single canonical atomic capability type, with **nine** cases (DEC-054):
 
 ```text
 RailCapability
@@ -1890,11 +1890,16 @@ RailCapability
 - tripUpdates
 - vehiclePosition
 - alerts
+- serviceStatus
 - platform
 - recommendedCar
 - recommendedDoor
 - exitGuidance
 ```
+
+`serviceStatus` is **separate from** `alerts`: service-status information and alert resources are distinct data concepts, and the scheduled-guidance rules below already treat them separately. No provider name or provider resource identifier belongs in this vocabulary.
+
+The declared collection is conceptually `Set<RailCapability>`. All combinations remain representable in Phase 1 — including an empty set — and Phase 1 rejects none of them; any rule making a combination invalid is a future decision (DEC-054).
 
 Features check capabilities rather than provider names.
 
@@ -1916,7 +1921,17 @@ Capability is scoped to the **service/feed**, not the operator: provider identit
 
 **Ownership (DEC-049):** `RailCapability` is the **single canonical capability type**; no parallel capability abstraction is introduced. It is declared at **service/feed scope** and is **never** a fixed attribute of `Operator` (§5.7). Actual provider capability data, canonical mapping tables, and ingestion are Phase 2 / Phase 4 concerns, not Phase 1.
 
-Capability **tiers** (DEC-047) are derived from the declared capability set, never from the operator name: `tripUpdates` (with optional `vehiclePosition`) verified → **Realtime Journey Tracking**; `staticSchedule` plus optional `alerts`/service status without trip-level realtime → **Scheduled Journey Guidance**; otherwise **Deferred / Unsupported**. The tier is a property of the journey leg's service and is carried with provenance into `JourneyState`, the Live Activity mapper, and notifications. In the scheduled tier, progress is computed from the user-selected schedule and the clock and is typed as *scheduled*; no layer may convert it into observed progress, a delay figure, or a vehicle position.
+**Carrier boundary (DEC-054):** Phase 1 defines the capability vocabulary and the pure tier derivation **only**. It does **not** create a service/feed carrier and does **not** attach capabilities to `Operator`, `Station`, `RailwayLine`, `Trip`, or any invented `Service` type; no `ServiceID`, `FeedID`, `RailService`, or `ServiceScope` is introduced merely to hold the set. Actual service/feed-scoped declaration, ingestion, and attachment are **Phase 4** concerns. Capabilities are declared only after the applicable evidence gates are satisfied (DEC-046), so **presence in the declared set already means that capability passed its verification gate** — no second verification flag exists.
+
+Capability **tiers** (DEC-047) are derived from the declared capability set, never from the operator or provider name. The derivation is a pure function of `Set<RailCapability>` (DEC-054); Swift case spelling is `realtimeJourneyTracking`, `scheduledJourneyGuidance`, `deferredOrUnsupported`:
+
+| Declared set contains | Derived tier |
+|---|---|
+| `tripUpdates` — `vehiclePosition` optional, `staticSchedule` not additionally required | **Realtime Journey Tracking** |
+| otherwise `staticSchedule` — `alerts` and `serviceStatus` optional supplements | **Scheduled Journey Guidance** |
+| otherwise — including the empty set, alerts-only, service-status-only, and vehicle-position-only | **Deferred / Unsupported** |
+
+`staticSchedule` with `vehiclePosition` but no `tripUpdates` derives Scheduled Journey Guidance; other extra capabilities never promote a tier by themselves. **Provenance and realtime freshness are not inputs** to this derivation, and the tier makes no claim about live data availability at a particular instant — runtime freshness, observed state, degraded state, and presentation behaviour are later concerns (DEC-024, Rule 12). The tier is a property of the journey leg's service and is carried with provenance into `JourneyState`, the Live Activity mapper, and notifications. In the scheduled tier, progress is computed from the user-selected schedule and the clock and is typed as *scheduled*; no layer may convert it into observed progress, a delay figure, or a vehicle position.
 
 ---
 
