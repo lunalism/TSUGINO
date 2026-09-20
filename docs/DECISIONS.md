@@ -2267,6 +2267,92 @@ Also revisit this Decision if either operator's static feed revision changes sta
 
 ---
 
+# DEC-049 — Operator Is Canonical Identity; Railway Capabilities Are Declared at Service/Feed Scope
+
+**Status:** Accepted\
+**Date:** 2026-09-20\
+**Related:** DEC-021, DEC-022, DEC-041, DEC-042, DEC-046, DEC-047; `RULES.md` Rule 9, Rule 10, Rule 26; `ARCHITECTURE.md` §5.7, §51
+
+## Context
+
+`ROADMAP.md` Phase 1 lists `Operator` among the canonical railway models, but `ARCHITECTURE.md` §5 defined `Station`, `RailwayLine`, `Trip`, and the Journey types without ever defining `Operator`. At the same time §51 states that capability is scoped to the **service/feed**, not the operator, because one operator may publish trip-level realtime for some services and only alerts for others (DEC-046, DEC-047).
+
+That gap left a real ambiguity: one implementer could reasonably give `Operator` a fixed capability set, another could model capabilities separately, and the two designs would be incompatible — DEC-047's capability tiers would then be derivable in one design and not the other.
+
+## Decision
+
+1. **`Operator` is a provider-neutral canonical identity model.** It owns its canonical identifier (`OperatorID`, DEC-021) and the canonical localized display names required by DEC-041 / DEC-042 / Rule 26 (Japanese, English, Korean).
+2. **`Operator` must not own a fixed, operator-wide capability set.** Capability is not an attribute of the company.
+3. **Railway capabilities are declared at the applicable service/feed scope**, consistent with `ARCHITECTURE.md` §51.
+4. **The canonical capability type name is `RailCapability`**, already used in §51. It is the single capability abstraction; no parallel or overlapping capability type is introduced.
+5. **Capability-dependent behaviour must be selected from the declared capability value** — never from operator names, line names, or hard-coded provider identity checks (DEC-022, Rule 10).
+6. **Capability tiers are derived from declared service/feed capabilities**, including the Toei and Tokyo Metro distinctions already accepted in DEC-047. The tier is a consequence of the declared capability set, not of the operator's name.
+7. **Actual provider capability data, canonical mapping tables, and network ingestion remain outside Phase 1** — they belong to Phase 2 and Phase 4.
+
+## Consequences
+
+- `ARCHITECTURE.md` gains an explicit `Operator` definition (§5.7) so the Phase 1 model set is complete.
+- Phase 1 defines the shape of `RailCapability` and how a capability-bearing scope is expressed; it does not populate real capability data.
+- A future operator can be added by declaring capabilities per service, without touching journey logic (`ARCHITECTURE.md` §50).
+- Any code that branches on an operator name is a rule violation (Rule 10), not a style preference.
+
+## Scope statement
+
+This is an **architecture-ownership decision**. It does not claim that any model, adapter, screen, or dataset is implemented, and it does not change any accepted provider capability classification: Tokyo Metro remains Scheduled Journey Guidance and Toei Subway remains Realtime Journey Tracking exactly as DEC-047 records.
+
+## Rationale
+
+Binding capability to the company is the single most likely way to reintroduce provider-name branching by the back door. Declaring capability where the data actually varies — the service/feed — keeps DEC-022 enforceable and lets DEC-047's honest tiering fall out of evidence rather than out of a hard-coded table.
+
+## Revisit Triggers
+
+- A provider publishes capability metadata whose natural granularity is neither service nor feed.
+- A future operator's capabilities genuinely cannot be expressed at service/feed scope.
+- DEC-047's tier model changes.
+
+---
+
+# DEC-050 — Phase 1 Defines the JourneyEngine Boundary; Phase 5 Owns Its Behaviour
+
+**Status:** Accepted\
+**Date:** 2026-09-20\
+**Related:** DEC-010, DEC-011, DEC-012, DEC-020, DEC-024, DEC-038; `ROADMAP.md` Phase 1 and Phase 5; `ARCHITECTURE.md` §4, §6, §7
+
+## Context
+
+`ARCHITECTURE.md` §4 places `JourneyEngine.swift` inside `Domain/Journey/` beside the journey models, and `ROADMAP.md` Phase 1 includes the task "define domain protocols". But Phase 1's *Included* list names only the journey **models** (`Journey`, `JourneyLeg`, `JourneyState`, `JourneyPhase`, `JourneyEvent`), while **Phase 5 — Journey Engine** owns progression, realtime reconciliation, through service, journey events, and interruption detection.
+
+Read together, these could authorise either "Phase 1 writes the engine" or "Phase 1 must not touch it at all". Those are materially different plans.
+
+## Decision
+
+1. **Phase 1 may define** the provider-neutral journey domain types, events, commands or inputs, outputs, and the **`JourneyEngine` protocol boundary** required by the domain architecture.
+2. **Phase 1 must not implement JourneyEngine runtime behaviour.**
+3. **Phase 5 owns** state-transition logic, progression behaviour, realtime/scheduled observation handling, and operational engine behaviour — unchanged from `ROADMAP.md` Phase 5.
+4. **Any Phase 1 protocol must remain provider-neutral** and must not import SwiftUI, ActivityKit, a provider SDK, or networking implementation details (`ROADMAP.md` Phase 1 Acceptance Criteria).
+5. **Phase 1 tests may verify value semantics and protocol-facing domain contracts**, but must not prematurely implement Phase 5 behaviour.
+
+## Consequences
+
+- The Phase 1 deliverable is a *shape*: types plus a boundary that Phase 5 fills in.
+- DEC-011 is unchanged — `JourneyEngine` still owns progression; this Decision only says when that behaviour is built.
+- A Phase 1 slice that starts asserting transition outcomes has drifted into Phase 5 and should be stopped (`AGENTS.md` §5.1).
+
+## Scope statement
+
+This is a **phase-ownership clarification**. It does not implement, redesign, or weaken the journey state machine (`ARCHITECTURE.md` §6) and it does not change DEC-010 or DEC-011.
+
+## Rationale
+
+The engine is the highest-risk component in the product. Defining its boundary early makes the domain types answerable to a real consumer; implementing its behaviour early, before static data and realtime shapes exist, would bake in assumptions that Phases 2–4 have not yet earned.
+
+## Revisit Triggers
+
+- Phase 1 discovers that the domain types cannot be validated at all without some engine behaviour.
+- `ROADMAP.md` Phase 5 scope changes.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
@@ -2347,6 +2433,8 @@ The following areas are intentionally not fully locked yet.
 ### Route Search Provider
 
 Candidates still require technical, licensing, and pricing evaluation.
+
+**`RouteSearching` protocol disposition (2026-09-20, bounded and non-blocking):** whether the provider-neutral `RouteSearching` protocol (`ARCHITECTURE.md` §4, §10) is defined during Phase 1 is **not decided here**. It is **non-blocking for Phase 1 slices S1–S5** and must not delay branch creation or the canonical-identifier work. The inclusion-or-deferral decision is to be made **before S6**, when Phase 1 addresses domain protocols. **Live route-search integration remains Phase 3 regardless of that later decision**, and DEC-004 stays Provisional until a provider is selected.
 
 Related:
 - DEC-004

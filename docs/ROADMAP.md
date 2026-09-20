@@ -187,17 +187,23 @@ Build a provider-independent railway and journey domain.
 - JourneyState
 - JourneyPhase
 - JourneyEvent
-- capability model
+- capability model — `RailCapability`, declared at **service/feed scope**; `Operator` is canonical identity only and owns no capability set (DEC-049)
 - typed errors
 - deterministic Clock
 
 ## Explicitly Excluded
 
 - live provider networking
+- GTFS or ODPT production ingestion
+- canonical mapping-table population (Phase 2)
 - route-search API integration
+- realtime provider integration (Phase 4)
+- **JourneyEngine runtime behaviour — Phase 5 owns it (DEC-050)**
+- production persistence and recovery implementation
 - Live Activity production UI
 - pixel animations
 - persistence schema beyond test scaffolding
+- physical-device-dependent feature implementation
 
 ## Implementation Tasks
 
@@ -209,7 +215,7 @@ Build a provider-independent railway and journey domain.
 - define through-service representation
 - define realtime freshness model
 - define interruption/recovery model
-- define domain protocols
+- define provider-neutral domain protocol boundaries assigned to Phase 1, including the **`JourneyEngine` protocol boundary without its runtime behaviour** (DEC-050). Whether the `RouteSearching` protocol is defined in Phase 1 is deliberately **undecided and non-blocking for slices S1–S5**; it is settled before the protocol slice (S6), and live route-search integration stays in Phase 3 regardless (`DECISIONS.md` §4 “Route Search Provider”)
 
 ## Tests
 
@@ -478,6 +484,8 @@ Realtime data is reliable enough to drive Journey progression.
 ---
 
 # Phase 5 — Journey Engine
+
+> Phase 1 defines the journey domain types and the `JourneyEngine` protocol boundary; **this phase owns the engine's runtime behaviour** (DEC-050).
 
 ## Goal
 

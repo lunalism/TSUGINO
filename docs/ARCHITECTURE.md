@@ -695,6 +695,22 @@ The UI renders this state.
 
 ---
 
+### 5.7 Operator
+
+```text
+Operator
+- id
+- nameJapanese
+- nameEnglish
+- nameKorean
+```
+
+`Operator` is a **provider-neutral canonical identity model** (DEC-049). It owns its canonical `OperatorID` (DEC-021) and the canonical localized display names required by DEC-041 / DEC-042 / Rule 26; provider-supplied names are inputs, not the sole source of truth.
+
+`Operator` **does not own a capability set.** Railway capabilities are declared at the applicable **service/feed scope** (§51), because one operator may publish trip-level realtime for some services and only alerts for others (DEC-046, DEC-047). Capability-dependent behaviour is selected from the declared `RailCapability` value, never from the operator's name (DEC-022, Rule 10).
+
+---
+
 ## 6. Journey State Machine
 
 Journey progression should be modeled explicitly.
@@ -742,6 +758,8 @@ Views must never directly set journey phase.
 ## 7. Journey Engine
 
 `JourneyEngine` is the most important domain component.
+
+**Phase ownership (DEC-050):** **Phase 1** defines the provider-neutral journey domain types, events, commands/inputs, outputs, and the `JourneyEngine` **protocol boundary**; it does **not** implement runtime behaviour. **Phase 5** owns the state-transition logic, progression behaviour, realtime/scheduled observation handling, and operational engine behaviour described below. Any Phase 1 protocol stays provider-neutral and imports no SwiftUI, ActivityKit, provider SDK, or networking detail.
 
 Responsibilities:
 
@@ -1893,6 +1911,8 @@ if capabilities.supportsRecommendedCar
 This is critical for expanding beyond Tokyo.
 
 Capability is scoped to the **service/feed**, not the operator: provider identity alone cannot determine UI behaviour, because one operator may publish trip-level realtime for some services and not others (verified case: Toei Subway and Tokyo Sakura Tram have Trip Update / Vehicle Position; the Nippori-Toneri Liner has static, status, and Alert coverage only — DEC-046). Adapters expose capability and **provenance** (realtime / scheduled / status / unavailable) rather than synthesized state; Application and UI layers select behaviour from the capability set; no layer synthesizes progress from a schedule. A service is promoted to a richer capability set only through the evidence gates in DEC-046 (catalog/license, payload/schema, identity join, freshness/coverage, UI state).
+
+**Ownership (DEC-049):** `RailCapability` is the **single canonical capability type**; no parallel capability abstraction is introduced. It is declared at **service/feed scope** and is **never** a fixed attribute of `Operator` (§5.7). Actual provider capability data, canonical mapping tables, and ingestion are Phase 2 / Phase 4 concerns, not Phase 1.
 
 Capability **tiers** (DEC-047) are derived from the declared capability set, never from the operator name: `tripUpdates` (with optional `vehiclePosition`) verified → **Realtime Journey Tracking**; `staticSchedule` plus optional `alerts`/service status without trip-level realtime → **Scheduled Journey Guidance**; otherwise **Deferred / Unsupported**. The tier is a property of the journey leg's service and is carried with provenance into `JourneyState`, the Live Activity mapper, and notifications. In the scheduled tier, progress is computed from the user-selected schedule and the clock and is typed as *scheduled*; no layer may convert it into observed progress, a delay figure, or a vehicle position.
 
