@@ -94,6 +94,27 @@ struct LocalizedRailNameTests {
         #expect(decoded == original)
     }
 
+    /// The round-trip test above passes even if the encoded key names change,
+    /// because encoding and decoding would change together. This pins the wire
+    /// shape itself, which is what a later migration would have to reason about
+    /// (ARCHITECTURE.md §41).
+    ///
+    /// Keys are compared as a set, and each value is looked up by key, so the
+    /// test asserts nothing about JSON key ordering or formatting.
+    @Test func encodedFormUsesExactlyTheThreeLanguageKeys() throws {
+        let name = try Self.valid(japanese: "ja-value", english: "en-value", korean: "ko-value")
+        let encoded = try JSONEncoder().encode(name)
+
+        let object = try #require(
+            try JSONSerialization.jsonObject(with: encoded) as? [String: Any]
+        )
+
+        #expect(Set(object.keys) == ["japanese", "english", "korean"])
+        #expect(object["japanese"] as? String == "ja-value")
+        #expect(object["english"] as? String == "en-value")
+        #expect(object["korean"] as? String == "ko-value")
+    }
+
     @Test(arguments: [
         #"{"japanese":"","english":"Toei","korean":"도영"}"#,
         #"{"japanese":"東京都交通局","english":"  ","korean":"도영"}"#,

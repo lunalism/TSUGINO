@@ -42,7 +42,12 @@ nonisolated struct LocalizedRailName: Hashable, Codable, Sendable {
     ///
     /// Uses the Swift standard library's `Character.isWhitespace`, so the rule
     /// covers every Unicode whitespace scalar without depending on Foundation.
-    static func isBlank(_ name: String) -> Bool {
+    ///
+    /// Deliberately `private`: this enforces *this type's* construction rule
+    /// (DEC-053) and is not a reusable blankness API. A caller that pre-checks a
+    /// name instead of handling `init?`'s `nil` would duplicate the invariant
+    /// where it could drift.
+    private static func isBlank(_ name: String) -> Bool {
         name.allSatisfy(\.isWhitespace)
     }
 }

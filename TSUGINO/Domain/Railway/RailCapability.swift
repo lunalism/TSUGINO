@@ -38,7 +38,18 @@ nonisolated enum RailCapability: String, Hashable, Codable, Sendable, CaseIterab
 /// no claim about live availability at a particular instant: runtime freshness,
 /// observed state, and degraded behaviour are separate, later concerns
 /// (DEC-024, Rule 12).
-nonisolated enum RailCapabilityTier: String, Hashable, Codable, Sendable, CaseIterable {
+///
+/// **Derived, never stored.** The declared `Set<RailCapability>` is the single
+/// source of truth; the tier is a pure function of it (`init(declared:)`) and is
+/// not an independently stored value. Callers recompute it from the declared set
+/// rather than carrying one alongside the set, because a stored tier and its set
+/// can disagree and nothing would detect it.
+///
+/// This is why the type is deliberately neither `RawRepresentable` nor
+/// `Codable`: it has no encoded representation to persist or migrate, and giving
+/// it one would create exactly the second source of truth this type must not be.
+/// It conforms only to what an in-memory derived value needs.
+nonisolated enum RailCapabilityTier: Hashable, Sendable {
     /// Trip-level realtime is declared, so actual journey progress may be shown
     /// within the limits of DEC-024 and DEC-038.
     case realtimeJourneyTracking

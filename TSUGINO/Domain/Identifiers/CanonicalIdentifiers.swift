@@ -40,7 +40,12 @@ extension CanonicalIdentifier {
     ///
     /// Uses the Swift standard library's `Character.isWhitespace`, so the rule holds
     /// for every Unicode whitespace scalar without depending on Foundation.
-    static func isBlank(_ rawValue: String) -> Bool {
+    ///
+    /// Deliberately `fileprivate`: it is the shared implementation of the five
+    /// initialisers below (DEC-051), not a reusable blankness API. A caller that
+    /// pre-checks a value instead of handling `init?`'s `nil` would duplicate the
+    /// invariant where it could drift.
+    fileprivate static func isBlank(_ rawValue: String) -> Bool {
         rawValue.allSatisfy(\.isWhitespace)
     }
 
