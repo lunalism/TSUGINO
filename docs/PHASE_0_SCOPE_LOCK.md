@@ -87,7 +87,7 @@ Track B status (2026-09-18):
 
 ### 3.3 Documentation
 
-- Living documents are updated **only** if Phase 0 reveals something that changes current truth. The deployment-target decision (DEC-045), the 2026-09-17 documentation baseline repair, the 2026-09-18 Simulator-first workflow rule (`AGENTS.md` §22), the 2026-09-19 Track B A4 recording (DEC-048, RK-18, `RULES.md` Rule 53, plus the audit/scope-lock/ROADMAP/ARCHITECTURE cross-references), and the 2026-09-20 B10 evidence update (audit §2.3/§3.5.4/§6.6/§8.3/§11, DS-01, RK-3/RK-10/RK-17/RK-18, A1; DEC-048 evidence note; this scope lock) are the Phase 0 document changes to date. Otherwise they are not touched.
+- Living documents are updated **only** if Phase 0 reveals something that changes current truth. The deployment-target decision (DEC-045), the 2026-09-17 documentation baseline repair, the 2026-09-18 Simulator-first workflow rule (`AGENTS.md` §22), the 2026-09-19 Track B A4 recording (DEC-048, RK-18, `RULES.md` Rule 53, plus the audit/scope-lock/ROADMAP/ARCHITECTURE cross-references), the 2026-09-20 B10 evidence update (audit §2.3/§3.5.4/§6.6/§8.3/§11, DS-01, RK-3/RK-10/RK-17/RK-18, A1; DEC-048 evidence note; this scope lock), and the 2026-09-20 physical Dynamic Island validation recording (§3.1, §6, §6.2, §6.3, §6.4, new §6.5, §11, `AGENTS.md` §22) are the Phase 0 document changes to date. Otherwise they are not touched.
 
 ---
 
@@ -146,6 +146,11 @@ Living documents touched by the 2026-09-20 B10 evidence update (aggregate-only; 
 - `docs/PROVIDER_FEASIBILITY_AUDIT.md` — §2.3 B10 basis; §3.5.4 Pathways re-check; §6.2.5 candidate-count qualifier; §6.6 Pathways payload analysis; §8.3 and §11 facility-data status; DS-01; RK-3, RK-10, RK-17, RK-18; A1 action row; §14; §16
 - `docs/DECISIONS.md` — DEC-048 evidence note and revisit-trigger status (Accepted, unchanged)
 - `docs/PHASE_0_SCOPE_LOCK.md` — §3.2 B10 status, §3.3, §5.1, §11
+
+Living documents touched by the 2026-09-20 physical Dynamic Island validation recording:
+
+- `docs/PHASE_0_SCOPE_LOCK.md` — §3.1 Track A status, §3.3, §5.1, §6 AC5, §6.2, §6.3 (annotated, history preserved), §6.4, new §6.5, §11
+- `AGENTS.md` §22 — the physical Dynamic Island pending statement synchronized to current truth
 
 ### 5.2 Track A project structure (Steps A1–A5 — as on disk)
 
@@ -221,8 +226,8 @@ Track A status:
 - **Implemented (A2):** `AppEnvironment`, `AppConfiguration`, clock abstraction (`AppClock`, as named in ARCHITECTURE.md §38), typed feature flags (one placeholder Debug-only flag `debugLiveActivityBootstrapControl`, off in Release and test), privacy-safe `os.Logger` logging foundation, and 25 deterministic tests. No `project.pbxproj` change was needed (synchronized folders).
 - **Implemented (A3):** the Debug-only manual Live Activity bootstrap control — visible only for `buildMode == .debug` with `debugLiveActivityBootstrapControl` enabled (Release configurations reject the flag, so Release can never show it); start/update/end of a synthetic activity through `ActivityKitBootstrapActivities` (`pushType: nil`, no App Group, no tokens, no persisted IDs); 18 deterministic tests using fakes (the boundary has no artificial update/end failure paths). `TSUGINOLiveActivityAttributes` is declared `nonisolated` so its `ActivityAttributes` conformance is usable from ActivityKit's nonisolated APIs under the app target's MainActor default isolation. Validated on simulator and on a physical iPhone 12 (Lock Screen lifecycle; see A4).
 - **Completed (A4 — physical-device validation, 2026-09-17):** Debug build for a physical iPhone 12 (iOS 27.0) with automatic development signing; the Team ID was supplied only as an ephemeral command-line override and **no `DEVELOPMENT_TEAM` value was written to the project**. App and Live Activity extension both signed; extension embedded under `PlugIns/`; `NSSupportsLiveActivities = true`, `MinimumOSVersion = 18.0`, `UIDeviceFamily = [1]` verified on the built products. Install and launch on the device succeeded. Manual §6.2 Lock Screen lifecycle passed in full (see §6.3).
-- **Pending (Dynamic Island-capable device):** the Dynamic Island portion of AC5 / §6.2. The iPhone 12 has no Dynamic Island, so that portion is **N/A on this device, not a failure**; Lock Screen Live Activities remain enabled on such hardware — iOS simply does not present the Dynamic Island UI. No device-model detection or app-level disabling behavior is required. Physical Dynamic Island validation is deferred until an iPhone 14 Pro (or later Dynamic Island-capable iPhone) is available and must cover: compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, and end dismissal.
-- **Completed (A5 — Simulator Dynamic Island validation and reconciliation fix, 2026-09-18):** on the iPhone 17 Simulator (iOS 26.3), the Lock Screen and Dynamic Island compact/expanded presentations were exercised manually (§6.4). The first End after an App Switcher kill/relaunch failed: the relaunched process built a fresh controller with no retained handle, so End was logged as `end ignored (reason=noActiveActivity)` while the system-owned activity stayed active. Diagnosed from SpringBoard process-lifecycle records and the app's fixed-vocabulary log; fixed by adding reconciliation with the public `Activity<TSUGINOLiveActivityAttributes>.activities` collection inside the existing Debug bootstrap boundary (see "Reconciliation" below). After the fix, kill/relaunch restored `Active (value 2)` automatically and End dismissed both presentations. 54 deterministic tests. Simulator evidence only — it does not replace the pending physical Dynamic Island validation.
+- **Completed (physical Dynamic Island validation, 2026-09-20):** the Dynamic Island portion of AC5 / §6.2, validated on a physical iPhone 17 Pro Max (`iPhone18,2`, iOS 27.0) — build, install, launch, Live Activity request, value update, Lock Screen presentation, and Dynamic Island **compact and expanded** presentations all passed, and the activity terminated cleanly from both surfaces (§6.5). Minimal is `NOT_OBSERVED — SYSTEM-CONDITIONED` and does not block AC5. Automatic signing was retained, the development team was supplied only as an ephemeral command-line override with no value persisted in the project, and no source, project setting, or repository file was changed for the validation. The earlier iPhone 12 record (§6.3) remains valid historical evidence: the iPhone 12 has no Dynamic Island, so that portion was **N/A on that device, not a failure**, and Lock Screen Live Activities are not disabled on such hardware.
+- **Completed (A5 — Simulator Dynamic Island validation and reconciliation fix, 2026-09-18):** on the iPhone 17 Simulator (iOS 26.3), the Lock Screen and Dynamic Island compact/expanded presentations were exercised manually (§6.4). The first End after an App Switcher kill/relaunch failed: the relaunched process built a fresh controller with no retained handle, so End was logged as `end ignored (reason=noActiveActivity)` while the system-owned activity stayed active. Diagnosed from SpringBoard process-lifecycle records and the app's fixed-vocabulary log; fixed by adding reconciliation with the public `Activity<TSUGINOLiveActivityAttributes>.activities` collection inside the existing Debug bootstrap boundary (see "Reconciliation" below). After the fix, kill/relaunch restored `Active (value 2)` automatically and End dismissed both presentations. 54 deterministic tests. Simulator evidence only — it does not replace physical Dynamic Island validation, which was subsequently completed on 2026-09-20 (§6.5).
 
 Reconciliation (A5, Debug bootstrap only):
 
@@ -247,7 +252,7 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 | AC2 | Clean build | `xcodebuild build` for app + extension, zero errors |
 | AC3 | Clean test run | `xcodebuild test` on iPhone simulator, all smoke tests pass |
 | AC4 | App installs and launches | Physical iPhone install + launch (Rule 30) — **PASS** (iPhone 12, iOS 27.0, 2026-09-17; §6.3) |
-| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed — **PARTIAL**: extension functional and Lock Screen start/update/end lifecycle passed on a physical iPhone 12 (§6.3); Dynamic Island compact/expanded, update propagation, end dismissal, and process-relaunch reconciliation passed on the iPhone 17 **Simulator** (§6.4, Simulator evidence only); physical Dynamic Island rendering **pending** on a Dynamic Island-capable device (N/A on iPhone 12) |
+| AC5 | Live Activity extension is functional | Test activity started and ended on a physical Dynamic Island-capable iPhone; Dynamic Island rendering observed — **PASS** (2026-09-20, §6.5): on a physical iPhone 17 Pro Max the Live Activity request, value update, Lock Screen presentation, and Dynamic Island **compact and expanded** presentations all passed, and the activity terminated cleanly from both surfaces. Minimal is `NOT_OBSERVED — SYSTEM-CONDITIONED` and does not block this criterion. Earlier evidence retained: physical iPhone 12 Lock Screen start/update/end lifecycle (§6.3, Dynamic Island N/A on that hardware) and iPhone 17 **Simulator** runtime coverage incl. process-relaunch reconciliation (§6.4, Simulator evidence only) |
 | AC6 | Provider evaluation document exists | `docs/PROVIDER_FEASIBILITY_AUDIT.md` |
 | AC7 | No production feature depends on an unverified provider assumption | Trivially true in Phase 0 (no production features); registry rows all `Pending verification` and none referenced from configuration |
 
@@ -265,7 +270,7 @@ Folders **not** expected in Phase 0: `Domain/Journey`, `Domain/Routing`, `Domain
 - launch app — done (iPhone 12)
 - start minimal test Live Activity — done (iPhone 12, Lock Screen)
 - end test Live Activity — done (iPhone 12, Lock Screen)
-- confirm Dynamic Island rendering on supported device — **pending** (requires a Dynamic Island-capable iPhone; N/A on iPhone 12). Simulator rendering exercised — see §6.4.
+- confirm Dynamic Island rendering on supported device — **done** (physical iPhone 17 Pro Max, 2026-09-20: compact and expanded; §6.5). N/A on iPhone 12, which has no Dynamic Island. Simulator rendering also exercised — see §6.4.
 
 Simulator success alone does not satisfy AC4/AC5 (Rule 30, AGENTS §22).
 
@@ -304,10 +309,10 @@ Dynamic Island:
 | Item | Status |
 |---|---|
 | Dynamic Island rendering on iPhone 12 | N/A — hardware has no Dynamic Island (not a failure) |
-| Physical Dynamic Island validation | **Pending** — deferred until an iPhone 14 Pro is available |
-| Required future coverage | compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, end dismissal |
+| Physical Dynamic Island validation | **Completed 2026-09-20** on a physical iPhone 17 Pro Max — see §6.5. (At the time of this 2026-09-17 record it was pending, deferred until Dynamic Island-capable hardware was available.) |
+| Required future coverage (as listed on 2026-09-17) | compact leading/trailing, minimal, expanded leading/trailing/bottom, update propagation, end dismissal — subsequently covered by §6.5, except minimal, which remains `NOT_OBSERVED — SYSTEM-CONDITIONED` |
 
-Validation split: **iPhone 12 Lock Screen lifecycle — completed; Dynamic Island-capable device — pending.** Dynamic Island has **not** been physically validated. Lock Screen Live Activities are not disabled on iPhones without Dynamic Island.
+Validation split **as recorded on 2026-09-17**: iPhone 12 Lock Screen lifecycle — completed; Dynamic Island-capable device — pending. Dynamic Island had **not** been physically validated at that date. Lock Screen Live Activities are not disabled on iPhones without Dynamic Island. **Superseded 2026-09-20:** physical Dynamic Island validation is complete (§6.5); this iPhone 12 record stands as historical evidence and its Dynamic Island N/A was a hardware property, never a failure.
 
 ### 6.4 Simulator Runtime Validation Record (2026-09-18)
 
@@ -349,8 +354,88 @@ Evidence classification:
 | Simulator end dismissal | PASS (after the reconciliation fix) |
 | Simulator process-relaunch reconciliation | PASS |
 | Dynamic Island minimal | NOT EXERCISED — system-selected multi-activity state (the bootstrap retains one activity; not a failure) |
-| Physical Dynamic Island validation | **Pending** |
-| AC5 | **PARTIAL** — physical Dynamic Island validation not completed |
+| Physical Dynamic Island validation | **PASS** — completed 2026-09-20 on a physical iPhone 17 Pro Max (§6.5) |
+| AC5 | **PASS** — physical Lock Screen and Dynamic Island compact/expanded validated (§6.5); minimal `NOT_OBSERVED — SYSTEM-CONDITIONED` |
+
+---
+
+### 6.5 Physical Dynamic Island Validation Record (2026-09-20)
+
+Device class: iPhone 17 Pro Max (`iPhone18,2`, Dynamic Island-capable) · Device OS: iOS 27.0 · Xcode 27.0 (`27A266a`) · SDK: iPhoneOS 27.0 · Deployment target: iOS 18.0 · Device family: iPhone-only. No device identifier, device name, signing identity, profile identifier, or local path is recorded here by design. Outcome: **PASS WITH SYSTEM-CONDITIONED N/A**.
+
+Build / sign / install:
+
+| Check | Result |
+|---|---|
+| Physical Debug build (app + extension) | PASS |
+| Automatic development signing via ephemeral command-line team override | PASS |
+| `DEVELOPMENT_TEAM` written to the project | No (verified; project unchanged) |
+| Automatic device registration and provisioning refresh | PASS — completed without persistent project changes |
+| App and Live Activity extension signing | PASS |
+| Extension embedded in the app (`PlugIns/`) | PASS |
+| `NSSupportsLiveActivities` / `MinimumOSVersion = 18.0` / `UIDeviceFamily = [1]` | PASS |
+| Physical install and launch | PASS — no immediate crash |
+| Source, project setting, or repository file changed for the validation | None |
+
+Live Activity request and update:
+
+| Step | Result |
+|---|---|
+| Debug bootstrap requested a Live Activity | PASS |
+| State updated from value 1 to value 2 | PASS |
+| App crash during request or update | None |
+| Unexpected ActivityKit error | None observed |
+
+Lock Screen (physical):
+
+| Item | Result |
+|---|---|
+| TSUGINO Live Activity appeared on the Lock Screen | PASS |
+| Content legible | PASS |
+| Clipping, overlap, blank content, or broken presentation | None observed |
+
+Dynamic Island — compact (physical):
+
+| Item | Result |
+|---|---|
+| Compact presentation appeared in the physical Dynamic Island | PASS |
+| Compact leading rendered (`T`) | PASS |
+| Compact trailing rendered the numeric value | PASS |
+| Presentation updated successfully | PASS |
+| Clipping, overlap, blank content, unexpected disappearance, or crash | None observed |
+
+Dynamic Island — expanded (physical):
+
+| Item | Result |
+|---|---|
+| Long-press opened the expanded presentation | PASS |
+| Implemented leading / trailing / bottom regions rendered | PASS |
+| Bottom region displayed `Phase 0 bootstrap` | PASS |
+| Numeric value update visible | PASS |
+| Clipping or overlap | None observed |
+| Return from expanded to compact presentation | PASS |
+| Expanded centre region | Not implemented in the current bootstrap — absence is **not** a defect |
+
+Dynamic Island — minimal (physical):
+
+| Item | Status |
+|---|---|
+| Minimal presentation | **NOT_OBSERVED — SYSTEM-CONDITIONED** |
+
+A single Live Activity did not naturally cause the system to select the minimal presentation. The test did **not** force a second activity and did **not** alter implementation code; minimal remains system-conditioned. This does **not** block AC5, because the physical Lock Screen, compact, and expanded presentations all passed. Minimal has **not** been physically observed.
+
+End behaviour (physical):
+
+| Item | Result |
+|---|---|
+| Existing End control terminated the activity without a crash | PASS |
+| Activity disappeared from the Dynamic Island | PASS |
+| Activity disappeared from the Lock Screen | PASS |
+| Stale active presentation remaining | None |
+
+Evidence note: on the first observation attempt, unrelated active Dynamic Island presentation interference occupied the island. Once that interference was removed and TSUGINO was the relevant active Live Activity, TSUGINO presented correctly. **This was not a TSUGINO defect.**
+
+Validation split: **physical Lock Screen lifecycle and physical Dynamic Island compact/expanded presentations — completed on Dynamic Island-capable hardware.** The earlier iPhone 12 record (§6.3) remains valid historical evidence; its Dynamic Island N/A was a hardware property, never a failure.
 
 ---
 
@@ -404,6 +489,6 @@ Both tracks must reach this state. A buildable project with an unexamined provid
 1. Create the Xcode project and targets per §5.2 (Track A), iPhone-only, iOS 18.0, dependency-free.
 2. Add `Clock`, logging, `AppConfiguration`, feature-flag skeleton, smoke tests.
 3. Add Live Activity extension shell with throwaway test activity.
-4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3) and for the iPhone 17 Simulator Dynamic Island/Lock Screen sequence incl. relaunch reconciliation (§6.4); physical Dynamic Island portion pending on capable hardware, to be separately authorized.
+4. Build, test, install on device, run §6.2, record results — done for iPhone 12 Lock Screen (§6.3), for the iPhone 17 Simulator Dynamic Island/Lock Screen sequence incl. relaunch reconciliation (§6.4), and for the **physical iPhone 17 Pro Max Dynamic Island validation (§6.5, 2026-09-20)**; AC5 is **PASS**.
 5. In parallel (Track B), execute audit actions A1–A3 (Toei subway/tram trip-level realtime proof, Tokyo Metro degraded proof) and update the audit — Toei single-snapshot proof (B1/B2), six-snapshot short temporal study (B3), offline static route/localization audit (B4), official-documentation audit (B5), and the Tokyo Metro catalog/payload/Railway-mapping audit (B6A/B6B/B6C — PASS WITH LIMITATIONS) done (§3.2); Liner degraded-mode implementation (DEC-046, later phases), Tokyo Metro disruption-state sampling and branch/main display rule, reviewed project-owned Korean dataset, official-terms audit (B7 — commercial use, attribution, caching, image Specific Terms) done (§3.2); Toei static evidence recovered credential-free (B8) and **Track B A4 cross-operator canonical station identity completed — PASS WITH AMBIGUITIES, accepted as DEC-048, residual risk RK-18** (§3.2, audit §6.5); ODPT inquiry sent 2026-09-19 (A8 — awaiting official response), decoder selection, and route-provider commercial confirmation / DEC-004 remain; the only open A4 item is the **authoritative-evidence review for 新宿** (the GTFS-Pathways path was inspected and exhausted on 2026-09-20 — B10, audit §6.6; the remaining authoritative paths stay open); launch scope decided by DEC-047.
 6. Run §9 drift checklist and the AGENTS §24 phase audit; report.

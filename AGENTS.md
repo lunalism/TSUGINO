@@ -596,7 +596,7 @@ Simulator success alone is insufficient for these features.
 - Do not discover, select, build for, install to, launch on, inspect, or otherwise interact with a connected physical iPhone or iPad unless the user explicitly authorizes a specific physical-device step.
 - The physical device `LunaTestphone` is reserved for another app project and must not be touched by TSUGINO work.
 - This is a development workflow rule, not an app capability restriction: do not add runtime hardware detection and do not remove iPhone device support, signing, entitlements, or supported platforms because of it.
-- The historical physical iPhone 12 validation record remains valid; physical Dynamic Island validation remains **Pending** until a physical-device step is separately authorized.
+- The historical physical iPhone 12 validation record remains valid (Dynamic Island was N/A on that hardware, never a failure). **Physical Dynamic Island validation is complete** — validated on a Dynamic Island-capable iPhone on 2026-09-20 (`PHASE_0_SCOPE_LOCK.md` §6.5); AC5 is **PASS**. The simulator-first default and the explicit-authorization requirement for any further physical-device step both stay in force.
 
 ---
 
