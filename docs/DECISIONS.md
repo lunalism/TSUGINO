@@ -2712,6 +2712,176 @@ Gating coordinates, topology, and colour behind their own contracts — instead 
 
 ---
 
+# DEC-056 — Canonical Station Coordinates Use a Validated WGS 84 Domain Value
+
+**Status:** Accepted\
+**Date:** 2026-09-21\
+**Related:** DEC-021, DEC-026, DEC-040, DEC-048, DEC-051, DEC-053, DEC-055; `RULES.md` Rule 4, Rule 8, Rule 9, Rule 39, Rule 45, Rule 53; `ARCHITECTURE.md` §5.1, §5.1.1, §39, §40, §41; `ROADMAP.md` Phase 1 Slice S3, Phase 2
+
+## Context
+
+DEC-055 D4 gated station coordinates behind their own contract (slice S3b) and listed the questions that contract had to answer — provider-neutral representation, required versus optional `Station` ownership, finite-value and range rules, `(0, 0)` and signed-zero handling, exact preservation, `Codable` rejection, exclusion from identity, and one canonical coordinate per cross-operator group — while deliberately deciding none of them. S3a is implemented and independently approved; `Station` currently stores `id`, `name`, and `lineIDs` and no coordinate.
+
+A read-only S3b audit found that no repository document states what a coordinate *means*: nothing names a reference system, an angular unit, or an axis order, and the only quality evidence is that provider points are "single points with no accuracy metadata and no statement of what they mark" (`PROVIDER_FEASIBILITY_AUDIT.md` §6.5). Numeric ranges alone would leave the value undefined.
+
+The official GTFS Schedule reference (gtfs.org/documentation/schedule/reference, verified 2026-09-21) defines the `Latitude` field type as "WGS84 latitude in decimal degrees" within `-90.0...90.0` and `Longitude` as "WGS84 longitude in decimal degrees" within `-180.0...180.0`, and makes `stop_lat` / `stop_lon` **required** for `location_type` 0, 1, and 2. Every retained launch-set stop row is `location_type = 0` (audit §6.5), and the DEC-048 identity analysis used coordinates as structural corroboration for every resolved merge. No accepted product contract defines "coordinate unavailable" as a legitimate canonical Station state; DEC-053 already took the same position for canonical Korean names — the canonical dataset supplies the value, and the Domain has no representation for "absent".
+
+The cost asymmetry is the one DEC-051 relied on: `Station` has no persisted instances and no production call sites, so adding a required field now is free, whereas tightening an optional field after Phase 2 data and Phase 6 persistence exist is a migration.
+
+## Decision
+
+This Decision **locks the S3b contract**. It claims **no** implementation: `GeoCoordinate` does not yet exist, `Station` does not yet carry a coordinate, and no canonical coordinate data has been populated or verified.
+
+### 1. One provider-neutral coordinate value: `GeoCoordinate`
+
+S3b introduces exactly one new Domain value type with this public shape:
+
+```swift
+nonisolated struct GeoCoordinate: Hashable, Codable, Sendable {
+    let latitude: Double
+    let longitude: Double
+
+    init?(latitude: Double, longitude: Double)
+}
+```
+
+1. It belongs to the provider-neutral Domain and **imports nothing** — no CoreLocation, MapKit, SwiftUI, UIKit, provider SDK, or networking framework. It does not wrap `CLLocationCoordinate2D`.
+2. It carries **no** provider identity, provenance, altitude, accuracy, timestamp, source, projection, provider metadata, or location-permission state.
+3. Equality and hashing are **complete-value** over `latitude` and `longitude` (synthesized). It is a value, not a canonical entity: it has no identifier and is not listed in DEC-021.
+4. It performs **no** distance, averaging, comparison, or merge logic.
+
+### 2. Coordinate meaning: WGS 84 latitude and longitude in decimal degrees
+
+1. `latitude` is the **WGS 84 latitude in decimal degrees** — the north-positive angular position relative to the equator.
+2. `longitude` is the **WGS 84 longitude in decimal degrees** — the east-positive angular position relative to the prime meridian.
+3. The wording deliberately matches the GTFS field-type concept directly. No EPSG code, projection, or alternative reference system is part of the canonical contract.
+4. Named properties and keyed `Codable` fields remove positional axis ambiguity. **No tuple, array, or unnamed positional representation** is used anywhere.
+
+### 3. Every canonical `Station` stores exactly one required coordinate
+
+```text
+Station
+- id          (StationID)
+- name        (LocalizedRailName)
+- coordinate  (GeoCoordinate)   ← required, never optional
+- lineIDs     (Set<LineID>)
+```
+
+1. `Station.coordinate` is `GeoCoordinate`, **not** `GeoCoordinate?`. Source-level property and initialiser order may follow repository style; the stored fields and their semantics are fixed.
+2. A canonical Station with an unknown or unselected coordinate **must not be emitted** as a valid Phase 1 Station value.
+3. If Phase 2 cannot select a valid coordinate for a canonical record, the importer or mapping workflow **rejects or holds back** that record. It must not use `nil`, invent a coordinate, substitute `(0, 0)`, clamp an invalid value, or silently select a provider point without an explicit mapping policy.
+4. This is intentional: the retained launch-set stop rows are all `location_type = 0`; official GTFS requires latitude and longitude for those rows; the DEC-048 audit used coordinates as structural corroboration; no accepted contract defines "coordinate unavailable" as a legitimate canonical state; Phase 2 owns incomplete-ingestion handling; and a required field now avoids spreading optional handling and avoids tightening an optional schema later (Rule 39).
+5. Nothing here claims that actual canonical Station coordinates have been populated or verified.
+
+### 4. Numeric validity
+
+A `GeoCoordinate` is valid only when **both** values satisfy every applicable rule.
+
+| Input | Outcome |
+|---|---|
+| `latitude` finite and in `-90...90` (inclusive) | accepted |
+| `longitude` finite and in `-180...180` (inclusive) | accepted |
+| exact boundary values `-90`, `90`, `-180`, `180` | accepted |
+| `Double.nan` in either field | rejected |
+| positive or negative infinity in either field | rejected |
+| any value outside its range | rejected — **never clamped** |
+| `(0, 0)` | **valid**; it never represents absence or failure |
+| finite subnormal values | accepted |
+| Tokyo or Japan bounding box | **not applied** — the value is provider- and region-neutral |
+| rounding, precision reduction, geographic normalisation | **none** — a valid input is stored exactly |
+
+The direct initialiser is **failable** and returns `nil` for any invalid coordinate. It **never traps** — no `precondition`, `fatalError`, force unwrap, silent fallback, or sentinel (DEC-051 rule 11).
+
+### 5. Signed zero
+
+1. `-0.0` and `0.0` are both valid.
+2. They compare equal under Swift `Double` semantics and must hash consistently (the standard library already guarantees this).
+3. S3b performs **no** explicit signed-zero normalisation.
+4. **No contract promises that the sign of zero survives encoding and decoding.** Tests must not assert serialised signed-zero preservation or exact JSON spelling.
+5. Loss of the sign of zero is not coordinate rounding and must not be described as such.
+
+### 6. `Codable`
+
+`GeoCoordinate` uses the keyed shape:
+
+```text
+{ "latitude": <Double>, "longitude": <Double> }
+```
+
+1. Encoding may be synthesized.
+2. Decoding **must apply the same invariants as direct construction**; a custom `init(from:)` is required unless an equally narrow implementation demonstrably enforces the same invariant.
+3. Decoded out-of-range or non-finite values fail with **`DecodingError.dataCorrupted`**.
+4. Missing keys retain the container's normal `keyNotFound` behaviour; wrong types retain normal `typeMismatch` behaviour.
+5. Valid finite values round-trip without application-level rounding or clamping.
+6. JSON key order, whitespace, numeric spelling, and byte-for-byte output are **not** contracts.
+7. `JSONEncoder`'s default rejection of non-finite values is only a backstop; it is not a substitute for construction and decode validation.
+
+After S3b implementation, `Station`'s keyed shape deliberately becomes `{ "id", "name", "coordinate", "lineIDs" }` with `coordinate` nested. No persisted Station schema exists yet (persistence is Phase 6), so this change requires migration *thinking* (Rule 39) but no production migration implementation.
+
+### 7. `Station` identity is unchanged
+
+1. `StationID` remains the **sole** Station identity (DEC-055 D3).
+2. The coordinate does **not** participate in `Station.==` or `Station.hash(into:)`.
+3. A coordinate may be corrected without creating a new Station.
+4. Because ID-only equality cannot prove coordinate preservation, `Codable` and actor-transfer tests must check the coordinate **explicitly**, field by field.
+5. `Station` construction remains **non-failable** when it receives an already-valid `GeoCoordinate`; it repeats no validation.
+6. The existing semantics of `name` and `lineIDs` (DEC-053, DEC-055 D2) are unchanged.
+
+### 8. Cross-operator canonical stations: value shape in Phase 1, data policy in Phase 2
+
+**Phase 1 (S3b) owns only the value shape:**
+
+- one canonical Station has **exactly one** canonical coordinate;
+- coordinates **never** establish or merge Station identity (DEC-048 rule 2, Rule 53);
+- same-name or nearby points never trigger automatic grouping;
+- **no distance threshold — including 320 metres — enters Domain** (DEC-048);
+- `GeoCoordinate` performs no distance, averaging, comparison, or merge logic.
+
+**Phase 2 owns the data policy:**
+
+- selecting the representative coordinate for a canonical station group;
+- choosing among multiple provider points;
+- deciding whether an explicitly derived point is ever appropriate;
+- recording selection rationale and provider provenance **in mapping data** (`ARCHITECTURE.md` §40);
+- retaining original provider coordinates **outside** the canonical Station value when needed;
+- rejecting or holding back a station when no valid representative coordinate can be selected;
+- documenting what the selected point represents (platform, station centre, or another published provider point).
+
+Averaging coordinates must **never** occur implicitly; if Phase 2 ever uses an averaged or otherwise derived point, that policy is explicitly documented and reviewable. Ambiguous identities such as the DEC-048 Shinjuku case remain **separate** Stations with separate coordinates. **No provenance type and no provider-coordinate collection** is introduced into the Phase 1 Domain.
+
+### 9. Outside S3b
+
+S3b does not own: user-location permission; CoreLocation acquisition; location-authorisation UI; distance calculation; nearby-station ranking; location-based search behaviour; geofencing; route search; map rendering; transfer topology; station identity resolution; provider ingestion; canonical mapping-table population; actual Tokyo station coordinates; S3c railway topology; line colour (DEC-055 D5); `Trip`, `ServiceType`, Journey, or `JourneyEngine`; persistence implementation; UI or Live Activities. Coordinates may later be consumed by nearby-station features (DEC-026, DEC-040); S3b provides only the validated value and its Station relationship.
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.1 shows `coordinate: GeoCoordinate` as a settled required property, and a new §5.1.1 describes the value; §40 states that representative-coordinate selection and provenance are Phase 2 mapping responsibilities.
+- `ROADMAP.md` Phase 1 Slice S3 records S3b as **contract-locked, implementation pending**; S3 remains incomplete until S3b and S3c are disposed of (DEC-055 completion rule).
+- S3b implementation is two small commits with zero production call sites to break: the `GeoCoordinate` value with its tests, then `Station.coordinate` with the existing Station tests updated (every construction site, the round-trip and encoded-key tests, malformed nested-coordinate payloads, and the actor-transfer check).
+- Phase 2's importer gains a hard requirement: a canonical station without a selectable coordinate is an import failure, not a canonical record.
+- The Domain still has no representation for "unknown coordinate"; introducing one would be a new decision, not an extension of this one.
+
+## Scope statement
+
+This is a **domain value contract and slice-boundary decision**. It implements nothing, adds no data, defines no provider syntax, and does not implement `GeoCoordinate`, modify `Station`, add tests, or touch S3c, line colour, `Trip`, Journey types, persistence, or any presentation surface. It does not claim S3b or S3 is complete. Provider-to-canonical mapping, coordinate population, and representative-point selection stay in Phase 2 (DEC-048, §40).
+
+## Rationale
+
+A coordinate whose meaning is unstated is not a contract, so the reference system and unit are written down once, in the terms the anticipated providers already use. A dedicated value type is the only option that keeps the invariant in one place, keeps Domain framework-free, and gives `Hashable` and `Codable` a lawful, provider-neutral home; two raw doubles would make `Station` failable and spread the rule, and a platform type would import a framework and carry no invariant.
+
+Making the coordinate required follows DEC-053's reasoning exactly: the canonical dataset guarantees the value, the Domain has no honest way to say "unknown", and a `nil` at runtime would be indistinguishable from a Phase 2 import defect. Deciding it now, while nothing is persisted and nothing calls `Station.init`, is the cheapest moment there will ever be.
+
+## Revisit Triggers
+
+- Launch provider data cannot supply a valid representative coordinate for every canonical Station.
+- The product must represent a legitimate coordinate-unknown canonical Station.
+- A future data source requires a different reference system.
+- Altitude or horizontal accuracy becomes a real domain requirement.
+- `Codable` or persistence migration requirements change after production data exists (Phase 6).
+- A future use case requires distinguishing original and derived coordinates in Domain rather than in mapping data.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

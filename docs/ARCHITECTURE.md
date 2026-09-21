@@ -571,12 +571,13 @@ Structure exists to make changes easier, not to prevent change.
 
 ### 5.1 Station
 
-Settled S3a contract (DEC-055):
+Settled contract (S3a — DEC-055; S3b — DEC-056):
 
 ```text
 Station
 - id              (StationID — §39, DEC-051)
 - name            (LocalizedRailName — §39.1, DEC-053)
+- coordinate      (GeoCoordinate — §5.1.1, DEC-056; required)
 - lineIDs         (Set<LineID> — DEC-055 D2)
 ```
 
@@ -588,11 +589,23 @@ Canonical names are held as the shared `LocalizedRailName` value (§39.1, DEC-05
 
 **Line membership (DEC-055 D2).** `lineIDs` is an unordered set of canonical `LineID` values only. It may be empty — Phase 1 value construction does not invent dataset-completeness policy — and its agreement with canonical line topology is a Phase 2 import/dataset validation responsibility, not an invariant of the isolated value. The encoded field and element meaning may be pinned; encoded element order is not a contract.
 
-**Coordinates — S3b-gated (DEC-055 D4).** No coordinate property is part of the S3a contract. Phase 1 slice S3b will lock and implement a provider-neutral coordinate value and its `Station` relationship (representation, required-vs-optional ownership, finite-value and range rules, `(0, 0)` and signed-zero handling, exact preservation, `Codable` rejection, one canonical coordinate per cross-operator group). Coordinates never participate in identity (DEC-048, Rule 53). `CLLocationCoordinate2D` and other framework types do not enter Domain.
+**Coordinate — required (DEC-056).** Every canonical `Station` stores exactly one `coordinate: GeoCoordinate` (§5.1.1). It is never optional, `Station` holds no raw latitude/longitude pair, and a canonical Station with an unknown or unselected coordinate is not a valid Phase 1 value: if Phase 2 cannot select one, the importer rejects or holds back the record rather than using `nil`, inventing a point, substituting `(0, 0)`, or clamping. The coordinate is descriptive data — it never participates in identity (DEC-048, Rule 53), may be corrected without creating a new Station, and must be compared explicitly in `Codable` and actor-transfer tests because ID-only equality cannot prove it survived. `Station` construction stays non-failable: it receives an already-valid `GeoCoordinate` and repeats no validation. The keyed `Codable` shape is `{ id, name, coordinate, lineIDs }`; no persisted Station schema exists yet, so this is migration thinking (Rule 39, §41), not a migration. *S3b contract locked; implementation pending (`ROADMAP.md` Phase 1 Slice S3).*
 
 Station identity must use a TSUGINO canonical ID rather than provider IDs directly.
 
 Provider IDs are stored as mappings.
+
+#### 5.1.1 GeoCoordinate
+
+```text
+GeoCoordinate
+- latitude        (Double — WGS 84 latitude, decimal degrees)
+- longitude       (Double — WGS 84 longitude, decimal degrees)
+```
+
+A provider-neutral Domain value (DEC-056), not a canonical entity: it has no identifier, no provider identity or provenance, and no altitude, accuracy, timestamp, or projection. `latitude` is the north-positive angle from the equator and `longitude` the east-positive angle from the prime meridian, both in WGS 84 decimal degrees — the same concept the GTFS `Latitude` / `Longitude` field types define. Named properties and keyed `Codable` fields (`{ latitude, longitude }`) remove positional ambiguity; no tuple or array form exists.
+
+Validity: both values must be finite; `latitude` in `-90...90` and `longitude` in `-180...180`, inclusive; `NaN` and ±infinity are rejected; out-of-range values are rejected, never clamped; `(0, 0)` is valid and never a sentinel; subnormal values are accepted; no rounding, precision reduction, geographic normalisation, or regional bounding box is applied. Construction is failable (`init?`) and never traps. Decoding applies the same invariant and fails with `DecodingError.dataCorrupted`; missing keys and wrong types keep their normal `Codable` errors. Equality and hashing are complete-value; `-0.0` and `0.0` are both valid and equal, with no normalisation and no promise that the sign of zero survives encoding. The type imports nothing — no CoreLocation, MapKit, SwiftUI, UIKit, provider SDK, or networking framework — and performs no distance, averaging, comparison, or merge logic.
 
 ---
 
@@ -1654,6 +1667,8 @@ Do not spread mapping logic across features.
 For cross-operator stations, each canonical station carries **every** provider station identifier and station code, **each provider's original name strings unmodified**, and any orthographic or presentation alias as an **explicit, reversible** mapping entry — never by rewriting a provider string (DEC-048). Station identity must not be established from display names or coordinates alone, and no parent-station or transfer relationship may be synthesized where the provider feed publishes none. Stations whose identity is unresolved stay **separate** until authoritative evidence supports a merge; such a merge is a schema/identity migration (§41, Rule 39), not an in-place edit.
 
 Because a canonical station may span operators, the Domain `Station` value stores no single `operatorID` (§5.1, DEC-055 D1); a station's operators are those of its lines, resolved at the dataset level. The 258-group result of DEC-048 is a Phase 2 planning input for this mapping layer, not Phase 1 model data.
+
+Each canonical station carries exactly one canonical `GeoCoordinate` (§5.1, DEC-056). **Selecting that representative point is a Phase 2 mapping responsibility**, not a Domain concern: the mapping layer chooses among the providers' published points, records the selection rationale and provider provenance as mapping data, retains original provider coordinates here when needed (never on the `Station` value), documents what the selected point represents, and rejects or holds back a station for which no valid point can be selected. Averaging or otherwise deriving a point never happens implicitly; if it is ever used, the policy is explicit and reviewable. Coordinates corroborate identity candidates only (DEC-048 rule 2); no distance threshold enters Domain, and the DEC-048 Shinjuku pair stays two stations with two coordinates.
 
 ---
 
