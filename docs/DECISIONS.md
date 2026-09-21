@@ -2882,6 +2882,194 @@ Making the coordinate required follows DEC-053's reasoning exactly: the canonica
 
 ---
 
+# DEC-057 — RailwayLine Topology Uses Undirected Canonical Station Adjacency
+
+**Status:** Accepted\
+**Date:** 2026-09-21\
+**Related:** DEC-004, DEC-009, DEC-010, DEC-011, DEC-021, DEC-047, DEC-048, DEC-051, DEC-053, DEC-055, DEC-056; `RULES.md` Rule 8, Rule 9, Rule 16, Rule 39, Rule 45, Rule 53; `ARCHITECTURE.md` §5.2, §5.2.1, §5.3, §13, §40, §41
+
+## Context
+
+DEC-055 D4 gated railway-line topology behind its own contract (slice S3c) and asked it to settle "canonical **ordered** line topology": representation, minimum station count, duplicate-`StationID` policy, circular lines, branches, the Marunouchi main line and branch, the distinction from a `Trip`'s stop sequence, and consistency with `Station.lineIDs`. The wording inherited the original §5.2 `stationSequence` — a single `[StationID]` — which DEC-055 retired as unspecified but did not replace.
+
+A read-only S3c audit then verified the launch network's actual shapes rather than assuming them. Current retained repository evidence and verified provider data identify the **Marunouchi** and **Oedo** lines as the launch-scope non-linear topology cases that require branch and loop-plus-tail support:
+
+- **Oedo** (Toei static GTFS, analysed offline from the official credential-free public distribution): a connected loop-plus-tail graph in which the canonical junction station participates in **three** adjacencies and every other station in one or two; the dominant real service pattern traverses the junction **twice** in one trip. The provider publishes one route and one stop row for the junction.
+- **Marunouchi** (`PROVIDER_FEASIBILITY_AUDIT.md` §6.2.4): a main path and a three-station branch sharing one junction. The static GTFS models it as **one** route whose branch trips run through to main-line termini; `odpt:Railway` models it as **two** records with no parent, branch, or connection field; DEC-047 treats it as **one** product service, "Marunouchi Line (incl. branch)". Providers therefore disagree with each other, and neither publishes adjacency, closure, or junction metadata.
+
+Every other launch line is a simple path. A single global `[StationID]` cannot represent either non-linear case truthfully: it cannot hold a branch at all, and it can hold a loop only by repeating the junction — which turns array position into a de-facto direction and forces a duplicate-`StationID` rule the graph does not need. A representation built from ordered paths would have had to invent three policies (closure, orientation, path ordering) that no document supports. What the line actually owns, once direction and traversal are correctly left to `Trip` (DEC-055), is only **which stations are directly adjacent on it**.
+
+## Decision
+
+This Decision **locks the S3c contract**. It claims **no** implementation: `StationAdjacency` and `RailwayLineTopology` do not yet exist, `RailwayLine` does not yet carry a topology, and no canonical topology data has been populated.
+
+### D1 — Canonical topology is undirected adjacency
+
+DEC-055's unresolved phrase "canonical ordered line topology" is **narrowed** to **canonical undirected adjacent-station topology**. A `RailwayLine` topology describes which canonical stations are directly adjacent on that line — and nothing else. It does **not** define travel direction, ascending or descending order, display order, station numbering, provider `stationOrder`, one actual train traversal, express/local stopping behaviour, terminal presentation, or route-search results.
+
+A single global `[StationID]` is **rejected**: it cannot truthfully represent both branches and loop-plus-tail structures without leaking direction or inventing repeat rules. **No parallel `stationSequence` property** is retained on `RailwayLine`.
+
+### D2 — `StationAdjacency`
+
+```swift
+nonisolated struct StationAdjacency: Hashable, Codable, Sendable {
+    let stationIDs: Set<StationID>
+
+    init?(_ first: StationID, _ second: StationID)
+}
+```
+
+1. One **unordered** adjacency between exactly **two distinct** canonical stations on the same line.
+2. Input order has no meaning: `(a, b)` and `(b, a)` are equal and hash identically.
+3. `stationIDs` contains exactly two distinct values; a self-adjacency `(a, a)` is **invalid**.
+4. Construction is **failable** and never traps (DEC-051 rule 11 pattern).
+5. The value has **no identity or identifier** of its own; equality and hashing use the complete value.
+6. It stores **no** direction, distance, duration, track, platform, operator, line, provider, or transfer metadata.
+7. The name is `StationAdjacency`, **not** `StationConnection`: "connection" could later be confused with a transfer or interchange relationship, whereas "adjacency" names the narrow same-line structural relationship.
+
+Keyed `Codable` shape: `{ "stationIDs": [<StationID>, <StationID>] }`. Collection element order is not a contract. Decoding must enforce exactly two distinct identifiers: a zero-, one-, duplicate-, or more-than-two-element value fails with **`DecodingError.dataCorrupted`**. Missing keys and wrong types retain their normal `Codable` errors.
+
+### D3 — `RailwayLineTopology`
+
+```swift
+nonisolated struct RailwayLineTopology: Hashable, Codable, Sendable {
+    let adjacencies: Set<StationAdjacency>
+
+    init?(adjacencies: Set<StationAdjacency>)
+
+    var stationIDs: Set<StationID> { get }
+}
+```
+
+1. The topology is an **undirected simple graph**.
+2. `adjacencies` is the stored canonical state.
+3. `stationIDs` is **derived** as the union of all adjacency station IDs; it is **not stored and not encoded**.
+4. Adjacency insertion order and encoded `Set` element order are not contracts.
+5. Equality and hashing use the complete adjacency set; the value has **no** canonical identifier.
+
+Keyed `Codable` shape: `{ "adjacencies": [...] }`.
+
+The type adds **no** paths, segments, branch identifiers, path identifiers, closure flags, direction, terminals, station order, transfer edges, weights, distance, duration, or display metadata.
+
+### D4 — Topology invariants
+
+A `RailwayLineTopology` is valid only when:
+
+1. its adjacency set is **non-empty**;
+2. every adjacency already contains exactly two distinct stations (D2);
+3. the graph formed by all adjacencies is **connected**.
+
+| Case | Outcome |
+|---|---|
+| empty adjacency set | invalid |
+| single-station topology | invalid (no adjacency can express it) |
+| disconnected components | invalid |
+| orphan station | impossible — membership is derived from adjacency endpoints |
+| self-adjacency | rejected by `StationAdjacency` |
+| duplicate undirected adjacency | structurally collapsed by `Set` |
+| cycle | **valid** |
+| arbitrary station degree | **valid** |
+| branch (degree ≥ 3 junction) | **valid** |
+| loop plus tail | **valid** |
+| more than one graph path between two stations | **valid** |
+| degree limit, maximum size, planarity, Tokyo-specific shape, launch-line special case | **none exists** |
+
+A valid topology therefore contains at least two unique stations. Construction is failable and never traps. **Decoding enforces the same non-empty and connectedness rules** as direct construction; an invalid decoded topology fails with `DecodingError.dataCorrupted`. A decoded list that repeats the same valid adjacency may collapse to one `Set` member — encoded ordering and duplicate input multiplicity are not semantic contracts — and the resulting unique graph must still satisfy every invariant. Connectedness validation is **internal**, not a public route-search API.
+
+### D5 — `RailwayLine` owns required topology
+
+```swift
+nonisolated struct RailwayLine: Codable, Sendable {
+    let id: LineID
+    let operatorID: OperatorID
+    let name: LocalizedRailName
+    let topology: RailwayLineTopology
+
+    init(id: LineID, operatorID: OperatorID, name: LocalizedRailName, topology: RailwayLineTopology)
+}
+```
+
+1. `topology` is **required and never optional**.
+2. `RailwayLine` construction remains **non-failable**: it receives an already-valid topology and repeats no validation.
+3. **`LineID` remains the sole identity** (DEC-055 D3): topology participates in neither equality nor hashing; correcting a topology does not create a new line; `Codable` and actor-transfer tests must compare topology **explicitly**, because ID-only equality cannot prove topology preservation.
+4. The keyed shape becomes exactly `{ id, operatorID, name, topology }`.
+5. No actual topology data is added during Phase 1.
+
+### D6 — Marunouchi identity
+
+The Tokyo Metro Marunouchi main line and branch form **one canonical `RailwayLine`** with **one canonical `LineID`**. The branch is represented through the topology's degree-three adjacency structure at the canonical junction station.
+
+Not created: a second canonical `LineID` solely because a provider publishes a separate `MarunouchiBranch` railway record; a branch ID; a segment ID; an `Mb` Domain identity; a transfer relation between main and branch (Rule 16); main-versus-branch metadata on `RailwayLineTopology`.
+
+Phase 2 mapping may map **multiple provider railway identifiers** — including the provider's Marunouchi branch identifier — to the same canonical `LineID` while retaining provider provenance (§40). The mapping layer must preserve enough provenance for later provider-specific status or realtime scoping (Phase 4); that provenance **never enters** the Phase 1 `RailwayLine` value.
+
+### D7 — Cycles, branches, and loop-plus-tail shapes
+
+Topology represents structure through adjacency only.
+
+- **Cycle:** closure exists because the final adjacency closes the graph; no station is repeated in any sequence; no first/last convention, closure flag, or self-edge exists.
+- **Branch:** a junction naturally has degree three or greater; no explicit branch marker is required.
+- **Loop plus tail:** the junction participates in both the loop and the tail adjacencies; it is stored no more than once per adjacency it belongs to.
+
+The model supports these structures generically and contains **no special case** named Marunouchi, Oedo, M, Mb, or E.
+
+### D8 — Evidence wording versus code strictness
+
+Current retained repository evidence and verified provider data identify the Marunouchi and Oedo lines as the launch-scope non-linear topology cases that require branch and loop-plus-tail support. This is an evidence statement, **not** an invariant that exactly two non-linear lines can ever exist, and it does not weaken the code contract: the value remains strictly validated and generically supports any connected linear graph, any connected branch graph, any connected cycle, any connected loop-plus-tail graph, and any other connected undirected simple station-adjacency graph. No "known launch shapes" enumeration exists.
+
+### D9 — `Station.lineIDs` relationship
+
+DEC-055 D2 is preserved unchanged: `Station.lineIDs` remains unordered canonical line membership; `RailwayLineTopology.stationIDs` is derived from adjacency; the two intentionally provide inverse dataset relationships; an isolated `Station` or `RailwayLine` value cannot validate the other; agreement is checked by Phase 2 importer/dataset validation. No S3a API changes, and topology holds `StationID` values only — never `Station` references or values.
+
+### D10 — `Trip` ownership
+
+`Trip` owns direction, the actual ordered stop sequence, one service traversal, repeated station visits, express/local skip patterns, and provider direction mapping (DEC-055; `ARCHITECTURE.md` §5.3).
+
+- `Trip.stopSequence` **must be capable of representing repeated `StationID`s**: verified Oedo service patterns visit the canonical junction more than once in one trip.
+- Consecutive `Trip` stops are **not** required to be direct topology adjacencies: an express or limited-stop service skips intermediate topological stations.
+- `RailwayLine` topology **never** calculates remaining stops; remaining-stop calculations use the selected Trip/Journey stop sequence (DEC-011, `FEATURES.md` §4.6).
+- The existing tension between the singular `Trip.lineID` (§5.3) and through service across lines (DEC-009, §13) is **not** resolved here. It is recorded as a required **Trip-slice** decision, not as topology state.
+
+### D11 — Route-search boundary
+
+S3c implements no path search. Topology may be a future input to local routing, but Phase 3 owns route-search provider integration (DEC-004). Not added: pathfinding, neighbours lookup, shortest paths, weights, transfer edges, route candidates, route-search protocols, or any graph algorithm beyond internal connectedness validation.
+
+### D12 — Derived APIs
+
+The only derived API locked for S3c is `var stationIDs: Set<StationID> { get }`, justified by topology membership and Phase 2 dataset validation. No speculative API is added for neighbours, terminal detection, branch-point detection, cycle detection, path search, station count, `contains`, or display ordering; each may be added later when an actual consumer requires it.
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.2 shows `topology: RailwayLineTopology` as a settled required property, a new §5.2.1 defines the two values, §5.3 notes the Trip repeat/skip facts and the open through-service ownership question, and §40 records the one-`LineID` Marunouchi mapping with provider-alias provenance.
+- `ROADMAP.md` Phase 1 Slice S3 records S3c as **contract-locked, implementation pending**; S3 remains incomplete until S3c is implemented and independently audited.
+- S3c implementation is two small commits with zero production call sites to break: the two values with their tests, then `RailwayLine.topology` with the existing line tests updated (every construction site, the round-trip and encoded-key tests, malformed nested topology, and the actor-transfer check).
+- The Phase 2 importer gains a structural target: each canonical line's adjacency graph, built from provider stop sequences, must be non-empty and connected, and its derived membership must agree with every `Station.lineIDs`.
+- The Trip slice inherits two recorded requirements: repeated stops in `Trip.stopSequence`, and a decision on line ownership under through service.
+- The custom `Decodable` initialisers will each add an instance of the repository's existing `ConformanceIsolation` warning pattern; that concern is tracked once, repository-wide, in the `ROADMAP.md` Parking Lot, and is not an S3c matter.
+
+## Scope statement
+
+This is a **domain value contract and slice-boundary decision**. It implements nothing, adds no data, defines no provider syntax, introduces no canonical identifier (DEC-021's list is unchanged), and does not implement `StationAdjacency`, `RailwayLineTopology`, `RailwayLine.topology`, `Trip`, `ServiceType`, route search, transfer topology, line colour, persistence, or any presentation surface. It does not claim S3c or S3 is complete. Provider-to-canonical mapping, topology population, and the Marunouchi alias mapping stay in Phase 2 (DEC-048, §40).
+
+## Rationale
+
+The only structural fact a line owns independently of any train is adjacency. Direction, order, and repetition are properties of a traversal, and DEC-055 already gave those to `Trip`; leaving them there, and modelling the line as an undirected simple graph, is what lets one small value represent a path, a branch, a loop, and a loop with a tail without a single special case. Requiring connectedness and non-emptiness turns "a line" into a checkable statement rather than a convention, at a cost that is trivial at any realistic size.
+
+One `LineID` for Marunouchi follows from Rule 9 and DEC-047: canonical identity is TSUGINO's product truth, not a provider's record split, and passengers on a branch train reach main-line termini without transferring (Rule 16). Keeping the branch as provider provenance in mapping data preserves everything Phase 4 needs for status scoping without letting a provider identifier become Domain structure.
+
+## Revisit Triggers
+
+- A launch or expansion line cannot be represented as one connected undirected simple station-adjacency graph.
+- Direction becomes an intrinsic property of a canonical line rather than of a `Trip`.
+- Disconnected components must legitimately share one `LineID`.
+- Parallel station-to-station relationships require distinct Domain meaning.
+- A consumer requires canonical display order.
+- Branch or segment identity becomes a real product requirement.
+- Persistence migration requirements arise after topology data is stored (Phase 6).
+- The Trip slice resolves through-service ownership in a way that changes this boundary.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

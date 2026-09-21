@@ -611,20 +611,36 @@ Validity: both values must be finite; `latitude` in `-90...90` and `longitude` i
 
 ### 5.2 RailwayLine
 
-Settled S3a contract (DEC-055):
+Settled contract (S3a — DEC-055; S3c — DEC-057):
 
 ```text
 RailwayLine
 - id              (LineID — §39, DEC-051)
 - operatorID      (OperatorID — §5.7)
 - name            (LocalizedRailName — §39.1, DEC-053)
+- topology        (RailwayLineTopology — §5.2.1, DEC-057; required)
 ```
 
 Line names use the same shared `LocalizedRailName` value as `Station` and `Operator` (§39.1, DEC-042, DEC-053): Japanese, English, and Korean are held canonically; provider-supplied names are inputs, not the sole source of truth.
 
 **Identity is the `LineID` alone (DEC-055 D3):** equality and hashing use only the ID, implemented explicitly as for `Operator` (§5.7). The operator relationship, names, topology, and any future colour are descriptive data and do not participate in identity. A line belongs to one operator; through service across lines and operators is a `Trip` / Journey concern (§5.3, §13), not a line property.
 
-**Topology — S3c-gated (DEC-055 D4).** `stationSequence` is not part of the S3a contract. Phase 1 slice S3c will lock and implement canonical ordered line topology after a separate contract audit or decision settles its representation, minimum station count, duplicate-`StationID` policy, circular lines, branches (including the Marunouchi main line and branch and whether a branch is a separate `LineID`, a segment, or another structure), and dataset-level consistency with `Station.lineIDs`. Canonical line topology is distinct from a `Trip`'s stop sequence: **`Trip` owns `direction` and `stopSequence` (§5.3)**, and service-pattern behaviour never moves onto `RailwayLine`.
+**Topology — required (DEC-057).** Every canonical `RailwayLine` stores exactly one `topology: RailwayLineTopology` (§5.2.1): the **undirected adjacent-station graph** of the line — which canonical stations are directly adjacent on it, and nothing more. It is never optional and there is **no `stationSequence`**: a single global ordered array cannot truthfully hold both a branch and a loop-plus-tail without leaking direction or inventing repeat rules, so canonical topology is unordered. It defines no travel direction, ascending/descending order, display order, station numbering, provider `stationOrder`, actual traversal, stopping pattern, or route-search result. Topology is descriptive data: it never participates in identity, may be corrected without creating a new line, and must be compared explicitly in `Codable` and actor-transfer tests because ID-only equality cannot prove it survived. `RailwayLine` construction stays non-failable — it receives an already-valid topology and repeats no validation. The keyed `Codable` shape is `{ id, operatorID, name, topology }`; no persisted line schema exists yet (Rule 39, §41). **The Marunouchi main line and branch are one canonical `RailwayLine` with one `LineID`** (DEC-057 D6); the branch is simply a degree-three junction in the topology, and the provider's separate branch railway record is a Phase 2 mapping alias (§40). Canonical line topology is distinct from a `Trip`'s stop sequence: **`Trip` owns `direction` and `stopSequence` (§5.3)**, and service-pattern behaviour never moves onto `RailwayLine`. *S3c contract locked; implementation pending (`ROADMAP.md` Phase 1 Slice S3).*
+
+#### 5.2.1 StationAdjacency and RailwayLineTopology
+
+```text
+StationAdjacency
+- stationIDs      (Set<StationID> — exactly two distinct)
+
+RailwayLineTopology
+- adjacencies     (Set<StationAdjacency> — non-empty, connected)
+- stationIDs      (derived: union of adjacency endpoints; not stored, not encoded)
+```
+
+**`StationAdjacency`** (DEC-057 D2) is one unordered adjacency between exactly two distinct canonical stations on the same line. Input order has no meaning — `(a, b)` and `(b, a)` are equal and hash identically — and a self-adjacency is invalid. Construction is failable (`init?(_:_:)`) and never traps. It has no identifier and no direction, distance, duration, track, platform, operator, line, provider, or transfer metadata; it is named *adjacency*, not *connection*, so it cannot be mistaken for a transfer or interchange relation (DEC-048, Rule 16). Keyed `Codable` shape `{ stationIDs: [a, b] }`; element order is not a contract; decoding rejects zero, one, duplicate, or more than two identifiers with `DecodingError.dataCorrupted`, while missing keys and wrong types keep their normal errors.
+
+**`RailwayLineTopology`** (DEC-057 D3–D4) is an undirected **simple graph** stored as `adjacencies: Set<StationAdjacency>`. It is valid only when the set is **non-empty** and the graph is **connected**; so it always holds at least two unique stations, an empty or single-station topology is invalid, disconnected components are invalid, orphan stations are impossible (membership is derived), duplicate adjacencies collapse structurally, and cycles, branches (degree ≥ 3 junctions), loop-plus-tail shapes, and multiple graph paths between two stations are all valid. No degree limit, size limit, planarity rule, regional shape, or launch-line special case exists — the model supports any connected undirected simple station-adjacency graph generically (DEC-057 D7–D8). Construction is failable (`init?(adjacencies:)`) and never traps; decoding applies the same non-empty and connectedness rules and fails with `dataCorrupted`. Equality and hashing are complete-value over the adjacency set; the value has no identifier. The only derived API is `stationIDs`; connectedness checking is internal validation, not a public graph or route-search API (DEC-057 D11–D12). Insertion order and encoded `Set` element order are not contracts. Both values are `nonisolated`, `Hashable`, `Codable`, `Sendable`, import-free, and hold `StationID` values only — never `Station` references.
 
 **Colour — deferred beyond Phase 1 (DEC-055 D5).** No colour property exists in the Phase 1 contract. Whether line colour is canonical Domain data or a DesignSystem token (`DESIGN.md` §30), and how it is represented, is decided later — most plausibly during Phase 2 data/design integration — once the ODPT licensing question on official line colours (DEC-047) is resolved. DEC-018 continues to govern presentation priority once a colour exists. SwiftUI, UIKit, and provider SDK colour types never enter Domain.
 
@@ -657,6 +673,8 @@ The Trip model must support:
 - cancelled service
 
 without provider-specific branching in UI code.
+
+`Trip` owns **direction** and the **actual ordered stop sequence** of one service traversal (DEC-055, DEC-057 D10). Two facts verified for the launch network bind the future Trip contract: `stopSequence` **must admit repeated `StationID`s**, because a real loop-plus-tail service visits its junction station more than once in one trip; and consecutive stops are **not** required to be direct topology adjacencies (§5.2.1), because express and limited-stop services skip intermediate topological stations. Remaining-stop calculations use the selected Trip/Journey stop sequence, never a line's topology (DEC-011). The singular `lineID` shown above versus through service across lines (§13, DEC-009) is an **open Trip-slice decision**; it is not resolved by S3c and is not topology state. The final Trip API is designed in its own slice.
 
 ---
 
@@ -1667,6 +1685,8 @@ Do not spread mapping logic across features.
 For cross-operator stations, each canonical station carries **every** provider station identifier and station code, **each provider's original name strings unmodified**, and any orthographic or presentation alias as an **explicit, reversible** mapping entry — never by rewriting a provider string (DEC-048). Station identity must not be established from display names or coordinates alone, and no parent-station or transfer relationship may be synthesized where the provider feed publishes none. Stations whose identity is unresolved stay **separate** until authoritative evidence supports a merge; such a merge is a schema/identity migration (§41, Rule 39), not an in-place edit.
 
 Because a canonical station may span operators, the Domain `Station` value stores no single `operatorID` (§5.1, DEC-055 D1); a station's operators are those of its lines, resolved at the dataset level. The 258-group result of DEC-048 is a Phase 2 planning input for this mapping layer, not Phase 1 model data.
+
+Canonical **lines** are also product identity, not provider records (DEC-057 D6): the Tokyo Metro Marunouchi main line and branch are **one** `LineID`, so the mapping layer maps **several provider railway identifiers** — including the provider's separate Marunouchi branch record — to that one canonical line, each as an explicit entry that retains its provider provenance. That provenance is what later allows provider-specific status or realtime resources to be scoped to the branch (Phase 4); it never enters the Domain `RailwayLine` value. Canonical adjacency topology (§5.2.1) is populated by the Phase 2 importer from provider stop sequences, and its derived membership is checked against every `Station.lineIDs` at that level (DEC-055 D2, DEC-057 D9).
 
 Each canonical station carries exactly one canonical `GeoCoordinate` (§5.1, DEC-056). **Selecting that representative point is a Phase 2 mapping responsibility**, not a Domain concern: the mapping layer chooses among the providers' published points, records the selection rationale and provider provenance as mapping data, retains original provider coordinates here when needed (never on the `Station` value), documents what the selected point represents, and rejects or holds back a station for which no valid point can be selected. Averaging or otherwise deriving a point never happens implicitly; if it is ever used, the policy is explicit and reviewable. Coordinates corroborate identity candidates only (DEC-048 rule 2); no distance threshold enters Domain, and the DEC-048 Shinjuku pair stays two stations with two coordinates.
 

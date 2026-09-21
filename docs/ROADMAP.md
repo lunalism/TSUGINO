@@ -219,15 +219,15 @@ Build a provider-independent railway and journey domain.
 - define interruption/recovery model
 - define provider-neutral domain protocol boundaries assigned to Phase 1, including the **`JourneyEngine` protocol boundary without its runtime behaviour** (DEC-050). Whether the `RouteSearching` protocol is defined in Phase 1 is deliberately **undecided and non-blocking for slices S1–S5**; it is settled before the protocol slice (S6), and live route-search integration stays in Phase 3 regardless (`DECISIONS.md` §4 “Route Search Provider”)
 
-### Slice S3 — Station and RailwayLine (DEC-055, DEC-056)
+### Slice S3 — Station and RailwayLine (DEC-055, DEC-056, DEC-057)
 
 Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`LocalizedRailName`, `Operator`, `RailCapability`; DEC-053, DEC-054) are complete. S3 covers `Station` and `RailwayLine` and is subdivided as follows. **Completing S3a does not complete S3.**
 
 - **S3a — identity and relationship core: complete** (`a9c93bc`, `b668d41`; independently approved 2026-09-21). `Station { id, name, lineIDs: Set<LineID> }` (the S3a shape; S3b adds the required `coordinate`) and `RailwayLine { id, operatorID, name }`; provider-neutral, `nonisolated`, `Hashable` / `Codable` / `Sendable`, non-failable from already-valid components, explicitly ID-only equality and hashing. S3a itself added no coordinates, colour, topology, provider mappings, or railway data.
-- **S3b — coordinate contract: locked (DEC-056), implementation pending — the immediate next implementation slice.** Adds the provider-neutral `GeoCoordinate` value (WGS 84 latitude/longitude in decimal degrees; finite, inclusive `-90...90` / `-180...180`; failable construction; decode-side validation with `DecodingError.dataCorrupted`; complete-value equality; no framework import) and the **required** `Station.coordinate: GeoCoordinate`, giving `Station { id, name, coordinate, lineIDs }` with ID-only identity unchanged. Expected as two commits: the value with its tests, then the Station property with the existing Station tests updated. Representative-point selection, provenance, and actual coordinates stay in Phase 2.
-- **S3c — railway topology contract: gated Phase 1 work, unstarted.** A separate contract audit or decision must settle ordered-topology representation, minimum station count, duplicate-`StationID` policy, circular lines, branches (Marunouchi main line and branch; branch as separate `LineID`, segment, or other structure), the distinction from a `Trip`'s stop sequence, and dataset-level consistency with `Station.lineIDs` before `stationSequence` code exists.
-- **S3 completion rule.** S3 is complete only when S3a is implemented and audited; S3b is contract-locked and implemented, or an accepted decision moves coordinates out of Phase 1; S3c is contract-locked and implemented, or an accepted decision moves canonical topology out of Phase 1; and the resulting scope passes its independent audit. S3b and S3c remain Phase 1 work unless a later accepted decision says otherwise. **S3 is currently incomplete**: S3a is done, S3b is contract-locked but unimplemented, and S3c is unlocked.
-- **Not Phase 1 deliverables.** Line colour (deferred beyond Phase 1 pending ownership and licensing resolution — DEC-055 D5); actual coordinates and representative-point selection, topology records, station/line mappings, and Tokyo railway datasets (Phase 2); provider networking and ingestion (Phases 2–4).
+- **S3b — coordinate contract: complete** (`9f83f38`, `090f019`; independently approved 2026-09-21). Added the provider-neutral `GeoCoordinate` value (WGS 84 latitude/longitude in decimal degrees; finite, inclusive `-90...90` / `-180...180`; failable construction; decode-side validation with `DecodingError.dataCorrupted`; complete-value equality; no framework import) and the **required** `Station.coordinate: GeoCoordinate`, giving `Station { id, name, coordinate, lineIDs }` with ID-only identity unchanged. Representative-point selection, provenance, and actual coordinates stay in Phase 2.
+- **S3c — railway topology contract: locked (DEC-057), implementation pending — the immediate next implementation slice.** Canonical topology is **undirected adjacent-station topology**, not an ordered sequence: `StationAdjacency` (exactly two distinct `StationID`s, unordered, failable) and `RailwayLineTopology` (`Set<StationAdjacency>`, non-empty and connected, derived `stationIDs`), plus the **required** `RailwayLine.topology`, giving `RailwayLine { id, operatorID, name, topology }` with ID-only identity unchanged. Branches, cycles, and loop-plus-tail shapes are represented generically by adjacency; the Marunouchi main line and branch are **one** `LineID`. Expected as two commits: the two values with their tests, then the line property with the existing line tests updated. `Trip` keeps direction and actual stop order (which may repeat and skip stations); actual topology population and provider-alias mapping stay in Phase 2.
+- **S3 completion rule.** S3 is complete only when S3a is implemented and audited; S3b is contract-locked and implemented, or an accepted decision moves coordinates out of Phase 1; S3c is contract-locked and implemented, or an accepted decision moves canonical topology out of Phase 1; and the resulting scope passes its independent audit. S3b and S3c remain Phase 1 work unless a later accepted decision says otherwise. **S3 is currently incomplete**: S3a and S3b are done; S3c is contract-locked but unimplemented and must pass its independent audit.
+- **Not Phase 1 deliverables.** Line colour (deferred beyond Phase 1 pending ownership and licensing resolution — DEC-055 D5); actual coordinates and representative-point selection, topology records and adjacency population, provider-alias mapping (including the Marunouchi branch record), station/line mappings, and Tokyo railway datasets (Phase 2); provider networking and ingestion (Phases 2–4).
 
 ## Tests
 
@@ -235,7 +235,8 @@ Test:
 
 - identifier equality
 - station/line validation
-- stop ordering
+- line topology — adjacency, connectedness, branches, cycles (DEC-057); never a global station order
+- stop ordering — Trip-level actual traversal order, including repeated and skipped stations
 - trip stopping patterns
 - express/local differences
 - through-service representation
@@ -1267,6 +1268,14 @@ Potential:
 - exits
 - accessibility paths
 - richer platform guidance
+
+---
+
+# Parking Lot / Deferred
+
+Deferred items recorded once, per `AGENTS.md` §5.1. An entry here is not permission to implement it.
+
+- **Repository-wide Swift concurrency-isolation warnings.** Under the current Swift 5 language mode with `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, the Domain `Codable` conformances and custom decoders (S1 identifiers, S2 `LocalizedRailName`, S3b `GeoCoordinate`, and the S3c values to come) emit `ConformanceIsolation` / `ActorIsolatedCall` warnings that Swift 6 language mode would diagnose as errors. Address them **together**, as one repository-wide decision before any Swift 6 language-mode migration; do not fix individual S1/S2/S3 values inconsistently. This does not block current Phase 1 slices and is not a defect of any single slice. Owner: a future concurrency-migration decision (`DECISIONS.md`); no phase currently claims it.
 
 ---
 
