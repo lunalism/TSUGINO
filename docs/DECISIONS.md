@@ -2577,6 +2577,141 @@ Treating declaration as the verification record — rather than adding a second 
 
 ---
 
+# DEC-055 — Station and RailwayLine Identity, Relationships, and S3 Slice Boundaries
+
+**Status:** Accepted\
+**Date:** 2026-09-21\
+**Related:** DEC-018, DEC-021, DEC-029, DEC-048, DEC-050, DEC-051, DEC-053, DEC-054; `RULES.md` Rule 8, Rule 9, Rule 26, Rule 39, Rule 45, Rule 53; `ARCHITECTURE.md` §5.1, §5.2, §5.3, §5.7, §9, §39, §39.1, §40, §41
+
+## Context
+
+`ROADMAP.md` Phase 1 lists `Station` and `RailwayLine` among the canonical railway models, and DEC-053 assigns both to Phase 1 slice S3. A read-only contract audit before S3 found that the models could not be implemented as `ARCHITECTURE.md` §5.1 and §5.2 then wrote them without either violating an accepted decision or inventing policy.
+
+**The `Station.operatorID` contradiction.** §5.1 gave every `Station` exactly one `operatorID`. But DEC-048 accepts that a canonical station may be *one* identity served by *two* operators: of the 258 proposed canonical station groups, 27 are cross-operator merges (市ヶ谷 / 市ケ谷 and 押上 / 押上〈スカイツリー前〉 among them), and §40 requires each canonical station to carry *every* provider's identifiers. A single-valued operator on `Station` is unrepresentable for those 27 stations. A "primary operator" would be a new concept no document supports, and a stored set of operators would duplicate what the line relationships already say and could drift from it.
+
+**Unspecified fields presented as settled.** §5.1 listed `latitude` and `longitude`, and §5.2 listed `color` and `stationSequence`, with no accepted representation, range, validity, optionality, or identity rule for any of them anywhere in the repository. Colour is additionally documented both as a Domain property (§5.2) and as a DesignSystem token (`DESIGN.md` §30), some provider records carry no colour value, and the use of official line colours as standalone tokens is an open ODPT licensing gate (DEC-047). Topology has documented cases — the Marunouchi main line and branch — where a linear station array's meaning is undecided, and no document addresses loops, minimum counts, or repeated stations.
+
+**Identity semantics.** DEC-053 decided ID-only identity for `Operator` and named it as the default for canonical models, but no accepted text said so for `Station` or `RailwayLine`.
+
+Two implementers reading the documents as they stood could reasonably have produced incompatible models. As with S2, the contract is locked before code is written.
+
+## Decision
+
+### D1 — `Station` does not own a single `OperatorID`
+
+1. `Station` **must not** store `operatorID`.
+2. Operator participation is **dataset-level relational information**, obtained by joining `Station.lineIDs` to the canonical `RailwayLine` records and reading each `RailwayLine.operatorID`.
+3. Operator participation **does not participate in `Station` identity**.
+4. `Station` must **not** introduce `primaryOperatorID`, `operatorIDs`, a `StationGroupID`, an `InterchangeID`, provider identifiers, station codes, or transfer or parent-station relationships. DEC-021's list of canonical identifiers is unchanged.
+5. Cross-operator grouping continues to use the canonical `StationID` contract of DEC-048: a resolved cross-operator station is **one** `StationID`; an unresolved or ambiguous pair remains **two** `StationID`s with no inferred relationship. **DEC-048 is preserved in full**; this Decision removes the one field that could not honour it.
+
+### D2 — Station–line membership is `lineIDs: Set<LineID>`
+
+`Station` stores `lineIDs: Set<LineID>`. This is an architecture decision, not a local implementation choice.
+
+1. Membership is **unordered**; no document assigns meaning to the order in which a station's lines are listed.
+2. **Duplicate membership is not meaningful**, which the set type makes unrepresentable.
+3. The set **may be empty**. Phase 1 value construction must not invent a dataset-completeness rule; whether a canonical station with no line is a data error is a Phase 2 import concern.
+4. The set contains **canonical `LineID` values only** — never provider railway identifiers or station codes (Rule 9, DEC-020, DEC-021).
+5. `lineIDs` is **descriptive metadata** and does not participate in `Station` identity (D3).
+6. **Consistency between `Station.lineIDs` and canonical line topology** (S3c) is a **dataset/import validation responsibility**, not an invariant the isolated `Station` value can or should enforce.
+7. `Set` `Codable` element ordering is **not a semantic contract**. The encoded field name and the meaning of its elements may be pinned by tests; byte-for-byte JSON element order must not be treated as canonical or asserted.
+
+### D3 — `Station` and `RailwayLine` identity is the canonical ID alone
+
+1. `Station` identity is determined **exclusively by `StationID`**. `RailwayLine` identity is determined **exclusively by `LineID`**.
+2. For both, **equality and hashing use only the canonical identifier**.
+3. Names, memberships, coordinates, operator relationships, colour, and topology are **descriptive data** and do not participate in identity.
+4. Equality and hashing **must be implemented explicitly** when the models are implemented, following the `Operator` precedent (DEC-053), so that a future stored property cannot fold itself into identity.
+5. Renaming or correcting descriptive metadata **does not create a new canonical entity**. A merge or split of canonical identities remains an identity migration (Rule 39, DEC-048), never an in-place edit.
+6. `Codable` round-trip tests **must compare stored fields individually**, because ID-only equality cannot prove that descriptive fields survived encoding.
+
+### D4 — S3 is subdivided into S3a, S3b, and S3c; completing S3a does not close S3
+
+#### S3a — identity and relationship core (the immediate next implementation slice)
+
+S3a may implement **only**:
+
+```text
+Station
+- id        (StationID)
+- name      (LocalizedRailName)
+- lineIDs   (Set<LineID>)
+
+RailwayLine
+- id          (LineID)
+- operatorID  (OperatorID)
+- name        (LocalizedRailName)
+```
+
+Both models are provider-neutral; `nonisolated`; `Hashable`, `Codable`, and `Sendable`; **non-failable** to construct from already-valid component values (each component enforces its own rule — DEC-051, DEC-053 — and the model repeats none of it); and **explicitly ID-only** for equality and hashing (D3).
+
+S3a **must not** add coordinates, line colour, station topology, provider mappings, actual railway data, or any later-slice domain model.
+
+#### S3b — coordinate contract (gated; remains Phase 1)
+
+S3b decides and implements the provider-neutral coordinate value and its relationship to `Station`. It **remains part of Phase 1** and must be completed before S3 can be declared complete.
+
+The S3b contract must be **locked before its code is written** and must address at least: the provider-neutral representation; **required versus optional** `Station` ownership — deliberately **not decided here**, because no accepted repository contract answers it unambiguously; the finite-value requirement; the latitude range; the longitude range; `(0, 0)` handling; signed zero; exact preservation versus normalisation or rounding; `Codable` rejection of invalid values; exclusion of coordinates from `Station` identity (already fixed by D3); and selection of one canonical coordinate for a cross-operator station group.
+
+The expected technical direction is a **provider-neutral Domain value** rather than `CLLocationCoordinate2D` or any other framework type, because Domain imports no platform or provider framework. **No S3b contract or implementation exists yet**; this paragraph records the questions, not their answers.
+
+#### S3c — railway topology contract (gated; remains Phase 1)
+
+S3c decides and implements canonical ordered line topology. It **remains part of Phase 1** and must be disposed of before S3 can be declared complete.
+
+Before topology code is written, a separate contract audit or decision must address at least: the representation of ordered station topology; minimum station count; duplicate `StationID` policy; circular lines; branches; the Marunouchi main line and branch relationship; whether a branch is a separate canonical `LineID`, a segment, or another provider-neutral structure; the distinction between **canonical line topology** and a **Trip's stop sequence**; and dataset-level consistency with `Station.lineIDs`.
+
+`stationSequence` is **not** part of the S3a `RailwayLine` contract. **`Trip` retains ownership of `direction` and `stopSequence`** (`ARCHITECTURE.md` §5.3); nothing in S3 moves service-pattern behaviour onto `RailwayLine`.
+
+#### Completion rule
+
+Completing S3a **does not** close S3. S3 may be marked complete only after **all** of the following hold:
+
+1. S3a is implemented and audited;
+2. S3b is contract-locked and implemented, **or** an explicit accepted decision moves coordinates out of Phase 1;
+3. S3c is contract-locked and implemented, **or** an explicit accepted decision moves canonical line topology out of Phase 1;
+4. the resulting S3 scope passes its independent audit.
+
+This Decision does **not** move coordinates or topology out of Phase 1. It only gates each behind its own contract.
+
+### D5 — Railway line colour is deferred beyond Phase 1
+
+Line colour is **excluded** from S3a, S3b, S3c, and the Phase 1 implementation contract.
+
+Reasons: its representation is unspecified; repository documents conflict over whether it is canonical Domain data (`ARCHITECTURE.md` §5.2 as previously written) or a DesignSystem token (`DESIGN.md` §30); some provider records supply no colour value; the use of official line colours as standalone tokens remains subject to the unresolved ODPT licensing gate (DEC-047); and SwiftUI, UIKit, and provider SDK colour types must not enter Domain.
+
+Colour requires a **later explicit ownership and representation decision** once the relevant licensing evidence is available — most plausibly during Phase 2 data/design integration. That decision is **not made here**: no colour type, hex or RGB contract, UI token, or placeholder field is created. DEC-018 (real line colours take presentation priority over brand accent) is unchanged; it governs how a colour is used once one exists, not where it is stored.
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.1 and §5.2 are rewritten to show only the S3a properties as settled, with coordinates marked S3b-gated, topology S3c-gated, and colour deferred beyond Phase 1.
+- `ROADMAP.md` Phase 1 gains the S3a / S3b / S3c subdivision and the S3 completion rule so that finishing S3a cannot be mistaken for finishing S3.
+- The S3a models can be implemented from this record alone, with zero call sites to break when S3b later adds a coordinate property.
+- Any operator-derived behaviour for a station must go through its lines; there is no shortcut that reintroduces a single operator per station.
+- **Model invariants** (blank identifiers, blank names, and later coordinate validity) are enforced by the Domain value types. **Dataset validation** — empty `lineIDs`, `lineIDs` ⇄ topology agreement, coordinate completeness, one coordinate per cross-operator group — belongs to the Phase 2 importer and static-data tests, not to Phase 1 value construction.
+- Colour, when decided, is added by a new decision rather than by extending this one.
+
+## Scope statement
+
+This is a **domain model contract and slice-boundary decision**. It claims that **no model, test, adapter, screen, mapping table, or dataset is implemented**, and that S3a implementation has **not** started. It defines no provider syntax, adds no data, and does not touch `Trip`, `ServiceType`, the Journey models, `JourneyEngine` (DEC-050), `RouteSearching`, persistence, or capability attachment (DEC-054). Provider-to-canonical mapping and the 258-group planning input stay in Phase 2 (DEC-048, §40).
+
+## Rationale
+
+Removing `Station.operatorID` is the smallest change that makes §5.1 and DEC-048 say the same thing: the line already carries the operator, and a station's operators are exactly the operators of its lines. Anything more would be a second source of truth for a fact the dataset already encodes.
+
+Gating coordinates, topology, and colour behind their own contracts — instead of guessing — follows the pattern that DEC-051 and DEC-053 established: an undocumented invariant frozen into a Phase 1 value type becomes a persisted-data contract that is expensive to change, while adding a property to a model with no call sites is nearly free. Locking what is known and naming what is not keeps S3 honest about its own completeness.
+
+## Revisit Triggers
+
+- An accepted provider mapping or product rule genuinely requires a station-level operator concept that cannot be derived through its lines.
+- S3b or S3c evidence shows that `Set<LineID>` cannot represent a needed membership relation (for example, ordered or directional membership).
+- A later accepted decision moves coordinates or canonical topology out of Phase 1 (the completion rule already anticipates this).
+- The ODPT licensing response or a design decision settles colour ownership, at which point a new colour decision is written.
+- DEC-048's Shinjuku relationship is revisited, which is an identity migration and must not be handled by editing these models in place.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

@@ -571,17 +571,24 @@ Structure exists to make changes easier, not to prevent change.
 
 ### 5.1 Station
 
+Settled S3a contract (DEC-055):
+
 ```text
 Station
-- id
-- operatorID
+- id              (StationID — §39, DEC-051)
 - name            (LocalizedRailName — §39.1, DEC-053)
-- latitude
-- longitude
-- lineIDs
+- lineIDs         (Set<LineID> — DEC-055 D2)
 ```
 
 Canonical names are held as the shared `LocalizedRailName` value (§39.1, DEC-053), not as three flat properties: all three languages are required, blank names are rejected, and valid names are preserved exactly.
+
+**Identity is the `StationID` alone (DEC-055 D3):** equality and hashing use only the ID, implemented explicitly as for `Operator` (§5.7). Names, line membership, coordinates, and operator relationships are descriptive data; correcting them does not create a new station, and a merge or split of canonical identities is an identity migration (§41, Rule 39), never an in-place edit.
+
+**No single operator owner (DEC-055 D1).** `Station` stores no `operatorID`. A canonical station may be served by more than one operator (§40, DEC-048), so its operator participation is dataset-level relational information obtained by joining `lineIDs` to the canonical `RailwayLine` records and reading each line's `operatorID`. `Station` carries no `primaryOperatorID`, `operatorIDs`, station-group or interchange identifier, provider identifier, station code, or transfer/parent-station relationship.
+
+**Line membership (DEC-055 D2).** `lineIDs` is an unordered set of canonical `LineID` values only. It may be empty — Phase 1 value construction does not invent dataset-completeness policy — and its agreement with canonical line topology is a Phase 2 import/dataset validation responsibility, not an invariant of the isolated value. The encoded field and element meaning may be pinned; encoded element order is not a contract.
+
+**Coordinates — S3b-gated (DEC-055 D4).** No coordinate property is part of the S3a contract. Phase 1 slice S3b will lock and implement a provider-neutral coordinate value and its `Station` relationship (representation, required-vs-optional ownership, finite-value and range rules, `(0, 0)` and signed-zero handling, exact preservation, `Codable` rejection, one canonical coordinate per cross-operator group). Coordinates never participate in identity (DEC-048, Rule 53). `CLLocationCoordinate2D` and other framework types do not enter Domain.
 
 Station identity must use a TSUGINO canonical ID rather than provider IDs directly.
 
@@ -591,16 +598,22 @@ Provider IDs are stored as mappings.
 
 ### 5.2 RailwayLine
 
+Settled S3a contract (DEC-055):
+
 ```text
 RailwayLine
-- id
-- operatorID
+- id              (LineID — §39, DEC-051)
+- operatorID      (OperatorID — §5.7)
 - name            (LocalizedRailName — §39.1, DEC-053)
-- color
-- stationSequence
 ```
 
 Line names use the same shared `LocalizedRailName` value as `Station` and `Operator` (§39.1, DEC-042, DEC-053): Japanese, English, and Korean are held canonically; provider-supplied names are inputs, not the sole source of truth.
+
+**Identity is the `LineID` alone (DEC-055 D3):** equality and hashing use only the ID, implemented explicitly as for `Operator` (§5.7). The operator relationship, names, topology, and any future colour are descriptive data and do not participate in identity. A line belongs to one operator; through service across lines and operators is a `Trip` / Journey concern (§5.3, §13), not a line property.
+
+**Topology — S3c-gated (DEC-055 D4).** `stationSequence` is not part of the S3a contract. Phase 1 slice S3c will lock and implement canonical ordered line topology after a separate contract audit or decision settles its representation, minimum station count, duplicate-`StationID` policy, circular lines, branches (including the Marunouchi main line and branch and whether a branch is a separate `LineID`, a segment, or another structure), and dataset-level consistency with `Station.lineIDs`. Canonical line topology is distinct from a `Trip`'s stop sequence: **`Trip` owns `direction` and `stopSequence` (§5.3)**, and service-pattern behaviour never moves onto `RailwayLine`.
+
+**Colour — deferred beyond Phase 1 (DEC-055 D5).** No colour property exists in the Phase 1 contract. Whether line colour is canonical Domain data or a DesignSystem token (`DESIGN.md` §30), and how it is represented, is decided later — most plausibly during Phase 2 data/design integration — once the ODPT licensing question on official line colours (DEC-047) is resolved. DEC-018 continues to govern presentation priority once a colour exists. SwiftUI, UIKit, and provider SDK colour types never enter Domain.
 
 ---
 
@@ -1639,6 +1652,8 @@ Provider mapping belongs in Data infrastructure.
 Do not spread mapping logic across features.
 
 For cross-operator stations, each canonical station carries **every** provider station identifier and station code, **each provider's original name strings unmodified**, and any orthographic or presentation alias as an **explicit, reversible** mapping entry — never by rewriting a provider string (DEC-048). Station identity must not be established from display names or coordinates alone, and no parent-station or transfer relationship may be synthesized where the provider feed publishes none. Stations whose identity is unresolved stay **separate** until authoritative evidence supports a merge; such a merge is a schema/identity migration (§41, Rule 39), not an in-place edit.
+
+Because a canonical station may span operators, the Domain `Station` value stores no single `operatorID` (§5.1, DEC-055 D1); a station's operators are those of its lines, resolved at the dataset level. The 258-group result of DEC-048 is a Phase 2 planning input for this mapping layer, not Phase 1 model data.
 
 ---
 

@@ -200,6 +200,7 @@ Build a provider-independent railway and journey domain.
 - realtime provider integration (Phase 4)
 - **JourneyEngine runtime behaviour — Phase 5 owns it (DEC-050)**
 - **capability carrier and attachment** — Phase 1 defines the `RailCapability` vocabulary and the pure tier derivation only; it creates no service/feed carrier and attaches capabilities to no model. Service/feed-scoped declaration, ingestion, and attachment are **Phase 4** (DEC-054)
+- **railway line colour** — no colour type, contract, token, or placeholder field; ownership and representation are decided after the ODPT licensing gate, most plausibly in Phase 2 (DEC-055 D5)
 - production persistence and recovery implementation
 - Live Activity production UI
 - pixel animations
@@ -217,6 +218,16 @@ Build a provider-independent railway and journey domain.
 - define realtime freshness model
 - define interruption/recovery model
 - define provider-neutral domain protocol boundaries assigned to Phase 1, including the **`JourneyEngine` protocol boundary without its runtime behaviour** (DEC-050). Whether the `RouteSearching` protocol is defined in Phase 1 is deliberately **undecided and non-blocking for slices S1–S5**; it is settled before the protocol slice (S6), and live route-search integration stays in Phase 3 regardless (`DECISIONS.md` §4 “Route Search Provider”)
+
+### Slice S3 — Station and RailwayLine (DEC-055)
+
+Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`LocalizedRailName`, `Operator`, `RailCapability`; DEC-053, DEC-054) are complete. S3 covers `Station` and `RailwayLine` and is subdivided as follows. **Completing S3a does not complete S3.**
+
+- **S3a — identity and relationship core: the immediate next implementation slice.** `Station { id, name, lineIDs: Set<LineID> }` and `RailwayLine { id, operatorID, name }`; provider-neutral, `nonisolated`, `Hashable` / `Codable` / `Sendable`, non-failable from already-valid components, explicitly ID-only equality and hashing. No coordinates, colour, topology, provider mappings, or railway data.
+- **S3b — coordinate contract: gated Phase 1 work.** Locks and then implements the provider-neutral coordinate value and its `Station` relationship (representation, required-vs-optional ownership, finite/range rules, `(0, 0)`, signed zero, exact preservation, `Codable` rejection, one canonical coordinate per cross-operator group). The contract is locked before code is written; nothing is decided yet.
+- **S3c — railway topology contract: gated Phase 1 work.** A separate contract audit or decision must settle ordered-topology representation, minimum station count, duplicate-`StationID` policy, circular lines, branches (Marunouchi main line and branch; branch as separate `LineID`, segment, or other structure), the distinction from a `Trip`'s stop sequence, and dataset-level consistency with `Station.lineIDs` before `stationSequence` code exists.
+- **S3 completion rule.** S3 is complete only when S3a is implemented and audited; S3b is contract-locked and implemented, or an accepted decision moves coordinates out of Phase 1; S3c is contract-locked and implemented, or an accepted decision moves canonical topology out of Phase 1; and the resulting scope passes its independent audit. S3b and S3c remain Phase 1 work unless a later accepted decision says otherwise.
+- **Not Phase 1 deliverables.** Line colour (deferred beyond Phase 1 pending ownership and licensing resolution — DEC-055 D5); actual coordinates, topology records, station/line mappings, and Tokyo railway datasets (Phase 2); provider networking and ingestion (Phases 2–4).
 
 ## Tests
 
