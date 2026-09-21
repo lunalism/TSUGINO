@@ -3075,6 +3075,7 @@ One `LineID` for Marunouchi follows from Rule 9 and DEC-047: canonical identity 
 
 **Status:** Accepted\
 **Date:** 2026-09-21\
+**Amended by:** DEC-059 (2026-09-21) — narrows the §5 Tier 1 "Present status" wording: no capability or tier is declared for Tier 1 candidates until every eligibility gate passes; the body below is unchanged\
 **Extends:** DEC-047 (not superseded — its capability-aware guidance and launch matrix remain valid)\
 **Related:** DEC-001, DEC-004, DEC-009, DEC-021, DEC-022, DEC-037, DEC-038, DEC-046, DEC-047, DEC-048, DEC-049, DEC-054, DEC-055, DEC-056, DEC-057; `RULES.md` Rule 9, Rule 10, Rule 16, Rule 40, Rule 48, Rule 50; `ARCHITECTURE.md` §5.2, §5.3, §10, §40, §50, §51; `ROADMAP.md` Phase 2, Phase 3, Phase 4, Post-Launch Track A; `PROVIDER_FEASIBILITY_AUDIT.md` §4, §6.7, §7, §9
 
@@ -3214,6 +3215,58 @@ Ambition and honesty are reconciled by putting the gate in front of the map: the
 - A candidate line cannot be represented as one connected undirected simple graph (DEC-057 revisit).
 - The selected route-search provider cannot present airport brands, reservation requirements, or unsupported segments.
 - The Trip/ServiceType slice resolves multi-line and brand representation in a way that changes these boundaries.
+
+---
+
+# DEC-059 — Tier 1 Rail Candidates Have No Declared Capabilities Until Eligibility Gates Pass
+
+**Status:** Accepted\
+**Date:** 2026-09-21\
+**Amends:** DEC-058 §5, Tier 1 "Present status" language only — narrowly; DEC-058 is otherwise unchanged and remains Accepted\
+**Related:** DEC-022, DEC-037, DEC-046, DEC-054, DEC-058; `RULES.md` Rule 10, Rule 40; `ARCHITECTURE.md` §51; `PROVIDER_FEASIBILITY_AUDIT.md` §6.7, §9.1
+
+## Context
+
+An independent adversarial review of the DEC-058 documentation lock found that payload-unverified Tier 1 candidates were described as already occupying a scheduled-guidance tier. The three derivative sentences in `PRODUCT.md`, `ROADMAP.md`, and `PROVIDER_FEASIBILITY_AUDIT.md` were corrected in commit `17bd32d`. The focused re-review then found the same pattern in the controlling record itself: DEC-058 §5's Tier 1 row says the first three candidates "currently appear compatible with `staticSchedule` plus alert-class capabilities" and Yurikamome "with static scheduled guidance". Naming atomic `RailCapability` cases for an operator whose payloads have never been verified translates catalog evidence into a capability declaration — and, for Yurikamome, into a derived tier — before the gate DEC-058 §4 itself requires.
+
+DEC-054 makes the tier a pure function of the **declared** capability set, and declaration is permitted only after the DEC-046 evidence gates pass. DEC-058 §4 adds the production-eligibility gate in front of that. The sequence cannot be shortcut by a status column.
+
+Accepted decision bodies are historical (DEC-036, Rule 44). The offending row is therefore preserved as written, and this record controls its interpretation.
+
+## Decision
+
+1. This Decision **narrowly amends** the Tier 1 "Present status" language of DEC-058 §5. Nothing else in DEC-058 is changed.
+2. **Tier 1 still contains** TWR Rinkai Line, Metropolitan Intercity Railway Tsukuba Express, Tama Monorail, and Yurikamome.
+3. They are **required expansion candidates**, not supported production lines. They are not demoted, removed, or made optional by this Decision.
+4. **Catalog licence labels identify candidates; they do not declare operational capabilities.** A Basic License label establishes eligibility to *begin* verification, nothing more.
+5. Their **payloads remain unverified** (`PENDING_PAYLOAD_VERIFICATION`, audit DS-08).
+6. **No service/feed-scoped `RailCapability` is currently declared** for any Tier 1 candidate — not `staticSchedule`, not `alerts`, not `serviceStatus`, not any other case.
+7. **No `RailCapabilityTier` is currently derived** for any Tier 1 candidate.
+8. **Scheduled guidance may be considered only after** payload verification, every remaining DEC-058 §4 eligibility condition, and service/feed-scoped capability declaration have all passed.
+9. **Alert-class capability** for Rinkai Line, Tsukuba Express, and Tama Monorail may likewise be considered only after verification and declaration; the catalog's Alert resource is evidence to verify, not a declaration.
+10. **No realtime capability is promised** for any Tier 1 candidate.
+11. The **mandatory sequence** is: candidate identification → complete eligibility gate → verified service/feed-scoped capability declaration → tier derivation from the declared set → capability-dependent product behaviour. It is not weakened, bypassed, or reordered.
+12. **Where DEC-058 §5's historical wording appears to assign capabilities or scheduled guidance before those steps, DEC-059 controls current interpretation.**
+
+## Consequences
+
+- The corrected sentences in `PRODUCT.md` §6, `ROADMAP.md` Post-Launch Track A, and `PROVIDER_FEASIBILITY_AUDIT.md` §6.7 (commit `17bd32d`) are now consistent with the controlling decision text; they need no further change.
+- The data-source registry (`PROVIDER_FEASIBILITY_AUDIT.md` §9) records a capability for a Tier 1 operator only when the DS-08 row carries dated, repeated payload evidence and a service/feed declaration.
+- Any document, fixture, configuration, or test that names a Tier 1 capability before those steps is a contradiction to be corrected, not a forecast.
+
+## Scope statement
+
+This is an **interpretive amendment**. It changes no tier membership, priority, baseline count (15 canonical lines/services), Airport Rail status (P0, gated), phase boundary, or Domain contract (DEC-057 unchanged); it adds no dataset, mapping, capability declaration, or code; it contacts no operator; it does not implement S3c.
+
+## Rationale
+
+The tier vocabulary exists so that product behaviour falls out of verified evidence rather than out of a table of names (DEC-054 rationale). A status column that pre-names capabilities is a table of names by another route. Correcting the derivative sentences while leaving the controlling record untouched would have left the contradiction where it matters most; amending by a new record keeps history intact (Rule 44) and makes the current interpretation unambiguous.
+
+## Revisit Triggers
+
+- DS-08 payload verification completes for any Tier 1 candidate and a service/feed capability set is declared — at which point the tier is derived per DEC-054 and the registry row updated.
+- DEC-058 §4 or §5 is superseded by a later scope decision.
+- DEC-054's tier derivation changes.
 
 ---
 
