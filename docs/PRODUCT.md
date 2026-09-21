@@ -154,7 +154,7 @@ Scope rule: a line is a candidate when its **complete canonical line** has at le
 Tiers (classification, not delivery status):
 
 - **Tier 0 — accepted baseline:** the 15 lines/services above.
-- **Tier 1 — next candidates:** TWR Rinkai Line, Tsukuba Express, Tama Monorail, Yurikamome — Basic-License catalog entries whose payloads are unverified; expected scheduled-guidance tier (the first three with alert-class capability), no realtime promised.
+- **Tier 1 — next candidates:** TWR Rinkai Line, Tsukuba Express, Tama Monorail, Yurikamome — Basic-License catalog entries whose payloads are unverified; expected to qualify for scheduled guidance only if payload verification and the full production-eligibility gate pass; the first three may also qualify for alert-class capability if verified, but no capability tier is currently declared and no realtime capability is promised.
 - **Tier 2 — Airport Rail, P0 priority, gated:** Narita (Keisei / Narita Sky Access corridor, JR East access) and Haneda (Keikyu Airport Line corridor, Tokyo Monorail). **P0 means "enable as early as legally and technically possible"; it does not mean currently supported or guaranteed for the first release.** As of 2026-09-21 no airport operator beyond Toei's own Asakusa Line stations holds production-eligible data: Keisei, Hokuso, Shibayama, and Tokyo Monorail are absent from the audited catalog; Keikyu and JR East are Challenge-only. Airport Rail is neither cancelled nor low priority — and it is not currently deliverable.
 - **Tier 3 — broader Tokyo rail:** JR East urban lines and the private railways, under the same gate; Challenge-only operators stay production-blocked.
 
