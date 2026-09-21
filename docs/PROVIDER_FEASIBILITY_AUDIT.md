@@ -389,6 +389,7 @@ Status for every row: **UNAVAILABLE_IN_AUDITED_CATALOG**; verdict: **pending ope
 | Shonan Monorail | Kanagawa |
 | Enoshima Electric Railway | Kanagawa |
 | JR Central (Tokaido Shinkansen, Tokyo–Shin-Yokohama) | inter-city; likely out of v1 scope |
+| Shibayama Railway (added 2026-09-21, §6.7) | Narita corridor partner (東成田–芝山千代田, through-run by Keisei) |
 
 Through-service partners matter for DEC-009 (continuity across operator boundaries); a partner segment without data degrades a through-running journey at the boundary. Design input for Phase 4/5, not a Phase 0 blocker.
 
@@ -798,6 +799,24 @@ The A4 analysis (§6.5, DEC-048) was computed on the **base feed's** station ide
 
 ---
 
+### 6.7 Public catalog and scope re-check for the expansion decision (2026-09-21; DEC-058)
+
+Basis: the **public** ODPT CKAN catalog (`ckan.odpt.org` organization index and organization/dataset pages) and official airport-access web pages, read credential-free by an unauthenticated client. **No credential, token, authenticated endpoint, Challenge resource, provider payload download, device, simulator, build, or test.** Earlier sections are unchanged; this section records what the catalog and official pages showed on this date so that DEC-058's tiering rests on dated evidence. Result classification: **`CATALOG_RECHECKED_NO_ELIGIBILITY_CHANGE`**.
+
+**Catalog membership (131 organizations enumerated).** Rail organizations present: `toei`, `tokyometro`, `twr`, `mir`, `tamamonorail`, `yurikamome`, `yokohamamunicipal`, `jreast`, `keikyu`, `keio`, `tobu`, `odakyu`, `seibu`, `tokyu`, `sotetsu`. **Absent:** Keisei Electric Railway (only `keisei_transit_bus`, a bus company, exists), Hokuso Railway, Shibayama Railway, Tokyo Monorail, Saitama Rapid Railway, Toyo Rapid Railway, Yokohama Minatomirai Railway. Group B (§4.2) is therefore unchanged and gains Shibayama Railway as a Narita-corridor partner.
+
+**Licence labels (organization pages).** Toei: CC BY 4.0 (dataset pages). Tokyo Metro, TWR, MIR, Tama Monorail, Yurikamome: 公共交通オープンデータ基本ライセンス (Basic License). JR East, Keikyu, Keio, Tobu, Odakyu, Seibu, Tokyu, Sotetsu: 公共交通オープンデータチャレンジ限定ライセンス (Challenge Limited License). **Identical to §4.1.**
+
+**Realtime resources (dataset pages).** `r_train_gtfs_rt-odpt_train-{twr,mir,tamamonorail,tokyometro}` each expose a single resource titled 鉄道関連リアルタイム情報(Alert) — **Alert only**; no Trip Update or Vehicle Position has appeared for any Basic-License operator other than Toei (unchanged) and Yokohama Municipal (outside scope). DS-05 and DS-08 statuses stand.
+
+**Airport-access service taxonomy (official rider-facing pages; used for classification only, never as data).** `keisei.co.jp` Skyliner page: "Skyliner limited express… in as little as 36 minutes", termini Keisei-Ueno/Nippori; "Access Express — direct connection from Shinagawa, Shimbashi, and Nihombashi" (Toei Asakusa Line stations, i.e. cross-operator through service); "Keisei Main Line Rapid Limited Express… via Funabashi". `narita-airport.jp` access page: Skyliner, Access Express, Keisei Main Line (Keisei), Narita Express and JR lines (JR East) with their Tokyo-side stations. `tokyo-haneda.com` access page: "directly connected to the Keikyu Line and the Tokyo Monorail Line", Shinagawa ≈15 min, Hamamatsucho ≈20 min. `keikyu.co.jp`: reserved-seat 座席指定ウィングサービス exists; live status text names 空港線 and 泉岳寺–羽田空港第1・第2ターミナル. Not retrievable: `jreast.co.jp` N'EX pages (HTTP 403 — not bypassed); `tokyo-monorail.co.jp` service-type detail (JavaScript-rendered). Reservation requirements and exact service-type nomenclature for Keikyu and Tokyo Monorail are therefore **unverified from official pages on this date**.
+
+**Consequences recorded in DEC-058:** no Narita or Haneda operator beyond Toei's own Asakusa Line stations is production-eligible; Airport Rail is a P0 priority gated on operator-direct rights (action A9); Tier 1 candidates (TWR, MIR, Tama Monorail, Yurikamome) remain `PENDING_PAYLOAD_VERIFICATION` at scheduled-guidance level; service brands (Skyliner, Access Express, Narita Express, Keikyu airport services, Monorail service labels) are classified as service families / display labels, not canonical lines.
+
+**Limitations:** catalog and page evidence only — no payload was retrieved; licence texts (S1–S6) were **not** re-fetched on this date and are relied on as verified 2026-09-18; official operator pages were rider-facing and partially blocked; nothing here promotes any operator's registry status (§9.1).
+
+---
+
 ## 7. Challenge-Only and Time-Limited Data — Rule
 
 - Challenge Limited License data **must not** be a Release or production dependency (DEC-037, Rule 40; S3 Art. 4(1), 4(7), 13(2)–(3)).
@@ -939,6 +958,7 @@ These are verification actions, not implementation: no code, SDK, or dependency 
 | A5 | Confirm whether any provider exposes car/door/transfer-time data with a license permitting display | RK-12 | §11 note |
 | A6 | Operator-direct investigation for Group B and for the Challenge-licensed private railways' own developer programs (if any) | DS-10; RK-2 | rows updated; none moved to "no API" without evidence |
 | A7 | **Closed (2026-09-18, B7) as an evidence-acquisition action:** the Tokyo Metro image-data Specific Terms PDF was obtained through the official resource, read, and retained outside the repository (§2.5, §3.7); the marks are out of scope for the current v1 UI. Replaced by the narrower A8 written-confirmation items | DS-14 | §3.7, §3.8 |
+| A9 | **Airport Rail production rights (DEC-058, added 2026-09-21):** obtain or verify production-use rights and production-capable data sources from Keisei, Keikyu, Tokyo Monorail, JR East, Hokuso, and Shibayama (and any further Narita/Haneda partner found). Re-check blocked providers at least quarterly against the public catalog and licence texts and record each re-check here with its date. **No contact, application, or licence acceptance has occurred**; this row records the need | DS-06/07/10; DEC-058 Tier 2 | dated rows; registry updated only on verified rights |
 | A8 | **ODPT written-confirmation backlog (§3.12):** App Store/marketing use of provider data and official marks; system-rendered surfaces (Live Activity, Dynamic Island, widgets); binary inclusion/caching and offline static bundling; non-restorable canonical data; Korean/machine translation disclosure; colour-only trademark/design ambiguity; installed-cache deletion; Toei attribution placement. **Sent 2026-09-19** to `datacenter@odpt.org` (items 1, 5-partial, 6, 7, 8, 9 as Q1–Q6; items 2–4 and 10 deferred) — status `Awaiting official response`; no approval implied; restrictions unchanged (§3.12). Pre-release gate for any official-mark or ambiguous-surface use | DS-03/04/14 narrow PENDING_COMMERCIAL_CONFIRMATION; RK-5, RK-15, RK-16 | §3.6.4, §3.11, §3.12 updated |
 
 ---

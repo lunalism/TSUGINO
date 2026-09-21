@@ -132,16 +132,33 @@ Expansion must be based on:
 
 Nationwide coverage is a long-term objective, not an MVP requirement.
 
-### Initial Release Coverage (DEC-047)
+### Initial Release Coverage (DEC-047, DEC-058)
 
-The initial App Store release covers **all 13 Tokyo subway lines** with an explicit capability tier per service:
+The accepted current baseline is **15 canonical lines/services across Toei and Tokyo Metro** — all 13 Tokyo subway lines plus two further Toei services — each with an explicit capability tier per service:
 
 - **Toei Subway** — Asakusa, Mita, Shinjuku, Oedo: **Realtime Journey Tracking** (verified trip-level realtime).
 - **Tokyo Metro** — Ginza, Marunouchi (incl. branch), Hibiya, Tozai, Chiyoda, Yurakucho, Hanzomon, Namboku, Fukutoshin: **Scheduled Journey Guidance** (user-selected scheduled journey, timetable data, and available service-status/Alert information; never presented as actual train location or realtime progress).
-- **Tokyo Sakura Tram** (realtime tier) and the **Nippori-Toneri Liner** (scheduled tier, DEC-046) are also included; they are not subway lines.
+- **Tokyo Sakura Tram** (realtime tier) and the **Nippori-Toneri Liner** (scheduled tier, DEC-046) are included; they are not subway lines, which is why "13 subway lines" is a subway count, not the whole scope (DEC-058 §1).
 - Other operators are **Deferred / Unsupported** for journey guidance until verified (DEC-037, audit DS-08).
 
-Product and marketing copy must not describe all 13 lines as having realtime tracking; the generic word "supported" must not hide the tier difference.
+Product and marketing copy must not describe all 13 subway lines as having realtime tracking; the generic word "supported" must not hide the tier difference.
+
+### Expansion Direction (DEC-058)
+
+> TSUGINO intends to support all production-eligible Tokyo urban railways through staged expansion.
+
+This is a direction governed by a **production-eligibility gate**, not a claim that any further operator is licensed, mapped, or implemented today. A line becomes supported only when its production-use licence is verified, its payloads are repeatedly verified, its compliance duties are implemented, its `RailCapability` set is declared at service/feed scope, and its canonical mapping is deterministic. Challenge-only access never passes the gate.
+
+Scope rule: a line is a candidate when its **complete canonical line** has at least one station in Tokyo, or when it belongs to the Narita/Haneda airport-access corridor. Lines are modelled complete and never clipped at the prefectural boundary; through service does not recursively pull connected lines into scope; route results may show unsupported segments as untrackable presentation without making them supported lines.
+
+Tiers (classification, not delivery status):
+
+- **Tier 0 — accepted baseline:** the 15 lines/services above.
+- **Tier 1 — next candidates:** TWR Rinkai Line, Tsukuba Express, Tama Monorail, Yurikamome — Basic-License catalog entries whose payloads are unverified; expected scheduled-guidance tier (the first three with alert-class capability), no realtime promised.
+- **Tier 2 — Airport Rail, P0 priority, gated:** Narita (Keisei / Narita Sky Access corridor, JR East access) and Haneda (Keikyu Airport Line corridor, Tokyo Monorail). **P0 means "enable as early as legally and technically possible"; it does not mean currently supported or guaranteed for the first release.** As of 2026-09-21 no airport operator beyond Toei's own Asakusa Line stations holds production-eligible data: Keisei, Hokuso, Shibayama, and Tokyo Monorail are absent from the audited catalog; Keikyu and JR East are Challenge-only. Airport Rail is neither cancelled nor low priority — and it is not currently deliverable.
+- **Tier 3 — broader Tokyo rail:** JR East urban lines and the private railways, under the same gate; Challenge-only operators stay production-blocked.
+
+Airport service brands (Narita Express, Skyliner, Access Express, named Keikyu airport services, Tokyo Monorail service labels) are service families or display labels, never lines in their own right (DEC-058 §7).
 
 ---
 
@@ -599,7 +616,7 @@ Feature richness may vary by **verified service capability** (DEC-022, DEC-046, 
 
 ## 19. MVP Scope
 
-The MVP targets Tokyo — the 13 Toei and Tokyo Metro subway lines plus the two evaluated Toei services, each in its capability tier (§6, DEC-047). The user selects the boarding station, the intended departure time or scheduled train, and the destination; TSUGINO follows the selected journey with the best verified capability for that service.
+The MVP targets Tokyo — the 15 accepted Toei and Tokyo Metro lines/services (the 13 subway lines plus Tokyo Sakura Tram and the Nippori-Toneri Liner), each in its capability tier (§6, DEC-047, DEC-058). Further Tokyo urban rail and Airport Rail follow the staged, gated expansion in §6. The user selects the boarding station, the intended departure time or scheduled train, and the destination; TSUGINO follows the selected journey with the best verified capability for that service.
 
 The MVP should include, where supported by reliable data:
 
@@ -688,8 +705,7 @@ The MVP is successful if a user can:
 
 Potential future expansion includes:
 
-- additional Tokyo private railways
-- JR East production-grade support
+- the gated Tokyo urban-rail programme of §6 (Tier 1 candidates, Airport Rail as P0, broader private railways and JR East once production rights exist — DEC-058)
 - Kansai
 - Chubu
 - nationwide Japan coverage

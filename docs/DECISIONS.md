@@ -2002,6 +2002,7 @@ Relationship to earlier decisions: this Decision **uses** DEC-022's capability m
 
 **Status:** Accepted\
 **Date:** 2026-09-19\
+**Extended by:** DEC-058 (2026-09-21) — records that the accepted scope below is 15 canonical lines/services including Tokyo Sakura Tram and the Nippori-Toneri Liner, and adds the gated expansion programme; the body of this record is unchanged\
 **Closes:** `PROVIDER_FEASIBILITY_AUDIT.md` RK-2 (launch-scope product decision)\
 **Related:** DEC-001, DEC-004 (Provisional — unchanged), DEC-005, DEC-007, DEC-022, DEC-024, DEC-032, DEC-037, DEC-038, DEC-041, DEC-042, DEC-046
 
@@ -3067,6 +3068,152 @@ One `LineID` for Marunouchi follows from Rule 9 and DEC-047: canonical identity 
 - Branch or segment identity becomes a real product requirement.
 - Persistence migration requirements arise after topology data is stored (Phase 6).
 - The Trip slice resolves through-service ownership in a way that changes this boundary.
+
+---
+
+# DEC-058 — Tokyo Urban Rail Expansion Uses Production-Eligibility Gates and Prioritizes Airport Rail
+
+**Status:** Accepted\
+**Date:** 2026-09-21\
+**Extends:** DEC-047 (not superseded — its capability-aware guidance and launch matrix remain valid)\
+**Related:** DEC-001, DEC-004, DEC-009, DEC-021, DEC-022, DEC-037, DEC-038, DEC-046, DEC-047, DEC-048, DEC-049, DEC-054, DEC-055, DEC-056, DEC-057; `RULES.md` Rule 9, Rule 10, Rule 16, Rule 40, Rule 48, Rule 50; `ARCHITECTURE.md` §5.2, §5.3, §10, §40, §50, §51; `ROADMAP.md` Phase 2, Phase 3, Phase 4, Post-Launch Track A; `PROVIDER_FEASIBILITY_AUDIT.md` §4, §6.7, §7, §9
+
+## Context
+
+DEC-047 fixed the initial release at "all 13 Tokyo subway lines" and, in the same record, placed Tokyo Sakura Tram and the Nippori-Toneri Liner in scope while noting they "are not part of the '13 subway lines' statement". Current-truth documents then repeated the "13 lines" phrase as if it were the whole accepted scope, which under-counts what DEC-047 actually accepted.
+
+The product owner has since set a broader direction: TSUGINO should support every Tokyo urban railway that has sustainable production-use rights, sufficient trustworthy data, and a safe mapping into the canonical model; and Airport Rail — access to and from Narita and Haneda — is a tourist-critical P0 priority rather than an afterthought to subway commuting.
+
+A read-only product/provider/licensing audit on 2026-09-21 (`PROVIDER_FEASIBILITY_AUDIT.md` §6.7) re-verified the public ODPT catalog and the official airport-access sources. Its findings constrain what can honestly be promised: every major private railway and JR East remain under the Challenge Limited License (production-blocked, DEC-037, audit §7); the four remaining Basic-License rail operators — TWR Rinkai Line, Metropolitan Intercity Railway (Tsukuba Express), Tama Monorail, Yurikamome — publish static schedule and at most GTFS-RT Alert; and **no** Narita or Haneda airport operator other than Toei's own Asakusa Line stations is production-eligible today: Keisei, Hokuso, Shibayama, and Tokyo Monorail are absent from the catalog, and Keikyu and JR East are Challenge-only. The audit also verified that every candidate network shape is representable by DEC-057's generic topology.
+
+The decision therefore has to do three things at once: correct the baseline count, lock an ambition that is real, and refuse to let that ambition claim data it does not have.
+
+## Decision
+
+### 1. Present baseline — 15 canonical lines/services, not "13 lines"
+
+1. The currently accepted scope already contains **all 13 Toei Subway and Tokyo Metro subway lines, Tokyo Sakura Tram, and the Nippori-Toneri Liner** (DEC-047 decisions 1, 2, 4).
+2. The honest current canonical baseline is therefore **15 railway lines/services across Toei and Tokyo Metro**. "13 subway lines" remains correct as a count of subway lines and must not be used as the count of the whole accepted scope.
+3. Tokyo Sakura Tram and the Nippori-Toneri Liner are **not new additions** made by this Decision; they were within DEC-047's accepted scope and were simply not counted in its "13 subway lines" statement.
+4. Existing capability differences are unchanged: Tokyo Sakura Tram qualifies for realtime behaviour according to its verified feed capabilities; the Nippori-Toneri Liner provides scheduled guidance while trip-level realtime is not declared (DEC-046).
+5. Product behaviour continues to derive from declared service/feed capabilities (DEC-022, DEC-054, Rule 10) — never from operator or line-name hardcoding.
+
+Current-truth documents are corrected where "13 lines" was used as the entire scope; historical wording inside prior decision records is preserved.
+
+### 2. Product direction
+
+> **TSUGINO intends to support all production-eligible Tokyo urban railways through staged expansion.**
+
+This is a product direction governed by the eligibility gate in §4. It is **not** a claim that any Tokyo operator beyond the baseline is currently licensed, mapped, implemented, or launch-ready, and it is **not** a Phase 1 implementation commitment (Rule 45, Rule 48).
+
+### 3. Canonical geographic scope — complete lines, no clipping, no recursion
+
+A railway line may enter the Tokyo urban-rail **candidate set** when either:
+
+1. the complete canonical line contains at least one station located in Tokyo Metropolis; or
+2. the line is part of the explicitly prioritized Narita or Haneda airport-access corridor.
+
+Further:
+
+- TSUGINO models **complete canonical railway lines**. A line is **never clipped** at the Tokyo prefectural boundary; a line extending into Kanagawa, Chiba, or Saitama remains one canonical `RailwayLine` (DEC-057), because clipping would manufacture a false terminus and a `LineID` no provider or passenger recognises.
+- **Through-service participation does not recursively pull every connected line into scope.** A line enters the candidate set only on its own merits under rules 1–2; continuity across an unsupported partner segment is handled at the boundary (DEC-009, Rule 16).
+- A route-search provider result (Phase 3, DEC-004) **may display an unsupported line or segment as untrackable presentation**; that display never makes it a supported canonical TSUGINO line.
+- **Geographic inclusion alone never bypasses** the licensing and production-eligibility gate.
+
+This Decision adds no line datasets, stations, mappings, or coordinates.
+
+### 4. Production-eligibility gate
+
+A candidate line becomes **supported** only when **all** applicable conditions hold:
+
+1. a **production-use licence or operator authorisation** is verified from licence text or written authorisation (Rule 40, DEC-037);
+2. the required provider payloads have been **repeatedly verified**, not inferred from catalog presence (audit §9.1);
+3. attribution, update-notice, deletion, caching, and redistribution duties are **understood and implemented**;
+4. `RailCapability` values are **declared at the correct service/feed scope** after the DEC-046 evidence gates (DEC-054);
+5. **deterministic canonical mapping** to TSUGINO identifiers exists (Phase 2, DEC-048, §40).
+
+Recorded consequences: **Challenge-only / Challenge Limited access does not satisfy condition 1**; catalog presence alone establishes nothing; missing, ambiguous, or non-production rights keep a candidate gated; and a failed gate never justifies invented, stale, or manually guessed operational data (DEC-038, Rule 50).
+
+### 5. Expansion tiers (classification, not delivery status)
+
+| Tier | Content | Present status |
+|---|---|---|
+| **Tier 0 — accepted current baseline** | 13 Toei/Tokyo Metro subway lines, Tokyo Sakura Tram, Nippori-Toneri Liner — **15 canonical lines/services** | accepted in scope (DEC-047); tiers per verified capability |
+| **Tier 1 — next production-eligible expansion candidates** | TWR Rinkai Line; Metropolitan Intercity Railway Tsukuba Express; Tama Monorail; Yurikamome | **required candidates, not yet supported**: Basic License verified as catalog label; payloads unverified. Rinkai, Tsukuba Express, and Tama Monorail currently appear compatible with `staticSchedule` plus alert-class capabilities; Yurikamome with static scheduled guidance — all **subject to payload verification**. No realtime tracking is promised for any of them |
+| **Tier 2 — Airport Rail, P0 product priority, gated** | Narita: Keisei Main Line and Narita Sky Access corridor (with Hokuso and Shibayama partner segments), JR East airport access. Haneda: Keikyu Airport Line corridor, Tokyo Monorail | **P0 priority; presently blocked by data rights** — see §6 |
+| **Tier 3 — broader Tokyo rail expansion** | JR East urban lines; Tokyu, Keio, Odakyu, Seibu, Tobu, Sotetsu; through-service partners (Saitama Rapid, Toyo Rapid, Minatomirai) | future candidates under the same gate; Challenge-only operators remain production-blocked until valid production rights exist |
+
+Promotion from any tier into supported scope happens **only** when the §4 gate passes and the data-source registry row reaches `production-eligible` (audit §9.1). Tier 1 candidates must not be described as implemented or as accepted production support.
+
+### 6. Airport Rail — P0 priority, gated, not a current delivery promise
+
+Airport Rail is a **P0 product priority**: overseas visitors need dependable, honest guidance to and from Narita and Haneda on their first and last journeys, on unfamiliar lines with brand-heavy service names, terminal choices, and reserved-seat products.
+
+**P0 means "resolve and enable as early as legally and technically possible." It does not mean "currently production-supported" or "guaranteed for the first release."**
+
+Current blockers (verified 2026-09-21, audit §6.7):
+
+- **Narita:** Keisei, Hokuso, and Shibayama production data rights are not established by the audited catalog evidence (no organisation or dataset present); JR East is Challenge-only and therefore production-blocked.
+- **Haneda:** Keikyu is Challenge-only and therefore production-blocked; Tokyo Monorail production data rights are not established by the audited catalog evidence.
+- The **Toei Asakusa Line** is supported independently under Toei's CC BY 4.0 data, but that grants **no** support or rights for partner-operated through-service segments beyond Toei's own stations.
+
+Airport Rail moves into supported scope **only** after operator-direct rights, or another verified production-authorised source, satisfy the §4 gate. Airport Rail is **neither cancelled, optional, nor low priority — and it is not currently deliverable.** Both halves of that sentence are binding.
+
+### 7. Airport service taxonomy — brands are not lines
+
+Modelling boundaries recorded now; types **not** introduced here:
+
+- `RailwayLine` represents canonical infrastructure/service lines (DEC-057).
+- **N'EX / Narita Express, Skyliner, Access Express, named Keikyu airport services, and Tokyo Monorail rapid/express/local labels are service families, service patterns, or display brands — not automatically distinct `LineID` values.** A brand is never forced into `RailwayLine` identity merely to satisfy the product priority (Rule 9, DEC-021).
+- Candidate infrastructure lines — Keisei Main Line, Narita Sky Access, Keikyu Airport Line, Tokyo Monorail — **may** become canonical `RailwayLine` values if their later data and identity audits approve them, including the canonical-boundary question for multi-owner infrastructure.
+- The exact representation of service family or brand, limited-express classification, reserved-seat requirements, multi-line through journeys, tourist-facing display labels, and unsupported route segments belongs to the **later Trip/ServiceType contract audit** (with the open singular `Trip.lineID` question recorded in DEC-057 D10).
+
+### 8. Relationship to S3c and DEC-057
+
+- **DEC-057 remains valid and unchanged.** Its generic connected undirected simple topology supports the current network and every plausible future Tokyo rail shape examined (paths, branches, the Yamanote cycle, loop-plus-tail, multi-branch private networks).
+- The scope expansion **requires no operator-specific topology case** and gives no reason to weaken `StationAdjacency` or `RailwayLineTopology`.
+- Airport express skip-stops, brands, and through services are Trip concerns, not topology.
+- S3c implementation may proceed after this document lock and its independent review. **This Decision does not claim that S3c has been implemented.**
+
+### 9. Phase ownership
+
+- **Phase 1:** provider-neutral canonical domain contracts; generic topology values; capability vocabulary and derivation; **no real provider datasets**.
+- **Phase 2:** actual operator/line/station data population; provider identifier mappings (including multi-provider aliases such as the Marunouchi branch record, DEC-057 D6); representative coordinate selection and provenance in mapping data (DEC-056); candidate-line payload validation and canonical mapping; **promotion of lines whose production gates pass**.
+- **Phase 3 and later provider phases:** route-search integration with unsupported-segment presentation and brand/reservation fields (DEC-004); realtime/scheduled provider adapters (GTFS-RT Alert adapters for Tier 1 operators share the Tokyo Metro shape); operational behaviour selected from declared capabilities.
+- **Later Trip/ServiceType slice:** resolves the airport-service and through-service representation questions in §7, including the singular `Trip.lineID` concern.
+
+None of this implementation is pulled into the current task.
+
+### 10. Rights and evidence follow-up
+
+Durable actions are recorded in `ROADMAP.md` (Post-Launch Track A) and `PROVIDER_FEASIBILITY_AUDIT.md` (§13 A9): obtain or verify production-use rights and production-capable data sources from **Keisei, Keikyu, Tokyo Monorail, JR East, Hokuso, and Shibayama** (and any further Narita/Haneda partner discovered). Blocked Airport Rail providers are re-checked on a **periodic (at least quarterly) basis** against the public catalog and licence texts. **No outreach has occurred**; this Decision records the need, not a contact, application, or accepted licence.
+
+## Consequences
+
+- `PRODUCT.md` §6 and §19 state the 15-line baseline, the expansion direction, the eligibility gate, the tiers, and Airport Rail's P0-but-gated status; §23 no longer lists Tokyo private railways and JR East as vague "long-term" items but points to the tiered programme.
+- `FEATURES.md` §10.3 states that capability availability extends to every future operator under the same gate and that route results may show untrackable unsupported segments.
+- `ARCHITECTURE.md` §40 and §50 note multi-provider aliasing and that adding an operator also requires the §4 gate.
+- `ROADMAP.md` Phase 2 lists the Tier 1 candidates as gated data work; Post-Launch Track A becomes the tiered expansion programme with the rights-outreach action and re-check cadence.
+- `PROVIDER_FEASIBILITY_AUDIT.md` gains a dated §6.7 catalog/scope re-check, a Shibayama row in §4.2, and action A9; earlier evidence is untouched.
+- Marketing, App Store, and in-app copy must not state or imply airport coverage until an airport line passes the gate (DEC-038, Rule 50).
+
+## Scope statement
+
+This is a **product-scope and eligibility-policy decision**. It adds no dataset, mapping, coordinate, topology record, provider adapter, Domain type, or canonical identifier; it does not implement S3c, `Trip`, `ServiceType`, route search, or any presentation surface; it contacts no operator and accepts no licence. It extends DEC-047 and leaves DEC-057 unchanged.
+
+## Rationale
+
+Ambition and honesty are reconciled by putting the gate in front of the map: the direction can be as broad as the owner wants precisely because nothing ships until rights, payloads, compliance, capabilities, and mapping are each verified. Counting the baseline correctly (15, not 13) removes a self-inflicted understatement. Declaring Airport Rail P0 while stating plainly that it is blocked keeps the priority visible to planning without letting product copy overreach — the failure DEC-038 and Rule 50 exist to prevent. Keeping brands out of `LineID` protects DEC-057's topology and DEC-021's identity rule from the most likely way the airport priority could distort the Domain.
+
+## Revisit Triggers
+
+- An airport operator (Keisei, Keikyu, Tokyo Monorail, JR East, Hokuso, Shibayama) publishes production-usable data or grants a production licence.
+- The ODPT Challenge Limited License terms, scope, or end date change, or an operator moves to the Basic License / CC BY.
+- The ODPT catalog gains Trip Update / Vehicle Position resources for a Basic-License operator.
+- Tier 1 payload verification fails or reveals capabilities different from the catalog label.
+- A candidate line cannot be represented as one connected undirected simple graph (DEC-057 revisit).
+- The selected route-search provider cannot present airport brands, reservation requirements, or unsupported segments.
+- The Trip/ServiceType slice resolves multi-line and brand representation in a way that changes these boundaries.
 
 ---
 
