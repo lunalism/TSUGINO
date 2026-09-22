@@ -246,11 +246,11 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 - whether direction or destination is stored, derived, or deferred;
 - how through service remains representable without treating it as a transfer.
 
-**All of these are now answered by DEC-060**, which replaces the former `ARCHITECTURE.md` §5.3 sketch: `Trip` stores `id`, an ordered `stopSequence` of passenger stops (≥ 2, no adjacent duplicate, non-adjacent repeats required), and non-empty `lineSegments` that are ordered, joined at a shared stop, covering, and normalised — so a multi-line through service is one Trip rather than a transfer. `providerReferences` and a singular `lineID` are rejected; `scheduledTimes`, direction, destination, and headsign are deferred with their reasons recorded; `ServiceType` is deferred to **S4b**.
+**All of these are now answered by DEC-060**, which replaces the former `ARCHITECTURE.md` §5.3 sketch: `Trip` stores `id`, an ordered `stopSequence` of passenger stops (≥ 2, no adjacent duplicate, non-adjacent repeats required), non-empty `lineSegments` that are ordered, joined at exactly one shared boundary index, covering, and normalised — so a multi-line through service is one Trip rather than a transfer — and a `coverage` value stating whether the represented traversal reaches the real service's origin and destination, so a partial representation is never mistaken for a complete one. `providerReferences` and a singular `lineID` are rejected; `scheduledTimes`, direction, destination, and headsign are deferred with their reasons recorded; `ServiceType` is deferred to **S4b**.
 
 **S4 is subdivided (DEC-060 H):**
 
-- **S4a — Trip structure:** `Trip` and `TripLineSegment` per DEC-060 §A–§G. Implementable now; **not started**.
+- **S4a — Trip structure:** `Trip`, `TripLineSegment`, and `TripCoverage` per DEC-060 §A–§G, with focused tests covering recurring-run `TripID` semantics, ID-only equality, all four coverage states, the genuine short-turn versus incomplete-destination distinction, every segment boundary invariant, repeated visits, through service, and `Codable` rejection of invalid structures. Implementable now; **not started**.
 - **S4b — service class:** a separate decision settling whether a canonical service-class identity exists, its vocabulary shape, its separation from brand and reserved-seat status, and whether `Trip` gains an optional reference to it. **Not started; its decision identifier is unassigned.**
 
 Neither sub-slice is implemented. S4 is complete only when **both** are disposed of under the completion rule below — S4b either decided and implemented, or explicitly moved out of Phase 1 by an accepted decision.

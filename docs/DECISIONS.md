@@ -3304,7 +3304,18 @@ This Decision **locks the S4 contract**. It claims **no** implementation: no `Tr
 ### A. `Trip` identity and value semantics
 
 1. `Trip` is a **domain entity** identified by `TripID` (DEC-021; `TripID` already exists).
-2. **Equality and hashing use `TripID` alone**, written explicitly as for `Operator`, `Station`, and `RailwayLine` (DEC-053, DEC-055 D3, DEC-057 D5). A corrected stop list or segment list is the **same** Trip.
+
+   **What a Trip identifies.** A `Trip` identifies **one recurring canonical scheduled run definition** — not one dated physical train run, and not merely a structural stopping-pattern template. Implications:
+
+   - two separately published departures are **different** Trips even when they share the same `stopSequence`, the same `lineSegments`, the same coverage, and the same future service class;
+   - a Trip is therefore **never deduplicated by structural equality**;
+   - a corrected stop sequence, segment description, or coverage for the **same logical scheduled run** keeps the **same `TripID`**; a provider refresh does not mint a new Trip merely because descriptive data changed;
+   - deciding that two provider records denote the same logical run is **Phase 2 mapping and provenance** work; provider identifiers stay outside the canonical value, and **provider identity never defines canonical identity** — providers supply evidence, TSUGINO owns the `TripID` (Rule 9, DEC-021);
+   - a **service calendar** determines the dates on which a recurring Trip operates; that calendar is **not** part of S4a;
+   - a **particular dated execution** of a Trip is not this entity: date-specific operation, cancellation, delay, and live progress belong to the later schedule, realtime, and Journey contracts (DEC-011, DEC-050).
+
+   No departure time, calendar, provider reference, or dated-run identifier is introduced by this Decision.
+2. **Equality and hashing use `TripID` alone**, written explicitly as for `Operator`, `Station`, and `RailwayLine` (DEC-053, DEC-055 D3, DEC-057 D5) — valid precisely because the entity subject above is now defined. A corrected stop list, segment list, or coverage is the **same** Trip.
 3. Every structural property — the stop traversal and the line segments — is **descriptive** and participates in neither equality nor hashing. `Codable` and actor-transfer tests must therefore compare them explicitly, because ID-only equality cannot prove they survived.
 4. `Trip` is a `let`-only value type and is **immutable after successful construction**.
 5. `Trip` carries **no provider references, no provider identifiers, and no provider codes** (Rule 9, DEC-021, DEC-020). The `providerReferences` entry in the §5.3 sketch is **rejected**; provider identity lives in the Phase 2 mapping layer (§40).
@@ -3339,13 +3350,37 @@ Invariants, all checkable from the `Trip` value alone:
 2. Indices are **valid**: `0 <= startIndex < endIndex <= stopSequence.count - 1`. Ranges are **closed** — both endpoints are stops of that segment.
 3. Every segment **spans at least one movement** (`endIndex > startIndex`); a zero-length segment names a line that carries the train nowhere.
 4. Segments are stored **in traversal order**, and each one **joins the previous at a shared stop**: `segment[n].startIndex == segment[n - 1].endIndex`. The shared index is the **line-boundary station** — one stop, belonging to both segments as an endpoint.
-5. **Full coverage, no gaps, no overlaps**: `lineSegments.first.startIndex == 0` and `lineSegments.last.endIndex == stopSequence.count - 1`; rule 4 makes any other overlap impossible.
+5. **Full coverage, with exactly one shared endpoint per join.** `lineSegments.first.startIndex == 0` and `lineSegments.last.endIndex == stopSequence.count - 1`. **Consecutive closed segment ranges share exactly one endpoint. This shared boundary index is the only permitted overlap; all overlap beyond it and all gaps are invalid.** Overlap by two or more traversal indices, a gap between segments, a nested range, a duplicate range, and any order that does not progress through the traversal are each invalid — all of which rule 4 together with rules 2–3 already excludes, stated here explicitly so no implementation reads "no overlap" as forbidding the required boundary.
 6. **Adjacent segments must not share a `lineID`.** Two consecutive segments on the same line are one segment; requiring the normalised form keeps a Trip's representation unique, so value comparison of the segment list is meaningful.
 7. **Non-adjacent segments may repeat a `lineID`** — a service may leave a line and return to it.
 8. A **one-line Trip** is exactly one segment covering `0...stopSequence.count - 1`. This is the ordinary case for the current 13-line launch scope and costs nothing.
 9. A **multi-line through service** is two or more segments over **one** `stopSequence` — one `Trip`, no transfer, satisfying DEC-009 and Rule 16 structurally rather than by convention.
 
-**Unsupported continuation.** Where a real service continues onto infrastructure that TSUGINO has not yet modelled canonically, the `Trip` **ends at the last canonically supported stop**. No `LineID` is invented for the unsupported line, no segment is fabricated, and nothing in the value claims the run is complete. Whether and how such a truncation is disclosed to the user is a presentation and route-provider concern (DEC-058 §3 already allows unsupported segments to be shown as untrackable), not a Domain field in this slice.
+**Unsupported continuation.** Where a real service runs beyond the railway TSUGINO has modelled canonically, the represented traversal covers only the supported portion: **no `LineID` and no `StationID` is ever invented** for unmodelled infrastructure, and no segment is fabricated. Such a Trip is **not** silently presented as complete — the value states what it covers through `coverage` (§C2 below), so a partial representation is distinguishable from a service that genuinely ends there. Partial coverage is **not** a passenger transfer, and one physical through service is **never** split into several Trips merely to make each look complete.
+
+### C2. `TripCoverage` — what the represented traversal actually covers
+
+`Trip` stores `coverage: TripCoverage`, an immutable value stating independently whether the represented traversal reaches the real service's own endpoints:
+
+```text
+TripCoverage
+- includesServiceOrigin       (Bool)
+- includesServiceDestination  (Bool)
+```
+
+1. All **four** combinations are valid and meaningful:
+
+   | `includesServiceOrigin` | `includesServiceDestination` | Meaning |
+   |---|---|---|
+   | true | true | the complete passenger service is represented |
+   | true | false | representation starts at the real origin but ends before the real destination |
+   | false | true | representation starts after the real origin but reaches the real destination |
+   | false | false | only a supported middle portion of the service is represented |
+
+2. `coverage` is **descriptive data**: it is excluded from `Trip` identity (§A2) exactly as the traversal and segments are.
+3. `TripCoverage` is a value with **complete-value equality**, no identifier, and — having no invalid combination — **total construction**. `Trip` decoding must still validate the combined Trip invariants.
+4. It records **only the minimum completeness claim actually known**. It identifies no missing line, station, operator, or brand, and **no count of unknown stops**: unknown data stays unknown, and this Decision defines no way to count it.
+5. A different representation carrying exactly these two facts is acceptable; inventing missing stations, lines, or stop counts is not.
 
 ### D. Operator and service-brand separation
 
@@ -3376,7 +3411,7 @@ DEC-057 is preserved unchanged:
 ### G. Direction, destination, and headsign
 
 1. **No direction enum.** Inbound/outbound and ascending/descending do not survive the verified launch network: a loop-plus-tail line has no single terminal pair, and a branch line's "toward X" depends on the branch. Structural direction is given by **traversal order** — `stopSequence` runs from first stop to last.
-2. **No stored destination.** The terminal passenger stop is `stopSequence.last`; storing it again would duplicate state that can drift.
+2. **No stored destination, and no unconditional terminal claim.** `stopSequence.first` is the **first represented passenger stop** and `stopSequence.last` the **final represented passenger stop**. The first is the service's actual origin **only when** `coverage.includesServiceOrigin` is true; the last is the actual destination **only when** `coverage.includesServiceDestination` is true (§C2). A separate stored destination field would merely duplicate state that can drift and is not introduced. Consumers — including the later JourneyEngine and every presentation surface — **must consult coverage before** labelling a represented stop as the origin or terminal, or before claiming a remaining-stop count for the complete physical service (DEC-038, Rule 50). A **genuine short-turn** service that really ends where it is shown has `includesServiceDestination == true`; a **partial representation** ending at the same station has `includesServiceDestination == false`. The two states are therefore **not** identical, and nothing may treat them as such.
 3. **Provider-native direction identifiers** (GTFS `direction_id`, ODPT ascending/descending) stay **Phase 2 mapping data** (Rule 9).
 4. **Headsign is deferred.** A headsign is a passenger-facing, localized label that is *not* assumed to equal the final stop; its localization contract (DEC-041, DEC-042, DEC-053) and provider semantics are settled with the display work, not here.
 5. Loop, loop-plus-tail, branch, and short-turn shapes are all covered by traversal order alone (§ shape proofs).
@@ -3410,8 +3445,10 @@ S4 as a whole is **not** complete until S4b is disposed of — decided and imple
 | `lineSegments` non-empty | **S4a value construction** |
 | index bounds, `endIndex > startIndex` | **S4a value construction** |
 | segments ordered and joined at a shared index | **S4a value construction** |
-| full coverage, no gaps or overlaps | **S4a value construction** |
+| full coverage; exactly one shared endpoint per join; no gap, no wider overlap, no nesting, no duplicate range | **S4a value construction** |
 | adjacent segments differ in `lineID` (normalised form) | **S4a value construction** |
+| `coverage` decodes through its own value contract; all four combinations valid | **S4a value construction** |
+| coverage never relaxes a stop or segment rule — a partial Trip still needs ≥ 2 represented stops, valid segments, and no fabricated identifier | **S4a value construction** |
 | every stop is a known canonical `Station` | **Phase 2 dataset validation** |
 | every `lineID` names a known canonical `RailwayLine` | **Phase 2 dataset validation** |
 | each stop belongs to its segment's line / topology membership | **Phase 2 dataset validation** |
@@ -3419,7 +3456,7 @@ S4 as a whole is **not** complete until S4b is disposed of — decided and imple
 | schedule validity, service days, rollover | **later timetable contract** (§F) |
 | current station, next station, remaining stops, progress | **Phase 5 JourneyEngine** (DEC-011, DEC-050) |
 
-**Construction style** follows the established pattern and introduces **no new error architecture**: `TripLineSegment` and `Trip` use **failable initialisers that never trap** (DEC-051 rule 11), and decoding applies exactly the same rules, failing with `DecodingError.dataCorrupted` while missing keys and wrong types keep their natural `Codable` errors (DEC-053, DEC-056, DEC-057). Both values are `nonisolated`, `Hashable`, `Codable`, `Sendable`, and import-free; `TripLineSegment` is a value with **complete-value** equality and no identifier.
+**Construction style** follows the established pattern and introduces **no new error architecture**: `TripLineSegment` and `Trip` use **failable initialisers that never trap** (DEC-051 rule 11), and decoding applies exactly the same rules, failing with `DecodingError.dataCorrupted` while missing keys and wrong types keep their natural `Codable` errors (DEC-053, DEC-056, DEC-057). `TripCoverage` has no invalid combination, so **its construction is total**; `Trip` decoding must nevertheless validate the combined Trip invariants, and no synthesized decoding path may bypass them. Arbitrary decoded integers — negative, out of bounds, or extreme — must be **validated before** being used as an index or range, so decoding is safe and non-trapping for any payload. All three values are `nonisolated`, `Hashable`, `Codable`, `Sendable`, and import-free; `TripLineSegment` and `TripCoverage` are values with **complete-value** equality and no identifier.
 
 ## Shape proofs
 
@@ -3436,9 +3473,11 @@ Generic examples only; `A…F` are synthetic stations and `L1`, `L2` synthetic l
 | 7 | one-line Trip | one segment covering the whole traversal | **fully representable** |
 | 8 | multi-line continuous through service | stops `[A,B,X,C,D]`; segments `[(L1, 0, 2), (L2, 2, 4)]` — one Trip, no transfer | **fully representable** |
 | 9 | line-boundary station | index 2 (`X`) above: one stop, endpoint of both segments | **fully representable** |
-| 10 | continuation beyond canonical coverage | traversal ends at the last supported stop; no segment or `LineID` invented | **honestly truncated at the supported boundary**; full coverage awaits Phase 2 canonical modelling of that line |
+| 10 | continuation beyond canonical coverage | real service `A→B→C`, only `A→B` modelled: stops `[A,B]`; segments `[(L1, 0, 1)]`; `coverage = (origin: true, destination: false)`. No `LineID` or `StationID` is fabricated for the `B→C` portion; `B` is **not** claimed as the actual destination, and no remaining-stop count for the full service is implied | **fully representable and honest** — distinguishable from shape 6, a genuine short-turn ending at `B` with `destination: true` |
+| 11 | missing leading coverage | real service `A→B→C`, only `B→C` modelled: stops `[B,C]`; `coverage = (origin: false, destination: true)`; `B` is not claimed as the service origin | **fully representable and honest** |
+| 12 | supported middle only | real service `A→B→C→D`, only `B→C` modelled: stops `[B,C]`; `coverage = (origin: false, destination: false)` | **fully representable and honest** |
 
-Shapes 1–9 are structurally complete now; every one of them still awaits **Phase 2 data** before any real service can be constructed.
+Shapes 1–9 are complete-coverage cases (`origin: true, destination: true`); shapes 10–12 are the honest partial-coverage cases. All twelve are structurally representable now, and every one still awaits **Phase 2 data** before any real service can be constructed.
 
 ## Alternatives considered
 
@@ -3446,7 +3485,7 @@ Line association: the six candidates in the decision gate above; candidate 3 sel
 
 ## Consequences
 
-- `ARCHITECTURE.md` §5.3 replaces the sketch with this contract: `providerReferences`, singular `lineID`, `scheduledTimes`, `direction`, `destination`, and `serviceType` leave the accepted shape, each with its disposition recorded.
+- `ARCHITECTURE.md` §5.3 replaces the sketch with this contract: `providerReferences`, singular `lineID`, `scheduledTimes`, `direction`, `destination`, and `serviceType` leave the accepted shape, each with its disposition recorded, and `coverage` joins it.
 - `ROADMAP.md` Slice S4 records the contract as accepted, keeps implementation unstarted, and records the S4a / S4b subdivision under the existing completion rule.
 - S4a can be implemented from this record alone, with the same value-type pattern S1–S3 established and zero production call sites to break.
 - Phase 2's importer gains explicit structural targets: stop lists that may repeat stations, and segment lists that must be joined, covering, and normalised.
@@ -3462,9 +3501,11 @@ This Decision adds no real Tokyo or Airport Rail record; no provider identifier,
 
 ## Implementation sequence
 
-1. `TripLineSegment` with its invariants and tests.
-2. `Trip` with `stopSequence` and `lineSegments`, their cross-field invariants, and tests covering all ten shapes above.
+1. `TripLineSegment` and `TripCoverage` with their invariants and tests.
+2. `Trip` with `stopSequence`, `lineSegments`, and `coverage`, their cross-field invariants, and tests covering all twelve shapes above.
 3. Independent review, then the S4a completion record.
+
+S4a tests must cover, at minimum: the recurring-run `TripID` semantics at the domain-contract level; ID-only equality and hashing; all four coverage states; the genuine short-turn versus incomplete-destination distinction; every segment boundary invariant (including one shared endpoint, rejected wider overlap, gap, nesting, duplicate range, misordering, and adjacent same-line segments); repeated station visits; multi-line through service; and `Codable` rejection of every invalid structure.
 
 S4b follows as its own decision and implementation.
 
