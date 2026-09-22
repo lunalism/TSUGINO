@@ -231,7 +231,7 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 
 ### Slice S4 — Trip and Stop Sequence
 
-**Status: contract accepted (DEC-060, 2026-09-22); implementation not started.** S4 is the next open Phase 1 slice, following the closed Slice S3.
+**Status: contract accepted (DEC-060, 2026-09-22); S4a complete, S4b pending.** S4 is the open Phase 1 slice following the closed Slice S3, and remains **incomplete** until S4b is disposed of.
 
 **Purpose.** Define and implement the canonical *structural* representation of a `Trip` — one concrete train service — covering: ordered stop traversal; repeated station visits; intermediate topological stations skipped by a service; a railway-line association that remains compatible with through service; and the minimum relationship, if any, between `Trip` and `ServiceType`.
 
@@ -250,10 +250,10 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 
 **S4 is subdivided (DEC-060 H):**
 
-- **S4a — Trip structure:** `Trip`, `TripLineSegment`, and `TripCoverage` per DEC-060 §A–§G, with focused tests covering recurring-run `TripID` semantics, ID-only equality, all four coverage states, the genuine short-turn versus incomplete-destination distinction, every segment boundary invariant, repeated visits, through service, and `Codable` rejection of invalid structures. Implementable now; **not started**.
+- **S4a — Trip structure: complete** (`12c7edb`; independently approved 2026-09-22). Implements the DEC-060 §A–§G contract: `Trip`, `TripLineSegment`, and `TripCoverage`; `TripID`-only entity equality and hashing; an ordered passenger-stop traversal that rejects adjacent duplicate stations while supporting legitimate non-adjacent repeats; explicit closed-index railway-line segments meeting at exactly one shared boundary index, so a multi-line through service is one Trip and never implies a transfer; complete, leading-partial, trailing-partial, and middle-only coverage states, which is what distinguishes a genuine short-turn from an incomplete continuation; and invariant-preserving `Codable` decoding. Verification at `12c7edb`: full suite **476/476 executed cases passed, 0 failed, 0 skipped** (118 of them new to S4a); Debug build and clean Release build of the app and extension succeeded; iPhone 17 simulator, iOS 26.5. The independent adversarial review approved it with no material findings, having inspected that evidence rather than rerunning the commands. No physical-device validation is claimed or required.
 - **S4b — service class:** a separate decision settling whether a canonical service-class identity exists, its vocabulary shape, its separation from brand and reserved-seat status, and whether `Trip` gains an optional reference to it. **Not started; its decision identifier is unassigned.**
 
-Neither sub-slice is implemented. S4 is complete only when **both** are disposed of under the completion rule below — S4b either decided and implemented, or explicitly moved out of Phase 1 by an accepted decision.
+S4a is implemented and approved; **S4b is not**. S4 is complete only when **both** are disposed of under the completion rule below — S4b either decided and implemented, or explicitly moved out of Phase 1 by an accepted decision. Phase 1 as a whole remains in progress.
 
 **Inherited accepted facts** (not reopened by S4): through service is **not** a transfer (DEC-009, Rule 16); repeated `StationID`s **must** be representable in ordered Trip traversal, and consecutive Trip stops are **not** required to be adjacent in `RailwayLineTopology` — topology adjacency and Trip stop order are different concepts (DEC-057 D10); service brands are **never** `RailwayLine` identities (DEC-057, DEC-058 §7); remaining-stop calculation belongs to Trip/Journey progression, never to a line's topology (DEC-011); actual provider data, identifiers, and mappings are not Phase 1 deliverables.
 
@@ -1327,7 +1327,7 @@ Potential:
 
 Deferred items recorded once, per `AGENTS.md` §5.1. An entry here is not permission to implement it.
 
-- **Repository-wide Swift concurrency-isolation warnings.** Under the current Swift 5 language mode with `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, the Domain `Codable` conformances and custom decoders (S1 identifiers, S2 `LocalizedRailName`, S3b `GeoCoordinate`, and the S3c `StationAdjacency` and `RailwayLineTopology` values) emit `ConformanceIsolation` / `ActorIsolatedCall` warnings that Swift 6 language mode would diagnose as errors. Address them **together**, as one repository-wide decision before any Swift 6 language-mode migration; do not fix individual S1/S2/S3 values inconsistently. This does not block current Phase 1 slices and is not a defect of any single slice. Owner: a future concurrency-migration decision (`DECISIONS.md`); no phase currently claims it.
+- **Repository-wide Swift concurrency-isolation warnings.** Under the current Swift 5 language mode with `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, the Domain `Codable` conformances and custom decoders (S1 identifiers, S2 `LocalizedRailName`, S3b `GeoCoordinate`, the S3c `StationAdjacency` and `RailwayLineTopology` values, the S4a `Trip` and `TripLineSegment`, and any later canonical Domain value of the same shape) emit `ConformanceIsolation` / `ActorIsolatedCall` warnings that Swift 6 language mode would diagnose as errors. Address them **together**, as one repository-wide decision before any Swift 6 language-mode migration; do not fix individual values inconsistently. This does not block current Phase 1 slices and is not a defect of any single slice. Owner: a future concurrency-migration decision (`DECISIONS.md`); no phase currently claims it.
 
 ---
 
