@@ -229,6 +229,43 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 - **S3 completion rule — satisfied.** S3 is complete only when S3a is implemented and audited; S3b is contract-locked and implemented, or an accepted decision moves coordinates out of Phase 1; S3c is contract-locked and implemented, or an accepted decision moves canonical topology out of Phase 1; and the resulting scope passes its independent audit. **All four conditions are met**: neither coordinates nor topology were moved out of Phase 1, and the final S3c adversarial review reported no material findings. Verification at `47b9c88`: full suite **358/358 executed cases passed, 0 failed, 0 skipped**; Debug build and clean Release build of the app and extension succeeded; iPhone 17 simulator, iOS 26.5. No physical-device validation is claimed for S3 or required by it.
 - **Not Phase 1 deliverables.** Line colour (deferred beyond Phase 1 pending ownership and licensing resolution — DEC-055 D5); actual coordinates and representative-point selection, topology records and adjacency population, provider-alias mapping (including the Marunouchi branch record), station/line mappings, and Tokyo railway datasets (Phase 2); provider networking and ingestion (Phases 2–4).
 
+### Slice S4 — Trip and Stop Sequence
+
+**Status: contract audit completed; contract decision pending; implementation not started.** S4 is the next open Phase 1 slice, following the closed Slice S3.
+
+**Purpose.** Define and implement the canonical *structural* representation of a `Trip` — one concrete train service — covering: ordered stop traversal; repeated station visits; intermediate topological stations skipped by a service; a railway-line association that remains compatible with through service; and the minimum relationship, if any, between `Trip` and `ServiceType`.
+
+**To settle before implementation.** The S4 contract decision must answer, at minimum:
+
+- how a Trip represents one or more `RailwayLine`s;
+- how ordered stop traversal is represented;
+- how non-adjacent repeated station visits are supported;
+- whether adjacent duplicate visits are valid;
+- whether scheduled times are excluded from or included in this slice;
+- whether `ServiceType` belongs in S4 and, if so, its minimum structural scope;
+- whether direction or destination is stored, derived, or deferred;
+- how through service remains representable without treating it as a transfer.
+
+None of these is decided here. The `Trip` sketch in `ARCHITECTURE.md` §5.3 remains an unresolved sketch — including its singular `lineID` and its `providerReferences` entry — and is settled by the S4 decision, not by this roadmap entry.
+
+**Inherited accepted facts** (not reopened by S4): through service is **not** a transfer (DEC-009, Rule 16); repeated `StationID`s **must** be representable in ordered Trip traversal, and consecutive Trip stops are **not** required to be adjacent in `RailwayLineTopology` — topology adjacency and Trip stop order are different concepts (DEC-057 D10); service brands are **never** `RailwayLine` identities (DEC-057, DEC-058 §7); remaining-stop calculation belongs to Trip/Journey progression, never to a line's topology (DEC-011); actual provider data, identifiers, and mappings are not Phase 1 deliverables.
+
+**S4 completion rule.** S4 may be marked complete only when **all** of the following hold:
+
+1. the Trip / stop-sequence contract is accepted in a decision record;
+2. that accepted contract is implemented with focused tests;
+3. the implementation demonstrates ordered traversal; express or limited-stop behaviour without requiring consecutive stops to be topology-adjacent; legitimate non-adjacent repeated station visits; and through-service compatibility without a fake transfer or a service-brand-as-`LineID` shortcut;
+4. phase ownership and the exclusions below remain intact;
+5. the implementation and its completion record pass independent review.
+
+This rule is **structural**. Satisfying it claims nothing about populated datasets, real provider coverage, or operational through-service integration.
+
+**Excluded from S4.** Actual Tokyo railway records; actual Airport Rail records or brands; provider identifiers, mappings, aliases, provenance, and payload validation (Phase 2); provider networking (Phases 2–4); route search and pathfinding (Phase 3+); realtime behaviour and capability attachment (Phase 4); timetable computation; `JourneyEngine` behaviour, live progression, and current/next-station or remaining-stop calculation (Phase 5, DEC-011, DEC-050); persistence; UI, localized rendering, and Live Activities.
+
+### Later Phase 1 slices
+
+Phase 1 work after S4 remains open and will be scoped from the remaining Phase 1 deliverables above. **S6** remains the later **protocol slice** already referenced by this roadmap and by `DECISIONS.md` §4 (the `RouteSearching` inclusion-or-deferral question is settled before it). Detailed boundaries for **S5** and **S6** are **not** established here, and no remaining Phase 1 deliverable is assigned to a numbered slice by this entry. Phase 1 as a whole remains in progress.
+
 ## Tests
 
 Test:
