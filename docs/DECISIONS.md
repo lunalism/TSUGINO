@@ -3270,6 +3270,215 @@ The tier vocabulary exists so that product behaviour falls out of verified evide
 
 ---
 
+# DEC-060 — Trip Uses Ordered Stop Traversal with Explicit Railway-Line Segments
+
+**Status:** Accepted\
+**Date:** 2026-09-22\
+**Related:** DEC-009, DEC-010, DEC-011, DEC-021, DEC-038, DEC-046, DEC-047, DEC-048, DEC-050, DEC-051, DEC-053, DEC-055, DEC-056, DEC-057, DEC-058, DEC-059; `RULES.md` Rule 8, Rule 9, Rule 10, Rule 16, Rule 39, Rule 45; `ARCHITECTURE.md` §5.2.1, §5.3, §13, §39, §40; `ROADMAP.md` Phase 1 Slice S4
+
+## Context
+
+`ROADMAP.md` Slice S4 defines the next open Phase 1 work — the canonical structural representation of a `Trip` — and lists eight questions its contract must answer. `ARCHITECTURE.md` §5.3 has carried an unresolved sketch since Phase 0: `Trip { id, providerReferences, lineID, serviceType, direction, destination, stopSequence, scheduledTimes }`. Three of those entries are known problems rather than decisions: `providerReferences` would put provider identity inside a canonical Domain model (Rule 9, DEC-021); the **singular** `lineID` cannot describe a service that runs through onto another line, which DEC-009 and Rule 16 require to stay one continuous boarding experience rather than a transfer; and `scheduledTimes`, `direction`, `destination`, and `serviceType` were never given contracts at all. DEC-057 D10 recorded the `lineID` tension explicitly as a Trip-slice decision.
+
+Two facts are already accepted and constrain any answer (DEC-057 D10, §5.3): a Trip's ordered traversal **must** admit repeated `StationID`s, because a real loop-plus-tail service visits its junction twice in one run; and consecutive Trip stops are **not** required to be adjacent in `RailwayLineTopology`, because express and limited-stop services skip intermediate topological stations. Topology adjacency and stop order are different concepts.
+
+Phase 1 has no real railway data and will not get any (DEC-055, DEC-057, DEC-058): every invariant this Decision accepts must therefore be checkable from the value alone, with no `Station` or `RailwayLine` collection in hand.
+
+## Decision gate — line association candidates
+
+| Candidate | Locates the line change? | Through service as one Trip? | Unambiguous with repeated stations? | Duplicates stop data? | Locally validatable? | Works without Phase 2 data? | Verdict |
+|---|---|---|---|---|---|---|---|
+| **1. one `LineID`** | n/a | **no** — forces a fake transfer or a false line claim | yes | no | yes | yes | **Rejected** — known structural dead end (DEC-009, Rule 16) |
+| **2. ordered `[LineID]`** | **no** — names the lines but not where each applies | partly | **no** — cannot say which visit belongs to which line | no | weak | yes | Rejected |
+| **3. one ordered stop list + segments addressed by traversal position** | **yes** | **yes** | **yes** — positions are unique even when stations repeat | **no** — one canonical stop list | **yes** | **yes** | **Selected** |
+| **4. segments each owning their own stop subsequence** | yes | yes | yes | **yes** — the boundary station is stored twice, or asymmetrically in one segment only; the whole traversal must be reconstructed by concatenation | yes | yes | Rejected — two sources of truth for the same stop |
+| **5. no stored line, derived from datasets** | no | no | n/a | no | **no** | **no** — nothing derivable in Phase 1 | Rejected |
+| **6. primary display line + segments** | yes | yes | yes | no | yes | yes | Rejected **for now** — adds a presentation choice with no Phase 1 consumer; may be added later without migration |
+
+Candidate 3 is selected: it is the smallest representation that locates every line change, keeps one canonical stop list, and stays unambiguous in exactly the case that defeats station-keyed alternatives — a station visited more than once.
+
+## Decision
+
+This Decision **locks the S4 contract**. It claims **no** implementation: no `Trip`, `TripLineSegment`, or `ServiceType` exists, and no railway data is added.
+
+### A. `Trip` identity and value semantics
+
+1. `Trip` is a **domain entity** identified by `TripID` (DEC-021; `TripID` already exists).
+2. **Equality and hashing use `TripID` alone**, written explicitly as for `Operator`, `Station`, and `RailwayLine` (DEC-053, DEC-055 D3, DEC-057 D5). A corrected stop list or segment list is the **same** Trip.
+3. Every structural property — the stop traversal and the line segments — is **descriptive** and participates in neither equality nor hashing. `Codable` and actor-transfer tests must therefore compare them explicitly, because ID-only equality cannot prove they survived.
+4. `Trip` is a `let`-only value type and is **immutable after successful construction**.
+5. `Trip` carries **no provider references, no provider identifiers, and no provider codes** (Rule 9, DEC-021, DEC-020). The `providerReferences` entry in the §5.3 sketch is **rejected**; provider identity lives in the Phase 2 mapping layer (§40).
+
+### B. Ordered stop traversal
+
+1. `Trip` stores one ordered list of **passenger-visible stops**: `stopSequence: [StationID]`.
+2. It contains **stops only**. A station the service passes without stopping is simply **absent**; that is how an express or limited-stop pattern is expressed, and it is why no topology adjacency is implied (§E).
+3. **Minimum length is 2.** A service with fewer than two passenger stops carries no passenger anywhere.
+4. **Adjacent duplicates are invalid**: `stopSequence[i] != stopSequence[i + 1]` for every `i`. The same station twice in a row describes no movement.
+5. **Non-adjacent repeats are valid and required**: a station may appear any number of times at non-adjacent positions (DEC-057 D10). This is what makes a loop-plus-tail service representable.
+6. An individual **visit is addressed by its index** in `stopSequence`, never by its `StationID`. Index is the only unambiguous address once a station repeats.
+7. Traversal position is **derived from collection position**; no position identifier is stored, and no per-visit value type is introduced in this slice (nothing is attached to a visit yet — see §F).
+8. Order **is** part of the stop list's value: two Trips with the same stations in different order have different traversal. Order is not part of *entity identity* (§A2).
+
+### C. Explicit railway-line traversal
+
+`Trip` stores `lineSegments: [TripLineSegment]`, where a segment is a provider-neutral value naming one canonical line and the contiguous span of the traversal it applies to:
+
+```text
+TripLineSegment
+- lineID            (LineID)
+- startIndex        (Int — index into Trip.stopSequence)
+- endIndex          (Int — index into Trip.stopSequence)
+```
+
+The name is deliberately **not** "leg": a `JourneyLeg` is a passenger-facing portion of a planned journey that may involve a transfer, whereas a segment is a structural property of one continuous train run.
+
+Invariants, all checkable from the `Trip` value alone:
+
+1. `lineSegments` is **non-empty**.
+2. Indices are **valid**: `0 <= startIndex < endIndex <= stopSequence.count - 1`. Ranges are **closed** — both endpoints are stops of that segment.
+3. Every segment **spans at least one movement** (`endIndex > startIndex`); a zero-length segment names a line that carries the train nowhere.
+4. Segments are stored **in traversal order**, and each one **joins the previous at a shared stop**: `segment[n].startIndex == segment[n - 1].endIndex`. The shared index is the **line-boundary station** — one stop, belonging to both segments as an endpoint.
+5. **Full coverage, no gaps, no overlaps**: `lineSegments.first.startIndex == 0` and `lineSegments.last.endIndex == stopSequence.count - 1`; rule 4 makes any other overlap impossible.
+6. **Adjacent segments must not share a `lineID`.** Two consecutive segments on the same line are one segment; requiring the normalised form keeps a Trip's representation unique, so value comparison of the segment list is meaningful.
+7. **Non-adjacent segments may repeat a `lineID`** — a service may leave a line and return to it.
+8. A **one-line Trip** is exactly one segment covering `0...stopSequence.count - 1`. This is the ordinary case for the current 13-line launch scope and costs nothing.
+9. A **multi-line through service** is two or more segments over **one** `stopSequence` — one `Trip`, no transfer, satisfying DEC-009 and Rule 16 structurally rather than by convention.
+
+**Unsupported continuation.** Where a real service continues onto infrastructure that TSUGINO has not yet modelled canonically, the `Trip` **ends at the last canonically supported stop**. No `LineID` is invented for the unsupported line, no segment is fabricated, and nothing in the value claims the run is complete. Whether and how such a truncation is disclosed to the user is a presentation and route-provider concern (DEC-058 §3 already allows unsupported segments to be shown as untrackable), not a Domain field in this slice.
+
+### D. Operator and service-brand separation
+
+1. `RailwayLine.operatorID` identifies the operator relationship of the **canonical line** (DEC-055) and nothing more. It **must not** be treated as proof of which company physically operates a given Trip over that infrastructure.
+2. `Trip` stores **no operator**, and no single operator identity may be inferred merely because its segments name several lines.
+3. Service brands — N'EX, Skyliner, Access Express, named Keikyu airport services, Tokyo Monorail service labels — are **not** `LineID`s, **not** operators, and **not** a direction (DEC-057, DEC-058 §7).
+4. Actual operator-of-service and service-family modelling remains **deferred**; nothing in current scope requires it now.
+5. No claim is made that airport services in general traverse multiple `RailwayLine`s; whether any given service does is a per-service data question for Phase 2.
+
+### E. `Trip` versus `RailwayLineTopology`
+
+DEC-057 is preserved unchanged:
+
+1. `RailwayLineTopology` describes **structural station adjacency**; `Trip.stopSequence` describes an **ordered passenger-visible traversal**. They are different concepts.
+2. Consecutive Trip stops are **not required** to be adjacent in topology, because express and limited-stop services omit intermediate topological stations.
+3. Non-adjacent repeated stations are permitted.
+4. `Trip` construction performs **no** route search, pathfinding, or graph traversal of any kind.
+5. Remaining-stop calculation comes from the selected Trip/Journey, **never** from a line's topology (DEC-011).
+6. Checks that need populated collections — that every stop is a known `Station`, that each stop belongs to its segment's line, that a segment's `LineID` exists — are **dataset validation**, outside the isolated `Trip` initialiser (§G).
+
+### F. Scheduled times — excluded from S4
+
+1. Scheduled times are **not** part of the S4 Trip contract; the `scheduledTimes` entry of the §5.3 sketch is **not accepted** by this Decision.
+2. Timetable semantics — service days, calendar exceptions, times past 24:00, time zones, provider schedule mapping, and interaction with the injected Clock (Rule 38) — require their own contract, which this slice does not attempt.
+3. This is a **domain-contract deferral, not a product deferral**. Scheduled Journey Guidance (DEC-046, DEC-047) is unaffected; it is delivered once the timetable contract and its data exist.
+4. Because nothing is yet attached to an individual stop, `[StationID]` suffices for the traversal (§B7). When scheduled times or per-stop data arrive, a typed per-stop value may replace the element type — a change to an unpersisted Phase 1 value with no production call sites (Rule 39).
+
+### G. Direction, destination, and headsign
+
+1. **No direction enum.** Inbound/outbound and ascending/descending do not survive the verified launch network: a loop-plus-tail line has no single terminal pair, and a branch line's "toward X" depends on the branch. Structural direction is given by **traversal order** — `stopSequence` runs from first stop to last.
+2. **No stored destination.** The terminal passenger stop is `stopSequence.last`; storing it again would duplicate state that can drift.
+3. **Provider-native direction identifiers** (GTFS `direction_id`, ODPT ascending/descending) stay **Phase 2 mapping data** (Rule 9).
+4. **Headsign is deferred.** A headsign is a passenger-facing, localized label that is *not* assumed to equal the final stop; its localization contract (DEC-041, DEC-042, DEC-053) and provider semantics are settled with the display work, not here.
+5. Loop, loop-plus-tail, branch, and short-turn shapes are all covered by traversal order alone (§ shape proofs).
+
+### H. `ServiceType` — deferred to its own decision; S4 subdivided
+
+`ServiceType` is **not** defined or attached in this Decision, and `Trip` stores no service-type property yet.
+
+Reasoning, against the criteria S4 requires:
+
+- the **actual stopping pattern is already expressed** by `stopSequence`, so express and local Trips differ structurally without any label (`ROADMAP.md` Phase 1 tests "express/local differences");
+- the v1 need is a **display and selection label** on a train candidate (`FEATURES.md` §3.1, `DESIGN.md` §14.2), which is presentation data with a localization contract, not a structural Trip invariant;
+- provider coverage is incomplete and heterogeneous, and each operator names its own categories, so a **closed enum fixed today would be wrong at the first expansion** (DEC-058 Tier 1–3) while an **open provider string would import provider vocabulary into Domain** (Rule 9, Rule 10);
+- brand, reserved-seat status, and airport-service identity must stay separate from stopping-pattern class (DEC-058 §7), and one enum cannot carry all four honestly.
+
+Consequently **Slice S4 is subdivided**:
+
+- **S4a — Trip structure:** everything in §A–§G. Implementable immediately; nothing in it depends on `ServiceType`.
+- **S4b — service class:** a separate decision that settles whether a canonical service-class identity exists, its vocabulary shape, its relationship to brand and reserved-seat status, and whether `Trip` gains an optional reference to it. **Its decision identifier is not reserved here.**
+
+S4 as a whole is **not** complete until S4b is disposed of — decided and implemented, or explicitly moved out of Phase 1 by an accepted decision. This mirrors the S3 completion rule (DEC-055 D4) and keeps the roadmap's "minimum relationship, if any, between Trip and ServiceType" honestly answered rather than silently dropped.
+
+## Detailed invariants and their boundaries
+
+| Invariant | Boundary |
+|---|---|
+| valid `TripID`, `StationID`, `LineID` | **already guaranteed** by the identifier types (DEC-051) |
+| `stopSequence.count >= 2` | **S4a value construction** |
+| no adjacent duplicate stop | **S4a value construction** |
+| non-adjacent repeats permitted | **S4a** — a permission, not a check |
+| `lineSegments` non-empty | **S4a value construction** |
+| index bounds, `endIndex > startIndex` | **S4a value construction** |
+| segments ordered and joined at a shared index | **S4a value construction** |
+| full coverage, no gaps or overlaps | **S4a value construction** |
+| adjacent segments differ in `lineID` (normalised form) | **S4a value construction** |
+| every stop is a known canonical `Station` | **Phase 2 dataset validation** |
+| every `lineID` names a known canonical `RailwayLine` | **Phase 2 dataset validation** |
+| each stop belongs to its segment's line / topology membership | **Phase 2 dataset validation** |
+| provider trip identity, direction codes, headsign text | **Phase 2 provider mapping** |
+| schedule validity, service days, rollover | **later timetable contract** (§F) |
+| current station, next station, remaining stops, progress | **Phase 5 JourneyEngine** (DEC-011, DEC-050) |
+
+**Construction style** follows the established pattern and introduces **no new error architecture**: `TripLineSegment` and `Trip` use **failable initialisers that never trap** (DEC-051 rule 11), and decoding applies exactly the same rules, failing with `DecodingError.dataCorrupted` while missing keys and wrong types keep their natural `Codable` errors (DEC-053, DEC-056, DEC-057). Both values are `nonisolated`, `Hashable`, `Codable`, `Sendable`, and import-free; `TripLineSegment` is a value with **complete-value** equality and no identifier.
+
+## Shape proofs
+
+Generic examples only; `A…F` are synthetic stations and `L1`, `L2` synthetic lines. No real record appears.
+
+| # | Shape | Representation | Status |
+|---|---|---|---|
+| 1 | simple linear local | stops `[A,B,C,D]`; segments `[(L1, 0, 3)]` | **fully representable** |
+| 2 | express skipping stations | stops `[A,D]` (B, C simply absent); segments `[(L1, 0, 1)]` | **fully representable** — no topology adjacency required |
+| 3 | circular service | stops `[A,B,C,A]`; segments `[(L1, 0, 3)]` | **fully representable** — closure by return to `A`, no self-edge, no flag |
+| 4 | loop-plus-tail with a repeated station | stops `[J,A,B,J,T1,T2]`; segments `[(L1, 0, 5)]`; the two visits to `J` are indices 0 and 3 | **fully representable** — the case that decides index-based addressing |
+| 5 | branch service | stops `[A,J,B1,B2]` on one `LineID` (a branch is a topology junction, DEC-057 D6) | **fully representable** |
+| 6 | short-turn | stops `[A,B,C]` ending before the line's physical end | **fully representable** — a Trip asserts nothing about a line's extent |
+| 7 | one-line Trip | one segment covering the whole traversal | **fully representable** |
+| 8 | multi-line continuous through service | stops `[A,B,X,C,D]`; segments `[(L1, 0, 2), (L2, 2, 4)]` — one Trip, no transfer | **fully representable** |
+| 9 | line-boundary station | index 2 (`X`) above: one stop, endpoint of both segments | **fully representable** |
+| 10 | continuation beyond canonical coverage | traversal ends at the last supported stop; no segment or `LineID` invented | **honestly truncated at the supported boundary**; full coverage awaits Phase 2 canonical modelling of that line |
+
+Shapes 1–9 are structurally complete now; every one of them still awaits **Phase 2 data** before any real service can be constructed.
+
+## Alternatives considered
+
+Line association: the six candidates in the decision gate above; candidate 3 selected, 1/2/4/5 rejected for the recorded reasons, 6 deferred as a later additive choice. Stop element: a typed per-stop visit value was considered and deferred with `scheduledTimes` (§F4) — with nothing to attach, it would be a wrapper with no content. Segment boundaries keyed by `StationID` instead of index: rejected, because a repeated station makes the boundary ambiguous (shape 4). Half-open ranges: rejected, because the boundary station genuinely belongs to both segments, which closed ranges state directly. A `Trip`-level operator or brand: rejected (§D). A closed `ServiceType` enum: rejected now (§H).
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.3 replaces the sketch with this contract: `providerReferences`, singular `lineID`, `scheduledTimes`, `direction`, `destination`, and `serviceType` leave the accepted shape, each with its disposition recorded.
+- `ROADMAP.md` Slice S4 records the contract as accepted, keeps implementation unstarted, and records the S4a / S4b subdivision under the existing completion rule.
+- S4a can be implemented from this record alone, with the same value-type pattern S1–S3 established and zero production call sites to break.
+- Phase 2's importer gains explicit structural targets: stop lists that may repeat stations, and segment lists that must be joined, covering, and normalised.
+- A later per-stop value, a display line, or a service class can each be added without invalidating what S4a stores.
+
+## Phase ownership
+
+**Phase 1 (S4a):** the `Trip` and `TripLineSegment` value contracts above. **S4b:** service class. **Phase 2:** real station, line, topology, service, and timetable datasets; provider identifiers, mappings, aliases, provenance; payload validation; every cross-model check needing populated collections. **Phase 3+:** route search, pathfinding, provider integration. **Phase 4:** realtime adapters, capability attachment. **Phase 5:** `JourneyEngine` behaviour, live progression, current/next station, remaining stops. **Later presentation work:** localized headsign and service-label rendering, UI, Live Activities.
+
+## Explicit non-goals
+
+This Decision adds no real Tokyo or Airport Rail record; no provider identifier, mapping, or alias; no schedule or timetable computation; no provider networking; no realtime behaviour; no route search or pathfinding; no persistence; no journey progression; no UI or Live Activity; no new canonical identifier (DEC-021's list is unchanged); and no `ServiceType`. It does not mark S4 or Phase 1 complete, and it implements nothing.
+
+## Implementation sequence
+
+1. `TripLineSegment` with its invariants and tests.
+2. `Trip` with `stopSequence` and `lineSegments`, their cross-field invariants, and tests covering all ten shapes above.
+3. Independent review, then the S4a completion record.
+
+S4b follows as its own decision and implementation.
+
+## Revisit Triggers
+
+- A verified service cannot be represented as one ordered stop list plus joined, covering line segments.
+- Per-stop data (scheduled times, platform, per-stop headsign) is accepted, changing the traversal element type.
+- A consumer genuinely needs a primary display line, a stored destination, or a direction value on `Trip`.
+- S4b settles service class in a way that changes `Trip`'s shape.
+- Through-service ownership changes in a way that affects segment semantics.
+- Persistence design (Phase 6) requires a different encoded representation.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

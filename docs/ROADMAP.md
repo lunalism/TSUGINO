@@ -231,7 +231,7 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 
 ### Slice S4 — Trip and Stop Sequence
 
-**Status: contract audit completed; contract decision pending; implementation not started.** S4 is the next open Phase 1 slice, following the closed Slice S3.
+**Status: contract accepted (DEC-060, 2026-09-22); implementation not started.** S4 is the next open Phase 1 slice, following the closed Slice S3.
 
 **Purpose.** Define and implement the canonical *structural* representation of a `Trip` — one concrete train service — covering: ordered stop traversal; repeated station visits; intermediate topological stations skipped by a service; a railway-line association that remains compatible with through service; and the minimum relationship, if any, between `Trip` and `ServiceType`.
 
@@ -246,7 +246,14 @@ Phase 1 is implemented in slices; S1 (canonical identifiers, DEC-051) and S2 (`L
 - whether direction or destination is stored, derived, or deferred;
 - how through service remains representable without treating it as a transfer.
 
-None of these is decided here. The `Trip` sketch in `ARCHITECTURE.md` §5.3 remains an unresolved sketch — including its singular `lineID` and its `providerReferences` entry — and is settled by the S4 decision, not by this roadmap entry.
+**All of these are now answered by DEC-060**, which replaces the former `ARCHITECTURE.md` §5.3 sketch: `Trip` stores `id`, an ordered `stopSequence` of passenger stops (≥ 2, no adjacent duplicate, non-adjacent repeats required), and non-empty `lineSegments` that are ordered, joined at a shared stop, covering, and normalised — so a multi-line through service is one Trip rather than a transfer. `providerReferences` and a singular `lineID` are rejected; `scheduledTimes`, direction, destination, and headsign are deferred with their reasons recorded; `ServiceType` is deferred to **S4b**.
+
+**S4 is subdivided (DEC-060 H):**
+
+- **S4a — Trip structure:** `Trip` and `TripLineSegment` per DEC-060 §A–§G. Implementable now; **not started**.
+- **S4b — service class:** a separate decision settling whether a canonical service-class identity exists, its vocabulary shape, its separation from brand and reserved-seat status, and whether `Trip` gains an optional reference to it. **Not started; its decision identifier is unassigned.**
+
+Neither sub-slice is implemented. S4 is complete only when **both** are disposed of under the completion rule below — S4b either decided and implemented, or explicitly moved out of Phase 1 by an accepted decision.
 
 **Inherited accepted facts** (not reopened by S4): through service is **not** a transfer (DEC-009, Rule 16); repeated `StationID`s **must** be representable in ordered Trip traversal, and consecutive Trip stops are **not** required to be adjacent in `RailwayLineTopology` — topology adjacency and Trip stop order are different concepts (DEC-057 D10); service brands are **never** `RailwayLine` identities (DEC-057, DEC-058 §7); remaining-stop calculation belongs to Trip/Journey progression, never to a line's topology (DEC-011); actual provider data, identifiers, and mappings are not Phase 1 deliverables.
 

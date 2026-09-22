@@ -648,33 +648,36 @@ RailwayLineTopology
 
 ### 5.3 Trip
 
-A Trip represents a concrete train service.
+A Trip represents a concrete train service — one continuous run, whatever lines it traverses.
+
+Accepted structural contract (DEC-060; Phase 1 slice S4a):
 
 ```text
 Trip
-- id
-- providerReferences
-- lineID
-- serviceType
-- direction
-- destination
-- stopSequence
-- scheduledTimes
+- id              (TripID — §39, DEC-051)
+- stopSequence    ([StationID] — ordered passenger stops; ≥ 2; no adjacent duplicate;
+                   non-adjacent repeats permitted and required)
+- lineSegments    ([TripLineSegment] — non-empty, ordered, joined, covering, normalised)
+
+TripLineSegment
+- lineID          (LineID)
+- startIndex      (Int — index into Trip.stopSequence)
+- endIndex        (Int — index into Trip.stopSequence; endIndex > startIndex)
 ```
 
-The Trip model must support:
+**Identity is the `TripID` alone (DEC-060 A).** Equality and hashing use only `id`, written explicitly as for `Operator` (§5.7); the traversal and its segments are descriptive, so a corrected stop list is the same Trip and both must be compared explicitly in `Codable` and actor-transfer tests. `Trip` is immutable after construction and carries **no provider references, identifiers, or codes** — those are mapping-layer aliases (§40, Rule 9).
 
-- local
-- rapid
-- express
-- limited-stop service
-- through service
-- changed destination
-- cancelled service
+**Ordered traversal (DEC-060 B).** `stopSequence` lists **passenger stops only**; a station passed without stopping is simply absent, which is how an express or limited-stop pattern is expressed. At least two stops; adjacent duplicates are invalid; **non-adjacent repeats are valid and required**, because a loop-plus-tail service visits its junction twice in one run (DEC-057 D10). An individual visit is addressed by its **index**, never by its `StationID` — the only unambiguous address once a station repeats. Traversal order supplies structural direction.
 
-without provider-specific branching in UI code.
+**Line segments (DEC-060 C).** Each segment names one canonical line and the closed index range of the traversal it applies to. Segments are non-empty, in traversal order, each spanning at least one movement, and **joined at a shared stop** (`segment[n].startIndex == segment[n − 1].endIndex`) so the boundary station is one stop belonging to both; together they **cover** the whole traversal with no gaps or overlaps; **adjacent segments must not share a `lineID`** (the normalised form keeps one representation per Trip), while non-adjacent segments may return to an earlier line. A one-line Trip is a single segment; a **multi-line through service is several segments over one `stopSequence` — one Trip, not a transfer** (DEC-009, Rule 16). Where a real service continues onto infrastructure TSUGINO has not yet modelled, the Trip **ends at the last canonically supported stop**: no `LineID` is invented and no complete-coverage claim is made. The name is *segment*, not *leg*: a `JourneyLeg` (§5.5) is a passenger-facing portion of a planned journey that may involve a transfer.
 
-`Trip` owns **direction** and the **actual ordered stop sequence** of one service traversal (DEC-055, DEC-057 D10). Two facts verified for the launch network bind the future Trip contract: `stopSequence` **must admit repeated `StationID`s**, because a real loop-plus-tail service visits its junction station more than once in one trip; and consecutive stops are **not** required to be direct topology adjacencies (§5.2.1), because express and limited-stop services skip intermediate topological stations. Remaining-stop calculations use the selected Trip/Journey stop sequence, never a line's topology (DEC-011). The singular `lineID` shown above versus through service across lines (§13, DEC-009) is an **open Trip-slice decision**; it is not resolved by S3c and is not topology state. The final Trip API is designed in its own slice.
+**Operator and brand (DEC-060 D).** `RailwayLine.operatorID` describes the canonical line's operator relationship only; it is **not** proof of which company runs a given Trip, and `Trip` stores no operator. Service brands (for example airport limited-express names) are never `LineID`s, operators, or directions (DEC-057, DEC-058 §7).
+
+**Trip versus topology (DEC-060 E).** `RailwayLineTopology` (§5.2.1) describes structural adjacency; `stopSequence` describes an ordered traversal. Consecutive Trip stops are **not** required to be topology-adjacent. Trip construction performs no route search or pathfinding, and remaining-stop calculations use the selected Trip/Journey, never a line's topology (DEC-011).
+
+**Deferred by DEC-060, not cancelled.** `scheduledTimes` (§F) awaits its own timetable contract — service days, rollover, time zones, provider schedule mapping, Clock interaction — and its deferral does not affect Scheduled Journey Guidance (DEC-046, DEC-047). `direction`, `destination`, and headsign (§G) are not stored: traversal order gives direction, the terminal stop is `stopSequence.last`, provider direction identifiers stay Phase 2 mapping data, and a headsign is a localized label settled with the display work. `serviceType` (§H) is deferred to **slice S4b**: the actual stopping pattern is already expressed by the ordered stops, and stopping-pattern class, commercial brand, reserved-seat status, and provider codes must not be collapsed into one enum. `Trip` must still support local, rapid, express, limited-stop, through, changed-destination, and cancelled services without provider-specific branching in UI code; the structural part of that is the traversal itself.
+
+Checks that need populated collections — every stop a known `Station`, every `lineID` a known `RailwayLine`, stop-to-line membership — are **Phase 2 dataset validation**, not invariants of the isolated value.
 
 ---
 
