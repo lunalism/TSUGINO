@@ -650,7 +650,7 @@ RailwayLineTopology
 
 A Trip represents a concrete train service — one continuous run, whatever lines it traverses.
 
-Accepted structural contract (DEC-060, Phase 1 slice S4a; `serviceTypeSegments` and `ServiceType` from DEC-061, slice S4b — implemented, closure pending independent re-review):
+Accepted structural contract (DEC-060, Phase 1 slice S4a; `serviceTypeSegments` and `ServiceType` from DEC-061, slice S4b; implemented and closed in `ROADMAP.md` Phase 1 Slice S4):
 
 ```text
 Trip
