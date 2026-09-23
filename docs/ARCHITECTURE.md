@@ -708,45 +708,59 @@ Checks that need populated collections — every stop a known `Station`, every `
 
 ### 5.4 Journey
 
+Accepted structural contract (DEC-062, Phase 1 slice S5a — not yet implemented):
+
 ```text
-Journey
-- id
-- origin
-- destination
-- legs
-- currentLegIndex
-- state
-- createdAt
-- updatedAt
+Journey                      — entity; equality and hashing by JourneyID only
+- id        (JourneyID — §39, DEC-051)
+- legs      ([JourneyLeg] — non-empty; addressed by position)
 ```
+
+A Journey is the passenger's **route definition**: its legs in order, and nothing that changes as the ride progresses. **Identity is the `JourneyID` alone**; `legs` is descriptive and must be compared explicitly in `Codable` and actor-transfer tests. Runtime state — current leg, phase, freshness, interruption — is `JourneyState` (§5.6, slice S5b), never a Journey field. `origin` and `destination` are not stored: they are the first leg's start and the last leg's end. Creation and update timestamps are persistence (Phase 6).
+
+**Invariants (DEC-062 E), checked from the value alone.** Each leg has a start and an end station — an unselected rail leg's anchors, a selected rail leg's `trip.stopSequence[boardingIndex]` and `[alightingIndex]`, a walking transfer's `fromStationID` and `toStationID`. Then:
+
+1. `legs` is non-empty, and the **first and last legs are rail legs**;
+2. **continuity** — each leg ends at the station where the next begins, comparing canonical `StationID`s only; a cross-operator interchange at one canonical station (DEC-048) needs no walking leg;
+3. **no two consecutive walking legs**;
+4. **same-Trip split rule** — two directly consecutive **selected** rail legs are rejected when they share a `TripID` **and** the next boards at the index where the previous alights: that is one uninterrupted ride cut in two, a fake transfer (DEC-009, Rule 16). Nothing else is rejected on this ground: the same `TripID` separated by another leg, or reboarded at a later index, is valid; reboarding at an earlier index needs an operating date and is a Phase 5 check;
+5. an **all-unselected** Journey is structurally valid; readiness to begin tracking (DEC-007) is S5b / Phase 5.
 
 ---
 
 ### 5.5 JourneyLeg
 
 ```text
-JourneyLeg
-- id
-- kind
-- boardingStation
-- alightingStation
-- plannedTrip
-- selectedTrip
-- realtimeState
-- transferGuidance
+JourneyLeg                   — enum; not Equatable
+- rail(RailLeg)
+- walkingTransfer(WalkingTransfer)
+
+RailLeg                      — enum: the leg's selection state; not Equatable
+- unselected(RailLegAnchors)
+- selected(SelectedRailTrip)
+
+RailLegAnchors               — boardingStationID, alightingStationID (distinct)
+SelectedRailTrip             — trip (Trip snapshot), boardingIndex, alightingIndex; not Equatable
+                               0 <= boardingIndex < alightingIndex <= trip.stopSequence.count - 1,
+                               distinct stations at those indices; anchors derived, never stored
+WalkingTransfer              — fromStationID, toStationID (distinct)
 ```
 
-Possible kinds:
+**Rail legs (DEC-062 C).** An **unselected** leg records only its known boarding and alighting stations; it has no Trip, index, time, or route, so none can be invented. A **selected** leg embeds the chosen `Trip` snapshot and addresses boarding and alighting by **index**, the only unambiguous address once a Trip repeats a station (§5.3). A leg whose two ends are the same station is invalid in either state. Selecting a Trip for an unselected leg must **preserve its anchors** — `RailLegAnchors.admits(_:)` is the pure check; a selection at other stations is a replan. Each rail leg binds its own Trip, chosen later or replaced independently (DEC-008, §12); **performing** that binding, replacement, and snapshot reconciliation is Phase 5, not a Phase 1 operation.
 
-- rail
-- walkingTransfer
-- optional future transport modes
+**Walking transfer (DEC-062 D).** Records a change of station on foot between two distinct canonical stations. Structural validity means only that the walk is **stated** — never that a pedestrian connection exists, is inside or outside fare gates, is accessible, or takes any particular time. Verifying the connection is **Phase 2** dataset validation; walking time, route, and exits are **Phase 10** transfer guidance (§14); no surface may present a stated walk as a verified connection.
+
+**Equality (DEC-062 B).** `JourneyLeg`, `RailLeg`, and `SelectedRailTrip` are deliberately not `Equatable`: nothing in S5a needs to compare legs, and synthesised equality would be misleading because `Trip` equality is ID-only. A later consumer that needs leg comparison defines an explicit deep-snapshot rule in its own decision.
+
+**Encoded shape (DEC-062 F).** Both enums use one keyed pattern — a `kind` discriminator and exactly one payload key named after the case: `{"kind":"rail","rail":{"kind":"selected","selected":{…}}}`, `{"kind":"walkingTransfer","walkingTransfer":{…}}`, `{"kind":"unselected","unselected":{…}}`. Decoding rejects a missing `kind`, an unknown `kind`, a payload key of a different case (contradictory), a missing named payload, and any invalid nested value or Journey invariant.
+
+**Not in the leg (owners recorded in DEC-062).** No `plannedTrip` (Phase 3 route search), `realtimeState` (Phase 4 / S5b), `transferGuidance` (Phase 10), leg identifier (legs are addressed by position), or non-rail mode other than the walking transfer; a new mode needs its own decision.
 
 ---
 
 ### 5.6 JourneyState
 
-Journey state is separate from persisted route definition.
+Journey state is separate from persisted route definition. **Unresolved sketch — its contract is Phase 1 slice S5b** (a later decision); runtime behaviour is Phase 5 (DEC-050).
 
 ```text
 JourneyState
@@ -1037,7 +1051,7 @@ Upcoming leg selection can be:
 - confirmed near transfer time
 - replaced independently
 
-The whole Journey must not be rebuilt merely because one Trip changes.
+The whole Journey must not be rebuilt merely because one Trip changes. Structurally, each rail leg is either unselected (anchors only) or selected (a Trip snapshot with boarding and alighting indices), and a selection must preserve the leg's anchors (§5.5, DEC-062); performing the binding is Phase 5.
 
 ---
 

@@ -3685,6 +3685,184 @@ S4b tests must cover, at minimum: identifier validity; `ServiceType` ID-only equ
 
 ---
 
+# DEC-062 — Journey Structure Uses Position-Addressed Legs with Explicit Rail Selection and Station Continuity
+
+**Status:** Accepted\
+**Date:** 2026-09-23\
+**Related:** DEC-003, DEC-007, DEC-008, DEC-009, DEC-010, DEC-011, DEC-021, DEC-023, DEC-031, DEC-043, DEC-047, DEC-048, DEC-050, DEC-051, DEC-060, DEC-061; `RULES.md` Rule 5, Rule 16, Rule 17, Rule 18, Rule 39, Rule 45, Rule 50; `ARCHITECTURE.md` §5.4, §5.5, §5.6, §6, §7, §12, §14; `ROADMAP.md` Phase 1 Slice S5
+
+## Context
+
+Phase 1 still owes the journey models (`ROADMAP.md` Phase 1 *Included*). `ARCHITECTURE.md` §5.4 and §5.5 have carried an unresolved Phase 0 sketch — `Journey { id, origin, destination, legs, currentLegIndex, state, createdAt, updatedAt }` and `JourneyLeg { id, kind, boardingStation, alightingStation, plannedTrip, selectedTrip, realtimeState, transferGuidance }` — with the same kind of problems DEC-060 resolved for `Trip`:
+
+- `currentLegIndex`, `state`, and `realtimeState` put runtime state into the route definition, which §5.6 says must stay separate;
+- `origin` and `destination` duplicate the first boarding and last alighting stations;
+- `plannedTrip` is a route-search result (Phase 3), `transferGuidance` is Phase 10, and `createdAt`/`updatedAt` are persistence (Phase 6);
+- a boarding or alighting **station** cannot address a visit once a Trip repeats a station (DEC-060 B).
+
+Accepted facts constrain the answer: the user explicitly selects the train (DEC-007, Rule 18) through the boarding-station / departure / destination model (DEC-047); each rail leg binds its own Trip, which may be chosen later or replaced independently (DEC-008, Rule 17, §12); through service is not a transfer (DEC-009, Rule 16); Phase 1 defines shapes and Phase 5 owns progression and binding behaviour (DEC-011, DEC-050); cross-operator interchange stations share one `StationID` (DEC-048). Every invariant must be checkable from the value alone.
+
+S5 is subdivided: **S5a — Journey structure** (this Decision) and **S5b — Journey runtime state** (phase, state, freshness, interruption, events, typed errors; a later decision). **S6** remains the protocol slice.
+
+## Decision
+
+### A. Types
+
+```text
+Journey                      — entity; equality and hashing by JourneyID only
+- id        (JourneyID)
+- legs      ([JourneyLeg] — addressed by position)
+
+JourneyLeg                   — enum
+- rail(RailLeg)
+- walkingTransfer(WalkingTransfer)
+
+RailLeg                      — enum: the leg's selection state
+- unselected(RailLegAnchors)
+- selected(SelectedRailTrip)
+
+RailLegAnchors               — value; failable
+- boardingStationID   (StationID)
+- alightingStationID  (StationID)
+
+SelectedRailTrip             — value; failable
+- trip            (Trip — snapshot of the chosen Trip)
+- boardingIndex   (Int — index into trip.stopSequence)
+- alightingIndex  (Int — index into trip.stopSequence)
+  derived: boardingStationID, alightingStationID, anchors
+
+WalkingTransfer              — value; failable
+- fromStationID  (StationID)
+- toStationID    (StationID)
+```
+
+No new canonical identifier is introduced: legs are addressed by **position** in `legs`, and `JourneyID` already exists (DEC-021). All types are `nonisolated`, `Codable`, `Sendable`, and import-free; construction is failable and never traps (DEC-051 rule 11).
+
+### B. Journey identity and equality
+
+1. `Journey` equality and hashing use **`JourneyID` alone**, written explicitly; `legs` is descriptive and must be compared explicitly in `Codable` and actor-transfer tests.
+2. **`JourneyLeg`, `RailLeg`, and `SelectedRailTrip` are not `Equatable`.** No S5a invariant, API, or consumer needs to compare legs: Journey identity is the ID, and the invariants below compare only `StationID`s, `TripID`s, and indices. Synthesised equality would also be **misleading**, because `Trip` equality is ID-only (DEC-060 A), so two different snapshots with the same `TripID` would compare equal. If a later consumer genuinely needs leg comparison — for example Phase 5 change detection or Phase 6 persistence diffing — it must define an explicit deep-snapshot rule in its own decision. `RailLegAnchors` and `WalkingTransfer` hold only identifiers and may use complete-value equality.
+
+### C. Rail legs — unselected and selected
+
+1. **Unselected (`RailLegAnchors`).** Records only the known boarding and alighting stations — the user's selection (DEC-047) or, later, a route-search result. It has **no** Trip, stop index, time, or route; those fields do not exist in this state, so none can be invented. Valid only when `boardingStationID != alightingStationID`.
+2. **Selected (`SelectedRailTrip`).** Embeds the chosen `Trip` **snapshot** and addresses boarding and alighting by **index**, which stays unambiguous when the Trip visits a station more than once (DEC-060 B). Valid only when `0 <= boardingIndex < alightingIndex <= trip.stopSequence.count - 1` **and** the stations at those indices differ. Its anchors are **derived** from the snapshot, never stored a second time. A snapshot with partial `coverage` is valid; the indices can only address represented stops.
+3. **Same station at both ends is rejected in both states.** A leg that ends where it began carries the rider nowhere, including a full lap of a loop.
+4. **Selection preserves anchors.** Selecting a Trip for an unselected leg is valid only when the selection's derived anchors equal the unselected anchors; S5a provides this as a pure check, `RailLegAnchors.admits(_:) -> Bool`, beside the failable `SelectedRailTrip` constructor. A selection at different stations is a **replan**, not a selection. S5a provides **no** operation that binds, replaces, or mutates a leg inside a Journey: *when* and *how* a Trip is bound — at journey start, near transfer time, or on replacement — is Phase 5 selected-trip binding and recovery (DEC-011, DEC-050).
+5. **Snapshot staleness** — a later correction to the same `TripID` in the dataset — is reconciliation, owned by Phase 5 and Phase 6, not a structural invariant.
+
+### D. Walking transfer — recorded, not verified
+
+1. `WalkingTransfer` records that the Journey changes station on foot between two **distinct** canonical stations (`fromStationID != toStationID`). A same-station transfer needs no walking leg.
+2. Structural validity means only that the walk is **stated**. It does **not** claim that a pedestrian connection exists, whether it is inside or outside fare gates, its accessibility, its length, or its duration.
+3. **Verification belongs elsewhere:** that two stations form a known transfer pair, from data with recorded provenance, is **Phase 2** dataset validation; walking time, route, exits, and accessibility guidance are **Phase 10** transfer guidance with confidence and provenance (`ARCHITECTURE.md` §14); producing walking legs from a search is **Phase 3**. No presentation may describe a structurally valid walk as a verified connection.
+
+### E. Journey invariants
+
+Each leg has a start and an end station, computed from local values only:
+
+| Leg | Start | End |
+|---|---|---|
+| unselected rail | `anchors.boardingStationID` | `anchors.alightingStationID` |
+| selected rail | `trip.stopSequence[boardingIndex]` | `trip.stopSequence[alightingIndex]` |
+| walking transfer | `fromStationID` | `toStationID` |
+
+1. `legs` is **non-empty**.
+2. **Continuity:** `end(legs[n]) == start(legs[n + 1])` for every consecutive pair. Continuity compares canonical `StationID`s only; a cross-operator interchange at one canonical station (DEC-048) needs no walking leg, and whether a real transfer path exists there is still Phase 2 or Phase 10.
+3. The **first and last legs are rail legs**: a Journey begins at a boarding station and ends at an alighting station (DEC-047).
+4. **No two consecutive walking legs.** Phase 1 has no pathway model that could justify an intermediate station; a walk from A to C is one leg.
+5. **Same-Trip split rule.** Two **directly consecutive selected** rail legs are rejected when `next.trip.id == previous.trip.id` **and** `next.boardingIndex == previous.alightingIndex`: that is one uninterrupted ride cut at a single stop visit — a fake transfer, including a through service split at a line boundary (DEC-009, Rule 16). S5a rejects **nothing else** on this ground: the same `TripID` separated by another leg is valid; a directly consecutive reboard at a **later** index (continuity makes it a later visit to the same station, such as the next pass of a loop) is valid; a reboard at an **earlier** index is not decided here, because a `TripID` is a recurring run (DEC-060 A) and S5a has no operating date — that time-dependent check is **Phase 5**. Pairs involving an unselected leg cannot be compared; because the rule is a `Journey` invariant, it applies as soon as a Journey is constructed with those legs selected.
+6. **An all-unselected Journey is structurally valid.** Whether tracking may begin — for example, requiring a selected first leg (DEC-007) — is a readiness rule for S5b / Phase 5, not a structural invariant.
+
+### F. Encoded shape
+
+Both enums use **one stable keyed pattern**: a `kind` discriminator naming the case, and exactly one payload key with the **same name as that case**.
+
+```json
+{ "id": "J-1", "legs": [
+  { "kind": "rail",
+    "rail": { "kind": "selected",
+              "selected": { "trip": { … Trip … }, "boardingIndex": 0, "alightingIndex": 2 } } },
+  { "kind": "walkingTransfer",
+    "walkingTransfer": { "fromStationID": "s-2", "toStationID": "s-3" } },
+  { "kind": "rail",
+    "rail": { "kind": "unselected",
+              "unselected": { "boardingStationID": "s-3", "alightingStationID": "s-4" } } }
+] }
+```
+
+`JourneyLeg.kind` ∈ { `rail`, `walkingTransfer` }; `RailLeg.kind` ∈ { `unselected`, `selected` }. Decoding **rejects**:
+
+- a **missing** `kind` (`keyNotFound`, the natural keyed-container error);
+- an **unknown** `kind` value (`dataCorrupted`);
+- a **contradictory** payload — any payload key belonging to a **different** case, whether or not the named case's payload is also present (`dataCorrupted`); this check runs before the next one, so a wrong-case payload is always reported as contradictory;
+- a **missing** payload for the named case when no contradictory key is present (`keyNotFound`);
+- any **invalid nested value** — a blank identifier, an invalid `Trip`, out-of-range, reversed, or extreme indices, same-station ends — through the nested value's own rule (`dataCorrupted`), validating decoded integers before any use as an index;
+- a `Journey` that violates §E (`dataCorrupted`).
+
+No persisted Journey schema exists yet (Rule 39); Phase 6 owns persistence and any migration.
+
+## Detailed invariants and their boundaries
+
+| Invariant | Boundary |
+|---|---|
+| valid `JourneyID`, `StationID`, `TripID`; valid `Trip` snapshot | **already guaranteed** by their own types (DEC-051, DEC-060, DEC-061) |
+| rail anchors distinct; walking endpoints distinct | **S5a value construction** |
+| `0 <= boardingIndex < alightingIndex <= count − 1`; distinct stations at those indices | **S5a value construction** |
+| selection preserves anchors (`admits`) | **S5a pure check**; performing the binding is **Phase 5** |
+| non-empty legs; continuity; rail first and last; no consecutive walks; same-Trip split | **S5a `Journey` construction and decoding** |
+| encoded discriminator shape and rejection rules | **S5a decoding** |
+| walking pair is a known pedestrian connection; interchange path exists | **Phase 2 dataset validation** |
+| walking time, route, exits, accessibility | **Phase 10 transfer guidance** |
+| earlier-index reboard of the same run; operating date; readiness to track | **S5b / Phase 5** |
+| binding, replacement, replanning, snapshot reconciliation | **Phase 5** (with Phase 6 for persisted snapshots) |
+| current leg, phase, freshness, interruption, events | **S5b** (state vocabulary) and **Phase 5** (behaviour) |
+| creation and update timestamps; persistence | **Phase 6** |
+
+## Alternatives considered
+
+- **Leg stores only `TripID` plus indices:** rejected — its invariants would need a dataset lookup (Phase 2), and it would not record what the user actually chose.
+- **Anchors stored alongside the snapshot:** rejected — two sources of truth for the same stations.
+- **Unselected leg as an optional Trip on a single struct:** rejected — makes "indices without a Trip" representable.
+- **Strict same-station continuity with no walking leg:** rejected — blocks genuine transfers between distinct canonical stations.
+- **Consecutive walking legs:** rejected for now — no pathway model justifies the intermediate station.
+- **Rejecting every same-`TripID` pair:** rejected — would forbid a legitimate later reboard.
+- **A new `JourneyLegID`:** rejected — position addressing suffices; no consumer needs stable leg identity yet.
+- **Synthesised leg equality:** rejected — misleading under ID-only `Trip` equality (§B).
+- **Stored `origin`/`destination`, `currentLegIndex`, `state`, timestamps, `plannedTrip`, `realtimeState`, `transferGuidance`:** removed from the Journey structure with the owners recorded in the table above.
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.4 and §5.5 replace the sketch with this contract; §5.6 (`JourneyState`) is marked as the S5b contract, still unresolved.
+- `ROADMAP.md` gains Phase 1 Slice S5 with the S5a / S5b subdivision; S6 stays the protocol slice.
+- Phase 5 gains an explicit structural target: legs it can bind by anchor-preserving selection, and a same-Trip rule it must extend with time-dependent checks.
+- **S5 completion.** S5 is complete only when S5a and S5b are each decided, implemented with focused tests, and independently reviewed. S5 may close with S5b deferred **only** if a new accepted decision names the phase that replaces S5b and revises the affected Phase 1 acceptance criteria (and any Included deliverable it removes from Phase 1); deferral alone is not completion.
+
+## Phase ownership
+
+**Phase 1 (S5a):** the types and invariants above. **S5b:** `JourneyState`, `JourneyPhase`, `JourneyEvent`, realtime freshness, interruption reasons, typed errors, and tracking readiness. **S6:** the `JourneyEngine` protocol boundary (DEC-050) and the `RouteSearching` disposition. **Phase 2:** pedestrian-connection and interchange validation. **Phase 3:** route search producing legs. **Phase 5:** binding, progression, reconciliation, recovery, and time-dependent checks. **Phase 6:** persistence, timestamps, snapshot migration. **Phase 10:** transfer guidance.
+
+## Explicit non-goals
+
+No runtime state, phase, current leg, freshness, event, error, or readiness rule; no binding, replacement, or progression behaviour; no route search or planned trip; no realtime state; no transfer guidance, walking time, exit doors, or next-train wait; no pedestrian-connection verification; no provider identifier or mapping; no brand, fare, or seating (DEC-061 G); no persistence or timestamps; no UI or Live Activity; no new canonical identifier; no new dependency. This Decision does not mark S5 or Phase 1 complete.
+
+## Implementation sequence
+
+1. `RailLegAnchors`, `WalkingTransfer`, and `SelectedRailTrip` with their value tests and `admits`.
+2. `RailLeg` and `JourneyLeg` with the §F encoded shape.
+3. `Journey` with the §E invariants and ID-only identity.
+4. Independent review, then the S5a completion record.
+
+## Revisit Triggers
+
+- A verified journey needs consecutive walking legs, a non-rail mode, or a leg that starts or ends with a walk.
+- A consumer genuinely needs leg equality or stable leg identity.
+- Phase 5 shows the same-Trip rule needs a structural extension rather than a time-dependent check.
+- Phase 3 route-search results cannot be represented as anchors plus walking legs.
+- Persistence design (Phase 6) requires a different encoded representation.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
