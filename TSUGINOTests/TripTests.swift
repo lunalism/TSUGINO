@@ -3,9 +3,9 @@ import Testing
 @testable import TSUGINO
 
 /// Contract tests for one recurring canonical scheduled run (DEC-060,
-/// ARCHITECTURE.md §5.3).
+/// DEC-061, ARCHITECTURE.md §5.3).
 ///
-/// Every station, line, and trip identifier here is synthetic; no real Tokyo
+/// Every station, line, service-type, and trip identifier here is synthetic; no real Tokyo
 /// or Airport Rail record appears. Nothing asserts encoded collection order,
 /// topology adjacency, a remaining-stop count, or a display label.
 struct TripTests {
@@ -31,6 +31,11 @@ struct TripTests {
         return try #require(TripLineSegment(lineID: lineID, startIndex: start, endIndex: end))
     }
 
+    private static func serviceType(_ raw: String, _ start: Int, _ end: Int) throws -> TripServiceTypeSegment {
+        let serviceTypeID = try #require(ServiceTypeID(raw))
+        return try #require(TripServiceTypeSegment(serviceTypeID: serviceTypeID, startIndex: start, endIndex: end))
+    }
+
     private static let complete = TripCoverage(includesServiceOrigin: true, includesServiceDestination: true)
 
     /// A valid trip whose fields all default to a simple two-line run.
@@ -38,14 +43,16 @@ struct TripTests {
         id: String = "tr-1",
         stops stopSequence: [StationID]? = nil,
         segments: [TripLineSegment]? = nil,
-        coverage: TripCoverage = complete
+        coverage: TripCoverage = complete,
+        serviceTypes: [TripServiceTypeSegment] = []
     ) throws -> Trip {
         try #require(
             Trip(
                 id: try Self.tripID(id),
                 stopSequence: try stopSequence ?? Self.stops("a", "b", "c"),
                 lineSegments: try segments ?? [Self.segment("ln-1", 0, 2)],
-                coverage: coverage
+                coverage: coverage,
+                serviceTypeSegments: serviceTypes
             )
         )
     }
@@ -55,14 +62,16 @@ struct TripTests {
     private static let validStops = #"["a","b","c"]"#
     private static let validSegments = #"[{"lineID":"ln-1","startIndex":0,"endIndex":2}]"#
     private static let validCoverage = #"{"includesServiceOrigin":true,"includesServiceDestination":true}"#
+    private static let validServiceTypes = #"[]"#
 
     private static func payload(
         id: String = #""tr-1""#,
         stops: String = validStops,
         segments: String = validSegments,
-        coverage: String = validCoverage
+        coverage: String = validCoverage,
+        serviceTypes: String = validServiceTypes
     ) -> String {
-        #"{"id":\#(id),"stopSequence":\#(stops),"lineSegments":\#(segments),"coverage":\#(coverage)}"#
+        #"{"id":\#(id),"stopSequence":\#(stops),"lineSegments":\#(segments),"coverage":\#(coverage),"serviceTypeSegments":\#(serviceTypes)}"#
     }
 
     private static func decode(_ payload: String) throws -> Trip {
@@ -76,14 +85,22 @@ struct TripTests {
         let stops = try Self.stops("a", "b", "c", "d")
         let segments = [try Self.segment("ln-1", 0, 2), try Self.segment("ln-2", 2, 3)]
         let coverage = TripCoverage(includesServiceOrigin: true, includesServiceDestination: false)
+        let serviceTypes = [try Self.serviceType("st-1", 0, 3)]
         let subject = try #require(
-            Trip(id: id, stopSequence: stops, lineSegments: segments, coverage: coverage)
+            Trip(
+                id: id,
+                stopSequence: stops,
+                lineSegments: segments,
+                coverage: coverage,
+                serviceTypeSegments: serviceTypes
+            )
         )
 
         #expect(subject.id == id)
         #expect(subject.stopSequence == stops)
         #expect(subject.lineSegments == segments)
         #expect(subject.coverage == coverage)
+        #expect(subject.serviceTypeSegments == serviceTypes)
     }
 
     // MARK: - Identity (ID only)
@@ -150,7 +167,8 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: stops,
                 lineSegments: [try Self.segment("ln-1", 0, 1)],
-                coverage: Self.complete
+                coverage: Self.complete,
+                serviceTypeSegments: []
             ) == nil
         )
     }
@@ -168,7 +186,8 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: stops,
                 lineSegments: [try Self.segment("ln-1", 0, stops.count - 1)],
-                coverage: Self.complete
+                coverage: Self.complete,
+                serviceTypeSegments: []
             ) == nil
         )
     }
@@ -316,7 +335,8 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: try Self.stops("a", "b"),
                 lineSegments: [],
-                coverage: Self.complete
+                coverage: Self.complete,
+                serviceTypeSegments: []
             ) == nil
         )
     }
@@ -331,7 +351,8 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: try Self.stops("a", "b", "c", "d", "e"),
                 lineSegments: segments,
-                coverage: Self.complete
+                coverage: Self.complete,
+                serviceTypeSegments: []
             ) == nil,
             "\(sample.name) must be rejected"
         )
@@ -391,7 +412,8 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: try Self.stops("a"),
                 lineSegments: [try Self.segment("ln-1", 0, 1)],
-                coverage: partial
+                coverage: partial,
+                serviceTypeSegments: []
             ) == nil
         )
         #expect(
@@ -399,7 +421,193 @@ struct TripTests {
                 id: try Self.tripID("tr-1"),
                 stopSequence: try Self.stops("a", "b", "c"),
                 lineSegments: [try Self.segment("ln-1", 0, 1)],
-                coverage: partial
+                coverage: partial,
+                serviceTypeSegments: []
+            ) == nil
+        )
+    }
+
+    // MARK: - Service-type segments (DEC-061 E)
+
+    struct ServiceTypeSpan: Sendable {
+        let type: String
+        let start: Int
+        let end: Int
+    }
+
+    struct ServiceTypeCase: Sendable {
+        let name: String
+        let spans: [ServiceTypeSpan]
+    }
+
+    /// Accepted service-type lists over one five-stop traversal `[a,b,c,d,e]`.
+    static let validServiceTypeCases: [ServiceTypeCase] = [
+        ServiceTypeCase(name: "empty — unknown throughout", spans: []),
+        ServiceTypeCase(name: "full coverage by one type", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 4),
+        ]),
+        ServiceTypeCase(name: "leading portion only", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2),
+        ]),
+        ServiceTypeCase(name: "trailing portion only", spans: [
+            ServiceTypeSpan(type: "st-1", start: 2, end: 4),
+        ]),
+        ServiceTypeCase(name: "middle portion only", spans: [
+            ServiceTypeSpan(type: "st-1", start: 1, end: 3),
+        ]),
+        ServiceTypeCase(name: "change at a shared boundary", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2), ServiceTypeSpan(type: "st-2", start: 2, end: 4),
+        ]),
+        ServiceTypeCase(name: "different types separated by a gap", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 1), ServiceTypeSpan(type: "st-2", start: 3, end: 4),
+        ]),
+        ServiceTypeCase(name: "same type separated by a gap", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 1), ServiceTypeSpan(type: "st-1", start: 2, end: 4),
+        ]),
+        ServiceTypeCase(name: "return to an earlier type after a join", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 1), ServiceTypeSpan(type: "st-2", start: 1, end: 3),
+            ServiceTypeSpan(type: "st-1", start: 3, end: 4),
+        ]),
+    ]
+
+    /// Rejected service-type lists over one five-stop traversal `[a,b,c,d,e]`.
+    static let invalidServiceTypeCases: [ServiceTypeCase] = [
+        ServiceTypeCase(name: "end beyond the traversal", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 5),
+        ]),
+        ServiceTypeCase(name: "later segment beyond the traversal", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2), ServiceTypeSpan(type: "st-2", start: 2, end: 9),
+        ]),
+        ServiceTypeCase(name: "wider overlap", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 3), ServiceTypeSpan(type: "st-2", start: 2, end: 4),
+        ]),
+        ServiceTypeCase(name: "nested range", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 4), ServiceTypeSpan(type: "st-2", start: 1, end: 3),
+        ]),
+        ServiceTypeCase(name: "duplicate range", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2), ServiceTypeSpan(type: "st-2", start: 0, end: 2),
+        ]),
+        ServiceTypeCase(name: "reversed order", spans: [
+            ServiceTypeSpan(type: "st-1", start: 2, end: 4), ServiceTypeSpan(type: "st-2", start: 0, end: 2),
+        ]),
+        ServiceTypeCase(name: "reversed order across a gap", spans: [
+            ServiceTypeSpan(type: "st-1", start: 3, end: 4), ServiceTypeSpan(type: "st-2", start: 0, end: 1),
+        ]),
+        ServiceTypeCase(name: "non-progressing chain", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2), ServiceTypeSpan(type: "st-2", start: 2, end: 3),
+            ServiceTypeSpan(type: "st-3", start: 2, end: 4),
+        ]),
+        ServiceTypeCase(name: "joined segments of the same type", spans: [
+            ServiceTypeSpan(type: "st-1", start: 0, end: 2), ServiceTypeSpan(type: "st-1", start: 2, end: 4),
+        ]),
+    ]
+
+    private static func serviceTypeTrip(_ spans: [ServiceTypeSpan]) throws -> Trip? {
+        Trip(
+            id: try Self.tripID("tr-1"),
+            stopSequence: try Self.stops("a", "b", "c", "d", "e"),
+            lineSegments: [try Self.segment("ln-1", 0, 4)],
+            coverage: Self.complete,
+            serviceTypeSegments: try spans.map { try Self.serviceType($0.type, $0.start, $0.end) }
+        )
+    }
+
+    @Test(arguments: TripTests.validServiceTypeCases)
+    func validServiceTypeListsAreAccepted(sample: ServiceTypeCase) throws {
+        let subject = try #require(try Self.serviceTypeTrip(sample.spans), "\(sample.name) must be accepted")
+
+        #expect(subject.serviceTypeSegments.count == sample.spans.count)
+    }
+
+    @Test(arguments: TripTests.invalidServiceTypeCases)
+    func invalidServiceTypeListsAreRejected(sample: ServiceTypeCase) throws {
+        #expect(try Self.serviceTypeTrip(sample.spans) == nil, "\(sample.name) must be rejected")
+    }
+
+    /// An empty list states that the type is unknown everywhere; it is not a
+    /// claim that the service is local or has no type.
+    @Test func emptyServiceTypeListMeansUnknownThroughout() throws {
+        let subject = try Self.trip(serviceTypes: [])
+
+        #expect(subject.serviceTypeSegments.isEmpty)
+    }
+
+    /// The type changes where the train arrives under one type and departs
+    /// under the next: the boundary stop belongs to both segments.
+    @Test func typeChangeAtASharedBoundaryStopBelongsToBothSegments() throws {
+        let subject = try Self.trip(
+            stops: try Self.stops("a", "b", "x", "c", "d"),
+            segments: [try Self.segment("ln-1", 0, 4)],
+            serviceTypes: [try Self.serviceType("st-1", 0, 2), try Self.serviceType("st-2", 2, 4)]
+        )
+
+        #expect(subject.serviceTypeSegments[0].endIndex == 2)
+        #expect(subject.serviceTypeSegments[1].startIndex == 2)
+        #expect(subject.stopSequence[2] == (try Self.station("x")))
+    }
+
+    /// DEC-061 E7: a change at a station passed without stopping has no
+    /// truthful single type for the movement containing it, so that movement
+    /// is left as a gap between two passenger stops.
+    @Test func changeAtAPassedStationIsLeftAsAGap() throws {
+        let subject = try Self.trip(
+            stops: try Self.stops("a", "b", "c", "d"),
+            segments: [try Self.segment("ln-1", 0, 3)],
+            serviceTypes: [try Self.serviceType("st-1", 0, 1), try Self.serviceType("st-2", 2, 3)]
+        )
+
+        #expect(subject.serviceTypeSegments[1].startIndex == subject.serviceTypeSegments[0].endIndex + 1)
+    }
+
+    /// Service-type boundaries are independent of line boundaries: a type may
+    /// continue across a line boundary, and may change away from one.
+    @Test func serviceTypeBoundariesAreIndependentOfLineBoundaries() throws {
+        let throughOneType = try Self.trip(
+            stops: try Self.stops("a", "b", "x", "c", "d"),
+            segments: [try Self.segment("ln-1", 0, 2), try Self.segment("ln-2", 2, 4)],
+            serviceTypes: [try Self.serviceType("st-1", 0, 4)]
+        )
+        let changeAwayFromLineBoundary = try Self.trip(
+            stops: try Self.stops("a", "b", "x", "c", "d"),
+            segments: [try Self.segment("ln-1", 0, 2), try Self.segment("ln-2", 2, 4)],
+            serviceTypes: [try Self.serviceType("st-1", 0, 3), try Self.serviceType("st-2", 3, 4)]
+        )
+
+        #expect(throughOneType.serviceTypeSegments.count == 1)
+        #expect(changeAwayFromLineBoundary.serviceTypeSegments[0].endIndex == 3)
+        #expect(changeAwayFromLineBoundary.lineSegments[0].endIndex == 2)
+    }
+
+    @Test func serviceTypesDoNotParticipateInIdentity() throws {
+        let unknown = try Self.trip(serviceTypes: [])
+        let known = try Self.trip(serviceTypes: [try Self.serviceType("st-1", 0, 2)])
+
+        #expect(unknown == known)
+        #expect(unknown.hashValue == known.hashValue)
+        #expect(unknown.serviceTypeSegments != known.serviceTypeSegments)
+    }
+
+    /// Valid service types relax nothing: the DEC-060 traversal and line
+    /// segment rules still apply.
+    @Test func validServiceTypesDoNotRelaxOtherInvariants() throws {
+        let serviceTypes = [try Self.serviceType("st-1", 0, 1)]
+
+        #expect(
+            Trip(
+                id: try Self.tripID("tr-1"),
+                stopSequence: try Self.stops("a", "a"),
+                lineSegments: [try Self.segment("ln-1", 0, 1)],
+                coverage: Self.complete,
+                serviceTypeSegments: serviceTypes
+            ) == nil
+        )
+        #expect(
+            Trip(
+                id: try Self.tripID("tr-1"),
+                stopSequence: try Self.stops("a", "b", "c"),
+                lineSegments: [try Self.segment("ln-1", 0, 1)],
+                coverage: Self.complete,
+                serviceTypeSegments: serviceTypes
             ) == nil
         )
     }
@@ -410,7 +618,8 @@ struct TripTests {
         let original = try Self.trip(
             stops: try Self.stops("j", "a", "b", "j", "t"),
             segments: [try Self.segment("ln-1", 0, 3), try Self.segment("ln-2", 3, 4)],
-            coverage: TripCoverage(includesServiceOrigin: true, includesServiceDestination: false)
+            coverage: TripCoverage(includesServiceOrigin: true, includesServiceDestination: false),
+            serviceTypes: [try Self.serviceType("st-1", 0, 2), try Self.serviceType("st-2", 3, 4)]
         )
         let decoded = try JSONDecoder().decode(
             Trip.self,
@@ -419,32 +628,35 @@ struct TripTests {
 
         // Equality is ID-only, so every structural field is compared
         // explicitly: `decoded == original` alone would pass even if the
-        // traversal, segments, or coverage had been lost.
+        // traversal, segments, coverage, or service types had been lost.
         #expect(decoded.id == original.id)
         #expect(decoded.stopSequence == original.stopSequence)
         #expect(decoded.lineSegments == original.lineSegments)
         #expect(decoded.coverage == original.coverage)
+        #expect(decoded.serviceTypeSegments == original.serviceTypeSegments)
     }
 
     /// A regression guard for the encoded stored fields, not a general proof
     /// that `Trip` has no other stored properties. It would catch a provider
-    /// reference, schedule, direction, destination, or service type added as a
-    /// `Codable` member, which is the realistic way DEC-060 F–H would be
-    /// broken; a non-`Codable` member would slip past it.
-    @Test func encodedShapeContainsOnlyTheFourFields() throws {
+    /// reference, schedule, direction, destination, brand, fare, or seating
+    /// fact added as a `Codable` member, which is the realistic way DEC-060
+    /// F–G or DEC-061 G would be broken; a non-`Codable` member would slip
+    /// past it.
+    @Test func encodedShapeContainsOnlyTheFiveFields() throws {
         let data = try JSONEncoder().encode(try Self.trip())
         let object = try #require(
             try JSONSerialization.jsonObject(with: data) as? [String: Any]
         )
 
-        #expect(Set(object.keys) == ["id", "stopSequence", "lineSegments", "coverage"])
+        #expect(Set(object.keys) == ["id", "stopSequence", "lineSegments", "coverage", "serviceTypeSegments"])
     }
 
     @Test(arguments: [
-        #"{"stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","stopSequence":["a","b","c"],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}]}"#,
+        #"{"stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
     ])
     func missingKeysFailAsKeyNotFound(payload: String) {
         let error = #expect(throws: DecodingError.self) {
@@ -458,10 +670,12 @@ struct TripTests {
     }
 
     @Test(arguments: [
-        #"{"id":1,"stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","stopSequence":"a","lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":{"lineID":"ln-1"},"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true}}"#,
-        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":true}"#,
+        #"{"id":1,"stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":"a","lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":{"lineID":"ln-1"},"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":true,"serviceTypeSegments":[]}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":{"serviceTypeID":"st-1"}}"#,
+        #"{"id":"tr-1","stopSequence":["a","b","c"],"lineSegments":[{"lineID":"ln-1","startIndex":0,"endIndex":2}],"coverage":{"includesServiceOrigin":true,"includesServiceDestination":true},"serviceTypeSegments":"unknown"}"#,
     ])
     func wrongTypesFailAsTypeMismatch(payload: String) {
         let error = #expect(throws: DecodingError.self) {
@@ -493,6 +707,15 @@ struct TripTests {
         Self.payload(segments: #"[{"lineID":"ln-1","startIndex":-1,"endIndex":2}]"#),
         Self.payload(segments: #"[{"lineID":"ln-1","startIndex":2,"endIndex":2}]"#),
         Self.payload(segments: #"[{"lineID":"","startIndex":0,"endIndex":2}]"#),
+        // service-type segment list
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":3}]"#),
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":2},{"serviceTypeID":"st-2","startIndex":1,"endIndex":2}]"#),
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":1,"endIndex":2},{"serviceTypeID":"st-2","startIndex":0,"endIndex":1}]"#),
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":1},{"serviceTypeID":"st-1","startIndex":1,"endIndex":2}]"#),
+        // nested service-type segment invariant
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":-1,"endIndex":2}]"#),
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":2,"endIndex":2}]"#),
+        Self.payload(serviceTypes: #"[{"serviceTypeID":"","startIndex":0,"endIndex":2}]"#),
         // nested identifier
         Self.payload(id: #""""#),
     ])
@@ -518,11 +741,35 @@ struct TripTests {
         }
     }
 
+    @Test(arguments: [
+        #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":9223372036854775807}]"#,
+        #"[{"serviceTypeID":"st-1","startIndex":-9223372036854775808,"endIndex":2}]"#,
+        #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":1},{"serviceTypeID":"st-2","startIndex":9223372036854775806,"endIndex":9223372036854775807}]"#,
+    ])
+    func extremeDecodedServiceTypeIndicesAreRejectedSafely(serviceTypes: String) {
+        #expect(throws: DecodingError.self) {
+            try Self.decode(Self.payload(serviceTypes: serviceTypes))
+        }
+    }
+
     @Test(arguments: [#""tr-1""#, "[]", "null", "42"])
     func nonObjectPayloadsFailToDecode(payload: String) {
         #expect(throws: DecodingError.self) {
             try JSONDecoder().decode(Trip.self, from: Data(payload.utf8))
         }
+    }
+
+    @Test func validGappedServiceTypePayloadDecodes() throws {
+        let decoded = try Self.decode(
+            Self.payload(
+                stops: #"["a","b","c","d"]"#,
+                segments: #"[{"lineID":"ln-1","startIndex":0,"endIndex":3}]"#,
+                serviceTypes: #"[{"serviceTypeID":"st-1","startIndex":0,"endIndex":1},{"serviceTypeID":"st-1","startIndex":2,"endIndex":3}]"#
+            )
+        )
+
+        #expect(decoded.serviceTypeSegments.count == 2)
+        #expect(decoded.serviceTypeSegments[0].serviceTypeID == decoded.serviceTypeSegments[1].serviceTypeID)
     }
 
     @Test func validMultiLinePayloadDecodes() throws {
@@ -544,7 +791,8 @@ struct TripTests {
         let subject = try Self.trip(
             stops: try Self.stops("a", "b", "x", "c"),
             segments: [try Self.segment("ln-1", 0, 2), try Self.segment("ln-2", 2, 3)],
-            coverage: TripCoverage(includesServiceOrigin: false, includesServiceDestination: true)
+            coverage: TripCoverage(includesServiceOrigin: false, includesServiceDestination: true),
+            serviceTypes: [try Self.serviceType("st-1", 0, 2), try Self.serviceType("st-2", 2, 3)]
         )
         let received = await Task.detached { subject }.value
 
@@ -552,5 +800,6 @@ struct TripTests {
         #expect(received.stopSequence == subject.stopSequence)
         #expect(received.lineSegments == subject.lineSegments)
         #expect(received.coverage == subject.coverage)
+        #expect(received.serviceTypeSegments == subject.serviceTypeSegments)
     }
 }

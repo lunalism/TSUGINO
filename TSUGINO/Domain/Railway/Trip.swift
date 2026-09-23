@@ -1,10 +1,12 @@
 // One recurring canonical scheduled run (DEC-060, ARCHITECTURE.md §5.3).
 //
 // `Trip` is identity, an ordered passenger-stop traversal, the canonical lines
-// that traversal runs on, and what the traversal covers — nothing else. It
-// carries no provider reference, identifier, or code (Rule 9, DEC-021 — those
-// are mapping-layer aliases, §40), no operator (a line's operator is not proof
-// of who runs a given service, DEC-060 D), no service brand or class (S4b), no
+// that traversal runs on, what the traversal covers, and the service types
+// known for parts of it (DEC-061) — nothing else. It carries no provider
+// reference, identifier, or code (Rule 9, DEC-021 — those are mapping-layer
+// aliases, §40), no operator (a line's operator is not proof of who runs a
+// given service, DEC-060 D), no train brand, supplemental fare, or seating
+// policy (separate facts not implemented in Phase 1, DEC-061 G), and no
 // schedule, calendar, direction, destination, or headsign (DEC-060 F, G).
 //
 // What a Trip identifies: **one recurring canonical scheduled run
@@ -56,30 +58,48 @@ nonisolated struct Trip: Codable, Sendable {
     /// them alike (DEC-038, Rule 50).
     let coverage: TripCoverage
 
-    /// Fails unless the traversal and its segments satisfy every rule in
-    /// DEC-060 B and C. Never traps: each index is compared against the stop
-    /// count before anything is used to address the collection, and no
-    /// arithmetic is performed on a decoded index, so an arbitrary payload
-    /// cannot overflow or form an invalid range.
+    /// The service types known for parts of this run, in traversal order
+    /// (DEC-061 E).
     ///
-    /// `TripID`, each `StationID` and `LineID`, every `TripLineSegment`, and
-    /// `TripCoverage` each enforce their own rule, so this initialiser repeats
-    /// none of them; it enforces only what needs the whole value.
+    /// Empty means the service type is unknown for the whole represented
+    /// traversal. Segments may meet at one shared boundary stop — the train
+    /// arrives under one type and departs under the next — or be separated by
+    /// a gap, and a movement no segment covers has no stated type. Unknown is
+    /// never "local": absence of a segment is not a negative fact (DEC-061 A).
+    /// Descriptive only; it is not part of identity.
+    let serviceTypeSegments: [TripServiceTypeSegment]
+
+    /// Fails unless the traversal and its segments satisfy every rule in
+    /// DEC-060 B and C and DEC-061 E. Never traps: each index is compared
+    /// against the stop count before anything is used to address the
+    /// collection, and no arithmetic is performed on a decoded index, so an
+    /// arbitrary payload cannot overflow or form an invalid range.
+    ///
+    /// `TripID`, each `StationID`, `LineID`, and `ServiceTypeID`, every
+    /// `TripLineSegment` and `TripServiceTypeSegment`, and `TripCoverage` each
+    /// enforce their own rule, so this initialiser repeats none of them; it
+    /// enforces only what needs the whole value.
+    ///
+    /// `serviceTypeSegments` has no default: every construction states either
+    /// known segments or `[]` for unknown (DEC-061 E11).
     init?(
         id: TripID,
         stopSequence: [StationID],
         lineSegments: [TripLineSegment],
-        coverage: TripCoverage
+        coverage: TripCoverage,
+        serviceTypeSegments: [TripServiceTypeSegment]
     ) {
         guard
             Self.isValidStopSequence(stopSequence),
-            Self.isValidSegmentList(lineSegments, coveringStopCount: stopSequence.count)
+            Self.isValidSegmentList(lineSegments, coveringStopCount: stopSequence.count),
+            Self.isValidServiceTypeSegmentList(serviceTypeSegments, stopCount: stopSequence.count)
         else { return nil }
 
         self.id = id
         self.stopSequence = stopSequence
         self.lineSegments = lineSegments
         self.coverage = coverage
+        self.serviceTypeSegments = serviceTypeSegments
     }
 
     /// At least two represented stops, and no station immediately repeated.
@@ -114,13 +134,41 @@ nonisolated struct Trip: Codable, Sendable {
             next.startIndex != previous.endIndex || next.lineID == previous.lineID
         }
     }
+
+    /// Possibly empty, in range, strictly progressing, overlapping only at a
+    /// shared boundary stop, and never joining two segments of the same type.
+    ///
+    /// Unlike line segments there is no coverage rule: a gap before, between,
+    /// or after segments means unknown (DEC-061 E5). The order rule
+    /// `next.startIndex >= previous.endIndex`, together with each segment's
+    /// own `startIndex < endIndex`, makes ranges strictly progress, so an
+    /// overlap wider than the shared endpoint, a nested range, a duplicate
+    /// range, and any non-progressing order are all excluded. Ends therefore
+    /// strictly increase, so bounding the last end bounds every end; the
+    /// comparison uses `stopCount - 1`, which cannot overflow because the stop
+    /// count is already known to be at least two, and no arithmetic touches a
+    /// decoded index.
+    private static func isValidServiceTypeSegmentList(
+        _ segments: [TripServiceTypeSegment],
+        stopCount: Int
+    ) -> Bool {
+        guard let last = segments.last else { return true }
+
+        let isOrderedAndNormalised = !zip(segments, segments.dropFirst()).contains { previous, next in
+            next.startIndex < previous.endIndex
+                || (next.startIndex == previous.endIndex && next.serviceTypeID == previous.serviceTypeID)
+        }
+
+        return isOrderedAndNormalised && last.endIndex <= stopCount - 1
+    }
 }
 
 extension Trip: Hashable {
     // Written out rather than synthesised: synthesis would fold the traversal,
     // the segments, and the coverage into identity, which is precisely what
     // DEC-060 rules out — and it would make two separately published
-    // departures with identical structure the same Trip.
+    // departures with identical structure the same Trip. The same holds for
+    // the service-type segments (DEC-061 E9).
 
     static func == (lhs: Trip, rhs: Trip) -> Bool {
         lhs.id == rhs.id
@@ -133,14 +181,16 @@ extension Trip: Hashable {
 
 extension Trip {
     private enum CodingKeys: String, CodingKey {
-        case id, stopSequence, lineSegments, coverage
+        case id, stopSequence, lineSegments, coverage, serviceTypeSegments
     }
 
     /// Decodes with exactly the same rules as direct construction, so a
     /// decoded Trip can never be one `init` would have rejected. Nested values
     /// fail through their own decoders — a blank identifier through `TripID`,
-    /// `StationID`, or `LineID`, an invalid span through `TripLineSegment` —
-    /// and a missing key or wrong type keeps its normal keyed-container error.
+    /// `StationID`, `LineID`, or `ServiceTypeID`, an invalid span through
+    /// `TripLineSegment` or `TripServiceTypeSegment` — and a missing key or
+    /// wrong type keeps its normal keyed-container error. The
+    /// `serviceTypeSegments` key is required; `[]` is its unknown value.
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -148,12 +198,16 @@ extension Trip {
             id: try container.decode(TripID.self, forKey: .id),
             stopSequence: try container.decode([StationID].self, forKey: .stopSequence),
             lineSegments: try container.decode([TripLineSegment].self, forKey: .lineSegments),
-            coverage: try container.decode(TripCoverage.self, forKey: .coverage)
+            coverage: try container.decode(TripCoverage.self, forKey: .coverage),
+            serviceTypeSegments: try container.decode(
+                [TripServiceTypeSegment].self,
+                forKey: .serviceTypeSegments
+            )
         ) else {
             throw DecodingError.dataCorrupted(
                 .init(
                     codingPath: container.codingPath,
-                    debugDescription: "A trip must have at least two stops with no adjacent duplicate, and line segments that are joined, covering, and never repeat a line back to back."
+                    debugDescription: "A trip must have at least two stops with no adjacent duplicate, line segments that are joined, covering, and never repeat a line back to back, and service-type segments that are in range, progress through the traversal, overlap only at a shared boundary, and never join two segments of the same type."
                 )
             )
         }

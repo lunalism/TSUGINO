@@ -1,12 +1,12 @@
 // Canonical, TSUGINO-owned identifiers for the railway and journey domain
-// (DEC-021, DEC-051, ARCHITECTURE.md §39, RULES.md Rule 9).
+// (DEC-021, DEC-051, DEC-061, ARCHITECTURE.md §39, RULES.md Rule 9).
 //
 // Provider identifiers are aliases resolved through the provider mapping layer
 // (ARCHITECTURE.md §40). They are deliberately absent here: nothing in this file
 // knows that any particular provider exists, which is what lets a provider be
 // replaced without touching the domain (DEC-020).
 //
-// The five identifiers are separate nominal types, so the compiler rejects passing
+// The six identifiers are separate nominal types, so the compiler rejects passing
 // a `StationID` where a `LineID` is expected. That mistake is otherwise easy to
 // make and impossible to see in review, because every one of them wraps a `String`.
 //
@@ -16,10 +16,10 @@
 // folding, no Unicode normalisation, no separator rewriting. Rejecting blanks does
 // not authorise normalising the values that remain.
 
-/// Shared invariant and `Codable` mechanics for the five canonical identifiers.
+/// Shared invariant and `Codable` mechanics for the six canonical identifiers.
 ///
 /// It exists only so that the blank-value rule (DEC-051) and the encoded
-/// representation are defined once instead of five times. Five hand-written copies
+/// representation are defined once instead of six times. Six hand-written copies
 /// could drift apart, and a drifted invariant or encoding would surface far from
 /// this file.
 ///
@@ -41,7 +41,7 @@ extension CanonicalIdentifier {
     /// Uses the Swift standard library's `Character.isWhitespace`, so the rule holds
     /// for every Unicode whitespace scalar without depending on Foundation.
     ///
-    /// Deliberately `fileprivate`: it is the shared implementation of the five
+    /// Deliberately `fileprivate`: it is the shared implementation of the six
     /// initialisers below (DEC-051), not a reusable blankness API. A caller that
     /// pre-checks a value instead of handling `init?`'s `nil` would duplicate the
     /// invariant where it could drift.
@@ -114,6 +114,16 @@ nonisolated struct TripID: CanonicalIdentifier {
 
 /// Canonical identifier for a journey.
 nonisolated struct JourneyID: CanonicalIdentifier {
+    let rawValue: String
+
+    init?(_ rawValue: String) {
+        guard !Self.isBlank(rawValue) else { return nil }
+        self.rawValue = rawValue
+    }
+}
+
+/// Canonical identifier for an operator-scoped service type (DEC-061).
+nonisolated struct ServiceTypeID: CanonicalIdentifier {
     let rawValue: String
 
     init?(_ rawValue: String) {

@@ -3,14 +3,14 @@ import Testing
 @testable import TSUGINO
 
 /// Contract tests for the canonical domain identifiers (DEC-021, DEC-051,
-/// ARCHITECTURE.md §39).
+/// DEC-061, ARCHITECTURE.md §39).
 struct CanonicalIdentifierTests {
 
-    // MARK: - Shared contract across all five types
+    // MARK: - Shared contract across all six types
 
     /// Exercises the shared contract against one concrete identifier type without
     /// erasing it: `Identifier` is bound to a single nominal type per call, so the
-    /// five types are never funnelled through one domain type.
+    /// six types are never funnelled through one domain type.
     private static func assertSharedContract<Identifier: CanonicalIdentifier>(
         for type: Identifier.Type
     ) throws {
@@ -68,6 +68,10 @@ struct CanonicalIdentifierTests {
         try Self.assertSharedContract(for: JourneyID.self)
     }
 
+    @Test func serviceTypeIDSatisfiesTheSharedContract() throws {
+        try Self.assertSharedContract(for: ServiceTypeID.self)
+    }
+
     // MARK: - Validity rule (DEC-051)
 
     @Test(arguments: ["", " ", "  ", "\t", "\n", "\r\n", "\t \n", "\u{00A0}", "\u{2028}", "\u{3000}"])
@@ -110,16 +114,16 @@ struct CanonicalIdentifierTests {
 
     // MARK: - Nominal distinctness
 
-    /// A regression guard for five separate concrete declarations. The compiler —
+    /// A regression guard for six separate concrete declarations. The compiler —
     /// not this test — is what prevents assigning one identifier type to another;
     /// collapsing them into a single generic or typealias would fail here.
-    @Test func theFiveIdentifiersAreSeparateConcreteDeclarations() {
+    @Test func theSixIdentifiersAreSeparateConcreteDeclarations() {
         let names = Set(
-            [StationID.self, LineID.self, OperatorID.self, TripID.self, JourneyID.self]
+            [StationID.self, LineID.self, OperatorID.self, TripID.self, JourneyID.self, ServiceTypeID.self]
                 .map { String(describing: $0) }
         )
 
-        #expect(names == ["StationID", "LineID", "OperatorID", "TripID", "JourneyID"])
+        #expect(names == ["StationID", "LineID", "OperatorID", "TripID", "JourneyID", "ServiceTypeID"])
     }
 
     @Test func identicalRawStringsDoNotCollideAcrossTypedCollections() throws {
