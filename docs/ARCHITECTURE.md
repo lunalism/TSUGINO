@@ -650,7 +650,7 @@ RailwayLineTopology
 
 A Trip represents a concrete train service — one continuous run, whatever lines it traverses.
 
-Accepted structural contract (DEC-060; Phase 1 slice S4a):
+Accepted structural contract (DEC-060, Phase 1 slice S4a; `serviceTypeSegments` and `ServiceType` from DEC-061, slice S4b — not yet implemented):
 
 ```text
 Trip
@@ -659,6 +659,8 @@ Trip
                    non-adjacent repeats permitted and required)
 - lineSegments    ([TripLineSegment] — non-empty, ordered, joined, covering, normalised)
 - coverage        (TripCoverage — what the represented traversal actually covers)
+- serviceTypeSegments ([TripServiceTypeSegment] — may be empty; ordered; joined or gapped;
+                   gaps mean unknown; not required to cover)
 
 TripLineSegment
 - lineID          (LineID)
@@ -668,6 +670,16 @@ TripLineSegment
 TripCoverage
 - includesServiceOrigin       (Bool)
 - includesServiceDestination  (Bool)
+
+TripServiceTypeSegment
+- serviceTypeID   (ServiceTypeID)
+- startIndex      (Int — index into Trip.stopSequence)
+- endIndex        (Int — index into Trip.stopSequence; endIndex > startIndex)
+
+ServiceType
+- id              (ServiceTypeID — §39, DEC-051)
+- operatorID      (OperatorID — §5.7)
+- name            (LocalizedRailName — §39.1, DEC-053)
 ```
 
 **What a Trip identifies (DEC-060 A).** A `Trip` is **one recurring canonical scheduled run definition** — not one dated physical run, and not a bare stopping-pattern template. Two separately published departures are different Trips even with identical structure, so a Trip is never deduplicated by structural equality; a corrected traversal, segment list, or coverage for the same logical run keeps the same `TripID`. Deciding that two provider records denote the same logical run is Phase 2 mapping and provenance work — providers supply evidence, TSUGINO owns the identifier (Rule 9, §40). The service calendar, a particular dated execution, cancellation, delay, and live progress all belong to later schedule, realtime, and Journey contracts (DEC-011, DEC-050).
@@ -684,9 +696,13 @@ TripCoverage
 
 **Coverage (DEC-060 C2).** `TripCoverage` states independently whether the represented traversal reaches the real service's own origin and destination. All four combinations are valid: complete; origin but not destination; destination but not origin; supported middle only. It is descriptive — excluded from identity — has complete-value equality, no identifier, and total construction, and it names **no** missing line, station, operator, brand, or count of unknown stops: unknown data stays unknown. Partial coverage is **not** a transfer, and one through service is never split into several Trips to make each look complete.
 
-**Deferred by DEC-060, not cancelled.** `scheduledTimes` (§F) awaits its own timetable contract — service days, rollover, time zones, provider schedule mapping, Clock interaction — and its deferral does not affect Scheduled Journey Guidance (DEC-046, DEC-047). `direction`, `destination`, and headsign (§G) are not stored: traversal order gives direction, provider direction identifiers stay Phase 2 mapping data, and a headsign is a localized label settled with the display work. `stopSequence.first` and `.last` are the **first and final represented** stops; they are the service's actual origin and destination **only when** the matching coverage flag is true, so a genuine short-turn (`includesServiceDestination == true`) and a partial representation ending at the same station (`false`) are different states. Consumers, including the later JourneyEngine and every presentation surface, must consult coverage before claiming an origin, a terminal, or a remaining-stop count for the complete service (DEC-038, Rule 50). `serviceType` (§H) is deferred to **slice S4b**: the actual stopping pattern is already expressed by the ordered stops, and stopping-pattern class, commercial brand, reserved-seat status, and provider codes must not be collapsed into one enum. `Trip` must still support local, rapid, express, limited-stop, through, changed-destination, and cancelled services without provider-specific branching in UI code; the structural part of that is the traversal itself.
+**Deferred by DEC-060, not cancelled.** `scheduledTimes` (§F) awaits its own timetable contract — service days, rollover, time zones, provider schedule mapping, Clock interaction — and its deferral does not affect Scheduled Journey Guidance (DEC-046, DEC-047). `direction`, `destination`, and headsign (§G) are not stored: traversal order gives direction, provider direction identifiers stay Phase 2 mapping data, and a headsign is a localized label settled with the display work. `stopSequence.first` and `.last` are the **first and final represented** stops; they are the service's actual origin and destination **only when** the matching coverage flag is true, so a genuine short-turn (`includesServiceDestination == true`) and a partial representation ending at the same station (`false`) are different states. Consumers, including the later JourneyEngine and every presentation surface, must consult coverage before claiming an origin, a terminal, or a remaining-stop count for the complete service (DEC-038, Rule 50). `serviceType` (§H) was deferred to **slice S4b**, which DEC-061 settles as `serviceTypeSegments` (below) rather than a single Trip-wide value: the actual stopping pattern is already expressed by the ordered stops, and stopping-pattern class, commercial brand, reserved-seat status, and provider codes must not be collapsed into one enum. `Trip` must still support local, rapid, express, limited-stop, through, changed-destination, and cancelled services without provider-specific branching in UI code; the structural part of that is the traversal itself.
 
-Checks that need populated collections — every stop a known `Station`, every `lineID` a known `RailwayLine`, stop-to-line membership — are **Phase 2 dataset validation**, not invariants of the isolated value.
+**Service type (DEC-061).** A **service type** is the operator's named stopping-pattern class for a portion of a run — a label; the stopping pattern itself stays in `stopSequence`. `ServiceType` is an operator-scoped canonical value identified by `ServiceTypeID` alone (equality and hashing on `id`; `operatorID` and `name` descriptive): the same label on two operators is two values, and it carries no rank, cross-operator comparison, fare, seating, or brand flag, colour, or provider code. `Trip.serviceTypeSegments` attaches types by the `TripLineSegment` index conventions — closed passenger-stop ranges, in traversal order, where a **shared boundary index is the only permitted overlap** (the train arrives under one type and departs under the next) and joined segments must differ in `serviceTypeID` — with one deliberate difference: **gaps are permitted and mean unknown**, and an empty list means unknown for the whole represented traversal, so full coverage is not required. A type change at a station passed without stopping has no truthful single type for that movement, which is therefore left as a gap. Service-type boundaries are independent of line boundaries. The list is descriptive (not part of identity), is a required initialiser argument with no default, and is a required `Codable` key whose unknown value is `[]`; construction and decoding enforce the same rules without trapping. Whether a segment's type belongs to the operator actually running that portion is Phase 2 dataset validation (DEC-060 D).
+
+**Brand, supplemental fare, and seating (DEC-061 G).** These are separate facts, defined but **not implemented in Phase 1** and not attached to `Trip`. None is derived from another or from service type, and unknown is never rendered as a negative fact. Supplemental fare and seating are ride-scoped — they can vary by section, operating date, individual train, and car — so a Trip-wide value would be truthful only where verified uniform; their vocabularies are not finalised, and they may come only from a verified provider source or from curated canonical data with an authoritative source, provenance, licence review, and update rule.
+
+Checks that need populated collections — every stop a known `Station`, every `lineID` a known `RailwayLine`, every `serviceTypeID` a known `ServiceType`, stop-to-line membership — are **Phase 2 dataset validation**, not invariants of the isolated value.
 
 ---
 
@@ -1625,6 +1641,7 @@ LineID
 TripID
 JourneyID
 OperatorID
+ServiceTypeID   (DEC-061)
 ```
 
 Provider IDs are aliases, not canonical product identity.
@@ -1697,6 +1714,8 @@ Do not spread mapping logic across features.
 For cross-operator stations, each canonical station carries **every** provider station identifier and station code, **each provider's original name strings unmodified**, and any orthographic or presentation alias as an **explicit, reversible** mapping entry — never by rewriting a provider string (DEC-048). Station identity must not be established from display names or coordinates alone, and no parent-station or transfer relationship may be synthesized where the provider feed publishes none. Stations whose identity is unresolved stay **separate** until authoritative evidence supports a merge; such a merge is a schema/identity migration (§41, Rule 39), not an in-place edit.
 
 Because a canonical station may span operators, the Domain `Station` value stores no single `operatorID` (§5.1, DEC-055 D1); a station's operators are those of its lines, resolved at the dataset level. The 258-group result of DEC-048 is a Phase 2 planning input for this mapping layer, not Phase 1 model data.
+
+**Passenger-stop status must be verified (DEC-061 F).** In the two inspected static GTFS archives (Toei and Tokyo Metro), mid-trip `stop_times.txt` rows with `pickup_type = 1` and `drop_off_type = 1`, `timepoint = 0`, and no arrival or departure time are consistent with stations a trip passes without stopping (`PROVIDER_FEASIBILITY_AUDIT.md` §6.8). That is an observed pattern in those archives, not a general GTFS rule: pickup and drop-off flags alone can express other restrictions. Mapping therefore verifies passenger-stop status per provider and feed before building `Trip.stopSequence` (§5.3) — row presence never makes a passenger stop — and never places a service-type segment boundary at a station verified as passed. A visible skip pattern names which stations are passed, not the service type. Provider service-type codes are mapping aliases of canonical `ServiceTypeID`s.
 
 Canonical **lines** are also product identity, not provider records (DEC-057 D6): the Tokyo Metro Marunouchi main line and branch are **one** `LineID`, so the mapping layer maps **several provider railway identifiers** — including the provider's separate Marunouchi branch record — to that one canonical line, each as an explicit entry that retains its provider provenance. The same aliasing serves future operators whose records split or merge a canonical line differently (multi-owner airport-access infrastructure, service-corridor brands), and canonical lines are always modelled complete — never clipped at a prefectural boundary (DEC-058 §3). That provenance is what later allows provider-specific status or realtime resources to be scoped to the branch (Phase 4); it never enters the Domain `RailwayLine` value. Canonical adjacency topology (§5.2.1) is populated by the Phase 2 importer from provider stop sequences, and its derived membership is checked against every `Station.lineIDs` at that level (DEC-055 D2, DEC-057 D9).
 

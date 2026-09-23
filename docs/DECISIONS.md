@@ -871,7 +871,8 @@ None expected.
 # DEC-021 — TSUGINO Owns Canonical IDs
 
 **Status:** Accepted  
-**Date:** 2026-09-16
+**Date:** 2026-09-16\
+**Amended by:** DEC-061 (2026-09-23) — adds `ServiceTypeID` to the canonical identifier list; the body below is unchanged
 
 ## Context
 
@@ -3076,6 +3077,7 @@ One `LineID` for Marunouchi follows from Rule 9 and DEC-047: canonical identity 
 **Status:** Accepted\
 **Date:** 2026-09-21\
 **Amended by:** DEC-059 (2026-09-21) — narrows the §5 Tier 1 "Present status" wording: no capability or tier is declared for Tier 1 candidates until every eligibility gate passes; the body below is unchanged\
+**Amended by:** DEC-061 (2026-09-23) — the §7 and §9 brand-representation question assigned to the "Trip/ServiceType slice" is deferred from S4b to a later decision; airport service-brand guidance remains required for Airport Rail support and needs verified data and that later contract; the body below is unchanged\
 **Extends:** DEC-047 (not superseded — its capability-aware guidance and launch matrix remain valid)\
 **Related:** DEC-001, DEC-004, DEC-009, DEC-021, DEC-022, DEC-037, DEC-038, DEC-046, DEC-047, DEC-048, DEC-049, DEC-054, DEC-055, DEC-056, DEC-057; `RULES.md` Rule 9, Rule 10, Rule 16, Rule 40, Rule 48, Rule 50; `ARCHITECTURE.md` §5.2, §5.3, §10, §40, §50, §51; `ROADMAP.md` Phase 2, Phase 3, Phase 4, Post-Launch Track A; `PROVIDER_FEASIBILITY_AUDIT.md` §4, §6.7, §7, §9
 
@@ -3274,6 +3276,7 @@ The tier vocabulary exists so that product behaviour falls out of verified evide
 
 **Status:** Accepted\
 **Date:** 2026-09-22\
+**Amended by:** DEC-061 (2026-09-23) — settles the §H S4b deferral: `Trip` gains `serviceTypeSegments` and `ServiceTypeID` is introduced; every §A–§G invariant and the body below are unchanged\
 **Related:** DEC-009, DEC-010, DEC-011, DEC-021, DEC-038, DEC-046, DEC-047, DEC-048, DEC-050, DEC-051, DEC-053, DEC-055, DEC-056, DEC-057, DEC-058, DEC-059; `RULES.md` Rule 8, Rule 9, Rule 10, Rule 16, Rule 39, Rule 45; `ARCHITECTURE.md` §5.2.1, §5.3, §13, §39, §40; `ROADMAP.md` Phase 1 Slice S4
 
 ## Context
@@ -3516,6 +3519,168 @@ S4b follows as its own decision and implementation.
 - A consumer genuinely needs a primary display line, a stored destination, or a direction value on `Trip`.
 - S4b settles service class in a way that changes `Trip`'s shape.
 - Through-service ownership changes in a way that affects segment semantics.
+- Persistence design (Phase 6) requires a different encoded representation.
+
+---
+
+# DEC-061 — Service Type Is an Operator-Scoped Canonical Value Attached to Trip by Gap-Permitting Segments
+
+**Status:** Accepted\
+**Date:** 2026-09-23\
+**Amends:** DEC-021 (identifier list), DEC-058 (§7/§9 brand ownership), DEC-060 (§H) — headers only; their bodies are unchanged\
+**Related:** DEC-009, DEC-011, DEC-021, DEC-038, DEC-041, DEC-042, DEC-051, DEC-053, DEC-058, DEC-060; `RULES.md` Rule 9, Rule 10, Rule 11, Rule 16, Rule 26, Rule 39, Rule 45, Rule 50; `ARCHITECTURE.md` §5.3, §39, §40; `ROADMAP.md` Phase 1 Slice S4; `PROVIDER_FEASIBILITY_AUDIT.md` §6.8
+
+## Context
+
+DEC-060 §H deferred `ServiceType` to its own decision and subdivided S4: **S4b** must settle whether a canonical service-class identity exists, its vocabulary shape, its separation from brand and reserved-seat status, and whether `Trip` refers to it. S4 is not complete until S4b is decided and implemented, or explicitly moved out of Phase 1.
+
+The product needs a service-type label on a train candidate and on the current leg (`FEATURES.md` §3.1, §4.3; `DESIGN.md` §14.2). DEC-058 §7 already requires service brands, limited-express classification, and reserved-seat requirements to stay separate from line identity and from each other.
+
+Three facts shape the answer:
+
+1. **Evidence (B11, `PROVIDER_FEASIBILITY_AUDIT.md` §6.8).** The two inspected feeds — the retained Toei and Tokyo Metro static GTFS archives — do **not** establish service type, train brand, supplemental fare, or seat-reservation policy: no populated field carries any of them. Skip patterns appear only as `stop_times` rows whose flags, in these two archives, are consistent with stations passed without stopping. This is a statement about those two feeds, not a claim that no authoritative source exists; the ODPT train-timetable JSON is catalogued for both operators and its payload is unverified.
+2. **One run can change type.** DEC-060 makes a multi-line through service one `Trip`. A service's type can change along one run — at an operator or line boundary, or within a line — so a single Trip-wide service type can be false for part of the traversal.
+3. **Fare and seating vary on more axes than a Trip has.** A supplement or reserved seating can apply to some sections only, on some operating dates only, on some trains of the same type only, or in some cars only. A `Trip` is one recurring scheduled run definition (DEC-060 A), so a single Trip-wide value is truthful only where the fact is uniform.
+
+## Decision
+
+### A. Four separate facts
+
+| Fact | Meaning | Status |
+|---|---|---|
+| **Service type** | The operator's named stopping-pattern class for a portion of a run (for example local, rapid, express, limited express, in that operator's own vocabulary). It is a **label**; the actual stopping pattern stays in `stopSequence` (DEC-060 B). | Defined; implemented in Phase 1 slice S4b (§B–§E) |
+| **Train brand** | A named service family or marketing name (DEC-058 §7). | Defined, not implemented (§G) |
+| **Supplemental fare requirement** | Whether a rider must pay a charge beyond the base fare. | Defined, not implemented (§G) |
+| **Seat reservation policy** | Whether and where seats are reserved. | Defined, not implemented (§G) |
+
+1. **No fact is derived from another.** No API, mapping, or presentation rule may compute a supplemental fare or seating policy from a service type or a brand, or a service type from a brand, or the reverse.
+2. **No fact is inferred from indirect evidence** — not from a stopping pattern, a headsign, a provider trip identifier or its tokens, a line, or an operator (Rule 9, Rule 10, Rule 11).
+3. **Unknown is always representable, and absence of data is never a negative fact.** A missing service type is unknown, not "local"; a missing supplement fact is unknown, not "no supplement"; a missing seating fact is unknown, not "unreserved".
+
+### B. `ServiceTypeID`
+
+`ServiceTypeID` is a new TSUGINO-owned canonical identifier, extending the DEC-021 list (`StationID`, `LineID`, `OperatorID`, `TripID`, `JourneyID`) without changing DEC-021's body. It follows DEC-051 exactly: at least one non-whitespace character, failable construction that never traps, the same rule on decoding, and exact preservation of a valid value. Provider service-type codes are Phase 2 mapping aliases (§40, Rule 9), never canonical identity.
+
+### C. `ServiceType`
+
+```text
+ServiceType
+- id              (ServiceTypeID)
+- operatorID      (OperatorID)
+- name            (LocalizedRailName — DEC-053)
+```
+
+1. **Identity is the `ServiceTypeID` alone.** Equality and hashing use only `id`, written explicitly as for `Operator` and `RailwayLine`; `operatorID` and `name` are descriptive and must be compared explicitly in `Codable` and actor-transfer tests.
+2. **Operator-scoped.** Each service type belongs to exactly one operator. The same label on two operators is two `ServiceType` values: operators assign different stopping patterns to the same word, and their classes are not comparable.
+3. **Construction is non-failable**: every component is already a validated value and there is no cross-field rule. Keyed `Codable` shape `{ id, operatorID, name }`.
+4. `ServiceType` carries **no** rank or ordinal, no cross-operator comparison, no fare, seating, or brand flag, no colour or abbreviation, and no provider code.
+5. Names are canonical three-language names (Rule 26, DEC-041, DEC-042, DEC-053); a missing provider Korean name is supplied from TSUGINO's canonical dataset.
+
+### D. `TripServiceTypeSegment`
+
+```text
+TripServiceTypeSegment
+- serviceTypeID   (ServiceTypeID)
+- startIndex      (Int — index into Trip.stopSequence)
+- endIndex        (Int — index into Trip.stopSequence; endIndex > startIndex)
+```
+
+It uses the index conventions of `TripLineSegment` (DEC-060 C): a **closed** range of passenger-stop indices, so a boundary stop belongs to both neighbouring segments. Construction is failable and never traps, and fails unless `0 <= startIndex < endIndex`; decoding applies the same rule. Equality and hashing are complete-value; the segment has no identifier.
+
+### E. `Trip.serviceTypeSegments`
+
+`Trip` gains `serviceTypeSegments: [TripServiceTypeSegment]`. Invariants, all checkable from the `Trip` value alone:
+
+1. **Empty is valid** and means the service type is unknown for the whole represented traversal.
+2. **Bounds:** every `endIndex <= stopSequence.count - 1`.
+3. **Order:** segments are stored in traversal order, each starting no earlier than the previous one ends: `segment[n].startIndex >= segment[n - 1].endIndex`.
+4. **Joins:** where `segment[n].startIndex == segment[n - 1].endIndex`, the segments are joined at that shared stop — the train arrives under one type and departs under the next. **This shared boundary index is the only permitted overlap**; overlap by two or more indices, nested ranges, duplicate ranges, and any order that does not progress through the traversal are invalid.
+5. **Gaps mean unknown.** Where `segment[n].startIndex > segment[n - 1].endIndex`, and before the first or after the last segment, the movements not covered have **no stated** service type. Full coverage is **not** required. This is the one deliberate difference from `lineSegments`, which must cover the whole traversal.
+6. **Normalised joins:** two **joined** segments must not share a `serviceTypeID`. Two segments with the same `serviceTypeID` separated by a gap are valid — the gap says the type between them is not known.
+7. **Change at a passed station.** Indices address passenger stops only. If a type changes at a station the train passes without stopping, no truthful single type exists for the movement containing that station; that movement is left as a gap (`[…, k]` then `[k + 1, …]`) and is never assigned to either type.
+8. **Independent of line segments.** Service-type boundaries need not coincide with line boundaries, and a line boundary does not imply a type change.
+9. **Descriptive.** `serviceTypeSegments` participates in neither equality nor hashing; `TripID` remains the whole identity (DEC-060 A). Tests must compare it explicitly.
+10. **Represented traversal only.** Segments describe the represented stops (DEC-060 C2); they say nothing about any unrepresented continuation, and coverage never relaxes these rules.
+11. **Explicit at construction.** The `Trip` initialiser requires a `serviceTypeSegments` argument with no default, so every construction states either known segments or `[]` for unknown. The `Codable` key `serviceTypeSegments` is **required**; `[]` is its unknown value. Decoding applies exactly the rules above, validating arbitrary decoded integers before any use as an index or range, and fails with `DecodingError.dataCorrupted`, while missing keys and wrong types keep their natural errors.
+12. **Consistency with datasets is not a value invariant.** Whether a segment's service type belongs to the operator actually running that portion, and whether every `serviceTypeID` names a known `ServiceType`, are **Phase 2 dataset validation** — `RailwayLine.operatorID` is not proof of who runs a Trip (DEC-060 D).
+
+Every DEC-060 invariant is unchanged: `stopSequence`, `lineSegments`, `coverage`, identity, and immutability keep their accepted rules; `Trip` construction and decoding additionally fail when `serviceTypeSegments` is invalid.
+
+### F. Passed-stop mapping caution (Phase 2)
+
+**Observed pattern, not a general GTFS rule.** In the two inspected archives (audit §6.8), `stop_times.txt` contains mid-trip rows with `pickup_type = 1` **and** `drop_off_type = 1`, `timepoint = 0`, and no arrival or departure time; in these archives that pattern is consistent with **stations a trip passes without stopping**. Pickup and drop-off flags alone do not universally mean "not a passenger stop" — elsewhere they can express other boarding or alighting restrictions — so this Decision does not turn them into a rule. Phase 2 mapping must **verify passenger-stop status** for each provider and feed before building `stopSequence` (DEC-060 B): a row's presence does not make it a passenger stop, and only verified passenger stops enter the traversal. A service-type segment boundary is never placed at a station verified as passed (§E7). A skip pattern visible in such rows shows *which* stations are passed; it does not name the service type.
+
+### G. Train brand, supplemental fare, and seat reservation — defined, not implemented
+
+1. **Train brand** is a canonical entity with a future TSUGINO-owned identifier and a canonical localized name. It has no single operator, because a brand can be run jointly. It is never a `LineID`, an operator, a direction, or a service type (DEC-057, DEC-058 §7). Whether it attaches to a whole Trip or to segments is **not** decided here. DEC-058 §7 and §9 assigned the airport-service brand question to the Trip/ServiceType slice; this Decision **defers** that question to the later decision in §G6 rather than resolving it, while the through-service and singular-`lineID` questions are resolved by DEC-060 and §E. Deferral does **not** remove the requirement: airport service-brand guidance remains required for Airport Rail support (DEC-058 §6–§7) and needs verified data and that later contract. DEC-058's body is unchanged.
+2. **Supplemental fare requirement** and **seat reservation policy** are **ride-scoped facts**: their truth can depend on the section ridden (boarding and alighting stops), the operating date, the individual train, and the car. A Trip-wide value is truthful **only** when the fact is verified uniform across every section, operating date, and car of that run definition; any other case is non-uniform or unknown and must not be flattened into a Trip-wide value.
+3. **No vocabulary is finalised.** The provisional names considered during the S4b audit — a single "conditional" state and a "some cars reserved" state — are **not accepted**: the first cannot tell a rider whether *their* ride needs the supplement, and the second merges reserved-and-charged, reserved-and-free, and charged-but-unreserved cars.
+4. **Sources.** These facts may come only from a verified provider source, or from manually curated canonical data that has an authoritative source, recorded provenance, a licence review, and an update rule. Otherwise they remain unknown.
+5. **Seat booking remains out of scope** (`PRODUCT.md`, `FEATURES.md` §19). Describing a seating policy is not booking.
+6. **Implementation is moved out of Phase 1.** No type for brand, supplemental fare, or seating is introduced, and nothing is attached to `Trip`. These facts are implemented by a later decision once an authoritative source is available. This disposal is what lets S4b satisfy the S4 completion rule for these three facts.
+
+### H. Presentation rule (for later presentation work)
+
+A user-facing label may combine only **verified** facts — service type, brand, supplement, seating — each from its own source. Unknown facts are **omitted**; they are never rendered as "local", "no supplement", or "unreserved", and a service-type label never implies a fare or seating rule. Rendering, localization of combined labels, and any warning wording belong to later presentation work; Phase 1 implements none of it.
+
+## Detailed invariants and their boundaries
+
+| Invariant | Boundary |
+|---|---|
+| valid `ServiceTypeID` | **S4b value construction** (DEC-051) |
+| `ServiceType` identity is `id` only | **S4b value construction** |
+| segment `0 <= startIndex < endIndex` | **S4b value construction** |
+| segment bounds within `stopSequence` | **S4b `Trip` construction and decoding** |
+| ordered; shared boundary is the only overlap; no nesting or duplicates | **S4b `Trip` construction and decoding** |
+| joined segments differ in `serviceTypeID` | **S4b `Trip` construction and decoding** |
+| gaps permitted and meaning unknown; empty permitted | **S4b** — a permission, not a check |
+| every `serviceTypeID` names a known `ServiceType` | **Phase 2 dataset validation** |
+| segment service type belongs to the operator running that portion | **Phase 2 dataset validation** |
+| passenger-stop status verified before building `stopSequence` | **Phase 2 provider mapping** (§F) |
+| provider service-type codes | **Phase 2 provider mapping** (§40) |
+| brand, supplement, seating values | **later decision** (§G) |
+| rendering and localization of labels | **later presentation work** (§H) |
+
+## Alternatives considered
+
+- **One Trip-wide `serviceTypeID`:** rejected — false for part of a run that changes type (Context 2).
+- **Segments that must cover the whole traversal:** rejected — forces a fabricated type wherever the source is silent or a change happens at a passed station.
+- **Segments aligned to `lineSegments`:** rejected — a type can change within a line and need not change at a line boundary.
+- **A type per stop:** rejected — a service type describes movement between stops, which stop indices alone cannot express at a change point.
+- **Closed enum or raw provider string:** rejected by DEC-060 §H and reconfirmed.
+- **A global `ServiceType` shared across operators:** rejected — same words, different stopping patterns, non-comparable classes.
+- **Trip-wide fare and seating enums now:** rejected — untruthful for section-, date-, train-, and car-dependent services (Context 3).
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.3 gains `serviceTypeSegments`, `TripServiceTypeSegment`, `ServiceType`, and the gap rule; §39 gains `ServiceTypeID`; §40 gains the passenger-stop verification caution.
+- `ROADMAP.md` S4b records this contract; implementation follows.
+- `PROVIDER_FEASIBILITY_AUDIT.md` §6.8 records the B11 aggregate evidence.
+- Phase 2 gains explicit targets: operator-scoped service-type records with canonical names, provider code aliases, segment derivation from verified sources only, and verified passenger-stop status.
+
+## Phase ownership
+
+**Phase 1 (S4b):** `ServiceTypeID`, `ServiceType`, `TripServiceTypeSegment`, and `Trip.serviceTypeSegments`. **Separate evidence task:** verify the ODPT train-timetable JSON payload for Toei and Tokyo Metro before Phase 2 maps service types. **Phase 2:** service-type records, provider aliases, dataset validation, passenger-stop verification. **Later decision:** brand, supplemental fare, and seating representations, once an authoritative source exists. **Later presentation work:** labels, localization, and wording.
+
+## Explicit non-goals
+
+No real service-type, brand, fare, or seating data; no provider identifier, code, mapping, or alias; no brand, fare, or seating type; no fare amount or fare product; no seat booking; no timetable or calendar; no realtime; no route search; no persistence; no UI, label rendering, or Live Activity; no new `RailCapability`; no cross-operator ranking. Fast-transfer exit doors and recommended car/door positions, transfer walking time, and next-train wait time are **outside S4b** and stay with their existing feature and roadmap owners (`FEATURES.md` §5.3–§5.5). This Decision does not mark S4 or Phase 1 complete.
+
+## Implementation sequence
+
+1. `ServiceTypeID` with DEC-051 tests.
+2. `ServiceType` and `TripServiceTypeSegment` with their value tests.
+3. `Trip.serviceTypeSegments`: required initialiser argument, required `Codable` key, invariants §E, and updates to existing Trip tests.
+4. Independent review, then the S4b and S4 completion records.
+
+S4b tests must cover, at minimum: identifier validity; `ServiceType` ID-only equality and hashing with explicit descriptive comparison; segment construction bounds; empty, partial, gapped, and full service-type coverage; a join with a type change; a gap around a change at a passed station; rejected wider overlap, nesting, duplicates, misordering, and out-of-bounds indices; rejected joined same-type segments and accepted gap-separated same-type segments; a multi-line through service whose type changes at and away from a line boundary; unchanged DEC-060 behaviour; and `Codable` round-trips plus rejection of every invalid structure and of a missing `serviceTypeSegments` key.
+
+## Revisit Triggers
+
+- A verified source shows a service-type change that cannot be expressed at a passenger stop or as a gap.
+- A verified source makes brand, supplement, or seating facts available (§G4).
+- The ODPT train-timetable evidence task shows service-type semantics that are not operator-scoped.
+- A consumer needs a ranking or comparison of service types.
 - Persistence design (Phase 6) requires a different encoded representation.
 
 ---

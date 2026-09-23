@@ -139,6 +139,8 @@ The train candidate should show, where available:
 - platform information
 - final destination
 
+Service type, train brand, supplemental fare requirement, and seat reservation policy are **separate facts** (DEC-061): each is shown only when verified from its own source, none is inferred from another, and an unknown fact is omitted rather than shown as "local", "no supplement", or "unreserved". A service type can change along one train's run.
+
 The selected train becomes the authoritative trip reference for the active journey leg.
 
 Journey-selection model (DEC-047): the user selects the **boarding station**, the **intended departure time or scheduled train**, and the **destination or exit station**; TSUGINO then follows the selected journey with the best verified capability tier for that service — **Realtime Journey Tracking** where trip-level realtime is verified, otherwise **Scheduled Journey Guidance**. On a scheduled-tier service the candidate list shows scheduled departures only, labelled as scheduled, with available status/Alert information.
