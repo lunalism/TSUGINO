@@ -3771,11 +3771,12 @@ Each leg has a start and an end station, computed from local values only:
 2. **Continuity:** `end(legs[n]) == start(legs[n + 1])` for every consecutive pair. Continuity compares canonical `StationID`s only; a cross-operator interchange at one canonical station (DEC-048) needs no walking leg, and whether a real transfer path exists there is still Phase 2 or Phase 10.
 3. The **first and last legs are rail legs**: a Journey begins at a boarding station and ends at an alighting station (DEC-047).
 4. **No two consecutive walking legs.** Phase 1 has no pathway model that could justify an intermediate station; a walk from A to C is one leg.
-5. **Same-Trip rule — snapshot compatibility, then split detection.** A stop index is meaningful only inside the `stopSequence` it indexes, and a corrected snapshot of the same `TripID` may insert or remove stops (DEC-060 A), so indices from two snapshots are **not comparable** by `TripID` alone. For two **directly consecutive selected** rail legs with `next.trip.id == previous.trip.id`:
+5. **Same-Trip rule — snapshot compatibility, then forward progression.** A stop index is meaningful only inside the `stopSequence` it indexes, and a corrected snapshot of the same `TripID` may insert or remove stops (DEC-060 A), so indices from two snapshots are **not comparable** by `TripID` alone. For two **directly consecutive selected** rail legs with `next.trip.id == previous.trip.id`:
    1. **Compatibility first.** Their snapshots must be **structurally identical**, compared field by field over every stored structural field of `Trip`: `stopSequence`, `lineSegments`, `coverage`, and `serviceTypeSegments` (each compared by value — `[StationID]`, `[TripLineSegment]`, `TripCoverage`, and `[TripServiceTypeSegment]` all have complete-value equality). `Trip`'s own `==` is **not** used, because it compares `TripID` only (DEC-060 A), and no `Equatable` conformance is added to any leg type for this check (§B). If any field differs, the Journey is **rejected as incompatible**: S5a does not reconcile, choose one snapshot, or map indices between them.
-   2. **Split detection.** With identical snapshots, the pair is rejected when `next.boardingIndex == previous.alightingIndex`: that is one uninterrupted ride cut at a single stop visit — a fake transfer, including a through service split at a line boundary (DEC-009, Rule 16).
+   2. **Forward progression.** With identical snapshots, the pair is valid only when `next.boardingIndex > previous.alightingIndex`. An **equal** index is rejected as a **fake split** — one uninterrupted ride cut at a single stop visit, a fake transfer, including a through service split at a line boundary (DEC-009, Rule 16). A **lower** index is rejected as **unsupported backward traversal**: within one snapshot it would board the run at a point the train has already passed, and the value carries no evidence that it belongs to a different execution of the run.
+   3. **No inferred recurrence.** A `TripID` is a recurring run definition (DEC-060 A), so the same `TripID` could in reality recur on a later service day. S5a does **not** infer that: without an explicit service-date or execution identity, a lower index is never read as a later recurrence. Representing a later recurrence of the same `TripID` in one Journey requires such an identity and is left to a **later decision**.
 
-   If a future `Trip` stored field is added, this comparison must be extended in the same change. S5a rejects **nothing else** on this ground: the same `TripID` separated by another leg is valid, and the compatibility check does not apply to such non-consecutive legs; a directly consecutive reboard at a **later** index with identical snapshots (continuity makes it a later visit to the same station, such as the next pass of a loop) is valid; a reboard at an **earlier** index is not decided here, because a `TripID` is a recurring run (DEC-060 A) and S5a has no operating date — that time-dependent check is **Phase 5**. Pairs involving an unselected leg cannot be compared; because the rule is a `Journey` invariant, it applies as soon as a Journey is constructed with those legs selected.
+   If a future `Trip` stored field is added, this comparison must be extended in the same change. S5a rejects **nothing else** on this ground: the same `TripID` separated by another leg is valid, and neither the compatibility nor the progression check applies to such non-consecutive legs; a directly consecutive reboard at a **later** index with identical snapshots (continuity makes it a later visit to the same station, such as the next pass of a loop) is valid. Pairs involving an unselected leg cannot be compared; because the rule is a `Journey` invariant, it applies as soon as a Journey is constructed with those legs selected.
 6. **An all-unselected Journey is structurally valid.** Whether tracking may begin — for example, requiring a selected first leg (DEC-007) — is a readiness rule for S5b / Phase 5, not a structural invariant.
 
 ### F. Encoded shape
@@ -3814,11 +3815,13 @@ No persisted Journey schema exists yet (Rule 39); Phase 6 owns persistence and a
 | rail anchors distinct; walking endpoints distinct | **S5a value construction** |
 | `0 <= boardingIndex < alightingIndex <= count − 1`; distinct stations at those indices | **S5a value construction** |
 | selection preserves anchors (`admits`) | **S5a pure check**; performing the binding is **Phase 5** |
-| non-empty legs; continuity; rail first and last; no consecutive walks; same-`TripID` snapshot compatibility; same-Trip split | **S5a `Journey` construction and decoding** |
+| non-empty legs; continuity; rail first and last; no consecutive walks; same-`TripID` snapshot compatibility; same-`TripID` forward progression (no split, no backward traversal) | **S5a `Journey` construction and decoding** |
 | encoded discriminator shape and rejection rules | **S5a decoding** |
 | walking pair is a known pedestrian connection; interchange path exists | **Phase 2 dataset validation** |
 | walking time, route, exits, accessibility | **Phase 10 transfer guidance** |
-| earlier-index reboard of the same run; operating date; readiness to track | **S5b / Phase 5** |
+| lower-index reboard of consecutive same-`TripID` legs | **S5a `Journey` construction and decoding** — rejected as backward traversal |
+| a later recurrence of the same `TripID` (service-date or execution identity) | **later decision** |
+| operating date; readiness to track | **S5b / Phase 5** |
 | binding, replacement, replanning, snapshot reconciliation | **Phase 5** (with Phase 6 for persisted snapshots) |
 | current leg, phase, freshness, interruption, events | **S5b** (state vocabulary) and **Phase 5** (behaviour) |
 | creation and update timestamps; persistence | **Phase 6** |
@@ -3831,6 +3834,7 @@ No persisted Journey schema exists yet (Rule 39); Phase 6 owns persistence and a
 - **Strict same-station continuity with no walking leg:** rejected — blocks genuine transfers between distinct canonical stations.
 - **Consecutive walking legs:** rejected for now — no pathway model justifies the intermediate station.
 - **Rejecting every same-`TripID` pair:** rejected — would forbid a legitimate later reboard.
+- **Deferring lower-index reboards to Phase 5:** rejected — the value would admit backward travel through one run that nothing in it can distinguish from a later recurrence, so structural validity could not be trusted before Phase 5.
 - **A new `JourneyLegID`:** rejected — position addressing suffices; no consumer needs stable leg identity yet.
 - **Synthesised leg equality:** rejected — misleading under ID-only `Trip` equality (§B).
 - **Stored `origin`/`destination`, `currentLegIndex`, `state`, timestamps, `plannedTrip`, `realtimeState`, `transferGuidance`:** removed from the Journey structure with the owners recorded in the table above.
@@ -3839,12 +3843,12 @@ No persisted Journey schema exists yet (Rule 39); Phase 6 owns persistence and a
 
 - `ARCHITECTURE.md` §5.4 and §5.5 replace the sketch with this contract; §5.6 (`JourneyState`) is marked as the S5b contract, still unresolved.
 - `ROADMAP.md` gains Phase 1 Slice S5 with the S5a / S5b subdivision; S6 stays the protocol slice.
-- Phase 5 gains an explicit structural target: legs it can bind by anchor-preserving selection, and a same-Trip rule it must extend with time-dependent checks.
+- Phase 5 gains an explicit structural target: legs it can bind by anchor-preserving selection, and a same-Trip rule that already guarantees forward progression within one snapshot; representing a later recurrence of a `TripID` needs a later decision introducing service-date or execution identity.
 - **S5 completion.** S5 is complete only when S5a and S5b are each decided, implemented with focused tests, and independently reviewed. S5 may close with S5b deferred **only** if a new accepted decision names the phase that replaces S5b and revises the affected Phase 1 acceptance criteria (and any Included deliverable it removes from Phase 1); deferral alone is not completion.
 
 ## Phase ownership
 
-**Phase 1 (S5a):** the types and invariants above. **S5b:** `JourneyState`, `JourneyPhase`, `JourneyEvent`, realtime freshness, interruption reasons, typed errors, and tracking readiness. **S6:** the `JourneyEngine` protocol boundary (DEC-050) and the `RouteSearching` disposition. **Phase 2:** pedestrian-connection and interchange validation. **Phase 3:** route search producing legs. **Phase 5:** binding, progression, reconciliation, recovery, and time-dependent checks. **Phase 6:** persistence, timestamps, snapshot migration. **Phase 10:** transfer guidance.
+**Phase 1 (S5a):** the types and invariants above. **S5b:** `JourneyState`, `JourneyPhase`, `JourneyEvent`, realtime freshness, interruption reasons, typed errors, and tracking readiness. **S6:** the `JourneyEngine` protocol boundary (DEC-050) and the `RouteSearching` disposition. **Phase 2:** pedestrian-connection and interchange validation. **Phase 3:** route search producing legs. **Phase 5:** binding, progression, reconciliation, recovery, and time-dependent checks. **Phase 6:** persistence, timestamps, snapshot migration. **Phase 10:** transfer guidance. **Later decision:** service-date or execution identity, if a later recurrence of the same `TripID` must be representable in one Journey.
 
 ## Explicit non-goals
 
@@ -3857,13 +3861,13 @@ No runtime state, phase, current leg, freshness, event, error, or readiness rule
 3. `Journey` with the §E invariants and ID-only identity.
 4. Independent review, then the S5a completion record.
 
-**Enforcement.** Every §E invariant, including §E5, is checked by the failable `Journey` initialiser, and `Journey` decoding calls the same validation, failing with `DecodingError.dataCorrupted` — so a decoded Journey can never be one construction would have rejected. §E5 tests must include, at minimum: consecutive same-`TripID` legs whose snapshots are identical and joined at the same index (rejected as a split); identical snapshots with a later-index reboard (accepted); same-`TripID` snapshots that differ by a stop **inserted** before the join and by a stop **removed** before the join (both rejected as incompatible, including where the raw indices happen to be equal or differ by the shifted amount); snapshots differing only in `lineSegments`, only in `coverage`, and only in `serviceTypeSegments` (each rejected); different `TripID`s joined at a station (accepted); and each case again through decoding.
+**Enforcement.** Every §E invariant, including §E5, is checked by the failable `Journey` initialiser, and `Journey` decoding calls the same validation, failing with `DecodingError.dataCorrupted` — so a decoded Journey can never be one construction would have rejected. §E5 tests must include, at minimum: consecutive same-`TripID` legs whose snapshots are identical and joined at the same index (rejected as a split); identical snapshots with a later-index reboard (accepted); identical snapshots with a **lower** join index (rejected as backward traversal), including a loop-plus-tail snapshot where the repeated junction station satisfies continuity at both the equal, the lower, and the higher index; same-`TripID` snapshots that differ by a stop **inserted** before the join and by a stop **removed** before the join (both rejected as incompatible, including where the raw indices happen to be equal or differ by the shifted amount); snapshots differing only in `lineSegments`, only in `coverage`, and only in `serviceTypeSegments` (each rejected); different `TripID`s joined at a station (accepted); and each case again through decoding.
 
 ## Revisit Triggers
 
 - A verified journey needs consecutive walking legs, a non-rail mode, or a leg that starts or ends with a walk.
 - A consumer genuinely needs leg equality or stable leg identity.
-- Phase 5 shows the same-Trip rule needs a structural extension rather than a time-dependent check.
+- A verified journey needs a later recurrence of the same `TripID` within one Journey, requiring a service-date or execution identity.
 - Phase 3 route-search results cannot be represented as anchors plus walking legs.
 - Persistence design (Phase 6) requires a different encoded representation.
 
