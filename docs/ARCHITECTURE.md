@@ -760,7 +760,7 @@ WalkingTransfer              — fromStationID, toStationID (distinct)
 
 ### 5.6 JourneyState
 
-Accepted contract (DEC-063, Phase 1 slice S5b — implemented, closure pending independent review). Journey state is separate from the route definition (§5.4, DEC-062) and is never written into `Journey`.
+Accepted contract (DEC-063, Phase 1 slice S5b — implemented and closed in `ROADMAP.md` Phase 1 Slice S5). Journey state is separate from the route definition (§5.4, DEC-062) and is never written into `Journey`.
 
 ```text
 JourneyState                  — value; failable
