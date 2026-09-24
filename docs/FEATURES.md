@@ -572,6 +572,8 @@ Live Activity presentation must match the leg's verified capability tier (DEC-04
 
 TSUGINO's UI responds to journey state.
 
+The states below are **presentation labels**. Stored journey state uses a smaller neutral phase vocabulary (DEC-063, `ARCHITECTURE.md` §5.6, §6) from which these labels are derived with the leg, position, and freshness. For scheduled guidance no label may claim boarding, station passage, or arrival: "Arrived" is never shown for schedule-based completion, and no label presents a planned endpoint as the rider's confirmed arrival.
+
 Initial conceptual states:
 
 - Planning
@@ -623,7 +625,7 @@ Exact timing should be configurable later if needed.
 
 ### 9.4 Arrival
 
-Optional arrival confirmation.
+Optional **planned-endpoint notification**: the selected journey has reached its planned final stop by schedule or by observed train position (DEC-063). It is not an arrival confirmation and must not say the rider has arrived; confirming the rider's arrival requires rider-side evidence and is outside the current journey-state contract.
 
 ---
 

@@ -413,7 +413,7 @@ Pixel scenes may change based on journey phase:
 - ApproachingTransfer → station / corridor
 - Transferring → transfer passage
 - ApproachingDestination → destination platform
-- Arrived → calm arrival scene
+- Arrived → calm arrival scene (a presentation label; never presents schedule passage or observed train location as confirmed rider arrival — DEC-063)
 
 These scenes are decorative and must never be required for understanding the journey.
 
@@ -998,6 +998,7 @@ The main app may visually express the train's movement through the pixel railway
 #### Arrived
 - motion stops
 - destination environment becomes calm and visually resolved
+- the scene reflects the planned endpoint (DEC-063); it must not present schedule passage or observed train location as the rider's confirmed arrival
 
 ### 22.2 Dynamic Station Name
 

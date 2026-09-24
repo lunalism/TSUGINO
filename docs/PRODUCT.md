@@ -462,6 +462,8 @@ A Journey contains:
 
 ## 14. Journey States
 
+These are presentation labels; stored journey state uses a smaller neutral phase vocabulary that never claims the rider boarded or arrived (DEC-063).
+
 Initial conceptual states:
 
 - Planning

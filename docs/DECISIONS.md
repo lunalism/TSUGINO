@@ -3870,6 +3870,237 @@ No runtime state, phase, current leg, freshness, event, error, or readiness rule
 
 ---
 
+# DEC-063 — Journey Runtime State Uses Neutral Phases, Current-Leg Freshness, and Pair-Validated Consistency
+
+**Status:** Accepted\
+**Date:** 2026-09-24\
+**Related:** DEC-007, DEC-008, DEC-010, DEC-011, DEC-012, DEC-022, DEC-023, DEC-024, DEC-026, DEC-027, DEC-030, DEC-031, DEC-033, DEC-038, DEC-043, DEC-046, DEC-047, DEC-050, DEC-051, DEC-062; `RULES.md` Rule 4, Rule 5, Rule 7, Rule 11, Rule 12, Rule 19, Rule 39, Rule 45; `ARCHITECTURE.md` §5.6, §6, §7, §25, §34, §35; `FEATURES.md` §4.12, §8, §10.3, §10.4, §16; `PRODUCT.md` §14; `ROADMAP.md` Phase 1 Slice S5
+
+## Context
+
+S5b owes the Phase 1 runtime-state vocabulary (`ROADMAP.md` Phase 1 *Included*: `JourneyState`, `JourneyPhase`, `JourneyEvent`, typed errors; *Implementation Tasks*: realtime freshness and interruption/recovery models). `ARCHITECTURE.md` §5.6 carries an unresolved sketch — `JourneyState { phase, currentLegIndex, currentStation, nextStation, remainingStops, progress, realtimeFreshness, interruptionReason, lastConfirmedAt }` — and §6 lists eleven phases (Planning, WaitingForDeparture, Boarding, OnTrain, ApproachingTransfer, Transferring, WaitingForNextTrain, ApproachingDestination, Arrived, Ended, Interrupted), repeated in `FEATURES.md` §8 and `PRODUCT.md` §14; §6 also draws Recovered / Replanned / Ended as exits from Interrupted.
+
+Constraints:
+
+- Phase 1 defines types and outputs; **Phase 5 owns every transition, progression, and detection** (DEC-011, DEC-050). A Phase 1 slice that asserts transition outcomes has drifted.
+- Freshness is explicit (DEC-024); unsupported precision is never implied (DEC-038); the scheduled tier may show scheduled next stop and clock-based scheduled progress but must not represent actual train location, station passage, departure, arrival, or onboard confirmation (DEC-046, DEC-047, `FEATURES.md` §10.3).
+- No value observes the **rider**: location is optional (Rule 4, DEC-026) and realtime observes only the train.
+- Animation never drives state (DEC-012); Live Activities consume derived state (DEC-030).
+- Already settled for S5b: recovery **proposals** are an engine output and belong to **S6**; freshness describes the **current leg** only; stale realtime alone is **not** an interruption; the event set is minimal.
+
+## Decision
+
+### A. Neutral phases, not rider claims
+
+Several documented phase names assert facts no Phase 1 value can support: *Boarding* and *OnTrain* claim the rider got on; *Arrived* claims an actual arrival; and the pairs *WaitingForDeparture* / *WaitingForNextTrain* and *ApproachingTransfer* / *ApproachingDestination* differ only by derivable leg position. `JourneyPhase` therefore stores a smaller **neutral** vocabulary describing where the journey stands **in the selected plan**; how it was established comes from `freshness` and each basis, never from the phase name.
+
+```text
+JourneyPhase                  — enum
+- planning
+- awaitingDeparture(legIndex)
+- riding(legIndex, position: JourneyPosition?)
+- transferring(TransferPoint)
+- plannedEndReached(PlannedEndBasis)
+- interrupted(JourneyInterruptionReason, legIndex: Int?)
+- ended(JourneyEndReason)
+
+TransferPoint                 — enum
+- walking(legIndex)                    — on a walking leg
+- atStation(afterRailLeg: n)           — a same-station change between rail legs n and n + 1
+
+JourneyPosition               — value; failable (index >= 0)
+- place: atStop(index) | betweenStops(after: index)   — into the current leg's trip.stopSequence
+- basis: observed | scheduleEstimate
+
+PlannedEndBasis               — enum
+- schedule                    — the final leg's scheduled arrival time has passed
+- trainObservedAtFinalStop    — realtime observed the selected train at the final alighting stop
+
+JourneyInterruptionReason     — missedTrain, wrongTrain, wrongDirection, serviceCancelled,
+                                destinationChanged, serviceSuspended, invalidPersistedJourney,
+                                unsupportedServiceChange
+JourneyEndReason              — trackingCompleted, cancelledByUser, endedEarlyByUser
+```
+
+| Stored phase | Documented names it covers | Asserts |
+|---|---|---|
+| `planning` | Planning | tracking has not started |
+| `awaitingDeparture(i)` | WaitingForDeparture, WaitingForNextTrain | before the departure of rail leg `i` |
+| `riding(i, position?)` | Boarding, OnTrain, ApproachingTransfer, ApproachingDestination | within leg `i`'s selected ride, on the stated basis |
+| `transferring(point)` | Transferring | between two rail legs |
+| `plannedEndReached(basis)` | Arrived (see §B) | the plan's final alighting point has been reached **by the stated basis** — never the rider's confirmed arrival |
+| `interrupted(reason, i?)` | Interrupted | the plan has diverged |
+| `ended(reason)` | Ended | tracking is over (terminal) |
+
+**Recovered** and **Replanned** are **transitions, not phases**: recovery is reported by a `recovered` event (§F) and replanning produces a revised Journey (DEC-062 C4; Phase 5). The documented names remain **derived presentation labels**, computed by presentation mappers from the phase, the leg index, the position, and the Journey, under the provenance rules below — for example "boarding" from `riding(i, atStop(boardingIndex))`, "approaching destination" from a position just before the last leg's alighting stop, "waiting for next train" from `awaitingDeparture(i)` with `i > 0`.
+
+**Honest presentation.** With `scheduledOnly` or `scheduleFallback` freshness, `awaitingDeparture` shows the scheduled departure, `riding` shows "your selected train, per timetable" with the scheduled next stop and clock-based progress, and `plannedEndReached(.schedule)` shows that the scheduled arrival time has passed; nothing says boarded, departed, passed, or arrived. With realtime freshness an `observed` position means the **train** was observed there; wording still never says the rider boarded.
+
+### B. The planned endpoint is not arrival
+
+`plannedEndReached` records that the plan's final alighting point has been reached by one of two bases, neither of which is the rider's arrival:
+
+- **`schedule`** — clock time passed the final leg's scheduled arrival (the only basis available to scheduled guidance). Phase 5 may produce it **only** when it has a scheduled final-arrival time for the selected Trip to compare against the supplied clock; S5b stores the resulting phase and basis, never a fabricated timetable, and defines no comparison or transition logic. Without such a time, this basis is not used;
+- **`trainObservedAtFinalStop`** — realtime observed the selected **train** at the final alighting stop. It concerns the train, never the rider: train location alone never establishes that the **rider** arrived.
+
+**Confirmed rider arrival is outside S5b.** It would need rider-side evidence: an explicit user confirmation, or — only where the user has granted it — device location consistent with the final station, under the privacy limits of Rule 4, DEC-026, and DEC-043. No such input exists in Phase 1. A later decision may add a confirmed basis together with its evidence source; until then no surface may present `plannedEndReached` as "Arrived" for scheduled guidance, or as the rider's confirmed arrival for either basis. `JourneyEndReason.trackingCompleted` likewise means tracking ended after the planned endpoint, not that arrival was confirmed.
+
+### C. Freshness of the current leg
+
+```text
+RealtimeFreshness             — enum
+- live(updatedAt)
+- delayedUpdate(lastUpdatedAt)
+- stale(lastUpdatedAt)
+- scheduleFallback(lastRealtimeAt: Date?)   — realtime expected but not usable; timetable guidance is still available
+- scheduledOnly                             — the service has no verified trip-level realtime (DEC-046, DEC-047)
+- unavailable                               — insufficient data for current guidance, realtime or timetable
+```
+
+It describes the **current leg's** service only (§A context). Classifying a feed into these cases from data age and provider thresholds is **Phase 4 / Phase 5** (DEC-024); S5b stores the classification. Stale or unavailable realtime is degraded freshness, **not** an interruption; only Phase 5 may decide that guidance cannot continue and move to `interrupted`.
+
+### D. JourneyState — the value alone
+
+```text
+JourneyState                  — value; failable
+- journeyID       (JourneyID — which Journey this state describes)
+- phase           (JourneyPhase)
+- freshness       (RealtimeFreshness)
+- lastConfirmedAt (Date? — last realtime-confirmed progress)
+- asOf            (Date — the instant this state describes)
+```
+
+Not stored: `currentStation`, `nextStation`, `remainingStops` (derived from position and the Journey — Phase 5, DEC-011); `progress` (an approximate presentation value, DEC-038; derived later, never stored as truth). Nothing is written into `Journey` (DEC-062). All times are **inputs**; Domain never reads a clock, which is how "deterministic time behavior" is met.
+
+`JourneyState` construction fails (returns `nil`, DEC-051 style) unless, from the value alone:
+
+1. `lastConfirmedAt`, when present, is `<= asOf`;
+2. every timestamp in `freshness` is `<= asOf`;
+3. an `observed` position requires realtime-derived freshness — `live`, `delayedUpdate`, or `stale`;
+4. `plannedEndReached(.trainObservedAtFinalStop)` requires realtime-derived freshness on the same terms.
+
+`JourneyPosition` construction fails for a negative index.
+
+### E. ActiveJourney — pair validation and the Phase 1 typed error
+
+```text
+ActiveJourney                 — value; throwing construction
+- journey  (Journey)
+- state    (JourneyState)
+
+ActiveJourneyInconsistency    — Error
+- journeyMismatch
+- legIndexOutOfRange(Int)
+- legKindMismatch(legIndex: Int)
+- legNotSelected(legIndex: Int)
+- positionOutOfRange(legIndex: Int)
+```
+
+`ActiveJourney(journey:state:)` is the only place a state's consistency with its Journey is checked, and it **throws** `ActiveJourneyInconsistency` so a caller learns which rule failed. Checks run in this order and produce exactly these errors:
+
+| Check | Error |
+|---|---|
+| `state.journeyID != journey.id` | `journeyMismatch` |
+| any leg index in the phase — `awaitingDeparture(i)`, `riding(i, …)`, `walking(i)`, both `n` and `n + 1` of `atStation(afterRailLeg: n)`, `interrupted(_, i)` — is `< 0` or `>= legs.count` | `legIndexOutOfRange(index)` |
+| `awaitingDeparture(i)` or `riding(i, …)` on a walking leg; `walking(i)` on a rail leg; `atStation(n)` where leg `n` or `n + 1` is not rail | `legKindMismatch(legIndex:)` |
+| `riding(i, …)` on an unselected rail leg; `awaitingDeparture(0)` on an unselected rail leg (**first-leg readiness**, DEC-007) | `legNotSelected(legIndex:)` |
+| `atStop(k)` outside `boardingIndex...alightingIndex`, or `betweenStops(after: k)` outside `boardingIndex..<alightingIndex`, of leg `i`'s selection | `positionOutOfRange(legIndex:)` |
+
+Nothing else is checked. `planning`, `plannedEndReached`, and `ended` pair with **any** Journey, including an all-unselected one; `awaitingDeparture(i)` with `i > 0` may point at an unselected leg (DEC-008 — the next train may be chosen near transfer time); `transferring(atStation)` accepts either selection state. The pair imposes **no ordering**: which phase may follow which, that legs advance monotonically, that `plannedEndReached` follows the last leg, and how any phase is reached are **Phase 5 transition rules**. A Journey whose leg was replaced keeps its `JourneyID` and is simply re-paired and re-checked.
+
+**Typed throws.** The construction is declared with typed throws, `throws(ActiveJourneyInconsistency)`, where the project's language mode supports it; implementation must verify that support. If the language mode prevents it, the construction uses ordinary `throws`, documented and tested to throw **only** `ActiveJourneyInconsistency`. Either form satisfies this contract.
+
+**Typed-error scope.** `ActiveJourneyInconsistency` is the Phase 1 typed-error deliverable. Its consumers are the Phase 6 recovery path for a persisted Journey that no longer pairs with its state (`invalidPersistedJourney`, DEC-031) and structured diagnostics (DEC-033). It deliberately invents **no** provider, route-search, realtime, persistence, transfer-guidance, or transition error: those remain examples for their owning phases (`ARCHITECTURE.md` §34), and the Phase 1 acceptance criteria are unchanged. This throwing construction is a **narrow exception** to the failable, non-throwing construction pattern (DEC-051 and later value decisions), limited to `ActiveJourney`, because only this pairing has a consumer that needs the reason.
+
+### F. Events
+
+```text
+JourneyEvent                  — value; failable
+- occurredAt  (Date)
+- kind        (JourneyEventKind)
+
+JourneyEventKind
+- phaseChanged(from: JourneyPhase, to: JourneyPhase)     — from != to
+- legStarted(legIndex)                                    — >= 0
+- tripSelected(legIndex)                                  — >= 0
+- tripReplaced(legIndex)                                  — >= 0
+- freshnessChanged(from: RealtimeFreshness, to: RealtimeFreshness)   — from != to
+- recovered
+- ended(JourneyEndReason)
+```
+
+There is **no separate `interrupted` event**: `phaseChanged(to: .interrupted(reason, legIndex))` already carries the reason and the leg, so a second event would duplicate it. Events are outputs Phase 5 produces and notifications consume (DEC-010, Phase 10); S5b defines only their shape and the local rules noted. Detecting any event is Phase 5. There are no per-stop events; Live Activities read state (DEC-030).
+
+### G. Conformances
+
+| Type | Conformance | Consumer |
+|---|---|---|
+| every S5b type | `Sendable` | state and events cross from off-main-actor production to the UI (DEC-027) |
+| `JourneyPhase`, `TransferPoint`, `JourneyPosition`, `PlannedEndBasis`, `RealtimeFreshness`, the reason enums | `Equatable` | the event rules `phaseChanged(from != to)` and `freshnessChanged(from != to)` |
+| `ActiveJourneyInconsistency` | `Error` | the typed-error contract (§E) |
+| `JourneyState`, `ActiveJourney`, `JourneyEvent` | none beyond `Sendable` | no Phase 1 consumer compares, hashes, or stores them |
+| any S5b type | **no** `Hashable`, **no** `Codable` | no key use; the persisted format and migration are **Phase 6** (Rule 39, DEC-023) |
+
+No encoding rule is specified now. When Phase 6 persists an active Journey it should reuse the DEC-062 §F `kind` + payload pattern and route decoding through the §E pair validation. `Journey` stays `Codable` under DEC-062.
+
+## Detailed invariants and their boundaries
+
+| Invariant | Boundary |
+|---|---|
+| position index `>= 0` | **S5b `JourneyPosition` construction** |
+| timestamps `<= asOf`; observed position and observed endpoint require realtime-derived freshness | **S5b `JourneyState` construction** |
+| journey match; leg index range; leg kind; selection and first-leg readiness; position within the selection | **S5b `ActiveJourney` construction** (typed error) |
+| event `from != to`; event leg index `>= 0` | **S5b `JourneyEvent` construction** |
+| which phase may follow which; monotonic legs; how phases are reached | **Phase 5** |
+| classifying freshness from age and thresholds | **Phase 4 / Phase 5** |
+| detecting interruptions and events; recovery proposals | **Phase 5** / **S6** |
+| current and next station, remaining stops, progress | **Phase 5** (derived) |
+| presentation labels ("Boarding", "Arrived", …) | **presentation mappers (Phases 8–9)** under §A / §B |
+| confirmed rider arrival | **later decision** with rider-side evidence |
+| persistence, encoding, migration | **Phase 6** |
+
+## Alternatives considered
+
+- **Keep the eleven documented phase names as stored values:** rejected — *Boarding*, *OnTrain*, and *Arrived* assert rider facts nothing observes, and four names duplicate derivable leg position.
+- **A stored "arrived" phase with a basis flag:** rejected — the word itself reads as confirmed arrival on every surface.
+- **Requiring a selected rail leg for every phase after planning:** rejected — would reject valid transfers, waiting for a train chosen near transfer time, interruptions, and ended journeys.
+- **Validating state only inside the engine:** rejected — a persisted state would never be checked against its Journey.
+- **Deferring all typed errors and revising the Phase 1 criteria:** rejected — the pairing error has a real consumer and satisfies the deliverable without inventing unowned errors.
+- **Codable now:** rejected — no Phase 1 consumer; Phase 6 owns the format.
+- **Storing current station, next station, remaining stops, or progress:** rejected — derived values that could drift; Phase 5 owns the derivation.
+
+## Consequences
+
+- `ARCHITECTURE.md` §5.6 replaces the sketch with this contract; §6 marks its diagram as documented presentation labels mapped to stored phases, with transitions in Phase 5; §34 records the Phase 1 typed error.
+- `FEATURES.md` §8 and `PRODUCT.md` §14 mark their phase lists as presentation labels derived from the stored phases, with "Arrived" never shown for schedule-based completion; `FEATURES.md` §9.4 describes a planned-endpoint notification rather than arrival confirmation; `DESIGN.md` notes that the Arrived scene never presents schedule passage or observed train location as confirmed rider arrival.
+- `ROADMAP.md` S5b records this contract; S6 gains recovery proposals beside the engine boundary.
+
+## Phase ownership
+
+**Phase 1 (S5b):** the types and construction rules above. **S6:** the `JourneyEngine` protocol boundary and recovery-proposal shape. **Phase 4 / 5:** freshness classification. **Phase 5:** transitions, progression, detection, derived stations and counts. **Phase 6:** persistence and encoding. **Phases 8–9:** presentation labels. **Phase 10:** notifications consuming events. **Later decision:** confirmed rider arrival.
+
+## Explicit non-goals
+
+No transition graph, ordering rule, or state machine behaviour; no detection of any event, interruption, or arrival; no freshness thresholds or classification; no realtime snapshot or provider data; no capability attachment; no recovery proposal; no `JourneyEngine` protocol; no persistence or encoding; no notification, Live Activity, UI, or animation state; no change to `Journey`; no brand, fare, seating, or transfer guidance; no new canonical identifier; no new dependency. This Decision does not mark S5 or Phase 1 complete.
+
+## Implementation sequence
+
+1. `JourneyPosition`, `TransferPoint`, `PlannedEndBasis`, the reason enums, and `RealtimeFreshness`.
+2. `JourneyPhase` and `JourneyState` with §D.
+3. `ActiveJourney` and `ActiveJourneyInconsistency` with §E.
+4. `JourneyEvent` with §F.
+5. Independent review, then the S5b and S5 completion records.
+
+## Revisit Triggers
+
+- A rider-side arrival or boarding signal becomes available and is accepted.
+- Phase 5 needs a stored phase the neutral vocabulary cannot express.
+- Freshness must be tracked per leg rather than for the current leg.
+- A Phase 1 consumer needs equality, hashing, or encoding of state or events.
+- Phase 6 persistence requires a different representation.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
