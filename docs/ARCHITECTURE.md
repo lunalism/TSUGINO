@@ -708,7 +708,7 @@ Checks that need populated collections — every stop a known `Station`, every `
 
 ### 5.4 Journey
 
-Accepted structural contract (DEC-062, Phase 1 slice S5a — not yet implemented):
+Accepted structural contract (DEC-062, Phase 1 slice S5a — implemented, closure pending independent review):
 
 ```text
 Journey                      — entity; equality and hashing by JourneyID only
