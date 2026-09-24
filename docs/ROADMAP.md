@@ -217,7 +217,7 @@ Build a provider-independent railway and journey domain.
 - define through-service representation
 - define realtime freshness model
 - define interruption/recovery model
-- define provider-neutral domain protocol boundaries assigned to Phase 1, including the **`JourneyEngine` protocol boundary without its runtime behaviour** (DEC-050). Whether the `RouteSearching` protocol is defined in Phase 1 is deliberately **undecided and non-blocking for slices S1–S5**; it is settled before the protocol slice (S6), and live route-search integration stays in Phase 3 regardless (`DECISIONS.md` §4 “Route Search Provider”)
+- define provider-neutral domain protocol boundaries assigned to Phase 1, including the **`JourneyEngine` protocol boundary without its runtime behaviour** (DEC-050). `RouteSearching` (with `RouteCandidate` and `TrainCandidate`) is **not** defined in Phase 1: DEC-064 assigns it to Phase 3, which already includes it, and live route-search integration stays in Phase 3 (`DECISIONS.md` §4 “Route Search Provider”)
 
 ### Slice S3 — Station and RailwayLine (DEC-055, DEC-056, DEC-057)
 
@@ -292,9 +292,17 @@ This rule is **structural**. Satisfying it claims nothing about populated datase
 
 **S5 completion rule — satisfied** (2026-09-24). S5a and S5b are each accepted in a decision record (DEC-062; DEC-063 as corrected at `feb204d`), implemented with focused tests (`bd1ae2f`; `62530b3`), and independently reviewed with no actionable finding, and the S5a and S5b exclusions are intact; S5b was not deferred, so no acceptance-criteria revision was needed. Verification of the final state at `62530b3`: **819/819 executed cases passed, 0 failed, 0 skipped**; Debug build and clean Release build of the app and extension succeeded; iPhone 17 simulator, iOS 26.5. Completing S5 claims **no** physical-device validation and **no** Phase 5 transitions, progression, detection, or schedule comparison; **no** confirmed rider arrival; **no** recovery proposal or `JourneyEngine` protocol (S6); and **no** Phase 6 persistence or encoding of runtime state.
 
-### Later Phase 1 slices
+### Slice S6 — Domain Protocol Boundary
 
-Phase 1 work after S5 remains open and will be scoped from the remaining Phase 1 deliverables above. **S6** remains the later **protocol slice** already referenced by this roadmap and by `DECISIONS.md` §4 (the `RouteSearching` inclusion-or-deferral question is settled before it), including the `JourneyEngine` protocol boundary (DEC-050) and the recovery-proposal shape (DEC-063). Detailed boundaries for **S6** are **not** established here. Phase 1 as a whole remains in progress.
+**Status: contract accepted (DEC-064, 2026-09-24); implementation not started.** Phase 1 as a whole remains in progress.
+
+**Scope (DEC-064).** The `JourneyEngine<Observation>` protocol — synchronous, pure, non-throwing, `Sendable`, with `transition(from: ActiveJourney, input:, at now:) -> JourneyTransitionOutcome` — whose `Observation` is supplied by Phase 4 and bound by the Phase 5 engine; `JourneyEngineInput` (`observed`, `timePassed`, `selectTrip`, `replaceTrip`, `end(UserEndReason)`); `JourneyTransitionOutcome` (`applied` with a valid result whose `next.state.asOf` equals the supplied `now` and which may leave the Journey and phase unchanged, or `rejected`); `JourneyTransitionResult` (same `JourneyID`, `asOf` not backwards, events inside the time window, a proposal only with a matching interruption, proposal legs in range and rail); `JourneyInputRejection` with a documented user-facing meaning and next step for every case, and the shared `structuralRejection` checks (backward `now` rejected for every input; an ended journey rejecting every input, including `timePassed` and `observed`; missing leg; walking leg; selection state; stations that differ; a `TripID` already selected on another leg, excluding a `replaceTrip` target's own `TripID`); and `JourneyRecoveryProposal` naming only reselectable rail legs. `RouteSearching`, `RouteCandidate`, and `TrainCandidate` are Phase 3.
+
+**S6 tests** must cover: every structural check producing exactly its rejection and payload, in order, including a backward `now` for `timePassed`, `observed`, and every command, and an ended journey rejecting every input with `journeyEnded`; valid inputs passing, including `replaceTrip` with the leg's own current `TripID`, while a `TripID` selected on another leg is rejected; the `trainStationsDiffer` payload identifying the mismatched boarding and/or alighting station; every result and proposal rule accepted and rejected; a test-only engine with `Observation = Never` returning `.applied` for `timePassed` with the Journey and phase unchanged and `asOf` advanced to `now`, and `.rejected` for a structural failure, crossing actor boundaries; and exhaustive coverage of the rejection cases for the user-facing mapping.
+
+**Excluded from S6.** Engine implementation, transitions, phase-dependent rules, and proposal content (Phase 5); realtime observation schema and provider validation (Phase 4 / 5); route search, candidates, and replanning (Phase 3); acting on proposals and persistence (Phase 6); localized rejection and proposal wording and UI (Phase 8); device context.
+
+**S6 completion rule.** S6 may be marked complete only when DEC-064 is accepted, its contract is implemented with focused tests, and the implementation and completion record pass independent review. A **Phase 1 closure audit** follows S6 before Phase 1 is marked complete.
 
 ## Tests
 
@@ -814,7 +822,8 @@ Implement the complete foreground user flow from route setup through active jour
 - degraded-mode UI states for services without trip-level realtime (scheduled / status-Alert / unavailable provenance — DEC-046)
 - Scheduled Journey Guidance presentation for the nine Tokyo Metro lines and the Liner (DEC-047): scheduled timeline, clock-based scheduled progress labelled as scheduled, scheduled next stop, status/Alert notices that are never concealed by scheduled progression; no live badge or physical-train claim
 - Legal/Data Sources screen (FEATURES §15): Toei CC BY 4.0 attribution fields (provider, content title, source link, license name + link, modification indication, supplied notices — audit §3.5.2) and the Tokyo Metro three-part source / accuracy-not-guaranteed / developer-contact notice (audit §3.6.2); machine-translation disclosure where used
-- surface recovery actions
+- surface recovery actions — reselection-only proposals as "choose another train", never as a promise that another train exists; ending always available (DEC-064 F)
+- explain every refused rider action from its `JourneyInputRejection` case with the specific cause and next step documented in DEC-064 E — localized, no raw enum names or developer diagnostics, and no generic fallback that hides a distinct cause; name the mismatched boarding and/or alighting station for `trainStationsDiffer` and never present replanning as an in-app action; background-input rejections (`timePassed`, `observed`) may be handled without a notification
 
 ## Tests
 

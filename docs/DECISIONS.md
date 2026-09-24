@@ -4100,6 +4100,193 @@ No transition graph, ordering rule, or state machine behaviour; no detection of 
 
 ---
 
+# DEC-064 — JourneyEngine Boundary Uses a Deferred Observation Type, Typed Input Rejections, and Reselection-Only Recovery Proposals
+
+**Status:** Accepted\
+**Date:** 2026-09-24\
+**Related:** DEC-004, DEC-007, DEC-008, DEC-010, DEC-011, DEC-021, DEC-024, DEC-027, DEC-031, DEC-038, DEC-050, DEC-062, DEC-063; `RULES.md` Rule 4, Rule 11, Rule 38, Rule 45; `ARCHITECTURE.md` §4, §7, §10, §34, §35; `FEATURES.md` §4.12, §16; `ROADMAP.md` Phase 1, Phase 3, Phase 4, Phase 5, Phase 6, Phase 8
+
+## Context
+
+S6 is the Phase 1 protocol slice. DEC-050 lets Phase 1 define the `JourneyEngine` **boundary** — types, inputs, outputs — while Phase 5 owns its behaviour; DEC-063 assigned the recovery-proposal **shape** to S6. `ARCHITECTURE.md` §7 sketches the engine as `Journey + RealtimeSnapshot + Current Time + Optional Device Context → JourneyTransitionResult { updatedJourney, events, warnings, recoveryProposal }`. `DECISIONS.md` §4 left open whether `RouteSearching` is defined in Phase 1, to be settled before S6.
+
+Constraints: `RealtimeSnapshot` does not exist and is Phase 4; location is optional (Rule 4); the engine must be deterministic and never read a clock (Rule 38, DEC-063 D); a result must never fabricate candidates or precision (DEC-038); and a rider whose action is refused must learn the specific reason, not a generic failure.
+
+## Decision
+
+### A. Route search is Phase 3
+
+`RouteSearching`, `RouteCandidate`, and `TrainCandidate` are **not** defined in Phase 1. `ROADMAP.md` Phase 3 already includes `RouteSearching` and `RouteCandidate`; no Phase 1 consumer exists, the §10 candidate shape carries provider-dependent fields, and DEC-004 remains Provisional. The Phase 1 *Included* list and acceptance criteria never named them, so no acceptance criterion changes. This resolves the `DECISIONS.md` §4 disposition. `RealtimeTripProviding` (Phase 4), `TransferGuidanceProviding` (Phase 10), and `JourneyRepository` (Phase 6) likewise stay with their phases.
+
+### B. The engine protocol
+
+```text
+protocol JourneyEngine<Observation>: Sendable
+- associatedtype Observation: Sendable
+- transition(from: ActiveJourney,
+             input: JourneyEngineInput<Observation>,
+             at now: Date) -> JourneyTransitionOutcome
+
+JourneyEngineInput<Observation>          — enum
+- observed(Observation)                  — realtime evidence; its type is supplied later
+- timePassed                             — no new evidence; re-evaluate at `now`
+- selectTrip(legIndex: Int, SelectedRailTrip)
+- replaceTrip(legIndex: Int, SelectedRailTrip)
+- end(UserEndReason)
+
+UserEndReason                            — cancelledByUser | endedEarlyByUser
+                                           (maps to the matching JourneyEndReason)
+```
+
+1. **Stable signature, deferred payload.** `Observation` is an associated type. **Phase 4** defines the concrete realtime observation (`RealtimeSnapshot` or a journey-scoped projection of it); **Phase 5** binds `typealias Observation = …` in its engine and implements `transition`. The protocol itself does not change. A scheduled-only test double may bind `Observation = Never`, which makes `observed` unrepresentable for it. `timePassed` is the only input available to scheduled guidance; it is not presented as the complete production input.
+2. **Synchronous, pure, non-throwing.** The method never reads a clock — `now` is an input — never performs I/O, and is `Sendable` so callers run it off the main actor (DEC-027). All outcomes, including refusals, are values.
+3. **No device context.** Location is optional (Rule 4) and has no contract; it is not an input.
+4. **Ending is always a user command.** `end` takes a `UserEndReason`, so the engine-produced `trackingCompleted` cannot be requested.
+
+### C. Outcomes and results
+
+```text
+JourneyTransitionOutcome                 — enum
+- applied(JourneyTransitionResult)       — a valid result; next.state.asOf == now; may leave the Journey and phase unchanged
+- rejected(JourneyInputRejection)
+
+JourneyTransitionResult                  — value; failable
+- previous          (ActiveJourney)
+- next              (ActiveJourney)
+- events            ([JourneyEvent])
+- recoveryProposal  (JourneyRecoveryProposal?)
+```
+
+`JourneyTransitionResult(previous:next:events:recoveryProposal:)` fails unless:
+
+1. `next.journey.id == previous.journey.id` — the engine cannot swap journeys;
+2. `next.state.asOf >= previous.state.asOf` — time never runs backwards;
+3. every event's `occurredAt` lies within `previous.state.asOf ... next.state.asOf`;
+4. a recovery proposal is present **only** when `next.state.phase` is `interrupted` with the **same reason**; an interruption without a proposal is valid;
+5. every leg index in the proposal is within `next.journey.legs` and names a **rail** leg.
+
+Because the pair is an `ActiveJourney`, `next` is already consistent with its Journey (DEC-063 E). A conforming engine returns `.applied` only with a result built through this constructor and with **`next.state.asOf == now`**, the supplied instant. An applied result may be a **no-change** result: the Journey and the phase are unchanged — for example `timePassed` when nothing has changed — but `asOf` still advances to `now` whenever `now` is later. It is distinguishable from a refusal because a refusal is `.rejected`. If an engine cannot build a valid result for an input it did not reject, that is a Phase 5 defect for its tests, never a silent no-change and never a rejection.
+
+### D. Input rejections
+
+```text
+JourneyInputRejection                    — enum
+- clockBehindJourney(stateAsOf: Date, requestedAt: Date)
+- journeyEnded
+- legNotFound(legIndex: Int)
+- walkingLegHasNoTrain(legIndex: Int)
+- trainAlreadySelected(legIndex: Int)
+- noTrainToReplace(legIndex: Int)
+- trainStationsDiffer(legIndex: Int, legStations: RailLegAnchors, trainStations: RailLegAnchors)
+- trainAlreadyInJourney(legIndex: Int, otherLegIndex: Int)
+- notAllowedInCurrentPhase(currentPhase: JourneyPhase)
+```
+
+**Validation boundary.** S6 defines a pure function, `JourneyEngineInput.structuralRejection(against: ActiveJourney, at now: Date) -> JourneyInputRejection?`, that callers may use to pre-check a rider's action and that a conforming engine must apply first, returning `.rejected` with its result. It checks, in order:
+
+| # | Check | Applies to | Rejection |
+|---|---|---|---|
+| 1 | `now < current.state.asOf` | **every** input, including `timePassed` and `observed` — never clamped, never an unchanged success | `clockBehindJourney` |
+| 2 | the current phase is `ended` | **every** input, including `timePassed` and `observed` | `journeyEnded` |
+| 3 | `legIndex` outside the legs | `selectTrip`, `replaceTrip` | `legNotFound` |
+| 4 | the leg is a walking transfer | `selectTrip`, `replaceTrip` | `walkingLegHasNoTrain` |
+| 5 | `selectTrip` on a selected leg / `replaceTrip` on an unselected leg | respectively | `trainAlreadySelected` / `noTrainToReplace` |
+| 6 | the train's derived stations differ from the leg's (`RailLegAnchors.admits` is false) | `selectTrip`, `replaceTrip` | `trainStationsDiffer` |
+| 7 | the Trip's `TripID` is already selected on **another** leg (DEC-062 E5); for `replaceTrip` the target leg's own current `TripID` is excluded, so re-selecting it (for example an updated snapshot) passes | `selectTrip`, `replaceTrip` | `trainAlreadyInJourney` |
+
+After these, **Phase 5** decides every rule that depends on the current phase — for example replacing the train of a leg already completed — and reports it as `notAllowedInCurrentPhase(currentPhase:)`. If a phase-dependent refusal cannot be explained honestly from the phase alone, Phase 5 must add a specific case under §E rather than reuse it. `observed` and `timePassed` are never rejected except by checks 1 and 2; an observation that cannot be used degrades freshness instead (DEC-024, DEC-063 C). An ended Journey accepts no further input of any kind. **Provider-specific observation validation** — schema, identity join, feed age — belongs to Phase 4 / 5; if it ever needs a rejection, that case is added with its own mapping. `replaceTrip` with the leg's own current `TripID` (for example an updated snapshot) is not rejected by check 7; a `TripID` selected on any other leg is.
+
+### E. User-facing rejection reasons
+
+Every rejection case carries enough detail for Phase 8 to explain **the specific reason** the action failed and, where applicable, what the rider can do next. Phase 8 owns localized wording and presentation; the meanings below are binding, the phrasing is not. Riders never see enum names, dates in developer form, or diagnostics, and distinct causes are never collapsed into a generic "cannot select a train".
+
+| Rejection | What the rider is told (meaning) | What the rider can do next |
+|---|---|---|
+| `clockBehindJourney` | The phone's time appears to be earlier than the journey's last update, so the journey cannot be updated reliably right now. | Check that the phone's date and time are set automatically, then try again. |
+| `journeyEnded` | This journey has ended, so it can no longer be changed or updated. | Start a new journey. When the refused input was not a rider action (`timePassed`, `observed`), the rejection may be handled internally without any notification or message. |
+| `legNotFound` | That part of the journey no longer exists, usually because the journey changed. | Reopen the journey and try again. |
+| `walkingLegHasNoTrain` | This part of the journey is travelled on foot between stations, so no train can be chosen for it. | Choose a train for one of the rail parts instead. |
+| `trainAlreadySelected` | A train is already chosen for this part of the journey. | Change the train instead of choosing a new one. |
+| `noTrainToReplace` | No train has been chosen for this part yet, so there is nothing to change. | Choose a train for it. |
+| `trainStationsDiffer` | This train does not run between the stations chosen for this part of the journey — Phase 8 names the mismatched **boarding** and/or **alighting** station, from `legStations` and `trainStations`. | Choose a train that boards and alights at the selected stations. Replanning is **not** presented as an in-app action under this contract; if no fitting train can be found, suggest only actions the app supports, such as ending the journey. |
+| `trainAlreadyInJourney` | This train is already used for another part of this journey. | Choose a different train for this part. |
+| `notAllowedInCurrentPhase` | This change is not possible at the journey's current stage (Phase 8 explains using the stage — for example that the train is already in progress). | Follow the options offered for the current stage, or end the journey. |
+
+Every rejection case added later — by Phase 4 or Phase 5 — must be added together with its row in this mapping.
+
+### F. Recovery proposals
+
+```text
+JourneyRecoveryProposal                  — value; failable
+- reason                  (JourneyInterruptionReason)
+- reselectableLegIndices  ([Int] — non-empty, ascending, unique, each >= 0)
+```
+
+A proposal identifies only **rail legs whose train selection can be reopened** for their unchanged stations. It promises that reopening selection is an **available action** — never that another train exists, can be caught, or fits. Presentation says "choose another train", never "another train is available". Ending the journey is **always** separately available (`FEATURES.md` §4.12) and is not listed. **Replanning is not offered** in Phase 1: it depends on route search (Phase 3) and on knowing where the rider is. If nothing is reselectable, there is no proposal, so an empty proposal cannot be represented. Whether an interruption deserves a proposal, and which legs it names, are Phase 5 decisions; acting on it is the Phase 6 `JourneyRecoveryCoordinator` and Phase 8 presentation.
+
+### G. Conformances
+
+All S6 types are `Sendable`. `UserEndReason` is `Equatable` (it has no payload). `JourneyInputRejection`, `JourneyTransitionOutcome`, `JourneyTransitionResult`, `JourneyEngineInput`, and `JourneyRecoveryProposal` add no `Equatable`, `Hashable`, `Codable`, or `Error` conformance: consumers pattern-match; nothing is compared, stored, encoded, or thrown. Persistence of any of them is Phase 6.
+
+## Detailed invariants and their boundaries
+
+| Invariant | Boundary |
+|---|---|
+| proposal legs non-empty, ascending, unique, `>= 0` | **S6 `JourneyRecoveryProposal` construction** |
+| same `JourneyID`; `asOf` not backwards; events inside the window; proposal only with a matching interruption; proposal legs in range and rail | **S6 `JourneyTransitionResult` construction** |
+| clock not behind; ended journey; leg exists; leg kind; selection state; stations preserved; `TripID` unique | **S6 `structuralRejection`**, applied by callers and required of the engine |
+| `next.state.asOf == now` for applied results | **engine contract** (S6), implemented and tested in **Phase 5** |
+| phase-dependent input rules | **Phase 5** |
+| transitions, progression, detection, which legs to propose | **Phase 5** |
+| realtime observation type and provider validation | **Phase 4 / 5** |
+| rejection wording and localization | **Phase 8** |
+| acting on proposals | **Phase 6** coordinator, **Phase 8** presentation |
+| route search, replanning | **Phase 3** and later |
+
+## Alternatives considered
+
+- **Define `RouteSearching` now:** rejected — no Phase 1 consumer; Phase 3 already owns it.
+- **A placeholder observation payload, or an `evaluate`-only input documented as complete:** rejected — invents a Phase 4 schema or misstates the production input.
+- **Throwing on inapplicable input:** rejected — refusals are ordinary rider outcomes, and non-command inputs never throw.
+- **Caller preconditions only:** rejected — cannot express phase-dependent refusals without trapping or silently ignoring the input.
+- **Clamping a backward `now`:** rejected — would fabricate a time and hide a real device-clock problem.
+- **A generic rejection ("cannot select a train"):** rejected — hides distinct, actionable causes.
+- **Recovery options `replan` and `endJourney`:** rejected for Phase 1 — `replan` has no implementation before Phase 3; `endJourney` is always true and carries no information.
+- **Keeping `warnings` and device context from the §7 sketch:** rejected — no vocabulary or consumer.
+
+## Consequences
+
+- `ARCHITECTURE.md` §7 replaces the conceptual sketch with this boundary; §10 notes that route search is Phase 3; §34 records `JourneyInputRejection` as a typed rejection value alongside `ActiveJourneyInconsistency`; §35 notes that the coordinator consumes reselection-only proposals.
+- `DECISIONS.md` §4 records the `RouteSearching` disposition as resolved.
+- `ROADMAP.md` gains Phase 1 Slice S6 and records the resolved task; a Phase 1 closure audit follows S6.
+
+## Phase ownership
+
+**Phase 1 (S6):** the protocol, inputs, outcomes, results, rejections with their user-facing mapping, structural checks, and proposals above. **Phase 3:** route search and replanning. **Phase 4:** the concrete observation and provider validation. **Phase 5:** the conforming engine, phase-dependent rules, transitions, and proposal content. **Phase 6:** the recovery coordinator and persistence. **Phase 8:** rejection and proposal wording and presentation.
+
+## Explicit non-goals
+
+No engine implementation or transition logic; no realtime schema or provider validation; no route search, candidate, or replanning; no device context; no persistence or encoding; no localized wording; no UI; no new canonical identifier; no new dependency. A test-only engine double is permitted; no production engine behaviour is added. This Decision does not mark S6 or Phase 1 complete.
+
+## Implementation sequence
+
+1. `UserEndReason`, `JourneyEngineInput`, and `JourneyInputRejection`.
+2. `structuralRejection(against:at:)` with §D.
+3. `JourneyRecoveryProposal` and `JourneyTransitionResult` with §C and §F.
+4. `JourneyTransitionOutcome` and the `JourneyEngine` protocol, with a test-only double.
+5. Independent review, then the S6 completion record and the Phase 1 closure audit.
+
+S6 tests must cover, at minimum: every §D check producing exactly its rejection with the documented payload, in order (a backward `now` rejected for `timePassed`, `observed`, and every command; an ended journey rejecting every input, including `timePassed` and `observed`, with `journeyEnded`); valid inputs returning no rejection, including `replaceTrip` with the leg's own current `TripID`, while `selectTrip` or `replaceTrip` with a `TripID` selected on another leg is rejected with `trainAlreadyInJourney`; every §C constructor rule accepted and rejected; `JourneyRecoveryProposal` rejecting empty, unsorted, duplicate, and negative indices; a test-only engine with `Observation = Never` conforming, returning `.applied` for `timePassed` with the Journey and phase unchanged and `next.state.asOf == now` advanced, and `.rejected` for a structural failure, and crossing actor boundaries; and a check that every `JourneyInputRejection` case appears in the §E mapping (a switch-exhaustiveness test in Phase 1; wording is Phase 8).
+
+## Revisit Triggers
+
+- Phase 4 needs an observation rejection, or Phase 5 a phase-dependent case the stage cannot explain.
+- Route search (Phase 3) makes replanning available as a recovery action.
+- A consumer needs to compare, store, or encode outcomes or proposals.
+- A rider-side signal (location or confirmation) is accepted as an engine input.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
@@ -4181,7 +4368,7 @@ The following areas are intentionally not fully locked yet.
 
 Candidates still require technical, licensing, and pricing evaluation.
 
-**`RouteSearching` protocol disposition (2026-09-20, bounded and non-blocking):** whether the provider-neutral `RouteSearching` protocol (`ARCHITECTURE.md` §4, §10) is defined during Phase 1 is **not decided here**. It is **non-blocking for Phase 1 slices S1–S5** and must not delay branch creation or the canonical-identifier work. The inclusion-or-deferral decision is to be made **before S6**, when Phase 1 addresses domain protocols. **Live route-search integration remains Phase 3 regardless of that later decision**, and DEC-004 stays Provisional until a provider is selected.
+**`RouteSearching` protocol disposition (2026-09-20, bounded and non-blocking):** whether the provider-neutral `RouteSearching` protocol (`ARCHITECTURE.md` §4, §10) is defined during Phase 1 is **not decided here**. It is **non-blocking for Phase 1 slices S1–S5** and must not delay branch creation or the canonical-identifier work. The inclusion-or-deferral decision is to be made **before S6**, when Phase 1 addresses domain protocols. **Live route-search integration remains Phase 3 regardless of that later decision**, and DEC-004 stays Provisional until a provider is selected. **Resolved by DEC-064:** `RouteSearching`, `RouteCandidate`, and `TrainCandidate` are **not** defined in Phase 1 and belong to Phase 3; DEC-004 is unchanged.
 
 Related:
 - DEC-004

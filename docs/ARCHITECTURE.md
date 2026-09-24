@@ -878,29 +878,32 @@ Responsibilities:
 - produce new JourneyState
 - create recovery suggestions
 
-Conceptual input:
+Accepted boundary contract (DEC-064, Phase 1 slice S6 — not yet implemented):
 
 ```text
-Journey
-+
-RealtimeSnapshot
-+
-Current Time
-+
-Optional Device Context
+protocol JourneyEngine<Observation>: Sendable
+- associatedtype Observation: Sendable     — the realtime observation, supplied by Phase 4
+- transition(from: ActiveJourney, input: JourneyEngineInput<Observation>, at now: Date)
+      -> JourneyTransitionOutcome
+
+JourneyEngineInput<Observation>
+- observed(Observation) | timePassed
+- selectTrip(legIndex, SelectedRailTrip) | replaceTrip(legIndex, SelectedRailTrip)
+- end(UserEndReason — cancelledByUser | endedEarlyByUser)
+
+JourneyTransitionOutcome
+- applied(JourneyTransitionResult)         — valid; next.state.asOf == now; may leave the Journey and phase unchanged
+- rejected(JourneyInputRejection)          — typed refusal with a user-facing meaning
+
+JourneyTransitionResult                    — previous, next (ActiveJourney), events, recoveryProposal?
+JourneyRecoveryProposal                    — reason, reselectableLegIndices (non-empty rail legs)
 ```
 
-Output:
+The engine is synchronous, pure, and non-throwing; `now` is an input and the engine never reads a clock. **Phase 4** supplies the concrete observation type (for example `RealtimeSnapshot`) and **Phase 5** binds it and implements `transition`; a scheduled-only test double may bind `Observation = Never`. There is no device-context input (location is optional, Rule 4) and no `warnings` output.
 
-```text
-JourneyTransitionResult
-- updatedJourney
-- events
-- warnings
-- recoveryProposal
-```
+A result keeps the same `JourneyID`, never moves `asOf` backwards, keeps every event inside the previous-to-next time window, and carries a recovery proposal only for a matching interruption. An applied result always has `next.state.asOf == now`; a no-change result leaves the Journey and phase unchanged while `asOf` advances. A backward `now` is **rejected** for every input — never clamped, never an unchanged success — and an **ended** Journey rejects every input, including `timePassed` and `observed`. Pure structural checks (backward clock, ended journey, missing leg, walking leg, selection state, stations that differ, a `TripID` already selected on another leg — a `replaceTrip` target's own `TripID` excluded) are shared with callers; **Phase 5** owns every rule that depends on the current phase. Each rejection has a documented user-facing meaning and next step (DEC-064 E); Phase 8 owns the wording. A recovery proposal names only rail legs whose train selection can be reopened; it never promises another train exists, ending stays separately available, and replanning is not offered in Phase 1.
 
-It should behave like a pure state transition engine wherever practical.
+It should behave like a pure state transition engine wherever practical; Phase 5 implements that behaviour.
 
 ---
 
@@ -1007,6 +1010,8 @@ Provider implementations may include:
 - NAVITIME
 - Ekispert
 - future provider
+
+**Phase ownership (DEC-064):** `RouteSearching`, `RouteCandidate`, and `TrainCandidate` are defined in **Phase 3**, not Phase 1.
 
 All results normalize into:
 
@@ -1550,7 +1555,7 @@ High-accuracy continuous location should not run unless clearly justified by a f
 
 Use typed errors.
 
-**Phase 1 (DEC-063 E):** the only Phase 1 typed error is `ActiveJourneyInconsistency`, thrown when a `JourneyState` does not fit its `Journey` (§5.6). The examples below belong to their owning phases and are not Phase 1 deliverables.
+**Phase 1 (DEC-063 E, DEC-064 D):** Phase 1 has one typed error, `ActiveJourneyInconsistency`, thrown when a `JourneyState` does not fit its `Journey` (§5.6), and one typed rejection value, `JourneyInputRejection`, returned (not thrown) when the engine cannot apply an input (§7) — each case with a documented user-facing meaning. The examples below belong to their owning phases and are not Phase 1 deliverables.
 
 Examples:
 
@@ -1595,6 +1600,8 @@ Handles:
 - unsupported service change
 
 Recovery should preserve valid context whenever possible.
+
+The coordinator acts on `JourneyRecoveryProposal` values from the engine (DEC-064 F): they name only rail legs whose train selection can be reopened, never promise that another train exists, and never offer replanning before route search exists; ending the journey is always separately available.
 
 ---
 
