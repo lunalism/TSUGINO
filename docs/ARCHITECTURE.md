@@ -878,7 +878,7 @@ Responsibilities:
 - produce new JourneyState
 - create recovery suggestions
 
-Accepted boundary contract (DEC-064, Phase 1 slice S6 — not yet implemented):
+Accepted boundary contract (DEC-064, Phase 1 slice S6 — implemented, closure pending independent review; no production engine exists yet):
 
 ```text
 protocol JourneyEngine<Observation>: Sendable
