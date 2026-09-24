@@ -4026,10 +4026,9 @@ JourneyEventKind
 - tripReplaced(legIndex)                                  — >= 0
 - freshnessChanged(from: RealtimeFreshness, to: RealtimeFreshness)   — from != to
 - recovered
-- ended(JourneyEndReason)
 ```
 
-There is **no separate `interrupted` event**: `phaseChanged(to: .interrupted(reason, legIndex))` already carries the reason and the leg, so a second event would duplicate it. Events are outputs Phase 5 produces and notifications consume (DEC-010, Phase 10); S5b defines only their shape and the local rules noted. Detecting any event is Phase 5. There are no per-stop events; Live Activities read state (DEC-030).
+There is **no separate `interrupted` or `ended` event**: `phaseChanged(to: .interrupted(reason, legIndex))` already carries the interruption reason and leg, and `phaseChanged(to: .ended(reason))` already carries the end reason, so a second event would duplicate either. Events are outputs Phase 5 produces and notifications consume (DEC-010, Phase 10); S5b defines only their shape and the local rules noted. Detecting any event is Phase 5. There are no per-stop events; Live Activities read state (DEC-030).
 
 ### G. Conformances
 

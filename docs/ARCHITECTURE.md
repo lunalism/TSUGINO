@@ -791,7 +791,7 @@ ActiveJourney                 — journey + state; throws ActiveJourneyInconsist
 
 **The planned endpoint is not arrival (DEC-063 B).** `plannedEndReached(.schedule)` means the scheduled arrival time has passed — Phase 5 produces it only when it has a scheduled final-arrival time to compare against the supplied clock, and S5b stores the phase and basis, never a fabricated timetable; `.trainObservedAtFinalStop` concerns the train, never the rider. Confirmed rider arrival needs rider-side evidence and is outside Phase 1.
 
-Stale or unavailable realtime is degraded freshness, not an interruption. `JourneyEvent` (phase and freshness changes, leg started, trip selected or replaced, recovered, ended — an interruption is a phase change to `interrupted`) is a Phase 5 output; recovery proposals are S6. No S5b type is `Codable` or `Hashable`; persistence is Phase 6.
+Stale or unavailable realtime is degraded freshness, not an interruption. `JourneyEvent` (phase and freshness changes, leg started, trip selected or replaced, recovered — an interruption or an ending is a phase change to `interrupted` or `ended`) is a Phase 5 output; recovery proposals are S6. No S5b type is `Codable` or `Hashable`; persistence is Phase 6.
 
 The UI renders derived state (DEC-010, DEC-030).
 
