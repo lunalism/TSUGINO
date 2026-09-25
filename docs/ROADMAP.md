@@ -398,6 +398,58 @@ Create a reliable local railway topology foundation.
 - gate any offline bundling of normalized Basic-License static data in the shipped binary on the ODPT written confirmation (audit §3.12 item 5)
 - represent route/pathway data availability so contest-period-limited resources (Toei GTFS-Pathways, audit RK-17) can disappear without breaking route topology
 
+### Slice Plan (DEC-065)
+
+**Status: accepted with DEC-065 (2026-09-25).** P2-S0 is complete; P2-S1 is next, and no Phase 2 code exists yet. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+
+| Slice | Kind | Content | Depends on | Decisions needed before it starts |
+|---|---|---|---|---|
+| **P2-S0** | documentation | Documentation lock: the public-repository boundary, P2-S1 scope, synthetic fixtures with local validation, and this plan (DEC-065) | — | — |
+| **P2-S1** | implementation | Toei-only static GTFS **table reader** → provider DTOs (DEC-065 §B, §C, §D) | S0 | **DEC-065 only** |
+| P2-S2 | implementation | Static source intake: source manifest (provider, dataset, resource, `feed_version`, SHA-256, obtained-at) and archive handling | S1 | where the Phase 2 pipeline runs (build-time tool or on device); any archive-handling dependency (Rule 34) |
+| P2-S3 | implementation | Tokyo Metro static and `odpt:Railway` reader, tested with synthetic fixtures only | S1 | where local Tokyo Metro development data may live, and token handling (Rule 42) |
+| P2-S4 | implementation | Operator-level identities (149 → 141 Toei, 185 → 144 Tokyo Metro) and line mapping to the 15 baseline `LineID`s, with the Marunouchi branch record as an alias (DEC-057 D6) | S2, S3 | canonical identifier format; for committed Tokyo Metro-involving records, resolution of DEC-065 §A |
+| P2-S5 | implementation | Cross-operator station identity, reconciled to DEC-048 (DEC-065 §E) | S4 | as S4 |
+| P2-S6 | implementation | Representative coordinates and line topology → valid `Station` and `RailwayLine` values | S5 | coordinate-selection policy, including the 27 merged stations; topology evidence source |
+| P2-S7 | implementation | Japanese/English/Korean names, search aliases, search index, local search API | S6 | Korean authorship and review; Tokyo Metro Korean inputs (ODPT Q4) |
+| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | storage format, after measurement (DEC-029); bundling in the shipped binary stays with ODPT item 5 |
+| P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | whether Phase 2 imports `Trip` records at all |
+| P2-S10 | evidence | Tier 1 payload evidence (DEC-058 §4, DEC-059); no capability declaration | S0 | explicit authorization for Basic-License data access; whether it counts toward Phase 2 exit |
+| P2-S11 | evidence | Physical-device measurements (cold launch, search speed, memory, offline search) | S7, S8 | explicit device authorization (`AGENTS.md` §22); `LunaTestphone` is never used |
+
+**P2-S0 completion record** (2026-09-25). DEC-065 was accepted after product and technical review, including the four P2-S1 reader policies (DEC-065 §D): a missing final line terminator is tolerated, unused columns are ignored, only UTF-8 is supported, and a blank time with no `timepoint` value is reported as unsupported. This slice plan and the timetable planning issue are recorded. Sources were checked: the GTFS Schedule Reference (gtfs.org, published 2026-04-27) for DEC-065 §D; the cited audit sections, figures, and hashes; and the repository's public visibility. Documentation only: no code, fixture, or provider data was added. The decisions listed for later slices remain open.
+
+**Completion rules, proportionate to the kind of slice:**
+
+- **Implementation slices** close with focused tests for the slice, the full test suite passing, and Debug and Release builds of the app and extension on the iPhone 17 simulator.
+- **Documentation and evidence slices** close with their sources checked (cited documents, sections, figures, and hashes) and the owner's review. No build or test run is required when no code changes.
+- Every slice gets a short completion record in this roadmap.
+- **Independent review** is required only where an accepted decision mandates it. No accepted decision currently mandates it for a Phase 2 slice; the owner may request it for any slice.
+- The **full phase audit** (§Phase Audit; `AGENTS.md` §24) is reserved for Phase 2 closure.
+
+**Slice-specific criteria:**
+
+- **P2-S1:**
+  - Every accepted, rejected, and unsupported case in DEC-065 §D has a test, including the valid cases: a BOM, CRLF and LF endings, quoted fields with doubled quotes, `stop_sequence` gaps, blank optional times, and times past `24:00:00`. Each rejection asserts its typed error with table and line context. Unsupported input is reported as unsupported, never as invalid.
+  - Output is deterministic: the same input gives equal DTOs.
+  - Parsing runs off the main actor.
+  - All fixtures are synthetic (DEC-065 §C).
+  - The branch contains no provider row, bulk identifier list, archive, mapping, credential, or evidence path.
+  - **Local validation, not committed:** run against the pinned Toei archive or the Toei static archive read from its public, credential-free source (DEC-065 §C). Against the pinned archive (SHA-256 `f10d03cd951565379e5c397cf9043d0db58b5030b670c29f7c56ac43fe3efbe2`), the reader reproduces the audit aggregates (§6.1.3, §6.5): 149 `stops` rows, all `location_type` 0; 6 routes; 5,600 trips; 404 `translations` rows (Japanese 202 / English 202 / Korean 0); 141 distinct stop names, 8 of them on two lines; zero invalid and zero unsupported rows. Only aggregates are recorded. If only a newer upstream archive is available, its hash and aggregates are recorded without claiming they match the audit.
+- **P2-S2:** a manifest entry for every input records provider, dataset, resource, `feed_version`, SHA-256, and obtained-at; archive handling is covered by tests; no archive is committed.
+- **P2-S3:** the reader handles the shapes the audit recorded (flat `stops` rows, `stop_code` line-letter prefixes including `Mb`, ten `odpt:Railway` records), tested only with synthetic fixtures. Real-data runs are local, and only aggregates are recorded (185 `stops` rows, 9 routes, 9,544 trips, 494 `translations` rows).
+- **P2-S4 / P2-S5:** a deterministic importer (same pinned inputs give byte-identical output) reproduces DEC-048's aggregates (DEC-065 §E). Tests assert that Toei 新宿 and Tokyo Metro 新宿 stay separate with no transfer edge, that both alias rules are explicit and reversible with original strings preserved, and that no distance constant exists. Production identifiers are minted independently of the analysis group keys.
+- **P2-S6:** every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate.
+- **P2-S7:** through the local search API, every baseline station is found by its Japanese, English, and Korean names and by its recorded aliases, including 市ヶ谷 / 市ケ谷 and 押上〈スカイツリー前〉; both 新宿 stations are returned and can be told apart by operator and lines. Station search UI is Phase 8.
+- **P2-S8:** the storage decision is recorded with measurements; a test proves ordinary use does not re-parse the full static dataset (Rule 15); reopen, data-version, and identifier-retirement migration tests pass.
+- **P2-S10 / P2-S11:** evidence is recorded as dated aggregates with its sources, under the authorization given; nothing is declared or promoted by the evidence alone.
+
+**Phase 2 exit relevance.** Slices S1–S8 serve the Phase 2 acceptance criteria. Whether S9 and S10 are needed for Phase 2 exit is an open decision. S11 is the Phase 2 physical-device test and needs authorization.
+
+### Open Planning Issue — Timetable Ownership (not Phase 2 scope)
+
+DEC-060 §F defers scheduled times to their own timetable contract: service days, calendar exceptions, times past 24:00, time zones, provider schedule mapping, and the Clock. **No phase currently owns that contract**, yet Scheduled Journey Guidance (DEC-046, DEC-047) — the delivered tier for the nine Tokyo Metro lines and the Nippori-Toneri Liner — depends on it. Phase 2 is **not** expanded to cover it: P2-S1 checks only the syntax of time values and gives them no timetable meaning, and P2-S9, if kept, imports stop sequences without times. Assigning ownership needs a separate planning decision that updates this roadmap (Scope Change).
+
 ## Performance Tasks
 
 Measure:

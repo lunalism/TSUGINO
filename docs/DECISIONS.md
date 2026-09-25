@@ -4287,6 +4287,136 @@ S6 tests must cover, at minimum: every §D check producing exactly its rejection
 
 ---
 
+# DEC-065 — Phase 2 Uses a Category-Based Public-Repository Data Boundary and Starts with a Toei-Only Static GTFS Reader
+
+**Status:** Accepted — after product and technical review, including the four P2-S1 reader policies in §D\
+**Date:** 2026-09-25\
+**Related:** DEC-021, DEC-027, DEC-029, DEC-037, DEC-047, DEC-048, DEC-055 D5, DEC-059, DEC-060 §F, DEC-061 F; `RULES.md` Rule 9, Rule 14, Rule 34, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §40; `ROADMAP.md` Phase 2; `PROVIDER_FEASIBILITY_AUDIT.md` §2.3, §3.5, §3.6.3, §3.11, §3.12, §6.1.3, §6.5, §6.8, §9 (DS-01, DS-03, DS-15)
+
+## Context
+
+Phase 2 (Static Railway Data + Canonical Mapping) begins after the Phase 1 closure (`ROADMAP.md` Phase 1 Completion Record). A read-only kickoff audit on 2026-09-25 found three things that must be settled before any Phase 2 code:
+
+1. **The GitHub repository is public** (visibility `PUBLIC`, checked through the GitHub API on 2026-09-25). Every committed file is therefore released in a form any third party can reuse.
+2. **The two launch providers publish under different regimes.** Toei data is CC BY 4.0: reproduction, adaptation, and redistribution are expressly allowed with attribution and a modification indication (audit §3.5.1–§3.5.2). Tokyo Metro data is under the ODPT Basic License, whose Art. 8(4)(1) prohibits releasing the data, duplicates of it, or derivatives from which all or most of it can be restored, in a third-party-reusable form, without prior written approval (audit §3.6.3). Whether non-restorable canonical data falls outside that prohibition was asked in the ODPT inquiry of 2026-09-19 (Q3) and is **unanswered** (audit §3.12).
+3. **No rule yet classifies repository content by data category.** Existing practice is recorded in two places: DEC-048 records only aggregate results and named exceptions, does not record the 285-row mapping, and states that no raw provider data enters the repository; the audit (§2.3) states that the repository contains no provider payload. This Decision keeps both unchanged.
+
+Offline **bundling** of normalized Basic-License static data in the shipped binary is a different question from committing data to the repository. It stays gated on the ODPT written confirmation (audit §3.11, §3.12 item 5; `ROADMAP.md` Phase 2 Implementation Tasks) and is **not** decided here.
+
+## Decision
+
+### A. Public-repository boundary by data category
+
+| Category | Toei (CC BY 4.0) | Tokyo Metro (Basic License) | Status |
+|---|---|---|---|
+| **Source archives** (provider ZIPs or complete provider files) | Not committed. This follows project practice (audit §2.3), not a licence prohibition | Not committed (S2 Art. 8(4)(1)) | Decided |
+| **Raw rows** copied from provider files | Not committed; P2-S1 fixtures are synthetic (§C). This keeps DEC-048's statement and audit §2.3 unchanged | Not committed | Decided |
+| **Provider identifiers and names, individually** | May be cited in documentation | Values already cited as named exceptions in accepted documents (for example the line codes, 市ケ谷, 押上〈スカイツリー前〉, `MarunouchiBranch`) may continue to be cited that way | Decided for these uses |
+| **Provider identifiers and names, in bulk** (lists or tables covering a line, a feed, or most of a feed) | Not committed by P2-S1. CC BY 4.0 would permit them with attribution; a later decision may allow specific artifacts | **Unresolved** — could approach a restorable duplicate; assessed per artifact and against the ODPT reply to Q3 | Toei: later decision. Tokyo Metro: unresolved |
+| **Mapping records** (canonical identifier ↔ provider identifiers, codes, and names) | Decided with the canonical identifier format (a later decision) | **Unresolved** — neither automatically allowed nor automatically prohibited. Whether a given record set is a restorable derivative (Art. 8(4)(1)) depends on its content and coverage, and on the ODPT reply to Q3. Until an accepted decision resolves it, no Tokyo Metro-involving mapping record is committed, and none is placed on the Phase 2 branch | Unresolved |
+| **Aggregate counts, hashes, field-presence facts** | Allowed | Allowed | Decided — existing practice (DEC-048, audit §2.3) |
+| **Synthetic fixtures** (invented values in a provider's file shape) | Allowed; marked synthetic | Allowed only when the values are invented, never transcribed from Tokyo Metro rows; marked synthetic | Decided |
+| **Project-owned code, documentation, and schemas** | Allowed. Must contain no credential, token, signed URL, local evidence path, or embedded provider dataset (Rule 42; audit §2.3) | Same | Decided |
+| **Project-owned canonical data** (canonical identifiers, Korean names, search aliases) | Decided in a later slice | Decided in a later slice. Korean translation of Tokyo Metro strings stays pending the ODPT reply to Q4 | Unresolved — later |
+| **Generated datasets** (importer output, build products) | Not committed; a later decision may classify specific artifacts | Not committed | Decided until a later decision |
+
+Committing and bundling are separate: this table governs the repository only. Whether normalized Tokyo Metro static data may be bundled in the shipped binary remains the pending ODPT question (audit §3.12 item 5).
+
+### B. P2-S1 scope — a Toei-only static GTFS reader
+
+1. P2-S1 reads the **text content of individual GTFS tables** supplied by its caller — `agency`, `routes`, `trips`, `stops`, `stop_times`, `calendar`, `calendar_dates`, `feed_info`, and `translations` — into provider DTOs under `Data/GTFS/Static` (`ARCHITECTURE.md` §4, §4.3).
+2. It creates **no** canonical identifier, mapping record, Domain value, search index, persistence, or `RailwayDataRepository`. Fare files are not read.
+3. It performs **no** ZIP extraction, network access, or discovery of the owner-only evidence storage. Archive handling may need a dependency or a tooling choice (Rule 34), and where the Phase 2 pipeline runs is undecided; both are settled before P2-S2.
+4. **Toei is the only provider.** No Tokyo Metro file, row, bulk identifier list, fixture, or mapping enters the branch while §A leaves its publication boundary unresolved.
+5. Parsing and validation run off the main actor (Rule 14, DEC-027).
+6. Provider fields such as `route_color`, `direction_id`, `pickup_type`, `drop_off_type`, and the time fields are carried as **DTO values checked only for syntax** (§D). No colour type or token (DEC-055 D5), passenger-stop inference (DEC-061 F), or timetable semantics (DEC-060 §F) is added.
+
+### C. Fixtures and local validation
+
+1. **All P2-S1 fixtures are synthetic:** invented values in GTFS file shape, marked synthetic. No real Toei row, and no bulk list of real Toei identifiers or names, is committed.
+2. **Local validation against the real Toei archive is kept, and nothing from it is committed.** The reader may be run locally against the pinned Toei archive (SHA-256 `f10d03cd951565379e5c397cf9043d0db58b5030b670c29f7c56ac43fe3efbe2`) kept outside the repository, or against the Toei static archive read from its public, credential-free source (audit §2.3, B8). Only aggregate results are recorded: counts, hashes, and pass/fail. No archive, extracted file, row, or local path enters the repository.
+
+### D. P2-S1 format contract
+
+Checked on 2026-09-25 against the GTFS Schedule Reference (gtfs.org, published 2026-04-27). Three kinds of statement are kept apart:
+
+- **Specification (S):** a GTFS requirement.
+- **Observed Toei shape (O):** what the audit recorded for the pinned Toei archive (audit §6.1.3, §6.5, §6.8). This is evidence about one feed, not a GTFS rule.
+- **Reader policy (P):** a TSUGINO choice for P2-S1.
+
+Input that is valid GTFS but outside the observed Toei shape is reported as **unsupported** — a scoped limitation of this reader — and never as invalid GTFS.
+
+**Accepted:**
+
+- (S) A byte-order mark: "Files that include the Unicode byte-order mark (BOM) character are acceptable." (P) The BOM never becomes part of the first field name.
+- (S) CRLF or LF line endings: "Each line must end with a CRLF or LF linebreak character." (P) A final line without a terminator is also accepted.
+- (S) Quoted fields: "Field values that contain quotation marks or commas must be enclosed within quotation marks. In addition, each quotation mark in the field value must be preceded with a quotation mark."
+- (S) A first line naming the fields, with case-sensitive names. (P) Column order is taken from the header, and columns the reader does not use are ignored.
+- (S) `stop_sequence` values that increase along a trip without being consecutive: "The values must increase along the trip but do not need to be consecutive." A gap is valid.
+- (S) Times as `HH:MM:SS` or `H:MM:SS`, including values past `24:00:00` for service after midnight.
+- (S) Blank times where the specification makes them optional. `arrival_time` is required on a trip's first and last stop and on `timepoint = 1` rows; `departure_time` is required on `timepoint = 1` rows only. Both are optional otherwise.
+- (O) Intermediate rows with `pickup_type = 1`, `drop_off_type = 1`, `timepoint = 0`, and blank times (540 rows in 73 trips; audit §6.8). They are parsed as given; what they mean is decided in a later slice (DEC-061 F).
+
+**Rejected as invalid, with a typed error carrying table and line context:**
+
+- (S) a field value containing a tab, carriage return, or line feed ("Field values must not contain tabs, carriage returns or new lines");
+- (S) a missing required column;
+- (S) a duplicate `stop_id`, `route_id`, or `trip_id`;
+- (S) an unresolved reference: `stop_times.trip_id` → `trips`; `trips.route_id` → `routes`; `trips.service_id` → `calendar` or `calendar_dates`; `stop_times.stop_id` → a `stops` row whose `location_type` is 0 or empty ("Referenced locations must be stops/platforms");
+- (S) a `parent_station` on a station row (`location_type = 1`), or a stop/platform `parent_station` that does not name a station;
+- (S) a `stop_sequence` that repeats or decreases within one trip;
+- (S) a blank `arrival_time` on a trip's first or last stop, or a blank `arrival_time` or `departure_time` on a `timepoint = 1` row;
+- (S) a malformed time, enumeration, or number value;
+- (P) malformed CSV structure: an unterminated quoted field, a row whose field count differs from the header's, or a duplicated header name;
+- (P) text that is not valid UTF-8. The specification says files *should* be UTF-8; this reader accepts only UTF-8, which is what the audit recorded for the Toei archive (O: 11 UTF-8 text members; audit §2.3, B8).
+
+**Reported as unsupported (valid GTFS outside this reader's scope):**
+
+- `stops` rows with `location_type` 2, 3, or 4, which a Pathways-style feed contains (audit §6.6) but the base Toei archive does not (O: 149 rows, all `location_type` 0, no `parent_station`);
+- `stop_times` rows that use `location_group_id`, `location_id`, or pickup/drop-off windows instead of `stop_id`;
+- `translations` rows keyed by `record_id` (O: the Toei archive keys every row by `field_value`);
+- (P) a row with a blank time and no `timepoint` value. The specification says that when no timepoint values are provided, all times are considered exact; the Toei shape always marks blank-time rows `timepoint = 0` (O), so the reader does not guess.
+
+### E. DEC-048 reconciliation target is preserved
+
+The later cross-operator slice must **reproduce** DEC-048 from pinned inputs, never import it as seed data. The targets are: 141 + 144 = 285 input identities; 54 candidates, of which 27 are the same station, 26 distinct, and 1 explicitly ambiguous; 27 merged + 114 Toei-only + 117 Tokyo Metro-only = **258 proposed groups**; 0 duplicate assignments; 0 unmapped identities. The explicit exceptions stay as accepted:
+
+- 市ヶ谷 / 市ケ谷 is one station, joined through an explicit, reversible orthographic alias, with both original strings preserved.
+- 押上 / 押上〈スカイツリー前〉 is one station, joined through an explicit subtitle alias, with the provider string preserved.
+- **Toei 新宿 and Tokyo Metro 新宿 remain two stations**: the relationship is `explicitly_ambiguous`, and no transfer edge is recorded.
+
+No distance threshold enters the pipeline — the 320 m figure is analytical corroboration only. The analysis group keys are **not** production identifiers.
+
+### F. Boundaries this Decision does not move
+
+- **DEC-048** is unchanged, including its statement that no raw provider data enters the repository.
+- **Timetable ownership.** DEC-060 §F defers scheduled times to a timetable contract that no phase currently owns, while Scheduled Journey Guidance (DEC-046, DEC-047) depends on it. This is recorded as an **open planning issue** in `ROADMAP.md` Phase 2. Phase 2 is **not** expanded to include it.
+- **Line colour** stays governed by DEC-055 D5 and the pending ODPT Q5.
+- **Tier 1 promotion** stays governed by DEC-058 §4 and DEC-059. No Tier 1 data is fetched and no capability is declared without separate authorization.
+- **Physical-device measurement** stays under `AGENTS.md` §22: it needs explicit authorization, and `LunaTestphone` is never used.
+- **Station search UI** stays in Phase 8 (`ROADMAP.md` Phase 8 Included). Phase 2 owns the local search index and API.
+
+## Rationale
+
+The public repository turns every commit into a release, so the licence boundary must be explicit before any data-shaped file exists. Classifying by category keeps the clear cases decided — archives and raw rows out, aggregates and synthetic fixtures in — while leaving Tokyo Metro mappings honestly unresolved, rather than forcing a guess in either direction before the ODPT reply. Synthetic-only fixtures let the reader be tested without committing provider data, while local runs against the real Toei archive still check it against reality. Separating specification rules from the observed Toei shape keeps a deliberately narrow reader from being mistaken for a GTFS validator.
+
+## Consequences
+
+- `ROADMAP.md` Phase 2 gains a slice plan with dependencies and completion criteria, and the timetable ownership gap as an open planning issue.
+- P2-S1 can start; nothing else must be decided first.
+- Tokyo Metro-involving mapping records stay off the branch until a later accepted decision resolves §A.
+- `ARCHITECTURE.md` changes only when the decisions that shape architecture (pipeline location, storage, identifier format) are accepted.
+- `PROVIDER_FEASIBILITY_AUDIT.md` is unchanged.
+
+## Revisit Triggers
+
+- The ODPT secretariat replies to Q2, Q3, or Q4.
+- The repository's visibility changes.
+- A provider's licence label or terms change.
+- A later slice needs a data category that §A does not classify, or a feed shape that §D reports as unsupported.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
