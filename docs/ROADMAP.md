@@ -400,13 +400,13 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26).** P2-S0 and P2-S1 are complete; P2-S2 is next. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26).** P2-S0 and P2-S1 are complete. P2-S2 is next and not yet implemented. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
 | **P2-S0** | documentation | Documentation lock: the public-repository boundary, P2-S1 scope, synthetic fixtures with local validation, and this plan (DEC-065) | — | — |
 | **P2-S1** | implementation | Toei-only static GTFS **table reader** → provider DTOs (DEC-065 §B, §C, §D) | S0 | **DEC-065 only** |
-| P2-S2 | implementation | Static source intake: source manifest (provider, dataset, resource, `feed_version`, SHA-256, obtained-at) and archive handling | S1 | where the Phase 2 pipeline runs (build-time tool or on device); any archive-handling dependency (Rule 34) |
+| **P2-S2** | implementation | Static source intake in an offline macOS developer tool: archive member policy, streaming of the named tables with the system `bsdtar`, input consistency, and a source manifest (DEC-066) | S1 | **DEC-066 only** (accepted) |
 | P2-S3 | implementation | Tokyo Metro static and `odpt:Railway` reader, tested with synthetic fixtures only | S1 | where local Tokyo Metro development data may live, and token handling (Rule 42) |
 | P2-S4 | implementation | Operator-level identities (149 → 141 Toei, 185 → 144 Tokyo Metro) and line mapping to the 15 baseline `LineID`s, with the Marunouchi branch record as an alias (DEC-057 D6) | S2, S3 | canonical identifier format; for committed Tokyo Metro-involving records, resolution of DEC-065 §A |
 | P2-S5 | implementation | Cross-operator station identity, reconciled to DEC-048 (DEC-065 §E) | S4 | as S4 |
@@ -443,7 +443,26 @@ Create a reliable local railway topology foundation.
   - All fixtures are synthetic (DEC-065 §C).
   - The branch contains no provider row, bulk identifier list, archive, mapping, credential, or evidence path.
   - **Local validation, not committed:** run against the pinned Toei archive or the Toei static archive read from its public, credential-free source (DEC-065 §C). Against the pinned archive (SHA-256 `f10d03cd951565379e5c397cf9043d0db58b5030b670c29f7c56ac43fe3efbe2`), the reader reproduces the audit aggregates (§6.1.3, §6.5): 149 `stops` rows, all `location_type` 0; 6 routes; 5,600 trips; 404 `translations` rows (Japanese 202 / English 202 / Korean 0); 141 distinct stop names, 8 of them on two lines; zero invalid and zero unsupported rows. Only aggregates are recorded. If only a newer upstream archive is available, its hash and aggregates are recorded without claiming they match the audit.
-- **P2-S2:** a manifest entry for every input records provider, dataset, resource, `feed_version`, SHA-256, and obtained-at; archive handling is covered by tests; no archive is committed.
+- **P2-S2 (DEC-066):**
+  - **Tool integration tests — required for completion.** They run in the macOS test runner against synthetic archives created in a temporary directory, never committed:
+    - a valid archive produces the expected manifest and a clean reader result;
+    - two runs on the same input produce byte-identical manifests;
+    - each unsafe name class rejects the whole archive — path separator, `..`, absolute path, folder entry, leading dot, control character, non-ASCII — including when the unsafe member would not be read;
+    - a duplicated name rejects the archive before any member is streamed;
+    - a missing required table rejects the archive;
+    - a CRC error and a truncation in a selected member reject the archive, and the bytes streamed so far are discarded;
+    - a damaged unselected member is accepted and recorded by name only, confirming the documented integrity limit;
+    - an archive over its size limit, one selected member over its limit, and selected members together over their limit each fail;
+    - a reader rejection (invalid or unsupported) fails the intake;
+    - after every failure, no manifest and no temporary file remains;
+    - an existing output file is never overwritten, including one created by another actor after the tool's preliminary check and before publication: publication fails with `EEXIST` and leaves that file untouched;
+    - a controlled change to the archive during intake fails without publishing a manifest, both when its bytes are modified in place and when its path is replaced by another file;
+    - archive and output paths inside the repository are refused, including through a symlink;
+    - a `sourceURL` with user information, a query, or a fragment is rejected, and a `credentialed` source is recorded without any URL.
+  - **Unit tests** in the same runner cover the name policy, the limits, SHA-256 known-answer vectors, the `obtainedAt` format, and deterministic manifest encoding.
+  - **Boundaries:** the app target and `TSUGINOTests` are unchanged. No third-party dependency and no Xcode target are added. Build artifacts appear only under the git-ignored `Tools/StaticDataIntake/.build/`.
+  - **Local validation, not committed:** the tool is run on the current public Toei archive, and on the pinned 2026-09-16 archive if it becomes available. The archive SHA-256, `feed_version`, and selected-member hashes are recorded as aggregates, with a clean reader result. No equivalence is claimed between different hashes.
+  - **Suite and builds:** the full `TSUGINOTests` suite and the Debug and Release builds of the app and extension still pass. No archive, member bytes, manifest, signed URL, token, or local path is committed.
 - **P2-S3:** the reader handles the shapes the audit recorded (flat `stops` rows, `stop_code` line-letter prefixes including `Mb`, ten `odpt:Railway` records), tested only with synthetic fixtures. Real-data runs are local, and only aggregates are recorded (185 `stops` rows, 9 routes, 9,544 trips, 494 `translations` rows).
 - **P2-S4 / P2-S5:** a deterministic importer (same pinned inputs give byte-identical output) reproduces DEC-048's aggregates (DEC-065 §E). Tests assert that Toei 新宿 and Tokyo Metro 新宿 stay separate with no transfer edge, that both alias rules are explicit and reversible with original strings preserved, and that no distance constant exists. Production identifiers are minted independently of the analysis group keys.
 - **P2-S6:** every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate.

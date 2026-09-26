@@ -343,6 +343,9 @@ TSUGINO/
 │   ├── PixelArt/
 │   └── Assets.xcassets
 │
+├── Tools/                      (outside the app target — DEC-066)
+│   └── StaticDataIntake/
+│
 └── Tests/
     ├── DomainTests/
     ├── ApplicationTests/
@@ -463,6 +466,19 @@ Owns:
 - asset catalogs
 
 Large generated rail datasets should be versioned and reproducible.
+
+#### Tools
+Established by DEC-066.
+
+Owns:
+- offline developer tools that run on macOS, outside the app target
+- static source intake (`Tools/StaticDataIntake/`)
+
+Must not own:
+- anything the app needs at run time
+- data artifacts: provider archives, member bytes, manifests, reader output, generated datasets, or credentials
+
+Tools may create build artifacts — compiled executables and compiler intermediates — only under their git-ignored `.build/` directory. Data artifacts never enter the repository working tree, whether ignored or not. A tool reads its input from outside the repository, writes its output outside it, and refuses paths that resolve inside it, following symlinks and comparing by file-system identity.
 
 #### Tests
 Should mirror production ownership.
@@ -992,6 +1008,16 @@ RailDataVersion
 ```
 
 Migration must be explicit when canonical IDs change.
+
+**Static source intake (DEC-066).** Provider archives are handled only by an offline macOS developer tool (`Tools/StaticDataIntake/`), never by the app; the app target gains no intake code. The tool:
+
+- rejects any archive whose member names fall outside a strict character set, or repeat;
+- streams only the nine GTFS table members to memory with the system `bsdtar`, under fixed size limits — no third-party ZIP code, nothing extracted to disk;
+- passes their exact bytes to the P2-S1 reader (`GTFSStaticTableReader`, DEC-065);
+- works on one opened archive file throughout, and fails if that file changes during intake;
+- writes a source manifest of provenance, hashes, and sizes, only on success, and publishes it atomically without ever replacing an existing file.
+
+Only the streamed members are integrity-checked; other members are recorded by name only. Archives, member bytes, manifests, and credentials stay outside the repository. How static data reaches the shipped app is not decided: bundling Tokyo Metro data remains pending with ODPT.
 
 ---
 

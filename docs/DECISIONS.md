@@ -4428,6 +4428,160 @@ The public repository turns every commit into a release, so the licence boundary
 
 ---
 
+# DEC-066 — Static Source Intake Runs in an Offline Developer Tool Using the System Archive Tool
+
+**Status:** Accepted — with the output-publication and input-consistency safeguards in §F and §D\
+**Date:** 2026-09-26\
+**Related:** DEC-020, DEC-027, DEC-029, DEC-034, DEC-037, DEC-047, DEC-065; `RULES.md` Rule 14, Rule 15, Rule 34, Rule 40, Rule 42; `ARCHITECTURE.md` §4, §4.5, §9; `ROADMAP.md` Phase 2 P2-S2; `PROVIDER_FEASIBILITY_AUDIT.md` §2.3, §3.2, §3.6, §3.11, §3.12, §9 (DS-01, DS-03)
+
+## Context
+
+P2-S1 (DEC-065) reads GTFS tables from caller-supplied bytes and deliberately handles no archives. P2-S2 must decide where static source intake runs — checking a provider archive, recording its provenance, and handing its tables to the reader — before any code exists. The constraints are recorded elsewhere:
+
+- The repository is public (DEC-065). Provider archives, raw rows, and — for Tokyo Metro — mapping records stay out of it.
+- Tokyo Metro static data is obtained through a registered ODPT account (Basic License, S2 Art. 14(1)); the access token must not be disclosed or embedded in a distributed client (S5 Art. 5(1)(5); audit §3.2). Toei static GTFS is available from a credential-free public URL (audit §2.3, B8).
+- Bundling normalized Tokyo Metro static data in the shipped binary is unresolved (audit §3.12 item 5); nothing may assume it is allowed.
+- iOS offers no public ZIP API; macOS ships `/usr/bin/bsdtar` (libarchive 3.7.4, maintained upstream) and `/usr/bin/unzip` (Info-ZIP 6.00, 2009, with Apple modifications).
+- Heavy parsing stays off the main actor (Rule 14, DEC-027).
+
+**Observed `bsdtar` behaviour** (2026-09-26, macOS 26.6.2; synthetic archives built outside the repository, plus the current public Toei archive):
+
+1. `bsdtar -tf` lists member names from the archive, but the listing is **not a faithful byte copy of each name**: control characters are printed as escapes such as `\001`, a backslash is printed as `/`, and non-ASCII bytes are printed raw.
+2. Duplicate member names are listed once each. `bsdtar -xOf <archive> <name>` on a duplicated name writes **every** matching member, concatenated.
+3. Name arguments are **patterns**, not literals: `a[x].txt` matched a member named `ax.txt`, and `dir` matched `dir/x.txt`.
+4. A CRC error in a streamed member exits with status 1, **after** the damaged bytes have already been written to standard output.
+5. A CRC error in a member that is not streamed is not detected: listing still exits with status 0.
+6. A truncated archive makes both listing and streaming exit with status 1. A requested name that is absent exits with status 1.
+7. On the current public Toei archive, `bsdtar -tf` exits with status 0, and streaming each of the nine tables exits with status 0 and returns the expected byte count.
+8. `bsdtar` reads an archive through an inherited file descriptor (`/dev/fd/N`) exactly as through a path: listing and streaming give the same results.
+
+**Observed publication behaviour** (same date, APFS): `renamex_np(2)` with `RENAME_EXCL` onto an existing file fails with `EEXIST` and leaves that file unchanged; onto an absent name it succeeds.
+
+## Options considered
+
+| Option | Summary | Assessment |
+|---|---|---|
+| **A. On-device intake** | The app downloads and extracts archives itself | Rejected. It needs ZIP code in the app (a hand-written parser or a third-party dependency, Rule 34), a Tokyo Metro token or a TSUGINO server, and it presumes shipping and caching rules that are still pending with ODPT |
+| **B1. Offline macOS tool, compiled from shared sources** | A command-line tool under `Tools/`, built with `xcrun swiftc` from its own sources plus the app's `Data/GTFS/Static` reader sources, using the system `bsdtar` | **Recommended.** No dependency, no Xcode project or target change, no intake code in the app, and the tool exercises exactly the reader the app ships |
+| B2. Offline tool as an Xcode macOS target | The same tool as a command-line target sharing files by target membership | Workable, but it changes the project file and folder membership for no present gain |
+| B3. Offline tool plus a local Swift package | Move the reader into a package shared by the app and the tool | A module-boundary change larger than P2-S2 needs; reconsider if the tool grows |
+| C. Script in another language | For example Python | Rejected. It would validate a second implementation instead of the Swift reader |
+
+## Decision
+
+### A. Where intake runs
+
+1. Static source intake runs in an **offline developer tool on macOS**, not in the app. P2-S2 adds **no code to the app target**: no archive handling, manifest, hashing, networking, or credential.
+2. The tool lives in `Tools/StaticDataIntake/`. A repository script builds it with `xcrun swiftc` from the tool's sources and the app's `TSUGINO/Data/GTFS/Static` reader sources. No Xcode target or project change is made.
+3. P2-S2 acquires nothing over the network. The operator supplies a local archive — for Toei, one obtained from the credential-free public URL recorded in audit §2.3 — together with its obtained-at record. Fetching, and any Tokyo Metro token handling, is decided with P2-S3.
+
+### B. Build artifacts versus data artifacts
+
+- **Build artifacts** — the compiled tool, the compiled test runner, and compiler intermediates — are the only things created inside the repository, and only under `Tools/StaticDataIntake/.build/`, which is git-ignored. Nothing else is ever written there.
+- **Data artifacts** — provider archives, member bytes, manifests, reader output, and any generated dataset — never enter the repository working tree, ignored or not. Member bytes exist only in the tool's memory and are never written to disk. The manifest is the only data file the tool writes, and only to an operator-chosen path outside the repository.
+- **Test data** — synthetic archives built by the test runner — is created in a fresh directory under the system temporary directory and removed when the run ends, whether it passes or fails.
+- **Repository-path check.** The repository root is the directory `git rev-parse --show-toplevel` reports for the tool's own location. The archive path, and the output file's parent directory, are resolved with symlinks followed. A path counts as inside the repository when the repository root is that directory or one of its ancestors. The comparison uses file-system identity (device and inode), so neither a symlink nor a case variant of a path escapes the check. Such a path is refused before any work starts.
+
+### C. Member selection and names
+
+1. The tool lists the archive once (`bsdtar -tf`). A listing failure rejects the archive.
+2. **Every** listed name must match `[A-Za-z0-9][A-Za-z0-9._-]*` — ASCII letters, digits, `.`, `_`, and `-`, not starting with `.`. Any other name rejects the whole archive, whether or not it would have been read. This covers path separators, `..`, absolute paths, folder entries, hidden files, control characters, and non-ASCII names. It also covers the listing's escaping (observed behaviour 1): a strict character set is checked instead of trying to reconstruct names.
+3. A name listed more than once rejects the archive (observed behaviour 2).
+4. **Selected members** are the listed names that exactly equal one of the nine P2-S1 table file names (`agency.txt` … `translations.txt`). The five required tables must be present. These names contain no pattern characters, and rules 2–3 run before any member is streamed, so pattern matching (observed behaviour 3) cannot select anything else.
+5. Every other listed member is an **unselected member**. It is recorded by name only. It is never streamed, sized, or hashed.
+
+### D. Integrity guarantee
+
+- For **selected members**, each is streamed with `bsdtar -xOf <archive> <name>`. Its bytes are accepted only if `bsdtar` exits with status 0. On any non-zero exit, everything already streamed is discarded and the intake fails (observed behaviour 4).
+- The tool validates **only the selected members**. It does **not** verify unselected members (observed behaviour 5), and it makes no whole-archive CRC claim.
+- The archive SHA-256 identifies the exact file received. It is provenance, not a statement that every member is intact.
+
+**Input consistency — the hashed bytes are the bytes `bsdtar` processes:**
+
+1. The tool opens the archive **once**, read-only, and works only through that descriptor. It refuses anything `fstat` does not report as a regular file. It records the file's identity and state from `fstat`: device, inode, size, and modification and status-change times to the nanosecond. The archive size limit is checked against that size.
+2. `archiveSHA256` is computed by reading the whole file through the descriptor, from offset 0.
+3. `bsdtar` never opens the archive by path. Each invocation inherits the descriptor and reads it as `/dev/fd/N` (observed behaviour 8), so renaming or replacing the path during intake cannot change which file it reads.
+4. After the last `bsdtar` run, and before publication, the tool checks three things. Through the descriptor, `fstat` must report the same size, modification time and status-change time, and the SHA-256 recomputed from offset 0 must equal `archiveSHA256`. And the archive path, resolved again, must still name the same device and inode. Any difference fails the intake, and no manifest is published.
+5. This detects any change the file system records: a write updates the modification and status-change times, and a process cannot set the status-change time back. It detects modification; it does not prevent it.
+
+### E. Size limits
+
+The limits are named constants, set with evidence from the current public Toei archive (2026-09-26): 779,699 bytes compressed; 5,306,535 bytes across the nine tables (5,464,695 across all 11 members); largest member `stop_times.txt` at 5,099,709 bytes. The Tokyo Metro archive recorded in audit §6.2.2 is 1,113,444 bytes compressed and 8,242,595 bytes uncompressed.
+
+| Limit | Value | Headroom over the Toei archive |
+|---|---|---|
+| Archive file size, checked before listing | 32 MiB | about 43× |
+| One selected member, counted while streaming | 64 MiB | about 13× its largest member |
+| All selected members together | 128 MiB | about 25× |
+
+A selected member is read from `bsdtar`'s standard output in chunks, while the tool counts bytes. When a count would exceed its limit, the tool terminates `bsdtar`, discards the bytes read so far, and fails. The listing's sizes are never trusted.
+
+### F. Output, failure, and cleanup
+
+- The tool writes the manifest only after every check has passed: paths, listing, names, streaming, limits, the P2-S1 reader returning no invalid or unsupported result, and input consistency (§D).
+
+**Atomic publication that never replaces a manifest:**
+
+1. The tool creates a temporary file in the target file's directory with `open(2)` using `O_CREAT | O_EXCL`, under a randomly generated name. It writes the complete manifest and calls `fsync(2)` before closing.
+2. It publishes with `renamex_np(2)` and `RENAME_EXCL`, which moves the temporary file to the target name only if no file of that name exists. The check and the rename are one atomic operation, so a file created at the target path by another process at any earlier moment — including after the tool's own preliminary check — makes publication fail with `EEXIST`, and that file is left untouched.
+3. If the output directory's file system does not support `RENAME_EXCL`, publication fails. There is no fallback to an ordinary rename.
+4. A preliminary check that the target does not exist gives an early error message only. It is never relied on for safety.
+
+- On any failure — including `EEXIST` at publication — the tool removes its temporary file, leaves any existing file at the target path untouched, and publishes nothing, so no partial output remains. It reports the failure — with the reader's table and line when the reader failed — and exits non-zero.
+
+### G. Source manifest
+
+One manifest is produced per successful intake. It holds only provenance, hashes, and sizes — never provider rows or local paths:
+
+| Field | Content | How it is produced |
+|---|---|---|
+| `manifestVersion` | schema version, starting at `1` | constant |
+| `sourceID` | project key for the source, tied to its registry row (for example DS-01) | from the tool's committed source list |
+| `provider`, `license`, `dataset`, `resource` | provider name, licence label, catalog dataset and resource identifiers | from the committed source list, which cites the audit |
+| `sourceAccess` | `publicURL` or `credentialed` | from the committed source list |
+| `sourceURL` | the stable public URL — present only when `sourceAccess` is `publicURL` | from the committed source list. It must be `https`, with no user information, query, or fragment. A redirect target or signed URL is never recorded |
+| `archiveSHA256`, `archiveByteCount` | SHA-256 (lowercase hex) and size of the exact archive file | computed by the tool with CryptoKit over the bytes it read |
+| `obtainedAt`, `obtainedAtBasis` | UTC time the archive was obtained, as `YYYY-MM-DDTHH:MM:SSZ`; basis `declared` | supplied by the operator from the acquisition record, never from a file timestamp. The tool checks only the format and never reads a clock, so the output stays deterministic |
+| `feedVersion`, `feedStartDate`, `feedEndDate` | from `feed_info`, when present | from the reader's DTOs, as stated |
+| `selectedMembers` | per member: name, byte count, SHA-256 | computed over the exact streamed bytes; sorted by name |
+| `unselectedMembers` | names only | from the listing; sorted by name |
+
+When no safe public URL exists — for example a source that needs an account token — `sourceAccess` is `credentialed`, and the manifest identifies the source only by `sourceID`, `dataset`, and `resource`. No URL is recorded.
+
+The same archive and the same declaration always produce **byte-identical JSON**: sorted keys, sorted member lists, fixed formatting, no generation time, no path. Committing a manifest is a later decision (DEC-065 §A).
+
+### H. Where the code lives and how it is tested
+
+- Every part of P2-S2 is tool-only: the manifest model and encoding, hashing, the name policy, limits, process execution, file-system access, and the command-line interface. It lives in `Tools/StaticDataIntake/`. The app's reader sources are compiled into the tool unchanged, and run through their `@concurrent` entry point.
+- A **macOS test runner** is built from the same sources plus test sources by a repository script, and exits non-zero on any failure. Its synthetic archives are written by a small test-only ZIP writer (stored entries, computed CRCs). That writer can produce duplicate and unsafe names, damaged CRCs, and truncation, which the system `zip` cannot. None of these archives is committed.
+- The input-change and publication-race tests use injection points between intake stages. These exist only in the test runner's build, never in the operator's tool.
+- `TSUGINOTests` is unchanged by P2-S2.
+
+### I. Not decided here
+
+Network fetching; Tokyo Metro acquisition and token handling (P2-S3); committing manifests or generated datasets; bundling any static data in the app (ODPT item 5); storage format (P2-S8); whole-archive verification of unselected members; and moving to a Swift package (option B3).
+
+## Rationale
+
+Intake is a developer activity on provider files that must never reach the app or the repository. Running it offline on macOS keeps credentials and archives on the developer's machine. It uses a maintained system archive tool instead of new ZIP code or a dependency, and it exercises the same Swift reader the app will ship. The observed `bsdtar` behaviour sets the contract: a strict name policy instead of reconstructing listed names, rejecting duplicates before streaming, discarding streamed bytes on a non-zero exit, and a stated integrity guarantee limited to what is actually checked.
+
+## Consequences
+
+- `ARCHITECTURE.md` §4 gains a `Tools/` folder for developer tooling outside the app target, and §9 describes the intake boundary.
+- `ROADMAP.md` P2-S2 records this decision and gives the tool's integration tests first-class completion status, including input-change and publication-race cases.
+- The app target is unchanged by P2-S2.
+- The pinned 2026-09-16 Toei archive can be reconciled by running the tool against it, when available.
+
+## Revisit Triggers
+
+- A shipped app needs to read or refresh static data from archives.
+- Tokyo Metro acquisition needs a token or fetching (P2-S3).
+- A later slice needs unselected members, or whole-archive verification.
+- `bsdtar` behaviour changes, or it becomes unavailable on supported macOS versions.
+- The tool grows enough to justify a shared Swift package.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
