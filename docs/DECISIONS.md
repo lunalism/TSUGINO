@@ -4291,6 +4291,7 @@ S6 tests must cover, at minimum: every §D check producing exactly its rejection
 
 **Status:** Accepted — after product and technical review, including the four P2-S1 reader policies in §D\
 **Date:** 2026-09-25\
+**Amended:** 2026-09-26 — §D narrowed after the P2-S1 implementation review: a repeated `stop_sequence` is invalid, while rows out of `stop_sequence` order in the file are unsupported; blank lines after the header and unread number notations are unsupported; and the additional rules found during implementation are recorded with their source (S, O, or P). The accepted reader policies are unchanged.\
 **Related:** DEC-021, DEC-027, DEC-029, DEC-037, DEC-047, DEC-048, DEC-055 D5, DEC-059, DEC-060 §F, DEC-061 F; `RULES.md` Rule 9, Rule 14, Rule 34, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §40; `ROADMAP.md` Phase 2; `PROVIDER_FEASIBILITY_AUDIT.md` §2.3, §3.5, §3.6.3, §3.11, §3.12, §6.1.3, §6.5, §6.8, §9 (DS-01, DS-03, DS-15)
 
 ## Context
@@ -4338,44 +4339,54 @@ Committing and bundling are separate: this table governs the repository only. Wh
 
 ### D. P2-S1 format contract
 
-Checked on 2026-09-25 against the GTFS Schedule Reference (gtfs.org, published 2026-04-27). Three kinds of statement are kept apart:
+Checked against the GTFS Schedule Reference, revised 2026-04-27: first on gtfs.org (2026-09-25), then, for the P2-S1 rule audit (2026-09-26), against the reference's canonical source text (`google/transit`, `gtfs/spec/en/reference.md`, same revision). Three kinds of statement are kept apart:
 
 - **Specification (S):** a GTFS requirement.
 - **Observed Toei shape (O):** what the audit recorded for the pinned Toei archive (audit §6.1.3, §6.5, §6.8). This is evidence about one feed, not a GTFS rule.
 - **Reader policy (P):** a TSUGINO choice for P2-S1.
 
-Input that is valid GTFS but outside the observed Toei shape is reported as **unsupported** — a scoped limitation of this reader — and never as invalid GTFS.
+Input that is valid GTFS but outside the observed Toei shape is reported as **unsupported** — a scoped limitation of this reader — and never as invalid GTFS. Where the specification fixes a value's text (an enumeration's constants, the time format), anything else is invalid. Where it does not fix the notation (an integer's sign, exponent notation in a decimal), a form the reader does not read is unsupported. A row in an unsupported shape is reported as soon as the shape is recognised, and the row's remaining fields are not checked. A repeated `stop_sequence` is checked across the whole table before row order, so it is always reported as invalid.
 
 **Accepted:**
 
 - (S) A byte-order mark: "Files that include the Unicode byte-order mark (BOM) character are acceptable." (P) The BOM never becomes part of the first field name.
 - (S) CRLF or LF line endings: "Each line must end with a CRLF or LF linebreak character." (P) A final line without a terminator is also accepted.
 - (S) Quoted fields: "Field values that contain quotation marks or commas must be enclosed within quotation marks. In addition, each quotation mark in the field value must be preceded with a quotation mark."
-- (S) A first line naming the fields, with case-sensitive names. (P) Column order is taken from the header, and columns the reader does not use are ignored.
+- (S) A first line naming the fields, with case-sensitive names. (P) Column order is taken from the header, columns the reader does not use are ignored, and values are kept exactly as written, without trimming.
 - (S) `stop_sequence` values that increase along a trip without being consecutive: "The values must increase along the trip but do not need to be consecutive." A gap is valid.
 - (S) Times as `HH:MM:SS` or `H:MM:SS`, including values past `24:00:00` for service after midnight.
 - (S) Blank times where the specification makes them optional. `arrival_time` is required on a trip's first and last stop and on `timepoint = 1` rows; `departure_time` is required on `timepoint = 1` rows only. Both are optional otherwise.
 - (O) Intermediate rows with `pickup_type = 1`, `drop_off_type = 1`, `timepoint = 0`, and blank times (540 rows in 73 trips; audit §6.8). They are parsed as given; what they mean is decided in a later slice (DEC-061 F).
+- (S) A `translations` row for `feed_info` with neither `record_id` nor `field_value`.
 
 **Rejected as invalid, with a typed error carrying table and line context:**
 
+- (S) a table with no first line naming its fields — empty text, or a blank first line ("The first line of each file must contain field names") — or a header with an empty field name, such as a trailing comma;
 - (S) a field value containing a tab, carriage return, or line feed ("Field values must not contain tabs, carriage returns or new lines");
+- (S) a quotation mark in an unquoted value, or text after a closing quotation mark (the quoting rule above);
 - (S) a missing required column;
+- (S) a blank required value, including the conditionally required values of the shape read here: `stop_name`, `stop_lat`, and `stop_lon` for stops and stations; `route_long_name` when `route_short_name` is blank (and the reverse); `stop_id` in a `stop_times` row with no `location_group_id` or `location_id`; and `field_value` in a `translations` row that is not for `feed_info` and has no `record_id`;
+- (S) a value the specification forbids: in a `translations` row without `record_id`, `field_value` or `record_sub_id` for `feed_info`, or `record_sub_id` together with `field_value`;
 - (S) a duplicate `stop_id`, `route_id`, or `trip_id`;
-- (S) an unresolved reference: `stop_times.trip_id` → `trips`; `trips.route_id` → `routes`; `trips.service_id` → `calendar` or `calendar_dates`; `stop_times.stop_id` → a `stops` row whose `location_type` is 0 or empty ("Referenced locations must be stops/platforms");
+- (S) an unresolved reference: `stop_times.trip_id` → `trips`; `trips.route_id` → `routes`; `trips.service_id` → `calendar` or `calendar_dates`; `stops.parent_station` → `stops`; `stop_times.stop_id` → a `stops` row whose `location_type` is 0 or empty ("Referenced locations must be stops/platforms");
 - (S) a `parent_station` on a station row (`location_type = 1`), or a stop/platform `parent_station` that does not name a station;
-- (S) a `stop_sequence` that repeats or decreases within one trip;
+- (S) a `stop_sequence` value repeated within one trip;
 - (S) a blank `arrival_time` on a trip's first or last stop, or a blank `arrival_time` or `departure_time` on a `timepoint = 1` row;
-- (S) a malformed time, enumeration, or number value;
+- (S) a malformed time; an enumeration whose text is not one of the specification's constants — including `01` for `1`, a `route_type` outside `0`–`7`, `11`, and `12`, and a `translations.table_name` outside the reference's list; a negative or fractional value where a non-negative integer is required; or a latitude or longitude that is not a decimal number within its range. The reference defines no extended route types; codes such as `100` belong to a separate convention and are therefore invalid under this contract;
 - (P) malformed CSV structure: an unterminated quoted field, a row whose field count differs from the header's, or a duplicated header name;
 - (P) text that is not valid UTF-8. The specification says files *should* be UTF-8; this reader accepts only UTF-8, which is what the audit recorded for the Toei archive (O: 11 UTF-8 text members; audit §2.3, B8).
 
-**Reported as unsupported (valid GTFS outside this reader's scope):**
+**Reported as unsupported (may be valid GTFS; outside this reader's scope):**
 
-- `stops` rows with `location_type` 2, 3, or 4, which a Pathways-style feed contains (audit §6.6) but the base Toei archive does not (O: 149 rows, all `location_type` 0, no `parent_station`);
-- `stop_times` rows that use `location_group_id`, `location_id`, or pickup/drop-off windows instead of `stop_id`;
-- `translations` rows keyed by `record_id` (O: the Toei archive keys every row by `field_value`);
+- (O) `stops` rows with `location_type` 2, 3, or 4, which a Pathways-style feed contains (audit §6.6) but the base Toei archive does not (149 rows, all `location_type` 0, no `parent_station`);
+- (O) `stop_times` rows that use `location_group_id`, `location_id`, or pickup/drop-off windows instead of `stop_id`;
+- (O) `translations` rows keyed by `record_id` (the Toei archive keys every row by `field_value`);
+- (P) a trip whose `stop_times` rows appear out of `stop_sequence` order in the file. A trip's order is defined by `stop_sequence`, not by the position of its rows, and the specification does not require rows to be sorted, so such a feed may be valid. Reading rows in source order is a limitation of this reader;
+- (P) a blank line after the header. The specification does not address blank lines;
+- (P) a number in a form the specification does not fix and this reader does not read: a `+`-signed integer, an integer too large for the reader (the specification sets no upper bound), or a decimal in exponent notation;
 - (P) a row with a blank time and no `timepoint` value. The specification says that when no timepoint values are provided, all times are considered exact; the Toei shape always marks blank-time rows `timepoint = 0` (O), so the reader does not guess.
+
+Not checked by this reader, and not claimed: date and colour syntax (kept as provider text), `agency_id` requirements and references, uniqueness of `calendar.service_id`, when `feed_info` must be present, HTML or escape sequences in values, and the specification's recommendations (such as removing extra spaces). The reader reports the first problem it finds, in a fixed order.
 
 ### E. DEC-048 reconciliation target is preserved
 
