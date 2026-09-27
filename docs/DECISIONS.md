@@ -4594,6 +4594,164 @@ Intake is a developer activity on provider files that must never reach the app o
 
 ---
 
+# DEC-067 — Tokyo Metro Static Data Is Read Through Synthetic Contracts; Real Inputs Stay Local
+
+**Status:** Accepted — design only; P2-S3 is not yet implemented\
+**Date:** 2026-09-27\
+**Amends:** DEC-065 §B4 — narrowly, to allow fully invented, Tokyo Metro-shaped synthetic fixtures; DEC-065 is otherwise unchanged\
+**Related:** DEC-021, DEC-037, DEC-047, DEC-048, DEC-057 D6, DEC-065, DEC-066; `RULES.md` Rule 8, Rule 9, Rule 14, Rule 34, Rule 40, Rule 42; `ARCHITECTURE.md` §4, §4.3, §40; `ROADMAP.md` Phase 2 P2-S3; `PROVIDER_FEASIBILITY_AUDIT.md` §3.6, §3.12, §6.2.1–§6.2.5, §6.8, §9 (DS-03)
+
+## Context
+
+P2-S3 reads Tokyo Metro's static data: the static GTFS archive and the ten `odpt:Railway` records.
+
+- **Licence.** Tokyo Metro data is under the ODPT Basic License. Raw data, duplicates, and restorable derivatives must not be released in a third-party-reusable form (S2 Art. 8(4)(1); audit §3.6.3). The repository is public (DEC-065). Whether non-restorable canonical data is allowed (Q3) and whether static data may be bundled in the app (§3.12 item 5) are both **unanswered**; no reply is assumed.
+- **Access.** Tokyo Metro data is obtained through a registered ODPT account (S2 Art. 14(1)). The token must not be disclosed or embedded (S5 Art. 5(1)(5)).
+- **Retained evidence.** One static GTFS archive (SHA-256 `9a077f8f…`) and one `odpt:Railway` snapshot, both from 2026-09-18, are kept in owner-only storage outside the repository (audit §2.4, B6C). Their availability to development is not guaranteed.
+- **Observed static GTFS shape** — aggregates, from one archive (audit §6.2.2, §6.8):
+  - 11 UTF-8 members, read tolerating a byte-order mark; the audit does not record which members carry one;
+  - 9 routes, all `route_type` 1, with `route_color` on every route;
+  - 185 flat `stops` rows, all `location_type` 0, with no parent stations; every stop has a `stop_code` of a line-letter prefix plus a number;
+  - 9,544 trips and 172,168 `stop_times` rows, each trip's `stop_sequence` starting at 1 and contiguous;
+  - 4,151 intermediate rows with `pickup_type` = `drop_off_type` = 1, `timepoint` = 0, and blank times;
+  - 15 first rows with `pickup_type` = 1, and 29 last rows with `drop_off_type` = 1;
+  - 494 `translations` rows, keyed by `field_value`.
+
+  Every one of these fits the DEC-065 §D contract of the P2-S1 reader.
+- **Observed `odpt:Railway` shape** — one snapshot (audit §6.2.2):
+  - a JSON array of 10 objects, each typed `odpt:Railway`, with unique `@id` and `owl:sameAs` values, and one operator throughout;
+  - each carries a title language map, a line code, a colour, ascending and descending rail directions, and a station order;
+  - each station order has contiguous indices from 1, and each entry carries a station-title language map;
+  - line codes are unique, and no record has a parent, branch, part-of, or connection field;
+  - the branch record is a separate record, cited in accepted documents as `MarunouchiBranch` with line code `Mb` (DEC-057 D6, DEC-065 §A); it has Japanese and English titles only.
+- **Unverified.** The official ODPT developer specification of `odpt:Railway` has not been read and recorded in this repository.
+- **DS-03 catalog metadata, verified 2026-09-27** from the public catalog pages `https://ckan.odpt.org/dataset/train-tokyometro` and its resource page. No token was used, and no provider file was downloaded:
+  - dataset `train-tokyometro`, organization `tokyometro`, titled 東京メトロ 鉄道関連情報 / Train information of Tokyo Metro;
+  - licence label 公共交通オープンデータ基本ライセンス / Public Transportation Open Data Basic License;
+  - exactly one resource, `d4f11962-1c5a-4316-9a16-7fb229c227ea`, titled 鉄道関連情報 / Train information, format GTFS/GTFS-JP;
+  - its file URL is the path audit §6.2.1 records, and it carries an `acl:consumerKey` query parameter. So no credential-free URL exists, and none may be recorded.
+
+## Decision
+
+### A. Repository boundary for Tokyo Metro (DEC-065 §A, unchanged)
+
+- **Committed:** only reader code, fully invented synthetic fixtures, verified catalog metadata (§D), and the aggregate evidence in §E.
+- **Never committed:** real archives, JSON payloads, rows, provider identifiers or names (individually beyond the named exceptions already in accepted decisions, or in bulk), line-code sets, station-order sequences, coordinates, mapping pairs, manifests, credentials, tokens, and signed URLs.
+- **Still open:** publication of Tokyo Metro mapping records and bulk lists (DEC-065 §A), and bundling in the shipped app (audit §3.12 item 5). P2-S3 decides neither.
+
+### B. Synthetic fixtures — narrow amendment of DEC-065 §B4
+
+DEC-065 §B4 kept every Tokyo Metro fixture off the branch. This Decision allows **fully invented, synthetic fixtures shaped like Tokyo Metro's feeds**, marked synthetic. A fixture may reproduce a *shape* — for example a flat stop list with line-letter codes, or a JSON array of railway records with a separate branch record. It may not contain any row, value, identifier, code, name, title, colour, or coordinate copied from a Tokyo Metro file. Invented stand-ins are used instead, such as invented line codes `Q` and `Qb`. No copied provider row is permitted. Nothing else in DEC-065 §B changes.
+
+### C. Local inputs, with no fetching or token handling
+
+1. Real Tokyo Metro inputs are supplied by the operator from local storage outside the repository, for example the owner-only retained evidence.
+2. P2-S3 adds **no** fetching, token handling, or credential storage to the app, the P2-S2 tool, or anything else. Acquiring a fresh copy stays a manual, out-of-band operator action under the owner's ODPT registration.
+3. If no owner-only input is available, local real-data validation is recorded as **outstanding**. The synthetic contract stays fully testable without it.
+
+### D. Component boundary
+
+- **Static GTFS:** the P2-S1 reader (`GTFSStaticTableReader`, DEC-065 §B–§D) is already provider-neutral code. It is reused **unchanged** for Tokyo Metro's static GTFS. P2-S3 adds Tokyo Metro-shaped synthetic tests of that reader and changes none of its rules. If a real Tokyo Metro archive reports an unsupported shape, that becomes a separate, recorded decision — never a silent rule change.
+- **Local GTFS validation, through the unchanged intake command.** The P2-S2 tool's committed source list gains one entry, built only from the verified catalog metadata in Context:
+  - `sourceID` `DS-03/tokyometro-static-gtfs`;
+  - provider `Tokyo Metro` (the catalog's publisher label);
+  - licence `Public Transportation Open Data Basic License`;
+  - dataset `train-tokyometro`;
+  - resource `d4f11962-1c5a-4316-9a16-7fb229c227ea`;
+  - access `credentialed`, with no URL.
+
+  The intake command's archive and manifest contract (DEC-066) is unchanged.
+- **Tokyo Metro-specific:** an `odpt:Railway` reader in `TSUGINO/Data/ODPT/` (`ARCHITECTURE.md` §4.3 — DTO and reader only, no client). It decodes caller-supplied JSON bytes into DTOs in source order and preserves provider values as stated: `@id`, `owl:sameAs`, operator, line code, colour text, title language maps, rail directions, and station order with indices and station-title maps. Like the GTFS reader, it runs through a single `@concurrent` entry point and reports typed `invalid` / `unsupported` errors, each with a record index and field name.
+- **Deferred to P2-S4:** matching static routes to Railway records (the audit's derivation, §6.2.3), canonical identifiers, and any mapping record.
+
+### E. Recordable evidence from local validation
+
+The public repository records only counts, totals, and hashes. No provider identifier appears in them, except the named exceptions already in accepted decisions, cited as those existing facts.
+
+- **Static GTFS**, through the intake command:
+  - archive SHA-256 and byte count, and `feed_version`;
+  - the reader outcome (0 invalid, 0 unsupported);
+  - per-table row counts;
+  - selected and unselected member counts.
+- **`odpt:Railway`**, through `validate-railway` (§F):
+  - input SHA-256 and byte count;
+  - the reader outcome;
+  - the number of records;
+  - the number of distinct line codes, as a count only;
+  - the total number of station-order entries;
+  - title-language coverage totals, counted over record titles and over station-order titles.
+
+**Never recorded:** a line-code set, station or stop identifiers, station-order sequences, names, titles, coordinates, per-line figures keyed by a provider code, mapping pairs, manifests, or any excerpt from which provider data could be restored.
+
+### F. `validate-railway` — the smallest read-only workflow
+
+A separate command of the P2-S2 tool. The intake command and its manifest contract are untouched.
+
+- **Invocation:** `static-data-intake validate-railway --input <file>`. There is no source selection, output path, network access, or credential.
+- **Input:**
+  - it passes DEC-066's repository-boundary checks (resolved path, file-system identity, then a check on the opened file itself);
+  - it is opened once, non-blocking, and must be a regular file within a fixed 8 MiB limit — the retained snapshot is about 50 KB (audit §6.2.2).
+- **Output boundary:**
+  - it writes nothing to disk, anywhere;
+  - standard output carries only the §E aggregates, on success;
+  - on failure it exits non-zero, and standard error names the reader's error kind, record index, and field name — never a provider value.
+- **Tests,** in the P2-S2 macOS runner with invented JSON:
+  - a valid input prints exactly the expected aggregates;
+  - repository paths are refused, including through a symlink;
+  - a non-regular file, and an input over the limit, are refused;
+  - reader failures exit non-zero and print no provider value;
+  - no file is created anywhere in the test workspace.
+
+### G. `odpt:Railway` reader contract — deliberately scoped
+
+This is a **reader contract based on the retained audit's observed shape**. It makes no claim about the ODPT specification, which has not been verified (Context). Two outcomes are distinguished:
+
+- **Invalid:** input that is not valid UTF-8, or not well-formed JSON.
+- **Unsupported** — valid JSON outside the supported record shape, reported with its record index and field name:
+  - a top level that is not an array, or an element that is not an object;
+  - an `@type` other than `odpt:Railway`;
+  - a missing or wrongly typed `@id`, `owl:sameAs`, `odpt:operator`, `odpt:lineCode`, `odpt:railwayTitle`, or `odpt:stationOrder`;
+  - a title map whose values are not strings;
+  - a station-order entry without an integer `odpt:index` and a string `odpt:station`;
+  - station-order indices that are not contiguous from 1;
+  - a duplicate `@id`, `owl:sameAs`, or line code;
+  - mixed operators.
+
+  Unsupported says only that the reader does not handle the shape. It never claims the provider's data is wrong.
+- **Accepted:** optional `odpt:color` and rail-direction fields, absent or present. Unknown keys are ignored. Title maps keep every language key, sorted, and require no particular language — which languages are required is decided with localization (P2-S7).
+
+What each kind of evidence can decide:
+
+| Question | Decided by |
+|---|---|
+| Every accepted, invalid, and unsupported case above, determinism, source order, and actor isolation | synthetic tests with invented JSON — fully decidable now |
+| Whether the retained snapshot fits the supported shape; the §E aggregates | local validation on owner-only evidence (§C) |
+| Whether any unsupported case is in fact invalid ODPT data; which fields are required; index semantics | the official ODPT developer specification, once read and recorded. Until then, no case is promoted to invalid |
+
+### H. Marunouchi branch
+
+P2-S3 reads the branch record as its own DTO. It is a **distinct provider record**: its identifiers, line code, and titles are kept as stated, and the reader does not merge it, rename it, or relate it to any other record. In P2-S4, both Railway records — and the single static route that carries the branch stops — become explicit aliases of **one** canonical `LineID`, with provider provenance (DEC-057 D6, `ARCHITECTURE.md` §40). **No canonical identifier is minted in P2-S3.**
+
+## Rationale
+
+Reusing the provider-neutral GTFS reader keeps one tested contract instead of two. An `odpt:Railway` DTO reader keeps provider JSON inside Data (Rule 8). Fully invented fixtures keep the contract testable in a public repository without copying Basic-License data. Recording only counts and totals respects Art. 8(4) while the ODPT questions are open. A read-only command with no output file keeps Railway validation outside DEC-066's archive and manifest contract. Labelling the Railway rules as a scoped reader contract avoids claiming anything about a specification nobody has recorded.
+
+## Consequences
+
+- `ROADMAP.md` P2-S3 records this decision and its completion criteria.
+- `ARCHITECTURE.md` needs no change: `Data/ODPT/` with a DTO area is already part of the canonical structure (§4, §4.3).
+- The P2-S2 tool gains one verified, credentialed source entry and the read-only `validate-railway` command. DEC-066's intake contract is unchanged.
+
+## Revisit Triggers
+
+- The ODPT secretariat replies to Q2, Q3, or item 5.
+- The official ODPT `odpt:Railway` specification is verified and recorded.
+- Local validation reports an unsupported Tokyo Metro shape.
+- The DS-03 catalog resource or its licence label changes.
+- A later slice needs data this reader does not keep.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

@@ -400,14 +400,14 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26).** P2-S0, P2-S1, and P2-S2 are complete. P2-S3 is next. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27).** P2-S0, P2-S1, and P2-S2 are complete. P2-S3 is next; its design is accepted and it is not yet implemented. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
 | **P2-S0** | documentation | Documentation lock: the public-repository boundary, P2-S1 scope, synthetic fixtures with local validation, and this plan (DEC-065) | — | — |
 | **P2-S1** | implementation | Toei-only static GTFS **table reader** → provider DTOs (DEC-065 §B, §C, §D) | S0 | **DEC-065 only** |
 | **P2-S2** | implementation | Static source intake in an offline macOS developer tool: archive member policy, streaming of the named tables with the system `bsdtar`, input consistency, and a source manifest (DEC-066) | S1 | **DEC-066 only** (accepted) |
-| P2-S3 | implementation | Tokyo Metro static and `odpt:Railway` reader, tested with synthetic fixtures only | S1 | where local Tokyo Metro development data may live, and token handling (Rule 42) |
+| P2-S3 | implementation | Tokyo Metro static GTFS through the unchanged P2-S1 reader, plus an `odpt:Railway` DTO reader; invented synthetic fixtures only, real inputs local (DEC-067) | S1, S2 | **DEC-067 only** (accepted) |
 | P2-S4 | implementation | Operator-level identities (149 → 141 Toei, 185 → 144 Tokyo Metro) and line mapping to the 15 baseline `LineID`s, with the Marunouchi branch record as an alias (DEC-057 D6) | S2, S3 | canonical identifier format; for committed Tokyo Metro-involving records, resolution of DEC-065 §A |
 | P2-S5 | implementation | Cross-operator station identity, reconciled to DEC-048 (DEC-065 §E) | S4 | as S4 |
 | P2-S6 | implementation | Representative coordinates and line topology → valid `Station` and `RailwayLine` values | S5 | coordinate-selection policy, including the 27 merged stations; topology evidence source |
@@ -486,7 +486,27 @@ Create a reliable local railway topology foundation.
   - **Boundaries:** the app target and `TSUGINOTests` are unchanged. No third-party dependency and no Xcode target are added. Build artifacts appear only under the git-ignored `Tools/StaticDataIntake/.build/`.
   - **Local validation, not committed:** the tool is run on the current public Toei archive, and on the pinned 2026-09-16 archive if it becomes available. The archive SHA-256, `feed_version`, and selected-member hashes are recorded as aggregates, with a clean reader result. No equivalence is claimed between different hashes.
   - **Suite and builds:** the full `TSUGINOTests` suite and the Debug and Release builds of the app and extension still pass. No archive, member bytes, manifest, signed URL, token, or local path is committed.
-- **P2-S3:** the reader handles the shapes the audit recorded (flat `stops` rows, `stop_code` line-letter prefixes including `Mb`, ten `odpt:Railway` records), tested only with synthetic fixtures. Real-data runs are local, and only aggregates are recorded (185 `stops` rows, 9 routes, 9,544 trips, 494 `translations` rows).
+- **P2-S3 (DEC-067; not yet implemented):**
+  - **GTFS, focused tests.** Fully invented, Tokyo Metro-shaped synthetic tests of the **unchanged** P2-S1 reader are accepted. They cover:
+    - a byte-order mark;
+    - flat stops with line-letter `stop_code` values, including a two-letter branch code;
+    - first rows with `pickup_type` 1 and last rows with `drop_off_type` 1;
+    - intermediate blank-time rows with `timepoint` 0;
+    - `field_value`-keyed translations.
+
+    No reader rule changes.
+  - **`odpt:Railway` reader, focused tests.** Every accepted, invalid, and unsupported case in the scoped contract of DEC-067 §G is tested, using invented records only, including a separate branch record kept as its own DTO. The tests also cover deterministic output, source order preserved, title-map language keys preserved, and parsing off the main actor.
+  - **Tool.** The P2-S2 runner still passes, with added cases:
+    - the DS-03 source entry is `credentialed`, carries the verified catalog metadata, and a manifest from it has no URL;
+    - `validate-railway` (DEC-067 §F) prints exactly the §E aggregates for a valid invented input;
+    - `validate-railway` refuses repository paths (including through a symlink), a non-regular file, and an input over its limit;
+    - `validate-railway` exits non-zero on a reader failure without printing a provider value, and writes no file.
+  - **Boundaries.** No copied Tokyo Metro row or value, no identifier or line-code list, no mapping, manifest, credential, or token is committed. There is no fetching or token handling, no canonical identifier, and no route-to-Railway matching (P2-S4).
+  - **Local validation, not committed.**
+    - When the owner-only inputs are available, the intake command on the retained static archive reports 0 invalid and 0 unsupported rows. It is expected to reproduce the audit's counts — 185 `stops` rows, 9 routes, 9,544 trips, 172,168 `stop_times` rows, 494 `translations` rows — for SHA-256 `9a077f8f…`; any other archive is recorded without claiming a match.
+    - `validate-railway` on the retained snapshot reports 10 records.
+    - Only the DEC-067 §E counts, totals, and hashes are recorded. If the inputs are unavailable, this validation is recorded as outstanding.
+  - **Suite and builds.** The full suite and the Debug and Release builds of the app and extension pass.
 - **P2-S4 / P2-S5:** a deterministic importer (same pinned inputs give byte-identical output) reproduces DEC-048's aggregates (DEC-065 §E). Tests assert that Toei 新宿 and Tokyo Metro 新宿 stay separate with no transfer edge, that both alias rules are explicit and reversible with original strings preserved, and that no distance constant exists. Production identifiers are minted independently of the analysis group keys.
 - **P2-S6:** every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate.
 - **P2-S7:** through the local search API, every baseline station is found by its Japanese, English, and Korean names and by its recorded aliases, including 市ヶ谷 / 市ケ谷 and 押上〈スカイツリー前〉; both 新宿 stations are returned and can be told apart by operator and lines. Station search UI is Phase 8.
