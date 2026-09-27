@@ -4432,6 +4432,7 @@ The public repository turns every commit into a release, so the licence boundary
 
 **Status:** Accepted — with the output-publication and input-consistency safeguards in §F and §D\
 **Date:** 2026-09-26\
+**Amended:** 2026-09-26 — after the P2-S2 implementation review, §B and §F close check-to-use gaps. The output directory is pinned by a descriptor when it is checked, and publication works relative to it (`openat`, `renameatx_np`). The opened archive itself is checked against the repository boundary and the checked path, and the final check (§D) also rejects an archive whose path or descriptor now lies inside the repository. The directory is `fsync`ed after publication; if that fails, the complete manifest is left in place and the failure is reported, because no removal by name could be sure to remove only this run's file. The approach and safeguards are otherwise unchanged.\
 **Related:** DEC-020, DEC-027, DEC-029, DEC-034, DEC-037, DEC-047, DEC-065; `RULES.md` Rule 14, Rule 15, Rule 34, Rule 40, Rule 42; `ARCHITECTURE.md` §4, §4.5, §9; `ROADMAP.md` Phase 2 P2-S2; `PROVIDER_FEASIBILITY_AUDIT.md` §2.3, §3.2, §3.6, §3.11, §3.12, §9 (DS-01, DS-03)
 
 ## Context
@@ -4481,6 +4482,11 @@ P2-S1 (DEC-065) reads GTFS tables from caller-supplied bytes and deliberately ha
 - **Data artifacts** — provider archives, member bytes, manifests, reader output, and any generated dataset — never enter the repository working tree, ignored or not. Member bytes exist only in the tool's memory and are never written to disk. The manifest is the only data file the tool writes, and only to an operator-chosen path outside the repository.
 - **Test data** — synthetic archives built by the test runner — is created in a fresh directory under the system temporary directory and removed when the run ends, whether it passes or fails.
 - **Repository-path check.** The repository root is the directory `git rev-parse --show-toplevel` reports for the tool's own location. The archive path, and the output file's parent directory, are resolved with symlinks followed. A path counts as inside the repository when the repository root is that directory or one of its ancestors. The comparison uses file-system identity (device and inode), so neither a symlink nor a case variant of a path escapes the check. Such a path is refused before any work starts.
+- **No gap between check and use.** A checked path is never trusted again by name:
+  - The output directory is opened as soon as it is checked. Its identity must match the checked path, and its current path, read from the descriptor (`F_GETPATH`), must lie outside the repository.
+  - After the archive is opened, the same two checks are applied to the opened file.
+  - A path component replaced by a symlink after the check therefore cannot redirect the manifest into the repository, or bring a different file into the intake.
+  - What remains is a rename of the pinned output directory itself into the repository. The tool narrows that window by checking the descriptor's current path again just before publishing, but it cannot close it entirely.
 
 ### C. Member selection and names
 
@@ -4501,7 +4507,13 @@ P2-S1 (DEC-065) reads GTFS tables from caller-supplied bytes and deliberately ha
 1. The tool opens the archive **once**, read-only, and works only through that descriptor. It refuses anything `fstat` does not report as a regular file. It records the file's identity and state from `fstat`: device, inode, size, and modification and status-change times to the nanosecond. The archive size limit is checked against that size.
 2. `archiveSHA256` is computed by reading the whole file through the descriptor, from offset 0.
 3. `bsdtar` never opens the archive by path. Each invocation inherits the descriptor and reads it as `/dev/fd/N` (observed behaviour 8), so renaming or replacing the path during intake cannot change which file it reads.
-4. After the last `bsdtar` run, and before publication, the tool checks three things. Through the descriptor, `fstat` must report the same size, modification time and status-change time, and the SHA-256 recomputed from offset 0 must equal `archiveSHA256`. And the archive path, resolved again, must still name the same device and inode. Any difference fails the intake, and no manifest is published.
+4. After the last `bsdtar` run, and before publication, the tool checks four things:
+   - through the descriptor, `fstat` must report the same size, modification time and status-change time;
+   - the SHA-256 recomputed from offset 0 must equal `archiveSHA256`;
+   - the archive path, resolved again, must still name the same device and inode;
+   - neither that path nor the descriptor's current path may lie inside the repository.
+
+   Any difference fails the intake, and no manifest is published.
 5. This detects any change the file system records: a write updates the modification and status-change times, and a process cannot set the status-change time back. It detects modification; it does not prevent it.
 
 ### E. Size limits
@@ -4522,12 +4534,12 @@ A selected member is read from `bsdtar`'s standard output in chunks, while the t
 
 **Atomic publication that never replaces a manifest:**
 
-1. The tool creates a temporary file in the target file's directory with `open(2)` using `O_CREAT | O_EXCL`, under a randomly generated name. It writes the complete manifest and calls `fsync(2)` before closing.
-2. It publishes with `renamex_np(2)` and `RENAME_EXCL`, which moves the temporary file to the target name only if no file of that name exists. The check and the rename are one atomic operation, so a file created at the target path by another process at any earlier moment — including after the tool's own preliminary check — makes publication fail with `EEXIST`, and that file is left untouched.
+1. The tool creates a temporary file in the pinned output directory with `openat(2)` using `O_CREAT | O_EXCL`, under a randomly generated name. It writes the complete manifest and calls `fsync(2)` before closing.
+2. It checks again that the pinned directory lies outside the repository. It then publishes with `renameatx_np(2)` and `RENAME_EXCL` — the directory-relative form of `renamex_np(2)` — which moves the temporary file to the target name only if no file of that name exists. It then `fsync`s the directory. If that fails, the manifest — already complete, because its bytes were `fsync`ed before the rename — is left in place, and the tool exits with a distinct error asking the operator to check or remove it. It never deletes by name after publication, so another process's file is never removed. The check and the rename are one atomic operation, so a file created at the target path by another process at any earlier moment — including after the tool's own preliminary check — makes publication fail with `EEXIST`, and that file is left untouched.
 3. If the output directory's file system does not support `RENAME_EXCL`, publication fails. There is no fallback to an ordinary rename.
 4. A preliminary check that the target does not exist gives an early error message only. It is never relied on for safety.
 
-- On any failure — including `EEXIST` at publication — the tool removes its temporary file, leaves any existing file at the target path untouched, and publishes nothing, so no partial output remains. It reports the failure — with the reader's table and line when the reader failed — and exits non-zero.
+- On any failure up to and including the exclusive rename — `EEXIST` among them — the tool removes its temporary file, leaves any existing file at the target path untouched, and publishes nothing, so no partial output remains. It reports the failure — with the reader's table and line when the reader failed — and exits non-zero.
 
 ### G. Source manifest
 

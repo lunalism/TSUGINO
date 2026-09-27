@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26).** P2-S0 and P2-S1 are complete. P2-S2 is next and not yet implemented. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26).** P2-S0, P2-S1, and P2-S2 are complete. P2-S3 is next. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -425,6 +425,29 @@ Create a reliable local railway topology foundation.
 - **Review.** An adversarial pass found and fixed three issues: a repeated `stop_sequence` could be masked by an earlier source-order decrease (repeats are now checked across the table first, so they are always invalid); an integer too large for the reader was called invalid although the specification sets no bound (now unsupported); and DEC-065's wording on unsupported rows did not match the code (aligned). Independent Codex review of the working tree then found one defect — a header with an empty field name was accepted — which was fixed (now invalid, as the first line must name its fields). A final Codex review of the fixed state found no actionable defect.
 - **Tests.** 137 focused cases, all synthetic, cover every §D case, the cross-table references, determinism, a stable first reported problem, and a main-actor caller. Full suite: **1008/1008 executed cases passed, 0 failed, 0 skipped**. Debug build and clean Release build of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
 - **Local validation.** The pinned 2026-09-16 archive (SHA-256 `f10d03cd…`) was not available, so the reconciliation against that snapshot is **still outstanding**. The current public, credential-free Toei archive was read instead, fetched on 2026-09-25 and again on 2026-09-26 with the same result: SHA-256 `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`, `feed_version` 20260921. It read with **0 invalid and 0 unsupported rows**: 149 `stops` rows, all `location_type` 0; 6 routes; 5,600 trips; 122,798 `stop_times` rows; 404 `translations` rows (Japanese 202 / English 202 / Korean 0); 141 distinct stop names, 8 of them appearing twice. The hash differs from the pinned archive, so **no equivalence to the recorded snapshot is claimed**. That archive has LF line endings and no byte-order mark, so the CRLF and BOM paths are covered by synthetic tests only. The archive, its contents, and the validation driver stayed outside the repository.
+
+**P2-S2 completion record** (2026-09-26; implementation awaiting review and commit). The offline static source intake tool is implemented in `Tools/StaticDataIntake/`, following DEC-066:
+
+- **Build.** It is built by `build.sh` with `xcrun swiftc` from its own sources and the unchanged P2-S1 reader sources. `test.sh` builds and runs a separate test runner with `-D INTAKE_TESTING`. The only repository change outside the tool is one `.gitignore` entry for `.build/`. There is no Xcode target, no dependency, no networking, and no credential; the app target and `TSUGINOTests` are unchanged.
+- **How it works.** `bsdtar` reads the archive only as `/dev/fd/3`, from the single opened descriptor. That descriptor is duplicated to a number of 10 or above before spawning, because a descriptor that already is fd 3 would otherwise be closed in the child. Every run rewinds the shared offset, and hashing uses `pread`.
+- **Test-only code is absent from the operator build.** The test-only entry point and hooks exist only in the runner's binary: the operator binary has none of their symbols.
+- **Review.** An independent Codex review and an adversarial review of the stable change found a check-to-use gap. The output directory was re-opened by path at publication, so a path component swapped for a symlink could have redirected the manifest into the repository. The archive had a similar gap between its path check and its opening. Both are fixed, as recorded in the DEC-066 amendment: a pinned directory descriptor, and checks on the opened archive. A pipe read error is no longer taken as end of output. A second Codex review of the fixed change found two more issues, both fixed:
+  - the final archive check compared only identity, so an archive directory moved into the repository during intake could pass; it now also checks the boundary;
+  - withdrawing a manifest after a failed directory `fsync` could remove another process's file. The tool now never deletes by name after publication: the complete manifest stays, and a distinct error is reported.
+- **Tests.** The runner passes **34/34**, 8 unit and 26 integration cases, on synthetic archives created in, and removed from, a temporary directory. It covers every case listed above, plus:
+  - a FIFO archive;
+  - a same-size rewrite;
+  - a symlink retarget that exercises the path-identity check alone;
+  - three check-to-use races: an output directory, and an archive directory, each swapped for a repository symlink, and an archive replaced between its check and its opening;
+  - an archive directory moved into a stand-in repository root during intake, with its identity unchanged.
+
+  A failed directory `fsync` cannot be triggered in a test; its handling (report, never delete) is covered by review only. `TSUGINOTests` still passes **1008/1008**. Debug build and clean Release build of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
+- **Local validation, not committed.** The tool was run on the current public, credential-free Toei archive: SHA-256 `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`, 779,699 bytes, `feed_version` 20260921. It published a manifest with 9 selected members (5,306,535 bytes in total) and 2 unselected members (the two fare tables, by name only), and the reader reported 0 invalid and 0 unsupported rows. Two runs produced byte-identical manifests, and re-running onto an existing manifest was refused. The pinned 2026-09-16 archive (`f10d03cd…`) was not available; **no equivalence to it is claimed**. The archive and manifests stayed outside the repository.
+- **Observed and accepted.** An archive truncated only in its central directory still streams through its local headers, with every selected member's CRC checked. This is consistent with DEC-066's selected-members-only integrity guarantee.
+- **Remaining limits.**
+  - Renaming the pinned output directory itself into the repository during intake is narrowed but cannot be fully excluded.
+  - If the tool is killed by a signal during publication, a hidden `.static-data-intake-*.tmp` file may remain in the output directory, which lies outside the repository.
+  - A copy of the tool placed inside another Git repository would check that repository's boundary instead.
 
 **Completion rules, proportionate to the kind of slice:**
 

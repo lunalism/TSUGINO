@@ -4,3 +4,6 @@
 xcuserdata/
 DerivedData/
 *.xcuserstate
+
+# Static data intake tool build output (DEC-066)
+Tools/StaticDataIntake/.build/
