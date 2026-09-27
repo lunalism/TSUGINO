@@ -482,6 +482,30 @@ Create a reliable local railway topology foundation.
   - Real-feed validation has not been run.
   - **Compatibility with the actual Tokyo Metro feeds has not been established.** The synthetic contract covers the shapes the audit recorded, not the files themselves.
 
+**P2-S4 progress** (DEC-068). **P2-S4 as a whole is neither implemented nor complete**, and its real-data validation is outstanding (DEC-068 §H). Its steps are recorded here as they land.
+
+- **Step 1 — identifier form, minting, and registry contracts** (2026-09-28; reviewed). Synthetic only: no registry of real entities exists, no mapping record has been made, and no production identifier has been minted.
+  - **App.** `TSUGINO/Data/Mapping/` holds the DEC-068 §A identifier form and the registry, provider-reference, exact-value, provenance, and status records. Decoding checks every rule, and encoding is deterministic. There is no minting in the app.
+  - **Tool.** The minter and the lookup-or-mint assignment are in `Tools/StaticDataIntake/`. Generator injection exists only in the test runner's build.
+  - **Review.** An adversarial review, including Codex passes on a frozen tree, found that decoding and construction could produce registries the contract forbids. All are fixed with regression tests:
+    - unknown keys are rejected at every level instead of being dropped on re-encode;
+    - a repeated JSON key is rejected instead of silently keeping one value, and the registry can be read only through its checked decoder, which has no `Decodable` bypass;
+    - a retirement review must be printable ASCII when constructed, so every constructible registry decodes;
+    - provenance, including every original name's source, must match its namespace (GTFS member and table, or `odpt:Railway` record index);
+    - retirement successor cycles are rejected;
+    - each original name value carries its own source reference, and several values may share a language, so a renamed value is kept beside the old one (DEC-068 §C3, §E3);
+    - project and schema text — source, member, table, and field names, and review identifiers — is printable ASCII.
+
+    The final Codex pass on the fixed tree reported no findings. **Verdict: Step 1 passes review.**
+  - **Tests and builds.**
+    - Focused app tests pass **85/85**, all on invented records.
+    - The tool runner passes **51/51**: 8 unit, 26 intake integration, 9 DS-03 and `validate-railway`, and 8 minting cases.
+    - `TSUGINOTests` passes **1180/1180**.
+    - Debug and clean Release builds of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
+    - The Release build reports the existing 75 warnings; none comes from `Data/Mapping`.
+    - The operator binary has no generator-injection entry point, and the app binary has no minting.
+  - **Later steps.** Grouping proposals, reviewed grouping and binding records, revision reconciliation, the provisional-registry command, and real-data acceptance.
+
 **Completion rules, proportionate to the kind of slice:**
 
 - **Implementation slices** close with focused tests for the slice, the full test suite passing, and Debug and Release builds of the app and extension on the iPhone 17 simulator.
