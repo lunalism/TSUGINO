@@ -288,6 +288,7 @@ TSUGINO/
 │       └── NotificationCoordinator.swift
 │
 ├── Data/
+│   ├── Mapping/            (provider-neutral canonical mapping records — DEC-068)
 │   ├── GTFS/
 │   │   ├── Static/
 │   │   ├── Realtime/
@@ -407,11 +408,13 @@ Owns:
 - caches
 - persistence
 - provider-ID mappings
+- provider-neutral canonical mapping records and their validation (`Data/Mapping/`, DEC-068): the registry, provider-reference, grouping, and binding record types, used by the app and compiled into the offline tool
 
 Must not own:
 - SwiftUI state
 - user-facing screen decisions
 - journey business rules
+- canonical identifier minting or static import (Tools only, DEC-068)
 
 #### Features
 Owns:
@@ -473,10 +476,11 @@ Established by DEC-066.
 Owns:
 - offline developer tools that run on macOS, outside the app target
 - static source intake (`Tools/StaticDataIntake/`)
+- static mapping import (DEC-068): canonical identifier minting, grouping proposals, binding checks, and revision reconciliation, writing a provisional registry and report outside the repository
 
 Must not own:
 - anything the app needs at run time
-- data artifacts: provider archives, member bytes, manifests, reader output, generated datasets, or credentials
+- data artifacts: provider archives, member bytes, manifests, reader output, generated datasets, provisional registries and reports, or credentials
 
 Tools may create build artifacts — compiled executables and compiler intermediates — only under their git-ignored `.build/` directory. Data artifacts never enter the repository working tree, whether ignored or not. A tool reads its input from outside the repository, writes its output outside it, and refuses paths that resolve inside it, following symlinks and comparing by file-system identity.
 
@@ -1719,6 +1723,15 @@ This reduces migration pain when providers change.
 
 **Validity invariant (DEC-051):** a canonical identifier must contain at least one non-whitespace character; empty and whitespace-only values are rejected. Construction is failable and never traps, and decoding applies the same rule, failing with `DecodingError.dataCorrupted`. A value that passes is preserved **exactly** — no trimming, case folding, Unicode normalisation, or separator rewriting. Validity and losslessness are separate concerns: rejecting blanks does not authorise normalising what remains, and any stricter format rule requires a new decision.
 
+**Minting and the registry (DEC-068).** The minting rule sits beside the validity invariant; it does not change it. The Domain identifier types still accept any non-blank value exactly, and do not check the minting format.
+
+- **Form.** New `StationID`, `LineID`, and `OperatorID` values are minted as a kind prefix (`stn`, `lin`, `opr`), an underscore, and 16 lowercase Crockford base32 characters encoding 80 bits from the system's cryptographically secure generator. The result is exactly 20 characters and is compared as an exact string.
+- **Meaning.** An identifier encodes nothing: no provider identifier, code, name, coordinate, source order, mint time, or function of provider data.
+- **Collisions.** A new identifier is checked against every identifier the registry has ever held, of any kind, active or retired. A collision is redrawn, and 8 consecutive collisions fail the run.
+- **Identity.** Randomness only chooses the label; the **registry** owns identity. Imports look identities up and never re-mint. Identifiers are never reused, rebound, or deleted, and a merge or split is an explicit identity migration (§41, Rule 39).
+- **Where minting happens.** Only in the offline tool (§4.1 Tools), and only on an explicit request in the run input. The app never mints.
+- **No production identifiers yet.** Until a registry-of-record decision settles where the registry lives, every registry is provisional, kept outside the repository, and no minted identifier is a production identifier.
+
 ---
 
 ## 39.1 Language Resolution Architecture
@@ -1787,6 +1800,27 @@ Because a canonical station may span operators, the Domain `Station` value store
 **Passenger-stop status must be verified (DEC-061 F).** In the two inspected static GTFS archives (Toei and Tokyo Metro), mid-trip `stop_times.txt` rows with `pickup_type = 1` and `drop_off_type = 1`, `timepoint = 0`, and no arrival or departure time are consistent with stations a trip passes without stopping (`PROVIDER_FEASIBILITY_AUDIT.md` §6.8). That is an observed pattern in those archives, not a general GTFS rule: pickup and drop-off flags alone can express other restrictions. Mapping therefore verifies passenger-stop status per provider and feed before building `Trip.stopSequence` (§5.3) — row presence never makes a passenger stop — and never places a service-type segment boundary at a station verified as passed. A visible skip pattern names which stations are passed, not the service type. Provider service-type codes are mapping aliases of canonical `ServiceTypeID`s.
 
 Canonical **lines** are also product identity, not provider records (DEC-057 D6): the Tokyo Metro Marunouchi main line and branch are **one** `LineID`, so the mapping layer maps **several provider railway identifiers** — including the provider's separate Marunouchi branch record — to that one canonical line, each as an explicit entry that retains its provider provenance. The same aliasing serves future operators whose records split or merge a canonical line differently (multi-owner airport-access infrastructure, service-corridor brands), and canonical lines are always modelled complete — never clipped at a prefectural boundary (DEC-058 §3). That provenance is what later allows provider-specific status or realtime resources to be scoped to the branch (Phase 4); it never enters the Domain `RailwayLine` value. Canonical adjacency topology (§5.2.1) is populated by the Phase 2 importer from provider stop sequences, and its derived membership is checked against every `Station.lineIDs` at that level (DEC-055 D2, DEC-057 D9).
+
+**Provider references, reviewed records, and revisions (DEC-068).** The mapping layer is made of records in `Data/Mapping/`; it is never held only in code.
+
+- **Provider references.** Every provider value that identifies an entity — a GTFS `agency_id`, `route_id`, `stop_id`, or `stop_code`, or an ODPT operator, Railway `@id`, `owl:sameAs`, or line code — is a provider-reference record. It holds its canonical identifier, source, namespace, status, and the first and last identified input it was seen in.
+- **Exact values.** A reference keeps the exact decoded value: the Unicode scalars as read from UTF-8, with no normalization, compared scalar by scalar. It also keeps a source reference: the input and member SHA-256, the table or record index, the field, and the provider key. Source bytes are not stored, and byte-for-byte preservation is claimed only for raw inputs retained outside the repository.
+- **Nothing is merged or bound automatically.** Stop rows of one operator become one operator-level identity only through a **reviewed grouping record**. The importer proposes a grouping only when:
+  - the rows come from one identified input;
+  - they share no route;
+  - their codes fit every route that serves them;
+  - their neighbouring stops are recorded;
+  - no other row competes.
+
+  Equal names and code prefixes are signals, never grounds for a merge. A grouping that fails a check is accepted only with an explicit reviewed exception for that one grouping. Anything unclear is held back, with its source references.
+- **Lines.** Each static route and each Railway record is bound to exactly one `LineID` by a **reviewed binding record**. Official-field checks only propose a binding.
+- **Operators stay separate.** No operator-level step relates stations of different operators.
+- **Revisions.** A provider reference is *active* (in the latest input; only active references resolve), *absent* (missing from the latest input; kept as history, not current), or *retired* (only by a reviewed record; never reactivated). An omission never deletes history. A conflict fails the run. A canonical identifier never changes because a provider value changed.
+- **Public repository and completion gates.**
+  - The code, schemas, and fully invented synthetic fixtures may be committed.
+  - No real mapping, reference, grouping, binding, or registry record is committed for either operator until the registry-of-record decision is made.
+  - Tokyo Metro-derived mappings also need the ODPT Q3 reply or a separate publication decision (DEC-065 §A).
+  - P2-S4 is complete only after real-data acceptance on identified snapshots (DEC-068 §H).
 
 Each canonical station carries exactly one canonical `GeoCoordinate` (§5.1, DEC-056). **Selecting that representative point is a Phase 2 mapping responsibility**, not a Domain concern: the mapping layer chooses among the providers' published points, records the selection rationale and provider provenance as mapping data, retains original provider coordinates here when needed (never on the `Station` value), documents what the selected point represents, and rejects or holds back a station for which no valid point can be selected. Averaging or otherwise deriving a point never happens implicitly; if it is ever used, the policy is explicit and reviewable. Coordinates corroborate identity candidates only (DEC-048 rule 2); no distance threshold enters Domain, and the DEC-048 Shinjuku pair stays two stations with two coordinates.
 

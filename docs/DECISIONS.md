@@ -4756,6 +4756,238 @@ Reusing the provider-neutral GTFS reader keeps one tested contract instead of tw
 
 ---
 
+# DEC-068 — Canonical Identifiers Are Minted Opaque Values Owned by One Registry; P2-S4 Maps Operator Identities and Lines Only Through Reviewed Records
+
+**Status:** Accepted — design only; P2-S4 is not yet implemented\
+**Date:** 2026-09-28\
+**Decides:** the canonical identifier format that DEC-065 §A and `ROADMAP.md` P2-S4 wait for; the minting and registry rules for `StationID`, `LineID`, and `OperatorID`; the P2-S4 mapping, revision, and completion contract\
+**Does not amend:** DEC-021, DEC-048, DEC-051, DEC-057, DEC-065 §A for Tokyo Metro, DEC-067\
+**Related:** DEC-021, DEC-026, DEC-047, DEC-048, DEC-049, DEC-051, DEC-055 D3, DEC-057 D6, DEC-058, DEC-065, DEC-066, DEC-067; `RULES.md` Rule 8, Rule 9, Rule 14, Rule 39, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §4.3, §9, §39, §40, §41; `ROADMAP.md` Phase 2 P2-S3, P2-S4, P2-S5; `PROVIDER_FEASIBILITY_AUDIT.md` §3.5, §3.6.3, §3.12, §6.1.3, §6.2.3, §6.2.4, §6.5
+
+## Context
+
+P2-S4 maps the two launch feeds to operator-level station identities and to the 15 baseline lines. It waits for two things (`ROADMAP.md` slice plan):
+
+1. **A canonical identifier format.** DEC-021 says TSUGINO owns its identifiers, and DEC-051 fixes only their validity: at least one non-whitespace character, preserved exactly. DEC-051 says any stricter format needs a new decision. DEC-048 says its analysis group keys are not production identifiers.
+2. **For committed Tokyo Metro-involving records, a resolution of DEC-065 §A.** The ODPT inquiry of 2026-09-19 is **unanswered**, including Q3, which asks whether non-restorable canonical data falls outside Art. 8(4)(1) (audit §3.12). No reply is assumed. DEC-065 §A leaves the Toei mapping-record row to be decided with the identifier format.
+
+**Evidence available for P2-S4** (read-only check, 2026-09-28):
+
+- **Accepted aggregates.** Toei has 149 `stops` rows forming 141 operator-level identities, and Tokyo Metro 185 rows forming 144 (audit §6.5). The audit justified each multi-row group within an operator by structure rather than by name: its rows share no route, their code prefixes match their lines, and their English names are identical. This held for all 8 Toei groups and all 32 Tokyo Metro groups. **It is evidence about one snapshot per operator, not a rule** for any feed.
+- **Line evidence.**
+  - Toei publishes 6 static routes (audit §6.1.3) and Tokyo Metro 9 (§6.2.3), which are the 15 baseline lines (DEC-047, DEC-058).
+  - Tokyo Metro also publishes 10 `odpt:Railway` records. No record carries a GTFS `route_id` and no route carries a Railway identifier. Every route-to-record match is *derivable from official fields*, never direct (§6.2.3).
+  - The branch record (`MarunouchiBranch`, line code `Mb`) has no static route of its own (§6.2.4).
+- **Inputs.**
+  - The current public Toei archive (SHA-256 `dd575706…`) can be read locally. The pinned Toei archive (`f10d03cd…`) is not available.
+  - The owner-only Tokyo Metro static archive (`9a077f8f…`) and the 2026-09-18 `odpt:Railway` snapshot are **not available** in any location this project records or has authorized. None may be searched for or fetched with a credential (DEC-067 §C). P2-S3's real-data validation is therefore still outstanding.
+- **Limits.** The audit saw one snapshot per operator, so no feed revision has ever been compared.
+- **What the readers keep.**
+  - The P2-S1 GTFS reader and the P2-S3 `odpt:Railway` reader decode UTF-8 into strings. Values are kept as written, without trimming, and only a leading byte-order mark is dropped (DEC-065 §D, DEC-067 §G).
+  - Their DTOs keep provider keys and source order, not line numbers.
+  - The intake manifest records the archive's SHA-256 and each selected member's SHA-256 (DEC-066).
+
+## Decision
+
+### A. Canonical identifier minting contract
+
+1. **Form.** A minted identifier is exactly 20 ASCII characters: a 3-letter kind prefix, an underscore, and a 16-character body.
+
+   | Kind prefix | Identifier |
+   |---|---|
+   | `stn` | `StationID` |
+   | `lin` | `LineID` |
+   | `opr` | `OperatorID` |
+
+   `TripID`, `JourneyID`, and `ServiceTypeID` are not covered; minting them needs its own decision.
+2. **Alphabet and encoding.**
+   - The body is 80 random bits, read as 16 five-bit groups from the most significant bit.
+   - Each group is written as one character of the lowercase Crockford base32 alphabet `0123456789abcdefghjkmnpqrstvwxyz`, which excludes `i`, `l`, `o`, and `u`.
+   - Only these lowercase characters are valid. There is no Crockford decoding leniency: uppercase and substitute letters are rejected, not mapped. There are no separators and no check character.
+   - The whole identifier is compared as an exact string.
+3. **Random source.**
+   - The bits come from the operating system's cryptographically secure generator, through Swift's `SystemRandomNumberGenerator`, which is `arc4random_buf` on Apple platforms.
+   - The minter is never seeded, and takes no input except the kind and the registry.
+   - A deterministic generator may be injected only in test builds, as DEC-066's test hooks are. The production minter contains no such entry point.
+4. **Entropy.** 80 bits per identifier. At one million identifiers of one kind, the chance that any two random bodies are equal is about 4 × 10⁻¹³. The launch set needs a few hundred. Uniqueness does not rely on this figure: item 5 guarantees it.
+5. **Collisions and uniqueness.**
+   - A new identifier is compared with **every identifier the registry has ever held**, of every kind, active or retired.
+   - If it is already held, it is discarded and a new one is drawn. After 8 consecutive collisions the run fails without minting, since that points to a broken random source, not to chance.
+   - The registry rejects any repeated identifier when it is decoded. An identifier is never reused, even after retirement.
+6. **Randomness chooses a value; the registry owns identity.** A random draw only picks an opaque label. What makes it a stable identity is the registry entry that holds it (§B). The same provider input, drawn again, would give a different label, which is why re-importing looks up the registry and never mints again.
+
+   Nothing in an identifier encodes a provider identifier, station or line code, name, coordinate, source order, mint time, or any function of provider data.
+7. **DEC-051 is unchanged.** `StationID`, `LineID`, and `OperatorID` still accept any value with a non-whitespace character and preserve it exactly, as DEC-051 decides. No Domain type is changed, and Domain does not validate this format. The registry validates the format for the identifiers it mints and holds.
+
+Rejected alternatives:
+- **Sequential numbers** would expose source order and invite meaning.
+- **Provider-derived or hashed values** would change whenever a provider identifier changes (Rule 9), and a hash of provider data is still a function of it.
+- **Name slugs:** names are not identity (DEC-048 rule 1, Rule 53), and the two 新宿 stations would collide.
+- **Bare UUIDs** are acceptable but longer and carry no kind.
+
+### B. The registry
+
+1. **Identity lives in the registry.** A canonical entity exists because the registry holds it. An import looks identities up through their provider references (§C). It never re-mints them.
+2. **Minting is explicit.** An identifier is minted once, only for an entity the registry does not hold, and only when the run input requests it. An unmatched provider record is reported, never minted automatically.
+3. **Identifiers are never reused, rebound, or deleted.**
+   - A canonical entity is active or retired. A retired entity stays in the registry with its successor identifier or identifiers.
+   - A merge or a split happens only through an explicit identity migration (§E4; Rule 39, Rule 53, DEC-026). A future Shinjuku merge would be one (DEC-048).
+4. **The registry is versioned data** (Rule 39, `ARCHITECTURE.md` §41):
+   - It has a schema version and a revision number, and its encoding is deterministic.
+   - Decoding rejects an unknown schema version, a repeated identifier, an identifier outside the §A form, a provider reference bound to two identifiers, and a blank original value.
+5. **Determinism.** The same inputs, the same reviewed records, and the same registry give byte-identical importer output. Randomness enters only when an explicitly requested identifier is minted.
+6. **Only provisional registries exist until §F.** Every registry an importer writes before the registry-of-record decision is **provisional**: it is kept outside the repository and may be discarded. **No identifier minted into a provisional registry is a production identifier.** The first registry of record fixes identity from then on.
+
+### C. Provider references, original values, and provenance
+
+1. **Every provider value that identifies an entity is a provider-reference record**, holding:
+   - the canonical identifier;
+   - the source (`DS-01/…`, `DS-03/…`, DEC-066);
+   - the namespace, one of `gtfs.agency_id`, `gtfs.route_id`, `gtfs.stop_id`, `gtfs.stop_code`, `odpt.operator`, `odpt.railway.id`, `odpt.railway.sameAs`, or `odpt.railway.lineCode`;
+   - the decoded value (item 2);
+   - its status (§E);
+   - the first and last identified input it was seen in.
+2. **Exact decoded value.**
+   - A value is kept as the exact sequence of Unicode scalars the reader decoded from UTF-8: no Unicode normalization, trimming, case change, or width folding, and no rewriting of ヶ / ケ or 〈…〉.
+   - Values are compared scalar by scalar, never with canonical-equivalence string equality, so a composed and a decomposed spelling are different values.
+   - This is what "exact" means in this Decision. It is a claim about the decoded value, **not** about source bytes.
+3. **Source-byte provenance.**
+   - Every value carries a source reference: the source, the input SHA-256 (for GTFS, the archive and member SHA-256 from the intake manifest; for `odpt:Railway`, the input SHA-256), the table or record index, the field, and the row's provider key.
+   - The reference identifies the bytes the value came from; it does not contain them. Source bytes are not kept in any mapping record.
+   - Byte-for-byte preservation is claimed only for a raw input that is actually retained outside the public repository, verified against its recorded hash. It is never claimed for a mapping record.
+4. **Original names.** Each provider-reference record keeps the provider's original name values per language, as decoded values (item 2). They are provider inputs, never canonical names (P2-S7).
+5. **Alias rules.** The ヶ / ケ orthographic rule and the 〈…〉 subtitle rule (DEC-048) are their own explicit records, used only as comparison keys. P2-S5 applies them; P2-S4 only reserves them in the schema.
+6. **Reversibility.** Every mapping traces to its source values, and no mapping is held only in code.
+
+### D. P2-S4 mapping contract — nothing is merged or bound without a reviewed record
+
+1. **Operators.** Toei's `agency_id` is bound to one `OperatorID`. Tokyo Metro's `agency_id` and `odpt:operator` are bound to another. Both bindings are explicit, reviewed records. There are two operators.
+2. **Operator-level station identities — proposed by evidence, accepted by review.**
+   - **Default.** Each `stops` row is its own operator-level identity. **No rows are ever merged automatically**: not on equal Japanese names, equal English names, matching code prefixes, or any combination of them. No distance is used, and no rule applies to all feeds.
+   - **Candidates.** Candidate generation may use any signal, including names. A candidate is only a question for review.
+   - **Evidence for a grouping proposal.** The importer proposes a grouping only when all of the following hold, and it attaches this evidence to the proposal:
+     - the rows belong to one operator and one identified input;
+     - they share no route;
+     - each row's code is consistent with every route that serves it;
+     - each row appears in its routes' stop sequences, and its neighbouring stops there are recorded as route and topology context;
+     - the rows' original Japanese and English values are listed side by side, as a signal and not as proof;
+     - no other row of the same operator competes as a candidate for any member.
+   - **Acceptance.** A grouping takes effect only through an explicit **reviewed grouping record**. That record lists every member's source reference, the evidence reviewed, and the reviewer's decision. A proposal the record does not list is not applied.
+   - **Exceptions.** Accepting a grouping whose evidence is incomplete or contradictory requires an **explicit reviewed exception**: a recorded reason, tied to that one grouping. It never becomes a general rule.
+   - **Held back.** A candidate with contradictory, competing, or insufficient evidence is held back. It is listed with the source references of all its rows, and they stay separate identities.
+   - **No `StationID` is minted in P2-S4.** Canonical stations are formed in P2-S5, which reconciles to DEC-048 (DEC-065 §E).
+3. **Lines** (15 `LineID`s):
+   - Each static route and each `odpt:Railway` record is bound to **exactly one** `LineID` by an explicit, reviewed binding record.
+   - The official-field checks — line code against the stop-code prefix, Japanese and English titles, colour — only **propose** a binding and report any disagreement. They never bind on their own.
+   - An unbound route or record, or a disagreement that no binding record accepts, fails the run.
+4. **Marunouchi** (DEC-057 D6, DEC-067 §H):
+   - The single static route and **both** Railway records — the main-line record and the branch record `MarunouchiBranch` / `Mb` — are bound to **one** `LineID`.
+   - The branch record keeps its own references and station scope as provenance, for Phase 4 status scoping.
+   - No second `LineID`, branch identifier, segment identifier, or `Mb` Domain identity is created.
+5. **Separate operators stay separate.** P2-S4 never relates stations of different operators. Toei 新宿 and Tokyo Metro 新宿 therefore stay two operator-level identities with no relation and no transfer edge. P2-S5 keeps them as two canonical stations (DEC-048).
+6. **Not in P2-S4:**
+   - the 258 canonical station groups and the cross-operator alias rules (P2-S5);
+   - coordinates and topology values (P2-S6);
+   - canonical names and search (P2-S7);
+   - `odpt:Railway` station-order station identifiers as references — deferred to the slice that first needs them;
+   - `Trip` and service type;
+   - any Domain type change;
+   - any distance constant.
+
+### E. Revisions — history kept, current state explicit
+
+1. **Provider-reference status.**
+   - **Active:** present in the latest reconciled input of its source. Only active references resolve in lookups.
+   - **Absent:** missing from the latest reconciled input. It is kept as history with its last-seen input. It is **not current** and does not resolve.
+   - **Retired:** withdrawn by an explicit reviewed record, for example when a provider confirms a withdrawal or reuses a value for something else. It is kept as history, never resolves, and never becomes active again.
+2. **Transitions.**
+
+   | From | To | How |
+   |---|---|---|
+   | active | absent | automatic when the value is missing from an input; reported |
+   | absent | active | when the same value reappears with no conflicting structure; reported |
+   | active or absent | retired | only by an explicit reviewed record |
+
+   A retired value that reappears is reported as a conflict, never reactivated.
+3. **What an import reports.**
+   - **Unchanged:** the reference matches exactly.
+   - **Descriptive change:** the provider key is unchanged but its name, code, or route changed. The identity is kept, the change is reported, and the new original values are recorded beside the old.
+   - **Absent:** a reference is missing from the input. It moves to absent, and nothing is deleted.
+   - **New:** a value is not in the registry. It is reported as unassigned. An identifier is minted only on an explicit request, and a grouping or binding needs its reviewed record.
+   - **Conflict:** a change contradicts an accepted grouping or binding — for example, grouped rows now share a route — or a retired value reappears, or a value is reused. The run fails until a reviewed record resolves it.
+
+   An omission never deletes history and never implies that an old reference is still current.
+4. **Canonical identity changes only by migration.** A canonical identifier never changes because a provider value changed. Merging or splitting canonical entities requires an explicit identity migration: a reviewed record naming the old and new identifiers and their successors, versioned with the registry (Rule 39). It is never an in-place edit.
+
+### F. Registry of record and the public-repository boundary
+
+1. **One registry-of-record decision remains pending.** It decides where the registry of record lives — candidates are the public repository, owner-only storage, and a private repository — and how it is backed up and delivered to the app, which is tied to P2-S8 and bundling item 5.
+
+   Until it is accepted:
+   - **no production identifier is minted**;
+   - **no real mapping, provider-reference, grouping, or binding record is committed, for either operator.**
+2. **Toei and Tokyo Metro real records are deferred together.** DEC-065 §A left Toei mapping records "to be decided with the identifier format". This Decision defers them to the registry-of-record decision, so the registry is never split between the repository and elsewhere. CC BY 4.0 would permit Toei records with attribution (audit §3.5); that permission alone does not settle the location.
+3. **Tokyo Metro-derived mapping stays non-public until DEC-065's gate is resolved.** Publishing any Tokyo Metro-derived mapping record needs the ODPT reply to Q3 or a separate accepted publication decision (DEC-065 §A, unchanged). Nothing here assumes such records are non-restorable or permitted.
+4. **May be committed:**
+   - the format, minting, and registry code and schemas;
+   - the grouping-proposal, binding, and reconciliation code;
+   - fully invented synthetic fixtures (DEC-065 §A, DEC-067 §B), including invented reviewed records;
+   - aggregate counts and hashes (DEC-067 §E).
+
+### G. Where the code lives (`ARCHITECTURE.md` §4, §39, §40)
+
+- **App side.** Provider-neutral registry, provider-reference, grouping, and binding record types and their validation go in `TSUGINO/Data/Mapping/`. This is a new folder for mapping that spans providers, beside the per-provider `Mapping/` areas (§4, §4.3). It contains no minting. Like the readers, it is compiled into the tool.
+- **Tool side.** Minting, grouping proposals, binding checks, reconciliation, and a command that writes a provisional registry and report outside the repository go in the offline tool (`Tools/StaticDataIntake/`, DEC-066). The app gains no importer and no minting.
+
+Heavy work stays off the main actor (Rule 14). No dependency is added.
+
+### H. P2-S4 completion — synthetic implementation and real-data acceptance are separate
+
+1. **Implementation.** P2-S4 code and synthetic tests may proceed under this Decision. Passing them makes P2-S4 **implemented**, not complete.
+2. **Real-data acceptance.** P2-S4 is **complete** only when the actual Toei and Tokyo Metro aggregates are validated against identified source snapshots, each identified by its recorded SHA-256:
+   - operator-level identity counts;
+   - reviewed groupings and held-back candidates;
+   - line bindings, including the Marunouchi branch record.
+
+   The validation works as follows:
+   - Against the audited snapshots, the results are compared with the audit's aggregates.
+   - Against any other snapshot, its aggregates are recorded with its hash, and every difference from the audit must be explained through the reconciliation report and reviewed. No match is assumed.
+   - Only a new accepted decision can revise this exit condition.
+3. **Prerequisite.** P2-S3's real Tokyo Metro validation (DEC-067 §C, §E) is an outstanding prerequisite of P2-S4 real-data acceptance. Synthetic tests do not substitute for it.
+
+## What each kind of evidence can decide
+
+| Question | Decided by |
+|---|---|
+| Minting, registry validation, value exactness, grouping proposals and held-back reporting, reviewed-record enforcement, binding, reference status and revision rules, and keeping stations of separate operators apart | synthetic tests with invented data — **decidable now**; passing them makes P2-S4 *implemented* |
+| Toei identity, grouping, and line aggregates | a local run on an identified Toei snapshot. The current public archive is available now, but is not the audited one, so every difference needs a reviewed explanation |
+| Tokyo Metro identity, grouping, and line aggregates, including the branch record | a local run on identified owner-only snapshots — **outstanding**: they are unavailable, and P2-S3's validation must come first |
+| P2-S4 *complete* | both of the rows above (§H2), or a new accepted decision |
+| Committing any real mapping record for either operator; minting production identifiers | the registry-of-record decision (§F1) |
+| Publishing any Tokyo Metro-derived mapping | additionally, the ODPT Q3 reply or a separate accepted publication decision (§F3) |
+| Bundling canonical data in the shipped app | ODPT item 5 and P2-S8 — not P2-S4 |
+
+## Consequences
+
+- P2-S4 can be implemented and tested with synthetic data, but stays incomplete until §H2 is met.
+- Every operator-level grouping and every line binding for real data needs a reviewed record. The importer only proposes.
+- `ARCHITECTURE.md` is updated:
+  - §4, for the `Data/Mapping/` folder;
+  - §39, for the minting contract beside the unchanged DEC-051 invariant;
+  - §40, for provider-reference status, reviewed records, and revision rules.
+- The P2-S5 determinism criterion reads "the same inputs, reviewed records, and registry give byte-identical output", because identifiers are minted once rather than derived.
+- DEC-048's 258 groups and its digests stay a reconciliation target, never seed data or identifiers.
+
+## Revisit Triggers
+
+- The ODPT secretariat replies to Q3 or item 5.
+- The registry-of-record decision is made.
+- The owner-only Tokyo Metro inputs, or the pinned Toei archive, become available.
+- A feed revision produces a conflict (§E3), or an operator publishes a shared cross-operator identifier.
+- A new identifier kind needs minting (`TripID`, `ServiceTypeID`).
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
