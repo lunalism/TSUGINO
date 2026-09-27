@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27).** P2-S0, P2-S1, and P2-S2 are complete. P2-S3 is next; its design is accepted and it is not yet implemented. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27).** P2-S0, P2-S1, P2-S2, and P2-S3 are complete; P2-S3's local real-data validation is outstanding. P2-S4 is next. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -426,7 +426,7 @@ Create a reliable local railway topology foundation.
 - **Tests.** 137 focused cases, all synthetic, cover every §D case, the cross-table references, determinism, a stable first reported problem, and a main-actor caller. Full suite: **1008/1008 executed cases passed, 0 failed, 0 skipped**. Debug build and clean Release build of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
 - **Local validation.** The pinned 2026-09-16 archive (SHA-256 `f10d03cd…`) was not available, so the reconciliation against that snapshot is **still outstanding**. The current public, credential-free Toei archive was read instead, fetched on 2026-09-25 and again on 2026-09-26 with the same result: SHA-256 `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`, `feed_version` 20260921. It read with **0 invalid and 0 unsupported rows**: 149 `stops` rows, all `location_type` 0; 6 routes; 5,600 trips; 122,798 `stop_times` rows; 404 `translations` rows (Japanese 202 / English 202 / Korean 0); 141 distinct stop names, 8 of them appearing twice. The hash differs from the pinned archive, so **no equivalence to the recorded snapshot is claimed**. That archive has LF line endings and no byte-order mark, so the CRLF and BOM paths are covered by synthetic tests only. The archive, its contents, and the validation driver stayed outside the repository.
 
-**P2-S2 completion record** (2026-09-26; implementation awaiting review and commit). The offline static source intake tool is implemented in `Tools/StaticDataIntake/`, following DEC-066:
+**P2-S2 completion record** (2026-09-26; implementation reviewed and committed). The offline static source intake tool is implemented in `Tools/StaticDataIntake/`, following DEC-066:
 
 - **Build.** It is built by `build.sh` with `xcrun swiftc` from its own sources and the unchanged P2-S1 reader sources. `test.sh` builds and runs a separate test runner with `-D INTAKE_TESTING`. The only repository change outside the tool is one `.gitignore` entry for `.build/`. There is no Xcode target, no dependency, no networking, and no credential; the app target and `TSUGINOTests` are unchanged.
 - **How it works.** `bsdtar` reads the archive only as `/dev/fd/3`, from the single opened descriptor. That descriptor is duplicated to a number of 10 or above before spawning, because a descriptor that already is fd 3 would otherwise be closed in the child. Every run rewinds the shared offset, and hashing uses `pread`.
@@ -448,6 +448,39 @@ Create a reliable local railway topology foundation.
   - Renaming the pinned output directory itself into the repository during intake is narrowed but cannot be fully excluded.
   - If the tool is killed by a signal during publication, a hidden `.static-data-intake-*.tmp` file may remain in the output directory, which lies outside the repository.
   - A copy of the tool placed inside another Git repository would check that repository's boundary instead.
+
+**P2-S3 completion record** (2026-09-28). Implemented and reviewed as DEC-067 decides:
+
+- **Static GTFS.** Tokyo Metro static GTFS is read through the **unchanged** P2-S1 reader. Fully invented, Tokyo Metro-shaped tests cover:
+  - a byte-order mark on every table;
+  - flat stops with line-letter codes, including a two-letter branch code;
+  - first-row `pickup_type` 1 and last-row `drop_off_type` 1;
+  - blank-time `timepoint` 0 rows;
+  - `field_value` translations.
+
+  No reader rule changed.
+- **`odpt:Railway` reader.** A DTO reader in `TSUGINO/Data/ODPT/Railway/` with a single `@concurrent` entry point. It keeps source order and provider values, sorts title maps by language key, and reports typed invalid or unsupported errors that carry only a record index and a field name. It mints no identifier and matches nothing to GTFS routes. The branch shape is kept as a distinct record.
+  - Implementation found that Foundation's JSON parser tolerates trailing commas and repeated keys. The reader now makes a trailing comma invalid and a repeated key unsupported, as recorded in the DEC-067 amendment.
+  - The implementation review (2026-09-27, including a Codex pass) found three more gaps. All are fixed with regression tests and recorded in the DEC-067 amendment:
+    - The platform parser refuses some well-formed JSON — deep nesting, out-of-range numbers, lone-surrogate escapes — which the reader had reported as invalid. The reader now checks the RFC 8259 grammar itself, with an iterative recognizer. It reports such input as unsupported (`platformParserLimit`).
+    - A repeated-key error echoed any key, including provider text. It now names the key only when it is a reader field name, or a language tag inside a title map.
+    - `validate-railway` read to end of file without a bound, so a file growing during the read escaped the 8 MiB limit. It now reads no more than the size recorded at open, and fails as changed otherwise.
+- **Tool.**
+  - The committed source list gains the verified, credentialed DS-03 entry, with no URL.
+  - The read-only `validate-railway` command applies DEC-066's boundary checks and an 8 MiB limit. It writes nothing, prints only the DEC-067 §E aggregates, and reports failures without any provider value.
+  - The intake contract is unchanged: the Toei manifest is byte-identical to P2-S2's.
+  - Test-only overloads remain absent from the operator binary.
+- **Tests and builds.**
+  - Focused app tests pass **87/87**.
+  - The tool runner passes **43/43**: 8 unit, 26 intake integration, and 9 DS-03 and `validate-railway` cases.
+  - `TSUGINOTests` passes **1095/1095**.
+  - Debug build and clean Release build of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
+  - The Release build reports 75 warnings, the same count as before P2-S3. All are existing ones: actor-isolation warnings in existing `Domain` files, `AppIcon` asset warnings, and an App Intents metadata notice. None comes from P2-S3 code in `TSUGINO/Data/ODPT/`.
+- **Review.** An independent adversarial review, with Codex passes on a frozen tree, found four issues. All four are fixed with regression tests: the three gaps above, plus a follow-up narrowing of repeated-key naming to title maps. The final Codex pass on the fixed tree reported no findings. **Verdict: P2-S3 passes review.**
+- **Local real-data validation: outstanding.**
+  - The owner-only Tokyo Metro inputs — the static archive `9a077f8f…` and the 2026-09-18 `odpt:Railway` snapshot — were not available. None was fetched.
+  - Real-feed validation has not been run.
+  - **Compatibility with the actual Tokyo Metro feeds has not been established.** The synthetic contract covers the shapes the audit recorded, not the files themselves.
 
 **Completion rules, proportionate to the kind of slice:**
 
@@ -486,7 +519,7 @@ Create a reliable local railway topology foundation.
   - **Boundaries:** the app target and `TSUGINOTests` are unchanged. No third-party dependency and no Xcode target are added. Build artifacts appear only under the git-ignored `Tools/StaticDataIntake/.build/`.
   - **Local validation, not committed:** the tool is run on the current public Toei archive, and on the pinned 2026-09-16 archive if it becomes available. The archive SHA-256, `feed_version`, and selected-member hashes are recorded as aggregates, with a clean reader result. No equivalence is claimed between different hashes.
   - **Suite and builds:** the full `TSUGINOTests` suite and the Debug and Release builds of the app and extension still pass. No archive, member bytes, manifest, signed URL, token, or local path is committed.
-- **P2-S3 (DEC-067; not yet implemented):**
+- **P2-S3 (DEC-067):**
   - **GTFS, focused tests.** Fully invented, Tokyo Metro-shaped synthetic tests of the **unchanged** P2-S1 reader are accepted. They cover:
     - a byte-order mark;
     - flat stops with line-letter `stop_code` values, including a two-letter branch code;

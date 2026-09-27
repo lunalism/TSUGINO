@@ -10,7 +10,7 @@ try FileManager.default.createDirectory(at: temporaryRoot, withIntermediateDirec
 
 var passed = 0
 var failed: [String] = []
-for (index, test) in (unitTests + integrationTests).enumerated() {
+for (index, test) in (unitTests + integrationTests + railwayTests).enumerated() {
     do {
         let workspace = try Workspace(root: temporaryRoot.appendingPathComponent("case-\(index)"))
         try await test.body(workspace)
@@ -27,5 +27,5 @@ for (index, test) in (unitTests + integrationTests).enumerated() {
 
 try? FileManager.default.removeItem(at: temporaryRoot)
 let leftover = FileManager.default.fileExists(atPath: temporaryRoot.path)
-print("\n\(passed) passed, \(failed.count) failed (\(unitTests.count) unit, \(integrationTests.count) integration); temporary root removed: \(!leftover)")
+print("\n\(passed) passed, \(failed.count) failed (\(unitTests.count) unit, \(integrationTests.count) intake integration, \(railwayTests.count) DS-03 and validate-railway); temporary root removed: \(!leftover)")
 exit(failed.isEmpty && !leftover ? 0 : 1)

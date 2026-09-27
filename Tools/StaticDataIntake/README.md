@@ -21,6 +21,14 @@ Tools/StaticDataIntake/.build/static-data-intake \
     --output <manifest file outside the repository>
 ```
 
+To check an `odpt:Railway` JSON file read-only (DEC-067):
+
+```sh
+Tools/StaticDataIntake/.build/static-data-intake validate-railway --input <JSON file outside the repository>
+```
+
+It writes nothing and prints only counts, totals, and a hash; failures name an error kind, record index, and field, never a provider value.
+
 The tool performs no network access and reads no credentials; the operator supplies the archive and its obtained-at time. It refuses archive and output paths inside the repository, never overwrites an existing file, and publishes nothing when any check fails. Only the nine GTFS table members are read and integrity-checked; other members are recorded by name only.
 
 Never commit archives, extracted tables, or manifests (DEC-065 §A).

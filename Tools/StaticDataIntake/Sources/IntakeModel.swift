@@ -145,8 +145,8 @@ struct SourceDefinition: Equatable {
     }
 }
 
-/// The committed source list. Only credential-free sources are listed for
-/// P2-S2; Tokyo Metro acquisition is decided with P2-S3.
+/// The committed source list. The tool fetches nothing: every archive is
+/// supplied by the operator (DEC-066, DEC-067).
 enum SourceList {
     /// Registry row DS-01: Toei static GTFS, CC BY 4.0 (audit §2.3 B8, §3.5).
     static let toeiStaticGTFS = SourceDefinition(
@@ -159,7 +159,21 @@ enum SourceList {
         url: "https://api-public.odpt.org/api/v4/files/Toei/data/Toei-Train-GTFS.zip"
     )
 
-    static let all: [SourceDefinition] = [toeiStaticGTFS]
+    /// Registry row DS-03: Tokyo Metro static GTFS, Basic License. Metadata
+    /// verified 2026-09-27 from the public catalog pages of dataset
+    /// `train-tokyometro` (DEC-067 Context). The file URL requires an account
+    /// token, so the source is credentialed and no URL is recorded.
+    static let tokyoMetroStaticGTFS = SourceDefinition(
+        sourceID: "DS-03/tokyometro-static-gtfs",
+        provider: "Tokyo Metro",
+        license: "Public Transportation Open Data Basic License",
+        dataset: "train-tokyometro",
+        resource: "d4f11962-1c5a-4316-9a16-7fb229c227ea",
+        access: .credentialed,
+        url: nil
+    )
+
+    static let all: [SourceDefinition] = [toeiStaticGTFS, tokyoMetroStaticGTFS]
 
     static func source(id: String) -> SourceDefinition? {
         all.first { $0.sourceID == id }

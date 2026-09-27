@@ -1,20 +1,50 @@
 import Foundation
 
-// static-data-intake — the operator's command line (DEC-066).
+// static-data-intake — the operator's command line (DEC-066, DEC-067).
 //
 //   static-data-intake --source <id> --archive <path> --obtained-at <UTC> --output <file>
+//   static-data-intake validate-railway --input <file>
 //
-// The archive and the output file must lie outside the repository. The
-// tool performs no network access and reads no credentials.
+// Inputs and the output file must lie outside the repository. The tool
+// performs no network access and reads no credentials. validate-railway is
+// read-only: it writes no file and prints only aggregates.
 
 func usage() -> Never {
     let sources = SourceList.all.map(\.sourceID).joined(separator: ", ")
     FileHandle.standardError.write(Data("""
         usage: static-data-intake --source <id> --archive <path> --obtained-at <YYYY-MM-DDTHH:MM:SSZ> --output <file>
+               static-data-intake validate-railway --input <file>
         sources: \(sources)
 
         """.utf8))
     exit(64)
+}
+
+func toolRepositoryRoot() throws(IntakeError) -> FileIdentity {
+    guard let executable = Bundle.main.executablePath, let resolved = resolvedPath(executable) else {
+        throw IntakeError.repositoryRootUnavailable
+    }
+    return try repositoryRoot(containing: (resolved as NSString).deletingLastPathComponent)
+}
+
+if CommandLine.arguments.dropFirst().first == "validate-railway" {
+    let rest = Array(CommandLine.arguments.dropFirst(2))
+    guard rest.count == 2, rest[0] == "--input" else { usage() }
+    do {
+        let root = try toolRepositoryRoot()
+        let summary = try await RailwayValidation.run(inputPath: rest[1], repositoryRoot: root)
+        print(summary.report(), terminator: "")
+        exit(0)
+    } catch let error as IntakeError {
+        FileHandle.standardError.write(Data("validate-railway failed: \(error)\n".utf8))
+        exit(1)
+    } catch let error as RailwayValidationError {
+        FileHandle.standardError.write(Data("validate-railway failed: \(error)\n".utf8))
+        exit(1)
+    } catch {
+        FileHandle.standardError.write(Data("validate-railway failed.\n".utf8))
+        exit(1)
+    }
 }
 
 var options: [String: String] = [:]
@@ -29,10 +59,7 @@ guard let sourceID = options["--source"], let archive = options["--archive"],
 guard let source = SourceList.source(id: sourceID) else { usage() }
 
 do {
-    guard let executable = Bundle.main.executablePath, let resolved = resolvedPath(executable) else {
-        throw IntakeError.repositoryRootUnavailable
-    }
-    let root = try repositoryRoot(containing: (resolved as NSString).deletingLastPathComponent)
+    let root = try toolRepositoryRoot()
     let request = IntakeRequest(source: source, archivePath: archive, outputPath: output, obtainedAt: obtainedAt)
     let result = try await StaticDataIntake.run(request, repositoryRoot: root)
 
@@ -47,7 +74,7 @@ do {
         trips \(feed.trips.count), stop_times \(feed.stopTimes.count), calendar \(feed.calendars.count), \
         calendar_dates \(feed.calendarDates.count), feed_info \(feed.feedInfo.count), translations \(feed.translations.count)
         """)
-} catch let error as IntakeError {
+} catch {
     FileHandle.standardError.write(Data("intake failed: \(error)\n".utf8))
     exit(1)
 }

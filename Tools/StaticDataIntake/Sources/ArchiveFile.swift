@@ -87,6 +87,29 @@ final class ArchiveFile {
         return (hexString(hasher.finalize()), Int64(offset))
     }
 
+    /// Every byte from offset 0 to end of file, read with `pread`, or `nil`
+    /// when the file holds more than `maximum` bytes. At most `maximum + 1`
+    /// bytes are ever read, so a file that grows during the read can neither
+    /// exhaust memory nor keep the read from finishing.
+    func readAll(maximum: Int64) throws(IntakeError) -> Data? {
+        var data = Data()
+        var offset: off_t = 0
+        let buffer = UnsafeMutableRawBufferPointer.allocate(byteCount: 1024 * 1024, alignment: 1)
+        defer { buffer.deallocate() }
+        while offset <= maximum {
+            let wanted = Int(min(Int64(buffer.count), maximum + 1 - offset))
+            let count = pread(descriptor, buffer.baseAddress, wanted, offset)
+            if count < 0 {
+                if errno == EINTR { continue }
+                throw .archiveReadFailed(errno: errno)
+            }
+            if count == 0 { break }
+            data.append(contentsOf: buffer[0..<count])
+            offset += off_t(count)
+        }
+        return offset > maximum ? nil : data
+    }
+
     /// Resets the shared offset before a child reads the descriptor.
     func rewind() throws(IntakeError) {
         guard lseek(descriptor, 0, SEEK_SET) == 0 else { throw .archiveReadFailed(errno: errno) }

@@ -4596,8 +4596,9 @@ Intake is a developer activity on provider files that must never reach the app o
 
 # DEC-067 — Tokyo Metro Static Data Is Read Through Synthetic Contracts; Real Inputs Stay Local
 
-**Status:** Accepted — design only; P2-S3 is not yet implemented\
+**Status:** Accepted\
 **Date:** 2026-09-27\
+**Amended:** 2026-09-27 — §G, during P2-S3 implementation. Foundation's JSON parser accepts a trailing comma, which RFC 8259 forbids, so the reader rejects one as malformed JSON (invalid). It also silently keeps one value of a repeated object key, which RFC 8259 permits but leaves undefined, so the reader reports a repeated key as unsupported. After the P2-S3 implementation review, the reader checks the RFC 8259 grammar itself instead of relying on the platform parser. Well-formed JSON that the platform parser refuses — nesting beyond its depth, a number outside its range, a lone-surrogate escape — is unsupported (`platformParserLimit`), within RFC 8259's implementation limits (§8.2, §9). A repeated key is named only when it is a reader field name, or a language tag inside a title map. In §F, `validate-railway` reads no more than the size recorded at open, so a file that grows during the read fails as changed. The rest of the contract is unchanged.\
 **Amends:** DEC-065 §B4 — narrowly, to allow fully invented, Tokyo Metro-shaped synthetic fixtures; DEC-065 is otherwise unchanged\
 **Related:** DEC-021, DEC-037, DEC-047, DEC-048, DEC-057 D6, DEC-065, DEC-066; `RULES.md` Rule 8, Rule 9, Rule 14, Rule 34, Rule 40, Rule 42; `ARCHITECTURE.md` §4, §4.3, §40; `ROADMAP.md` Phase 2 P2-S3; `PROVIDER_FEASIBILITY_AUDIT.md` §3.6, §3.12, §6.2.1–§6.2.5, §6.8, §9 (DS-03)
 
@@ -4690,7 +4691,8 @@ A separate command of the P2-S2 tool. The intake command and its manifest contra
 - **Invocation:** `static-data-intake validate-railway --input <file>`. There is no source selection, output path, network access, or credential.
 - **Input:**
   - it passes DEC-066's repository-boundary checks (resolved path, file-system identity, then a check on the opened file itself);
-  - it is opened once, non-blocking, and must be a regular file within a fixed 8 MiB limit — the retained snapshot is about 50 KB (audit §6.2.2).
+  - it is opened once, non-blocking, and must be a regular file within a fixed 8 MiB limit — the retained snapshot is about 50 KB (audit §6.2.2);
+  - it is read only up to the size recorded when it was opened: a file that holds more bytes than that, or whose state changes, fails as changed, so the limit holds during the read as well.
 - **Output boundary:**
   - it writes nothing to disk, anywhere;
   - standard output carries only the §E aggregates, on success;
@@ -4706,7 +4708,7 @@ A separate command of the P2-S2 tool. The intake command and its manifest contra
 
 This is a **reader contract based on the retained audit's observed shape**. It makes no claim about the ODPT specification, which has not been verified (Context). Two outcomes are distinguished:
 
-- **Invalid:** input that is not valid UTF-8, or not well-formed JSON.
+- **Invalid:** input that is not valid UTF-8, or not well-formed JSON under the RFC 8259 grammar, including a trailing comma before `]` or `}` — which the platform parser would otherwise tolerate. The reader checks the grammar itself, before any other check. A leading byte-order mark is accepted, as RFC 8259 permits.
 - **Unsupported** — valid JSON outside the supported record shape, reported with its record index and field name:
   - a top level that is not an array, or an element that is not an object;
   - an `@type` other than `odpt:Railway`;
@@ -4715,7 +4717,9 @@ This is a **reader contract based on the retained audit's observed shape**. It m
   - a station-order entry without an integer `odpt:index` and a string `odpt:station`;
   - station-order indices that are not contiguous from 1;
   - a duplicate `@id`, `owl:sameAs`, or line code;
-  - mixed operators.
+  - mixed operators;
+  - a JSON object that repeats a key, reported with its record index. The key is named only when it is a reader field name, or a language tag inside a title map; any other key is provider text and is not named, even when it is shaped like a language tag;
+  - well-formed JSON the platform parser cannot read — nesting beyond its depth limit, a number outside its range, or a lone-surrogate escape. RFC 8259 allows such implementation limits (§8.2, §9), so this is not invalid.
 
   Unsupported says only that the reader does not handle the shape. It never claims the provider's data is wrong.
 - **Accepted:** optional `odpt:color` and rail-direction fields, absent or present. Unknown keys are ignored. Title maps keep every language key, sorted, and require no particular language — which languages are required is decided with localization (P2-S7).

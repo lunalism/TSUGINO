@@ -10,5 +10,6 @@ mkdir -p "$here/.build"
 xcrun swiftc -swift-version 5 -Onone -D INTAKE_TESTING -module-name StaticDataIntakeTests \
     -o "$here/.build/static-data-intake-tests" \
     "$here"/Sources/*.swift "$here"/Tests/*.swift \
-    "$repo"/TSUGINO/Data/GTFS/Static/*.swift
+    "$repo"/TSUGINO/Data/GTFS/Static/*.swift \
+    "$repo"/TSUGINO/Data/ODPT/Railway/*.swift
 exec "$here/.build/static-data-intake-tests"
