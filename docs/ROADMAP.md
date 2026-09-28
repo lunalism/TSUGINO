@@ -504,7 +504,29 @@ Create a reliable local railway topology foundation.
     - Debug and clean Release builds of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
     - The Release build reports the existing 75 warnings; none comes from `Data/Mapping`.
     - The operator binary has no generator-injection entry point, and the app binary has no minting.
-  - **Later steps.** Grouping proposals, reviewed grouping and binding records, revision reconciliation, the provisional-registry command, and real-data acceptance.
+- **Step 2 — grouping proposals and reviewed grouping records** (2026-09-28; reviewed). Synthetic only: no real grouping, mapping, or identifier.
+  - **App.** `Data/Mapping/StationGrouping.swift` holds the reviewed grouping record, its per-grouping exception, and the record set. A record names its members' `stops.stop_id` source references in one input, the digest of the evidence reviewed, and the decision.
+  - **Tool.** Candidates come from shared name values among rows of one established operator. Each gets the DEC-068 §D2 evidence and checks: one operator, no shared route, code fit, stop-sequence neighbours, Japanese and English name evidence, and uniform names. It is then proposed or held back, with findings and source references. Rows merge only through an accepted record whose evidence digest matches, and a failed check only through that record's own exception. Coordinates are not read.
+  - **Review.** An adversarial review, including Codex passes on frozen trees, found eight defects. All are fixed with regression tests:
+    - an exception could waive the one-operator check and merge rows of two operators. The operator boundary is now non-waivable (DEC-068 §D5): no exception can name it, and an acceptance of a candidate that spans operators fails;
+    - applying records took a report separately from its input, so identities could mix two archives. Proposals are now made from the one input inside the apply step;
+    - in a one-agency feed, a route without `agency_id` was treated as a different operator from a route naming that agency. Such a route now resolves to the feed's only agency, and an `agency_id` the feed does not define is unresolved;
+    - a row served by no route contributed no operator, so it passed the boundary and could be merged by an exception. It now has no established operator, fails the boundary, and is never grouped;
+    - a candidate lacking Japanese or English name evidence was proposed. It is now held back by a `nameEvidence` check. The published name counts in the feed's language, and a `ja` or `en` translation counts;
+    - in a feed with several agencies, another operator's same-name row pulled a valid pair into a candidate that crossed operators, which could never be accepted. Candidates now form only among rows of one established operator. A row with no established operator — no route, an undefined agency, or several agencies — forms candidates only with such rows, which the boundary holds back. Where it shares a name with a candidate, it is reported against that candidate as a competing row;
+    - a record naming an unknown row, another input's `stops.txt`, or rows never proposed together failed with one generic error. Each now fails with a distinct error. Rows with no name in common cannot be grouped in P2-S4, and nothing merges;
+    - a `stop_id` repeated in an input built without the reader would sit in two identities. The grouping input now refuses it.
+
+    The final Codex pass on the fixed tree reported no findings. **Verdict: Step 2 passes review.**
+  - **Tests and builds.**
+    - Focused app tests pass **93/93**: 8 grouping-record cases and the 85 Step 1 cases, all on invented records.
+    - The tool runner passes **68/68**: 8 unit, 26 intake integration, 9 DS-03 and `validate-railway`, 8 minting, and 17 grouping cases, on invented feeds.
+    - `TSUGINOTests` passes **1188/1188**.
+    - Debug and clean Release builds of the app and extension succeeded. iPhone 17 simulator, iOS 26.5.
+    - The Release build reports the existing 75 warnings, which predate Step 2; none comes from `Data/Mapping`.
+    - The operator binary has no generator-injection entry point, and the app binary has no proposal, apply, or minting code.
+  - **Not done.** Step 2 does not complete P2-S4, which remains neither implemented nor complete. Real-data validation is outstanding (DEC-068 §H).
+- **Later steps.** Line bindings, revision reconciliation, the provisional-registry command, and real-data acceptance.
 
 **Completion rules, proportionate to the kind of slice:**
 
