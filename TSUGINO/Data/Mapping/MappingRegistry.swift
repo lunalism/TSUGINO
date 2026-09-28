@@ -261,8 +261,9 @@ private nonisolated struct RegistryFile: Decodable {
 /// Finds a repeated key in any JSON object. Only strings and structure are
 /// tracked; the grammar is left to the decoder that runs next. Keys are
 /// compared by their decoded Unicode scalars, so an escaped spelling of the
-/// same key is a repeat.
-private nonisolated enum RegistryJSON {
+/// same key is a repeat. Also used by the offline tool for reviewed-record
+/// files.
+nonisolated enum RegistryJSON {
     static func repeatsKey(_ bytes: [UInt8]) -> Bool {
         // For each open container: whether it is an object, its keys so far,
         // and whether the next string is a key.

@@ -593,7 +593,70 @@ Create a reliable local railway topology foundation.
     - *Route history.* The previous raw input must be retained outside the repository to reconcile the next one (DEC-068 §C3 allows this). Route changes are reported, not stored in the registry.
     - *Interpretations to confirm.* A dropped name counts as a descriptive change. Codes are descriptive and provider keys identifying. The caller declares which namespaces an input covers. Recording every sighting grows name history by one entry per name per new input.
   - **Not done.** Turning feeds into observations, writing a registry or report (the provisional-registry command), and real-data acceptance. P2-S4 remains neither implemented nor complete, and its real-data validation is outstanding (DEC-068 §H).
-- **Later steps.** The provisional-registry command and real-data acceptance.
+- **Step 5 — provisional-registry command** (2026-09-28; reviewed). Synthetic only: no real registry, record, or identifier.
+  - **Scope.** The offline tool gains `mint`, `review-packet`, and `provisional-registry` (DEC-068 §B2, §G). It adds no fetching, credentials, or real data, and no production identity or Domain change.
+    - Every registry these commands write is provisional (§B6).
+    - No `StationID` exists in P2-S4 (§D2), so the registry holds only operators and lines. Station grouping runs and is checked in its established place, but is reported only as counts.
+  - **`mint`.** On explicit request only, it adds *n* provisional operator or line entities — never a station — to a registry, or to an empty one. It publishes the result as a new file, never replacing one.
+  - **`review-packet`.** Read-only. From the identified inputs, the registry, and a records file whose operator records are written, it exports one new file:
+    - every grouping proposal and held-back candidate (Step 2);
+    - every line proposal and unmatched Railway record (Step 3), with evidence digests computed as they will resolve once the operator records apply;
+    - the operator keys, and the registry's active operator and line identifiers;
+    - with a selection file, the exact evidence and digest for each reviewer-chosen member set, such as several routes of one line. It comes from the same Step 3 evidence path `provisional-registry` checks, so the digest is accepted unchanged. It refuses:
+      - a selection file for other sources or inputs;
+      - unknown, repeated, or cross-input members;
+      - a member in two selections;
+      - an unresolved agency, an unbound operator, or members of different operators.
+
+      An ambiguous selection is exported with its `uniqueCounterpart` finding.
+
+    The packet holds provider values: it stays with the inputs and is never committed. Only counts are printed.
+  - **`provisional-registry` inputs.** All are outside the repository and read-only:
+    - one GTFS archive of a known source, read by the intake's own stages (`ArchiveReading`);
+    - optionally one `odpt:Railway` file, read by validate-railway's checked read;
+    - the provisional registry (schema version 2);
+    - the reviewer's records file (schema version 1). It names both source identifiers and both input hashes, and is refused for any other, on a repeated key, or on an unknown key;
+    - once the registry holds references of a source, the previous inputs and records it was last reconciled with;
+    - optional launch-input identities for the line-binding rule.
+  - **Stages, in order.** Path checks; reading and identifying every input; a Railway-source check; grouping; operator reconciliation; line binding against the reconciled operators; line reconciliation.
+    - The Railway-source check refuses the run if a Railway `@id`, `owl:sameAs`, or operator value observed here is held under another source identifier (`sourceMismatch`).
+    - A reviewed operator record or line binding attaches its new keys, one attach record per key, with review identifier `<reviewID>:<n>`.
+    - Railway `@id`, `owl:sameAs`, and line code are each their own reference, with their own provenance (DEC-068 §C1).
+    - A held key must already resolve to the record's identity. The command never rebinds a key: that fails with `identityMismatch`.
+    - Step 4's undecided transitions and conflicts stop the run.
+    - The run's registry advances one revision when a reference changed.
+  - **Output contract.** A new directory holding `registry.json` and `report.json`, published by one `RENAME_EXCL` rename of a complete temporary directory (`DirectoryPublication`). The pair appears whole or not at all, and never replaces an existing entry. Nothing is published unless every stage has passed. On any failure before the rename, the files written and the temporary directory are removed.
+  - **Exposure.** The report and printed output hold only counts, hashes, revisions, and source identifiers. Errors name a stage and an error kind; review identifiers and provider values are stripped. One exception predates this step: intake errors can name an archive member, as DEC-066 accepted.
+  - **Review (once).** It found and fixed, each with regression tests:
+    - Railway `owl:sameAs` was not recorded, against DEC-068 §C1 and `ARCHITECTURE.md` §40;
+    - the operator-supplied Railway source identifier was checked against nothing, so a different identifier could silently duplicate the mapping under a new source. It is now bound to the records file and checked against the registry;
+    - `mint`'s programmatic entry accepted the station kind;
+    - no review export existed, so a reviewer could not obtain the evidence digests the records need. `review-packet` now provides them;
+    - the packet gave line proposals only one route at a time, although Step 3 permits a binding of several routes. This gap is closed: `review-packet --select` exports the exact evidence for any reviewer-chosen member set, and `provisional-registry` accepts it unchanged.
+  - **Tests and builds.**
+    - The tool runner passes **128/128**, including 16 provisional-registry cases on invented archives, Railway files, registries, and records. They cover:
+      - a first run with `owl:sameAs` provenance, and an identical, byte-identical rerun;
+      - a reviewed change;
+      - a missing or mismatched previous input;
+      - the undecided transition, a conflict, and a rebind;
+      - records for other inputs or sources, a Railway-source substitution, a repeated key, and an unheld line;
+      - repository paths;
+      - an existing or racing output, and a failure part-way through publication;
+      - `mint`, including the station refusal;
+      - `review-packet`, whose digests are the ones a full run accepts;
+      - a selected two-route, two-record binding, whose packet digest and findings `provisional-registry` accepts unchanged;
+      - an ambiguous selection;
+      - refused selections, including crossing and unbound operators.
+    - Before this review's tool-only fixes, the final gate passed: `TSUGINOTests` **1204/1204**, and Debug and clean Release builds of the app and extension (the existing 75 Release warnings, none from `Data/Mapping`). The fixes and the member-selection export changed no app code or build integration, so the gate was not rerun.
+  - **Operational limits.**
+    - *Durability.* Publication uses `fsync`, as manifest publication does, not `F_FULLFSYNC`, so a power loss can still lose a just-published output that the drive had cached.
+    - *Crash leftovers.* A crash before the rename can leave a hidden temporary directory beside the output, never at the output name.
+    - *Same-user interference.* A process running as the same user could add a file to the 0700 temporary directory before the rename.
+    - *Railway source list.* No Railway source entry is defined, so its identifier is operator-supplied, bound to the records, and checked against the registry.
+    - An agency without `agency_id` cannot be bound to an operator.
+    - Observed-value reuse and conflict-resolution or identity-migration records remain undecided (Step 4).
+  - **Not done.** Real-data acceptance on identified snapshots (DEC-068 §H), which needs P2-S3's real Tokyo Metro validation first. P2-S4 remains neither implemented nor complete.
+- **Later steps.** Real-data acceptance.
 
 **Completion rules, proportionate to the kind of slice:**
 

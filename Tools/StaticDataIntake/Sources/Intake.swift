@@ -98,83 +98,13 @@ enum StaticDataIntake {
         guard !publication.targetExists() else { throw .outputExists }
         afterPathChecks?()
 
-        // 3. One descriptor for the whole intake. The file actually opened is
-        // checked, so a path component swapped after step 2 cannot bring a
-        // repository file (or any other file) into the intake.
-        let archive = try ArchiveFile(resolvedPath: archivePath, limit: limits.archiveBytes)
-        guard let openedPath = descriptorPath(archive.descriptor),
-              !isInsideRepository(openedPath, repositoryRoot: repositoryRoot) else {
-            throw .pathInsideRepository(role: "archive")
-        }
-        guard FileIdentity(device: archive.initialState.device, inode: archive.initialState.inode) == checkedArchive else {
-            throw .inputChanged(reason: "the path no longer names the same file")
-        }
-        let (archiveSHA256, archiveByteCount) = try archive.sha256()
-
-        // 4. Listing and name policy, before anything is streamed.
-        let names = try Bsdtar.list(archive, limits: limits)
-        let (selected, unselected) = try MemberPolicy.partition(names)
-
-        // 5. Selected members only, under the limits.
-        var memberBytes: [String: Data] = [:]
-        var selectedMembers: [SourceManifest.SelectedMember] = []
-        var total = 0
-        for name in selected {
-            let bytes = try Bsdtar.stream(
-                name,
-                from: archive,
-                limits: limits,
-                remainingTotal: limits.selectedTotalBytes - total
-            )
-            didStreamMember?(name)
-            total += bytes.count
-            memberBytes[name] = bytes
-            selectedMembers.append(.init(name: name, byteCount: bytes.count, sha256: sha256Hex(bytes)))
-        }
-        afterStreaming?()
-
-        // 6. The unchanged P2-S1 reader.
-        let texts = GTFSStaticTableTexts(
-            agency: memberBytes["agency.txt"]!,
-            stops: memberBytes["stops.txt"]!,
-            routes: memberBytes["routes.txt"]!,
-            trips: memberBytes["trips.txt"]!,
-            stopTimes: memberBytes["stop_times.txt"]!,
-            calendar: memberBytes["calendar.txt"],
-            calendarDates: memberBytes["calendar_dates.txt"],
-            feedInfo: memberBytes["feed_info.txt"],
-            translations: memberBytes["translations.txt"]
+        // 3–7. Open, hash, list, stream, read, and recheck the archive.
+        let read = try await ArchiveReading.read(
+            requestedPath: request.archivePath, resolvedPath: archivePath, checked: checkedArchive,
+            repositoryRoot: repositoryRoot, limits: limits,
+            didStreamMember: didStreamMember, afterStreaming: afterStreaming
         )
-        let feed: GTFSStaticFeed
-        do {
-            feed = try await GTFSStaticTableReader.read(texts)
-        } catch {
-            switch error {
-            case .invalid(let reason, let location): throw .readerInvalid(reason, at: location)
-            case .unsupported(let reason, let location): throw .readerUnsupported(reason, at: location)
-            }
-        }
-
-        // 7. The bytes hashed are the bytes processed.
-        guard let finalState = ArchiveFile.state(of: archive.descriptor), finalState == archive.initialState else {
-            throw .inputChanged(reason: "the file's size or times changed")
-        }
-        guard try archive.sha256().hex == archiveSHA256 else {
-            throw .inputChanged(reason: "the file's bytes changed")
-        }
-        guard let currentPath = resolvedPath(request.archivePath),
-              let currentIdentity = FileIdentity(path: currentPath),
-              currentIdentity == FileIdentity(device: archive.initialState.device, inode: archive.initialState.inode)
-        else {
-            throw .inputChanged(reason: "the path no longer names the same file")
-        }
-        // The same file may have been moved into the repository during
-        // intake; the boundary is checked again, by path and by descriptor.
-        guard !isInsideRepository(currentPath, repositoryRoot: repositoryRoot),
-              let openedNow = descriptorPath(archive.descriptor),
-              !isInsideRepository(openedNow, repositoryRoot: repositoryRoot) else {
-            throw .pathInsideRepository(role: "archive")
-        }
+        let feed = read.feed
 
         // 8. Publication.
         let info = feed.feedInfo.first
@@ -187,15 +117,15 @@ enum StaticDataIntake {
             resource: request.source.resource,
             sourceAccess: request.source.access,
             sourceURL: request.source.access == .publicURL ? request.source.url : nil,
-            archiveSHA256: archiveSHA256,
-            archiveByteCount: archiveByteCount,
+            archiveSHA256: read.sha256,
+            archiveByteCount: read.byteCount,
             obtainedAt: request.obtainedAt,
             obtainedAtBasis: "declared",
             feedVersion: info?.version,
             feedStartDate: info?.startDate,
             feedEndDate: info?.endDate,
-            selectedMembers: selectedMembers,
-            unselectedMembers: unselected
+            selectedMembers: read.selectedMembers,
+            unselectedMembers: read.unselectedMembers
         )
         beforePublication?()
         try publication.publish(manifest.encoded())

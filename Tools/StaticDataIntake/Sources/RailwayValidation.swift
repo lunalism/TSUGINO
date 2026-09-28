@@ -116,6 +116,22 @@ enum RailwayValidation {
         _ limit: Int64,
         _ afterOpen: (() -> Void)?
     ) async throws(RailwayValidationError) -> RailwayValidationSummary {
+        let (data, records) = try await readChecked(inputPath, repositoryRoot, limit, afterOpen)
+        return RailwayValidationSummary(
+            inputSHA256: sha256Hex(data),
+            byteCount: Int64(data.count),
+            records: records
+        )
+    }
+
+    /// The checked read shared with the provisional-registry command: the
+    /// input's bytes, exactly as read and hashed, and its records.
+    static func readChecked(
+        _ inputPath: String,
+        _ repositoryRoot: FileIdentity,
+        _ limit: Int64 = standardLimit,
+        _ afterOpen: (() -> Void)? = nil
+    ) async throws(RailwayValidationError) -> (data: Data, records: [ODPTRailway]) {
         // DEC-066 repository-boundary checks: the resolved path, then the
         // opened file itself, compared by identity.
         guard let resolved = resolvedPath(inputPath) else { throw .pathUnavailable(errno: errno) }
@@ -159,10 +175,6 @@ enum RailwayValidation {
         } catch {
             throw .reader(error)
         }
-        return RailwayValidationSummary(
-            inputSHA256: sha256Hex(data),
-            byteCount: Int64(data.count),
-            records: records
-        )
+        return (data, records)
     }
 }
