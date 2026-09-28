@@ -10,7 +10,7 @@ try FileManager.default.createDirectory(at: temporaryRoot, withIntermediateDirec
 
 var passed = 0
 var failed: [String] = []
-for (index, test) in (unitTests + integrationTests + railwayTests + mintingTests + groupingTests + lineBindingTests).enumerated() {
+for (index, test) in (unitTests + integrationTests + railwayTests + mintingTests + groupingTests + lineBindingTests + revisionTests).enumerated() {
     do {
         let workspace = try Workspace(root: temporaryRoot.appendingPathComponent("case-\(index)"))
         try await test.body(workspace)
@@ -27,5 +27,5 @@ for (index, test) in (unitTests + integrationTests + railwayTests + mintingTests
 
 try? FileManager.default.removeItem(at: temporaryRoot)
 let leftover = FileManager.default.fileExists(atPath: temporaryRoot.path)
-print("\n\(passed) passed, \(failed.count) failed (\(unitTests.count) unit, \(integrationTests.count) intake integration, \(railwayTests.count) DS-03 and validate-railway, \(mintingTests.count) minting, \(groupingTests.count) grouping, \(lineBindingTests.count) line binding); temporary root removed: \(!leftover)")
+print("\n\(passed) passed, \(failed.count) failed (\(unitTests.count) unit, \(integrationTests.count) intake integration, \(railwayTests.count) DS-03 and validate-railway, \(mintingTests.count) minting, \(groupingTests.count) grouping, \(lineBindingTests.count) line binding, \(revisionTests.count) revision); temporary root removed: \(!leftover)")
 exit(failed.isEmpty && !leftover ? 0 : 1)

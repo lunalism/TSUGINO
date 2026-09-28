@@ -4760,6 +4760,7 @@ Reusing the provider-neutral GTFS reader keeps one tested contract instead of tw
 
 **Status:** Accepted — design only; P2-S4 is not yet implemented\
 **Date:** 2026-09-28\
+**Amended:** 2026-09-28 — §C1, during P2-S4 Step 4 review. A provider reference that reconciliation attaches to an existing identity through a reviewed record retains that record's exact review identifier (`attachedBy`) for good, as a retired reference retains its retiring review. A rerun of the same reviewed records verifies that same review, and a different record for the same key and identity is refused. This is registry schema version 2. A version 1 registry is rejected, never silently migrated. It is regenerated instead, which is possible only because every registry so far is provisional and holds no production identity (§B6, §F1). This amendment decides nothing about observed-value reuse, conflict resolution, or identity migration (§E1, §E3, §E4). The rest of the Decision is unchanged.\
 **Decides:** the canonical identifier format that DEC-065 §A and `ROADMAP.md` P2-S4 wait for; the minting and registry rules for `StationID`, `LineID`, and `OperatorID`; the P2-S4 mapping, revision, and completion contract\
 **Does not amend:** DEC-021, DEC-048, DEC-051, DEC-057, DEC-065 §A for Tokyo Metro, DEC-067\
 **Related:** DEC-021, DEC-026, DEC-047, DEC-048, DEC-049, DEC-051, DEC-055 D3, DEC-057 D6, DEC-058, DEC-065, DEC-066, DEC-067; `RULES.md` Rule 8, Rule 9, Rule 14, Rule 39, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §4.3, §9, §39, §40, §41; `ROADMAP.md` Phase 2 P2-S3, P2-S4, P2-S5; `PROVIDER_FEASIBILITY_AUDIT.md` §3.5, §3.6.3, §3.12, §6.1.3, §6.2.3, §6.2.4, §6.5
@@ -4846,7 +4847,8 @@ Rejected alternatives:
    - the namespace, one of `gtfs.agency_id`, `gtfs.route_id`, `gtfs.stop_id`, `gtfs.stop_code`, `odpt.operator`, `odpt.railway.id`, `odpt.railway.sameAs`, or `odpt.railway.lineCode`;
    - the decoded value (item 2);
    - its status (§E);
-   - the first and last identified input it was seen in.
+   - the first and last identified input it was seen in;
+   - for a reference attached to an existing identity by a reviewed record during reconciliation, that record's review identifier (`attachedBy`, schema version 2; amended 2026-09-28).
 2. **Exact decoded value.**
    - A value is kept as the exact sequence of Unicode scalars the reader decoded from UTF-8: no Unicode normalization, trimming, case change, or width folding, and no rewriting of ヶ / ケ or 〈…〉.
    - Values are compared scalar by scalar, never with canonical-equivalence string equality, so a composed and a decomposed spelling are different values.

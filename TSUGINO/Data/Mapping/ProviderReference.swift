@@ -345,12 +345,19 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
     /// value, and source. Several values may share a language: that is the
     /// name history. Only an exact repeat is rejected.
     let originalNames: [OriginalName]
+    /// The reviewed record that attached this provider key to its identity
+    /// during reconciliation (DEC-068 §E3 "New"), if one did. A reference
+    /// minted or recorded otherwise has none. Printable ASCII. It stays with
+    /// the reference for good, so which review authorized the mapping can
+    /// always be read, and a rerun can verify it.
+    let attachedBy: String?
 
     enum Invalid: Error, Hashable, Sendable {
         case malformedSourceID
         case malformedDigest
         case repeatedOriginalName
-        /// A retired status whose review identifier is not printable ASCII.
+        /// A retired status or attaching review whose identifier is not
+        /// printable ASCII.
         case malformedReview
         /// A GTFS namespace needs GTFS provenance (member and table); an ODPT
         /// namespace needs `odpt:Railway` provenance (record index). This holds
@@ -367,11 +374,12 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
         status: ProviderReferenceStatus,
         firstSeenInputSHA256: String,
         provenance: SourceReference,
-        originalNames: [OriginalName]
+        originalNames: [OriginalName],
+        attachedBy: String? = nil
     ) throws(Invalid) {
         guard MappingText.isToken(sourceID) else { throw .malformedSourceID }
         guard MappingText.isSHA256(firstSeenInputSHA256) else { throw .malformedDigest }
-        guard status.isWellFormed else { throw .malformedReview }
+        guard status.isWellFormed, attachedBy.map(MappingText.isToken) ?? true else { throw .malformedReview }
         guard namespace.isGTFS == provenance.isGTFSPosition,
               originalNames.allSatisfy({ namespace.isGTFS == $0.source.isGTFSPosition })
         else { throw .provenanceMismatch }
@@ -385,6 +393,7 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
         self.firstSeenInputSHA256 = firstSeenInputSHA256
         self.provenance = provenance
         self.originalNames = sorted
+        self.attachedBy = attachedBy
     }
 
     var key: ProviderReferenceKey {
@@ -392,7 +401,7 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
     }
 
     private enum CodingKeys: String, CodingKey, CaseIterable {
-        case canonicalID, sourceID, namespace, value, status, firstSeenInputSHA256, provenance, originalNames
+        case canonicalID, sourceID, namespace, value, status, firstSeenInputSHA256, provenance, originalNames, attachedBy
     }
 
     init(from decoder: any Decoder) throws {
@@ -407,7 +416,8 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
                 status: container.decode(ProviderReferenceStatus.self, forKey: .status),
                 firstSeenInputSHA256: container.decode(String.self, forKey: .firstSeenInputSHA256),
                 provenance: container.decode(SourceReference.self, forKey: .provenance),
-                originalNames: container.decode([OriginalName].self, forKey: .originalNames)
+                originalNames: container.decode([OriginalName].self, forKey: .originalNames),
+                attachedBy: container.decodeIfPresent(String.self, forKey: .attachedBy)
             )
         } catch let invalid as Invalid {
             throw MappingText.corrupted("\(invalid)", container)

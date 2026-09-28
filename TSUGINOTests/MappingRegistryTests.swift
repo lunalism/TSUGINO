@@ -40,7 +40,8 @@ struct MappingRegistryTests {
         _ text: String = "syn-route-q",
         namespace: ProviderNamespace = .gtfsRouteID,
         status: ProviderReferenceStatus = .active,
-        names: [OriginalName] = []
+        names: [OriginalName] = [],
+        attachedBy: String? = nil
     ) throws -> ProviderReference {
         try ProviderReference(
             canonicalID: id,
@@ -50,7 +51,8 @@ struct MappingRegistryTests {
             status: status,
             firstSeenInputSHA256: digestA,
             provenance: gtfsSource(text),
-            originalNames: names
+            originalNames: names,
+            attachedBy: attachedBy
         )
     }
 
@@ -194,7 +196,9 @@ struct MappingRegistryTests {
 
     // MARK: - Registry invariants
 
-    @Test(arguments: [0, 2, -1])
+    /// Version 1 is rejected too: it predates `attachedBy`, and provisional
+    /// registries are regenerated, not migrated.
+    @Test(arguments: [0, 1, 3, -1])
     func unknownSchemaVersionIsRejected(version: Int) throws {
         var object = try Self.jsonObject(Self.registry(references: []))
         object["schemaVersion"] = version
@@ -428,6 +432,28 @@ struct MappingRegistryTests {
         #expect(throws: ProviderReference.Invalid.malformedReview) {
             try Self.reference(status: .retired(review: review))
         }
+    }
+
+    /// Schema v2: a reference attached by a reviewed record names that review
+    /// for good; it round-trips, and a reference without one encodes no key.
+    @Test func attachingReviewRoundTrips() throws {
+        let attached = try Self.registry(references: [try Self.reference(attachedBy: "SYN-REVIEW-A1")])
+        let bytes = try attached.encoded()
+        #expect(try MappingRegistry.decoded(from: bytes).references[0].attachedBy == "SYN-REVIEW-A1")
+        #expect(String(decoding: bytes, as: UTF8.self).contains(#""attachedBy" : "SYN-REVIEW-A1""#))
+        let plain = try Self.registry(references: [try Self.reference()])
+        #expect(!String(decoding: try plain.encoded(), as: UTF8.self).contains("attachedBy"))
+        #expect(try MappingRegistry.decoded(from: try plain.encoded()).references[0].attachedBy == nil)
+    }
+
+    @Test(arguments: ["", " ", "SYN REVIEW", "SYN-レビュー"])
+    func attachingReviewMustBeWellFormed(review: String) throws {
+        #expect(throws: ProviderReference.Invalid.malformedReview) { try Self.reference(attachedBy: review) }
+        var object = try Self.jsonObject(Self.registry(references: [try Self.reference(attachedBy: "SYN-REVIEW-A1")]))
+        var references = object["references"] as! [[String: Any]]
+        references[0]["attachedBy"] = review
+        object["references"] = references
+        Self.expectCorrupted(try Self.text(object), "malformedReview")
     }
 
     /// Nothing that can be constructed fails to decode.

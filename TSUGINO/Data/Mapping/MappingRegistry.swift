@@ -88,8 +88,11 @@ nonisolated enum MappingRegistryError: Error, Hashable, Sendable {
 /// repeated-key check can never be bypassed through a `Decodable` conformance.
 nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
     /// The only schema this code reads. Any other version is rejected, never
-    /// reinterpreted (Rule 39).
-    static let schemaVersion = 1
+    /// reinterpreted (Rule 39). Version 2 added a reference's attaching review
+    /// (`attachedBy`). Version 1 files are rejected rather than migrated: every
+    /// registry so far is provisional and may be discarded and regenerated
+    /// (DEC-068 §B6); no registry of record exists.
+    static let schemaVersion = 2
 
     let revision: Int
     /// Sorted by identifier.

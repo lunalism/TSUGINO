@@ -558,7 +558,42 @@ Create a reliable local railway topology foundation.
     - P2-S3's real Tokyo Metro validation is outstanding.
     - The actual launch bindings and baseline checks are outstanding (DEC-068 §H): 6 Toei route bindings, and 9 Tokyo Metro routes and 10 Railway records bound to 9 `LineID`s, with the branch record on the Marunouchi `LineID`.
     - If a launch feed has an agency without `agency_id`, a DEC-068 decision on how to reference it may be needed.
-- **Later steps.** Revision reconciliation, the provisional-registry command, and real-data acceptance.
+- **Step 4 — feed-revision reconciliation** (2026-09-28; reviewed). Synthetic only: no real registry, reference, or identifier.
+  - **App.** `Data/Mapping/ReviewedRevision.swift` holds the two reviewed revision records — *attach* a provider key the registry has never held to an existing identity, and *retire* an active or absent reference — and their set: one record per review and per reference.
+    - Registry schema version 2 adds `attachedBy` to a provider reference: the review that attached it, kept for good, as a retirement already keeps its review. A rerun verifies that same review.
+    - Version 1 files are rejected rather than silently migrated. They are regenerated, which is possible only because every registry so far is provisional and holds no production identity (DEC-068 §C1 as amended 2026-09-28).
+  - **Tool.** `RevisionReconciliation` reconciles a validated registry with the references observed in one identified input of one source. The observations are grouped into entities by the new input's own reviewed groupings and bindings, and every observed `stop_id` carries its serving routes.
+    - The registry stores no routes. Route changes are therefore found against the *previous input*: the one the registry was last reconciled with for this source. It is required once the registry holds an active reference of the source. It must cover every namespace of an active reference that the run covers, and contain each such reference with its provenance on the previous input's hash.
+    - It reports the DEC-068 §E3 categories, in this order of precedence:
+      - Only the exact key — source, namespace, and value, scalar by scalar — links an observation to the registry. A respelled provider key is therefore *new*, and the old key goes *absent*; it is never a change.
+      - A retired key that reappears is a *conflict*.
+      - A held key is *unchanged* or *changed*: changed when its names differ from those seen in the input it was last seen in, or its serving routes differ from the previous input's (reported, not stored). Name history is append-only: every value keeps its first-sighting source, and each later sighting is recorded beside it with its own source. An identical entry is not added twice. An absent key returns to active and is reported as reactivated.
+      - A new provider key stays *unassigned* unless a reviewed record attaches it. A new code (`stop_code`, Railway `lineCode`) on an entity anchored by a held or attached provider key is a descriptive *change* of that identity and needs no review.
+      - A held reference of the source, in a namespace the input covers, that is not observed goes *absent*: kept, not current, never deleted.
+  - **Conflicts fail the run.** These are: a retired key reappearing; one entity resolving to two identities (a merge); one identity's references in two entities (a split); an entity on a retired identity; and two stop rows already grouped — held on one identity — that now share a route, unless the previous input shows they already did (a grouping accepted with a reviewed exception). Without that evidence, the route conflict fails closed. Rows grouped for the first time are settled by their own review. Reviewed records are idempotent: rerunning a run's records against its own output changes nothing, while a record that would rebind or re-retire under another review is still refused. Every conflict is collected and the run fails with no registry, summary, or report produced. Merges and splits need an identity migration, which Step 4 does not perform.
+  - **Registry.** Canonical identifiers, first sightings, and entities never change. The revision advances only when a reference changes, so a repeat run is a fixed point. Output is byte-identical for the same registry, input, and records. The summary holds only counts, the source, hashes, and revisions.
+  - **Tests and builds.**
+    - Focused app tests pass **109/109**: 4 revision-record, 6 line-binding, 8 grouping-record, and 91 registry cases (85 before schema version 2).
+    - The tool runner passes **112/112**, including 21 revision cases, on invented registries and inputs.
+    - `TSUGINOTests` passes **1204/1204**.
+    - Debug and clean Release builds of the app and extension succeeded. iPhone 17 simulator.
+    - The Release build reports the existing 75 warnings; none comes from `Data/Mapping`.
+  - **Review.** Codex passes on frozen trees and an adversarial review found and fixed these, each with regression tests:
+    - before review: a re-observed name overwrote its first-sighting source. Name history is now append-only;
+    - observations carried no route evidence, so a route change or newly shared route was reported as unchanged. Fixed with the previous-input comparison;
+    - the route conflict would also have blocked a new grouping accepted by review. It now covers only rows already held on one identity;
+    - rerunning a run's reviewed records against its own output failed, so a retry was not a fixed point. Records already applied are now left alone;
+    - a substitute attach record with the same key and identity was accepted as already applied, because the registry did not store which review attached a reference. Fixed by schema version 2's `attachedBy`, which a rerun verifies;
+    - a same-source previous input that covered no namespace, or omitted an active reference, passed its check vacuously, so route changes and conflicts could be missed. It must now cover and contain every active reference the run covers.
+
+    The final Codex pass on the fixed code tree (`fe5bea64482569e0`) reported no findings. **Verdict: Step 4 passes review.** P2-S4 as a whole remains neither implemented nor complete.
+  - **Open contract questions.**
+    - *Value reuse.* Retiring a value that is present in the input — DEC-068 §E1's reuse case — stops with `undecided(.retireObservedValue)`. The registry holds one reference per key, and DEC-068 does not say how a reused value's new meaning is recorded.
+    - *Resolving conflicts.* DEC-068 §E3 says a conflict fails "until a reviewed record resolves it" but defines no such record. The identity-migration record (§E4) is also undefined. Both remain conflicts.
+    - *Route history.* The previous raw input must be retained outside the repository to reconcile the next one (DEC-068 §C3 allows this). Route changes are reported, not stored in the registry.
+    - *Interpretations to confirm.* A dropped name counts as a descriptive change. Codes are descriptive and provider keys identifying. The caller declares which namespaces an input covers. Recording every sighting grows name history by one entry per name per new input.
+  - **Not done.** Turning feeds into observations, writing a registry or report (the provisional-registry command), and real-data acceptance. P2-S4 remains neither implemented nor complete, and its real-data validation is outstanding (DEC-068 §H).
+- **Later steps.** The provisional-registry command and real-data acceptance.
 
 **Completion rules, proportionate to the kind of slice:**
 
