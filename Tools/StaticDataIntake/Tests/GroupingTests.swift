@@ -310,6 +310,22 @@ let groupingTests: [TestCase] = [
         let translated = StationGrouping.propose(try SyntheticGrouping.input(SyntheticGrouping.feed(translations: withJapanese, feedLanguage: "en")))
         try check(translated.proposals.count == 1, "a ja-JP translation did not count: \(translated.heldBack.map(\.findings))")
     }),
+    ("a ja-Hrkt or ja-Latn reading is not Japanese name evidence; ja-Jpan is", { _ in
+        for reading in ["ja-Hrkt", "ja-Latn", "JA-HRKT"] {
+            var translations = SyntheticGrouping.translations
+            translations.append(("Synthetic Hub", reading, "ごうせいはぶ"))
+            let report = StationGrouping.propose(try SyntheticGrouping.input(SyntheticGrouping.feed(translations: translations, feedLanguage: "en")))
+            try check(report.proposals.isEmpty && report.heldBack.first?.failedChecks == [.nameEvidence], "\(reading) counted as Japanese")
+            try check(report.heldBack[0].members.allSatisfy { !$0.hasJapaneseAndEnglish }, "\(reading) members")
+        }
+        let readingFeed = StationGrouping.propose(try SyntheticGrouping.input(SyntheticGrouping.feed(feedLanguage: "ja-Hrkt")))
+        try check(readingFeed.heldBack.first?.failedChecks == [.nameEvidence], "a reading-language feed's published name counted as Japanese")
+
+        var display = SyntheticGrouping.translations
+        display.append(("Synthetic Hub", "ja-Jpan", "合成ハブ"))
+        let displayReport = StationGrouping.propose(try SyntheticGrouping.input(SyntheticGrouping.feed(translations: display, feedLanguage: "en")))
+        try check(displayReport.proposals.count == 1, "a ja-Jpan title did not count")
+    }),
     ("the operator boundary cannot be crossed, even with an exception for other checks", { _ in
         var stops = SyntheticGrouping.stops
         stops[1] = SyntheticGrouping.Stop(id: "syn-q2", code: nil, name: "Synthetic Hub")

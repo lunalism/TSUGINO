@@ -95,7 +95,8 @@ struct GroupingMemberEvidence: Hashable {
     /// Sorted by route.
     let routes: [GroupingRouteContext]
     /// Whether the names include a Japanese and an English value: the published
-    /// name in the feed's language, or a translation.
+    /// name in the feed's language, or a translation. A script-specific
+    /// reading such as `ja-Hrkt` is not a Japanese name.
     let hasJapaneseAndEnglish: Bool
 
     var stopID: ExactValue { stop.providerKey }
@@ -249,8 +250,8 @@ enum StationGrouping {
                     codeFitsRoute: !prefix.isEmpty && (routePrefixStops[route]?[prefix]?.subtracting([stopID]).isEmpty == false)
                 )
             }
-            let languages = Set(names.compactMap { $0.language.map { primarySubtag($0.text) } })
-                .union(names.contains { $0.language == nil } ? [feedLanguage.map(primarySubtag) ?? ""] : [])
+            let languages = Set(names.compactMap { $0.language.flatMap { displayLanguage($0.text) } })
+                .union(names.contains { $0.language == nil } ? [feedLanguage.flatMap(displayLanguage) ?? ""] : [])
             evidence.append(GroupingMemberEvidence(
                 stop: input.stopReference(stopID), code: code, names: sortedHints(Set(names)), routes: routes,
                 hasJapaneseAndEnglish: languages.isSuperset(of: ["ja", "en"])
@@ -385,14 +386,25 @@ enum StationGrouping {
         }
     }
 
-    /// The primary language subtag, lowercased: `ja` for `ja-JP`.
-    private static func primarySubtag(_ tag: String) -> String {
-        String(tag.split(separator: "-", maxSplits: 1).first ?? "").lowercased()
+    /// The language a value counts for as a display name: the primary
+    /// subtag, lowercased (`ja` for `ja-JP`), when the tag has no script
+    /// subtag or names that language's display script (`ja-Jpan`,
+    /// `en-Latn`). A script-specific reading or transliteration — `ja-Hrkt`
+    /// kana, `ja-Latn` romaji — counts for no language, so it never stands in
+    /// for a Japanese or English name. Shared with line binding.
+    static func displayLanguage(_ tag: String) -> String? {
+        let subtags = tag.lowercased().split(separator: "-", omittingEmptySubsequences: false).map(String.init)
+        guard let primary = subtags.first, !primary.isEmpty else { return nil }
+        if subtags.count > 1, subtags[1].count == 4, subtags[1].utf8.allSatisfy({ (0x61...0x7A).contains($0) }) {
+            let displayScripts = ["ja": "jpan", "en": "latn"]
+            guard displayScripts[primary] == subtags[1] else { return nil }
+        }
+        return primary
     }
 
     /// Leading ASCII letters: the observed line-letter part of a code
     /// (DEC-067 Context). A code with none fails `codeConsistency`.
-    private static func codePrefix(_ code: ExactValue) -> String {
+    static func codePrefix(_ code: ExactValue) -> String {
         String(decoding: code.text.utf8.prefix { (0x41...0x5A).contains($0) || (0x61...0x7A).contains($0) }, as: UTF8.self)
     }
 

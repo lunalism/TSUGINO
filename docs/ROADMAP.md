@@ -526,7 +526,39 @@ Create a reliable local railway topology foundation.
     - The Release build reports the existing 75 warnings, which predate Step 2; none comes from `Data/Mapping`.
     - The operator binary has no generator-injection entry point, and the app binary has no proposal, apply, or minting code.
   - **Not done.** Step 2 does not complete P2-S4, which remains neither implemented nor complete. Real-data validation is outstanding (DEC-068 §H).
-- **Later steps.** Line bindings, revision reconciliation, the provisional-registry command, and real-data acceptance.
+- **Step 3 — reviewed line bindings** (2026-09-28; reviewed). Synthetic only: no real binding, mapping, or identifier.
+  - **App.** `Data/Mapping/LineBinding.swift` holds the reviewed binding record, its per-member acceptance, and the record set. A record binds static routes and `odpt:Railway` records to one `LineID`, naming each member's source reference and the evidence digest. No accepted rule limits a line to one route (`ARCHITECTURE.md` §40), so a record may hold several. The set rejects a repeated review, a provider record bound twice to one `LineID` or to two, and a `LineID` in two records.
+  - **Tool.** Official-field checks — line code against stop-code prefixes, Japanese and English display titles against route long names, colour, and a unique counterpart — propose each route with its candidate records and report every disagreement. They never bind.
+    - In a binding, each record is compared with every bound route, and each route with every other. Agreement with one route never hides a disagreement with another.
+    - Applying requires, for every route and record: a reviewed binding whose evidence digest matches and whose acceptances name exactly the failed checks; a `LineID` the registry holds; a route agency resolved within its feed (a route naming no agency takes the feed's only agency); and an active registry operator reference for every member, all naming one operator. No `OperatorID` is minted or inferred. An unbound route or record fails the run.
+    - **Launch inputs.** The rule applies only when the operator identifies **both** the run's GTFS input and its Railway input, each by source and SHA-256, as launch inputs. Then a Railway record whose line code is a stop-code prefix of a route must be bound with that route. No acceptance can waive this, so a launch branch record cannot be split from its main line's `LineID` (DEC-068 §D4). The identities are supplied with the run, not kept in the repository. For other inputs, a fully accepted split is the reviewer's decision. The rule is tested only on invented feeds: it is not evidence that the real launch feeds satisfy it or bind correctly.
+  - **Branch provenance.** A Railway record keeps its own reference and its whole station order: each entry's `odpt:index` and station, with its record index and field. A blank station is refused rather than dropped. Matching stations to GTFS stops belongs to canonical station formation, so a record's GTFS stop scope is recorded as *deferred*. A stop-code prefix group is check evidence only, because a shared stop may carry the main line's code.
+  - **Step 2 correction.** A Japanese or English name counts only in a display language: no script subtag, or `Jpan` / `Latn`. A `ja-Hrkt` or `ja-Latn` reading satisfies neither Step 2's `nameEvidence` check nor Step 3's title checks.
+  - **Review.** The first Codex pass on the frozen tree reported no findings. An adversarial review found and fixed these, each with regression tests:
+    - in a launch input, accepting every disagreement could split a branch record onto a second `LineID`;
+    - agreement with any one bound route hid a disagreement with another, and unrelated routes could be bound with no acceptance;
+    - a blank station-order entry was dropped from the evidence;
+    - `odpt:index` values were not part of the evidence;
+    - in a launch input, a line-code route left unbound was reported as a split rather than as unbound.
+
+    The final Codex pass on the fixed code tree (`b233f2a5ad5760db`) reported no findings. **Verdict: Step 3 passes review.** P2-S4 as a whole remains neither implemented nor complete, and its real-data validation is outstanding (DEC-068 §H).
+  - **Tests and builds.**
+    - Focused app tests pass **99/99**: 6 line-binding, 8 grouping-record, and 85 registry cases.
+    - The tool runner passes **91/91**, including 18 grouping and 22 line-binding cases, on invented `Q` / `Qb` feeds.
+    - `TSUGINOTests` passes **1194/1194**.
+    - Debug and clean Release builds of the app and extension succeeded. iPhone 17 simulator.
+    - The Release build reports the existing 75 warnings; none comes from `Data/Mapping`.
+  - **Limits.**
+    - An agency without `agency_id` cannot be bound to an operator: no DEC-068 §C1 namespace identifies it.
+    - A branch record's GTFS scope is deferred.
+    - The launch rule assumes a launch line code's stops are served only by its line's routes, as the audit observed. A launch input where that fails, fails the run until reviewed.
+    - Whether each launch input's bindings give its baseline line count is checked at real-data acceptance (DEC-068 §H).
+    - Colour is compared as six hexadecimal digits, ignoring one leading `#` and case. Values are kept as written.
+  - **Open items.**
+    - P2-S3's real Tokyo Metro validation is outstanding.
+    - The actual launch bindings and baseline checks are outstanding (DEC-068 §H): 6 Toei route bindings, and 9 Tokyo Metro routes and 10 Railway records bound to 9 `LineID`s, with the branch record on the Marunouchi `LineID`.
+    - If a launch feed has an agency without `agency_id`, a DEC-068 decision on how to reference it may be needed.
+- **Later steps.** Revision reconciliation, the provisional-registry command, and real-data acceptance.
 
 **Completion rules, proportionate to the kind of slice:**
 
