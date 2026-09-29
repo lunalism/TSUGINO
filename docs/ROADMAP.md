@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28).** P2-S0, P2-S1, P2-S2, and P2-S3 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4's synthetic Steps 1–5 are implemented and reviewed. P2-S4 as a whole has not been declared *implemented*, since no audit against its synthetic criteria is recorded, and it is not complete. It can be completed only after real-data acceptance (DEC-068 §H), which is outstanding; its P2-S3 prerequisite is met. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 is next and has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -482,7 +482,7 @@ Create a reliable local railway topology foundation.
   - On 2026-09-29 the owner acquired a new pair, and the committed readers accepted both with 0 invalid and 0 unsupported: static GTFS `76f04623…a277e1` and `odpt:Railway` `90b16083…3b97f6c`. The owner accepted these as the P2-S3 inputs (recovery record, items 4, 6, and 7).
   - This establishes compatibility with these two snapshots only. It is not a claim that either file is byte-identical to its audited counterpart, or about later provider revisions.
 
-**P2-S4 progress** (DEC-068). Synthetic Steps 1–5 below are implemented and reviewed. **P2-S4 as a whole is not complete**: its real-data acceptance is outstanding (DEC-068 §H), and it has not been declared *implemented*, since no audit against its synthetic criteria is recorded. Its steps are recorded here as they land.
+**P2-S4 progress** (DEC-068). Synthetic Steps 1–5 below are implemented and reviewed. On 2026-09-30 the criteria audit and real-data acceptance made P2-S4 **implemented and complete** (DEC-068 §H2; acceptance record below). Its steps are recorded here as they landed.
 
 - **Step 1 — identifier form, minting, and registry contracts** (2026-09-28; reviewed). Synthetic only: no registry of real entities exists, no mapping record has been made, and no production identifier has been minted.
   - **App.** `TSUGINO/Data/Mapping/` holds the DEC-068 §A identifier form and the registry, provider-reference, exact-value, provenance, and status records. Decoding checks every rule, and encoding is deterministic. There is no minting in the app.
@@ -556,7 +556,7 @@ Create a reliable local railway topology foundation.
     - Colour is compared as six hexadecimal digits, ignoring one leading `#` and case. Values are kept as written.
   - **Open items.**
     - P2-S3's real Tokyo Metro validation passed on 2026-09-29 (recovery record below).
-    - The actual launch bindings and baseline checks are outstanding (DEC-068 §H): 6 Toei route bindings, and 9 Tokyo Metro routes and 10 Railway records bound to 9 `LineID`s, with the branch record on the Marunouchi `LineID`.
+    - The actual launch bindings and baseline checks passed in the 2026-09-30 provisional runs (acceptance record below): 6 Toei route bindings, and 9 Tokyo Metro routes and 10 Railway records bound to 9 `LineID`s, with the branch record on the Marunouchi `LineID`.
     - If a launch feed has an agency without `agency_id`, a DEC-068 decision on how to reference it may be needed.
 - **Step 4 — feed-revision reconciliation** (2026-09-28; reviewed). Synthetic only: no real registry, reference, or identifier.
   - **App.** `Data/Mapping/ReviewedRevision.swift` holds the two reviewed revision records — *attach* a provider key the registry has never held to an existing identity, and *retire* an active or absent reference — and their set: one record per review and per reference.
@@ -655,7 +655,7 @@ Create a reliable local railway topology foundation.
     - *Railway source list.* One Railway source entry, `DS-03/tokyometro-railway`, is defined (2026-09-29), apart from the intake sources. `review-packet` and `provisional-registry` refuse any other `--railway-source`. The identifier is still bound to the records and checked against the registry.
     - An agency without `agency_id` cannot be bound to an operator.
     - Observed-value reuse and conflict-resolution or identity-migration records remain undecided (Step 4).
-  - **Not done.** Real-data acceptance on identified snapshots (DEC-068 §H). Its P2-S3 prerequisite passed on 2026-09-29. P2-S4 is not complete.
+  - **Not done at Step 5.** Real-data acceptance on identified snapshots (DEC-068 §H), whose P2-S3 prerequisite passed on 2026-09-29. It was completed on 2026-09-30 (acceptance record below).
 - **Real-data acceptance preflight** (2026-09-28; rows 1–3 and 5 amended 2026-09-29 by the accepted recovery item 4; DEC-068 §H). Nothing was minted, no reviewed record was written, and no archive, manifest, packet, registry, or record was committed. Every local output stays outside the repository.
 
   | Row | Source snapshot | Expected aggregate | Reviewed records needed | Pass condition | Status |
@@ -663,8 +663,8 @@ Create a reliable local railway topology foundation.
   | 1. P2-S3 Tokyo Metro static | owner-only archive acquired 2026-09-29T13:56:51Z, SHA-256 `76f046236893b136f0d84b2e2ce21db67375a90e63c9e594732e1bec48a277e1` (1,135,582 bytes, `feed_version` 20260921) | 0 invalid, 0 unsupported; §E aggregates recorded; every difference from the audit stated | none | intake reports 0 invalid and 0 unsupported on that hash, and every difference is stated without claiming a match | **Passed** 2026-09-29: agency 1, stops 185, routes 9, trips 9,706, `stop_times` 176,385, calendar 2, `calendar_dates` 20, `feed_info` 1, translations 494 |
   | 2. P2-S3 Tokyo Metro Railway | owner-only `odpt:Railway` snapshot acquired 2026-09-29T13:56:51Z, SHA-256 `90b16083b4acfd73d4ad4dc840f6702e57799279d05d1e6781961c8ab3b97f6c` (49,842 bytes) | 10 records, 0 invalid, 0 unsupported | none | validate-railway reports these on that hash | **Passed** 2026-09-29: 10 records, 10 distinct line codes, 186 station-order entries |
   | 3. Toei, audited snapshot | pinned archive `f10d03cd…` (779,674 bytes) | 149 rows → 141 identities; 6 route bindings | one operator record; a decision on each of the 8 grouping candidates; 6 line bindings | a provisional run on that hash reproduces the audit's aggregates | **Historical**: pinned archive not available; row 4 stands in (DEC-068 §H2) |
-  | 4. Toei, other snapshot | current public archive `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4` (779,699 bytes, `feed_version` 20260921) | recorded, not assumed (below) | as row 3, written for this hash | a provisional run succeeds, and every difference from the audit is explained and reviewed | **Evidence evaluated; reviewed records and the run outstanding** |
-  | 5. Tokyo Metro P2-S4 | rows 1–2 inputs (the 2026-09-29 pair) | 185 rows → 144 identities; 9 routes and 10 Railway records → 9 `LineID`s, the branch record on the Marunouchi `LineID`; official-field checks agree 9/9 | one operator record; decisions on 32 grouping candidates; 9 line bindings (the branch with its accepted disagreements); both inputs identified as launch inputs | a provisional run with the launch rule succeeds, and every difference from the audit is explained and reviewed | **Outstanding**: reviewed records and the provisional run |
+  | 4. Toei, other snapshot | current public archive `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4` (779,699 bytes, `feed_version` 20260921) | recorded, not assumed (below) | as row 3, written for this hash | a provisional run succeeds, and every difference from the audit is explained and reviewed | **Passed 2026-09-30** (149 → 141, 8 accepted, 0 held back, 6 bindings); the differences observed in the available audit aggregates were explained, and reviewed by the owner |
+  | 5. Tokyo Metro P2-S4 | rows 1–2 inputs (the 2026-09-29 pair) | 185 rows → 144 identities; 9 routes and 10 Railway records → 9 `LineID`s, the branch record on the Marunouchi `LineID`; official-field checks agree 9/9 | one operator record; decisions on 32 grouping candidates; 9 line bindings (the branch with its accepted disagreements); both inputs identified as launch inputs | a provisional run with the launch rule succeeds, and every difference from the audit is explained and reviewed | **Passed 2026-09-30** (185 → 144; 9 routes and 10 records → 9 `LineID`s; branch retained; official-field agreement 9/9; differences reviewed with recovery item 4) |
 
   P2-S4 is complete only when row 3 or row 4, and row 5, pass (DEC-068 §H2).
   - **Historical audit inputs.** The audit's Tokyo Metro static archive `9a077f8f…` (1,113,444 bytes, `feed_version` 20260528; 185 `stops`, 9 routes, 9,544 trips, 172,168 `stop_times`, 494 `translations`), its 2026-09-18 `odpt:Railway` snapshot `90b16083…b97f6c` (49,842 bytes), and the pinned Toei archive `f10d03cd…` are historical audit evidence, not acceptance inputs. The new Tokyo Metro static archive is demonstrably a different archive from `9a077f8f…`: its SHA-256, size, `feed_version`, and three table counts differ. Whether the new Railway file is byte-identical to the 2026-09-18 snapshot is **unknown**: its size, the shortened hash, and every recorded aggregate agree, but the audit kept only a shortened hash. It is therefore neither claimed identical nor claimed different. The comparison and its limits are in the recovery record (items 6 and 7).
@@ -673,12 +673,11 @@ Create a reliable local railway topology foundation.
     - Rows: agency 1, stops 149, routes 6, trips 5,600, `stop_times` 122,798, calendar 4, `calendar_dates` 51, `feed_info` 1, translations 404.
     - `review-packet`, on an empty registry with no reviewed record: 8 grouping proposals of 2 rows each, 0 held back. If a reviewer accepted all 8, the result would be 141 identities from 149 rows.
     - Line evidence: 6 route-only proposals with 0 findings. All 6 routes have Japanese and English titles and code prefixes; 4 have a colour. The one agency has an `agency_id`.
-  - **Row 4, differences from the audit's pinned archive.** The hash differs, so no equivalence is claimed. `calendar_dates` is 51 rather than 39, and the size 779,699 bytes rather than 779,674. The other audited counts are equal. Each difference must still be explained in the reviewed run.
+  - **Row 4, differences from the audit's pinned archive.** The hash differs, so no equivalence is claimed. `calendar_dates` is 51 rather than 39, and the size 779,699 bytes rather than 779,674. The other audited counts are equal. These are the differences visible in the audit's aggregates, not necessarily every byte-level or row-level difference. They were explained and accepted on 2026-09-30 (acceptance record below).
   - **Outstanding gates.**
     - Rows 1 and 2 passed on 2026-09-29. The audited Tokyo Metro inputs were never located, and are historical evidence only.
     - The pinned Toei archive `f10d03cd…` (row 3) is historical. Row 4 stands in for it.
-    - For row 4: provisional operator and line identities (`mint`), and the reviewer's operator record, grouping decisions, and line bindings — a human review, not produced here. Then the provisional-registry run, and a reviewed explanation of each difference from the audit.
-    - For row 5: the same kind of reviewed records and provisional run on the 2026-09-29 pair (recovery record, item 7).
+    - Rows 4 and 5: the reviewed records and provisional runs were completed on 2026-09-30 (acceptance record below). Both passed; the owner reviewed row 4's explained differences on 2026-09-30.
     - The Tokyo Metro Railway source identifier is resolved: `DS-03/tokyometro-railway` is defined in the tool's source list.
 - **Real-data recovery record** (proposed 2026-09-28; item 4 **accepted by the owner on 2026-09-29**). The owner does not recall retaining the audited Tokyo Metro files, and a targeted local search found none. So `9a077f8f…` and `90b16083…` are no longer treated as files presumed to exist. On 2026-09-29 the prerequisites of item 5 were checked, the owner acquired a new pair (item 2), and both committed readers validated it (item 6). Nothing has been minted, reviewed, or run beyond those two readers.
   1. **What can be acquired now.** These were verified on 2026-09-28 from the public catalog pages on `ckan.odpt.org`, unauthenticated; no provider file was downloaded.
@@ -750,7 +749,69 @@ Create a reliable local railway topology foundation.
          - The expected aggregates (185 rows → 144 identities; 9 routes and 10 Railway records → 9 `LineID`s; official-field checks 9/9) are compared, and every difference from the audit is explained in the reconciliation report and reviewed.
        - *Toei, row 4:* the same reviewed records and the provisional run on `dd575706…`, with its `calendar_dates` and size differences explained.
        - *Not required for completion, but still gating later work:* the registry-of-record decision (DEC-068 §F1) before any production identifier or committed mapping record; the ODPT Q3 reply or a publication decision (DEC-065 §A, DEC-068 §F3) before publishing any Tokyo Metro-derived mapping.
-- **Later steps.** P2-S4 real-data acceptance: row 4 (or row 3, if the pinned archive becomes available) and row 5 above.
+- **P2-S4 real-data acceptance record** (2026-09-30; DEC-068 §H). Everything below was produced outside the repository. Registries are provisional (§B6): no identifier in them is a production identifier. Nothing generated is committed.
+  - **Provisional registry.** One registry is shared by both operators. On the owner's explicit request, `mint` added 2 provisional operator and 15 provisional line entities: an owner-only planning note intends 1 operator and 9 lines for Tokyo Metro, and 1 and 6 for Toei. No `StationID` exists. The checked decoder accepts it, all 17 identifiers are unique and in DEC-068 §A form, and it held 0 references before the runs.
+  - **Operator records** (one per input). The owner approved both bindings after reviewing the operator-review worksheet, and they were verified before being written:
+    - both intended operators are distinct active entities;
+    - all input hashes are the accepted ones;
+    - each archive's single agency matches;
+    - all 10 Tokyo Metro Railway records carry the single ODPT operator value.
+
+    Regenerated packets resolve every agency, operator value, route, and Railway record to its operator.
+  - **Grouping and line records.** Tokyo Metro: 32 grouping records and 9 line bindings. Toei: 8 grouping records and 6 line bindings. Each copies its members and evidence digest exactly from the regenerated packets, and the worksheets were re-checked against those packets before writing.
+    - **Approval provenance.** The owner approved every proposal after ChatGPT reviewed the supplied grouping and line-binding worksheets. No physical survey, and no inspection of evidence absent from those worksheets, is claimed.
+    - **Meaning.** A station grouping establishes operator-level identity only. It creates no transfer edge, walking time, or shared-platform assumption.
+    - **The Marunouchi branch.** Its Railway record names the branch, while the GTFS route names the whole line. So its `japaneseTitle` and `englishTitle` disagreements (2 accepted checks) were accepted explicitly, and both Railway records keep their own provenance under the Marunouchi `LineID`.
+    - Each of the 15 `LineID`s is assigned once, from its operator's intended pool. The assignment is kept owner-only.
+  - **Runs.** `provisional-registry`, chained: Tokyo Metro first, with both accepted files identified as launch inputs (static `76f04623…a277e1`, Railway `90b16083…3b97f6c`); then Toei (`dd575706…2b42d8c4`), from Tokyo Metro's output registry.
+
+    | Run | Grouping | Lines | Registry after the run |
+    |---|---|---|---|
+    | Tokyo Metro | 185 rows → 144 identities; 32 proposals, all accepted; 0 held back | 9 `LineID`s; 9 routes, 10 Railway records; 2 accepted checks | revision 2 → 3; 41 active references |
+    | Toei | 149 rows → 141 identities; 8 proposals, all accepted; 0 held back | 6 `LineID`s; 6 routes | revision 3 → 4; 48 active references |
+
+    - **Final registry:** 2 operators, 15 lines, and no `StationID`.
+      - 48 active references, 0 absent, 0 retired. Every key is held once, and no line reference crosses operators.
+      - Tokyo Metro: its agency and ODPT operator on one operator; 9 route references; 10 each of Railway `@id`, `owl:sameAs`, and line code across 9 `LineID`s. The branch line holds 1 route and 2 Railway records.
+      - Toei: its agency on the other operator, and 6 route references on 6 `LineID`s.
+    - **Reconciliation:** 0 unassigned, 0 absent, 0 retired, and no conflict.
+      - The 10 Railway line codes are reported as *changed*. A code on an identity already anchored by a reviewed key is a descriptive attachment made without review (DEC-068 §E3), which is also why those 10 references carry no `attachedBy`.
+      - All other references were attached by a reviewed record.
+    - **Official fields.** Each of the 9 Tokyo Metro routes agrees with its main Railway record on line code, both titles, and colour (9/9). The branch record agrees on code and colour, and its two title disagreements are the accepted ones.
+    - **Determinism.** Three repeat runs, each supplying its previous inputs and records, gave byte-identical registries with no revision increase and zero changes:
+      - Tokyo Metro against its own output;
+      - Toei against its own output;
+      - Tokyo Metro against the final combined registry.
+  - **Toei differences from the audit's pinned archive** (row 4; `f10d03cd…`, 779,674 bytes, not available).
+    - **Observed differences.** Among the audit's recorded aggregates, two differ: `calendar_dates` 39 → 51 (+12 service-exception dates) and archive size +25 bytes. The historical archive is unavailable, so these are **not claimed to be the only byte-level or row-level differences**.
+    - **Equal aggregates.** Every other recorded aggregate, including every identity and line aggregate, equals the audit's: stops 149, routes 6, trips 5,600, `stop_times` 122,798, translations 404, 8 grouping candidates → 141 identities, and 6 route bindings.
+    - **Explanation.** A calendar-exception difference changes service dates, not station or line identity. These first runs had no previous Toei registry state, so the reconciliation report cannot show audit differences itself: the explanation rests on the aggregates above.
+    - **Basis of acceptance.** Acceptance rests on the successful reviewed grouping and binding run on the identified newer snapshot (`dd575706…`), with matching baseline counts and deterministic reruns. It does **not** establish equivalence with the historical archive.
+    - **Owner review** (2026-09-30). The owner accepted the newer Toei snapshot and this difference explanation for P2-S4 acceptance, as DEC-068 §H2 requires.
+  - **Criteria audit** (2026-09-30), against the P2-S4 completion criteria:
+
+    | Criterion group | Evidence | Verdict |
+    |---|---|---|
+    | Minting and registry | Step 1 (reviewed; 85 app and 8 minting cases); the operator binary has no generator entry point | met |
+    | Values and provenance | Steps 1–2 (scalar round-trip, invented ヶ / ケ and 〈…〉 stand-ins, full provenance) | met |
+    | Operator-level grouping | Step 2 (18 grouping cases; non-waivable operator boundary; two operators' shared name stays two identities) | met |
+    | Lines | Step 3 (22 line-binding cases on invented `Q` / `Qb` feeds; unbound fails; disagreements never bind on their own) | met |
+    | Revisions | Step 4 (21 revision cases; every §E transition and category; conflicts fail) | met |
+    | Determinism | Steps 4–5; the real repeat runs above | met |
+    | Boundaries | no real record, registry, or importer output committed; no Tokyo Metro provider value committed (only DEC-067 catalog metadata, hashes, and aggregates); no distance constant; no dependency | met |
+    | Suite and builds | `TSUGINOTests` 1204/1204 and Debug and Release builds on the Step 5 tree. Since then the app changed only by one visibility widening in `MappingRegistry.swift`, inside that tree, and later commits changed tool and docs only. Tool runner 129/129 on the current code | met |
+    | Real data: P2-S3 first | recovery record, accepted 2026-09-29 | met |
+    | Real data: Tokyo Metro | the runs above (185 → 144; 9 routes and 10 records → 9 `LineID`s; branch retained; 9/9) | met |
+    | Real data: Toei | the runs above (149 → 141; groupings reviewed; 0 held back; 6 bindings); the observed differences explained, and reviewed by the owner on 2026-09-30 | met |
+
+    **Verdict: P2-S4 is implemented and complete** (2026-09-30). Every criterion in the audit is met. The provisional registry and every run artifact stay outside the repository and hold no production identifier.
+  - **Gates that stay open** after completion:
+    - production identifiers and the registry of record (DEC-068 §F1): the provisional registry is not it;
+    - publishing any Tokyo Metro-derived mapping (the ODPT Q3 reply or a publication decision; DEC-065 §A, DEC-068 §F3);
+    - bundling canonical data in the app (ODPT item 5, P2-S8);
+    - canonical stations (P2-S5) and the later Phase 2 slices (P2-S6 to P2-S8);
+    - the open Step 4 contract questions: value reuse, conflict-resolution and identity-migration records.
+- **Later steps.** P2-S5, not yet started.
 
 **Completion rules, proportionate to the kind of slice:**
 
