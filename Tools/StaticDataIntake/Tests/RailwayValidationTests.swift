@@ -73,6 +73,22 @@ let railwayTests: [TestCase] = [
         try source.validate()
         try check(SourceList.source(id: "DS-03/tokyometro-static-gtfs") == source, "lookup")
     }),
+    ("the DS-03 Railway entry names the route dataset and resource, credentialed, with no URL or token, apart from the intake sources", { _ in
+        let source = SourceList.tokyoMetroRailway
+        try check(source.sourceID == "DS-03/tokyometro-railway" && MappingText.isToken(source.sourceID), "identifier")
+        try check(source.provider == "Tokyo Metro" && source.license == "Public Transportation Open Data Basic License", "provider and licence")
+        try check(source.dataset == "r_route-tokyometro" && source.resource == "81d953eb-65f8-4dfd-ba99-cd43d41e8b9b", "dataset and resource")
+        try check(source.access == .credentialed && source.url == nil, "credentialed, no URL")
+        try source.validate()
+        for text in [source.sourceID, source.dataset, source.resource] {
+            try check(!text.contains("consumerKey") && !text.contains("?") && !text.contains("://"), "no token or URL")
+        }
+        try check(SourceList.railwaySource(id: "DS-03/tokyometro-railway") == source, "lookup")
+        try check(SourceList.source(id: source.sourceID) == nil, "intake cannot select a Railway source")
+        let identifiers = (SourceList.all + SourceList.railway).map(\.sourceID)
+        try check(Set(identifiers).count == identifiers.count, "no identifier collision")
+        try check(SourceList.railwaySource(id: SourceList.tokyoMetroStaticGTFS.sourceID) == nil, "a GTFS source is not a Railway source")
+    }),
     ("an intake under the DS-03 entry publishes a manifest with no URL", { workspace in
         let archive = try workspace.write(ZipWriter.archive(SyntheticFeed.entries()))
         let output = workspace.output.appendingPathComponent("metro.json")

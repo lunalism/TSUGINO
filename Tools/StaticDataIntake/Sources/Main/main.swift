@@ -103,6 +103,7 @@ if CommandLine.arguments.dropFirst().first == "mint" {
 if CommandLine.arguments.dropFirst().first == "review-packet" {
     let (flags, _) = parseFlags(["--source", "--archive", "--records", "--railway-source", "--railway", "--registry", "--select", "--output"])
     guard let sourceID = flags["--source"], SourceList.source(id: sourceID) != nil,
+          flags["--railway-source"].map({ SourceList.railwaySource(id: $0) != nil }) ?? true,
           let archive = flags["--archive"], let records = flags["--records"], let output = flags["--output"] else { usage() }
     let request = ReviewPacketRequest(
         gtfsSourceID: sourceID, railwaySourceID: flags["--railway-source"],
@@ -129,6 +130,7 @@ if CommandLine.arguments.dropFirst().first == "provisional-registry" {
         repeatable: ["--launch-input"]
     )
     guard let sourceID = flags["--source"], SourceList.source(id: sourceID) != nil,
+          flags["--railway-source"].map({ SourceList.railwaySource(id: $0) != nil }) ?? true,
           let archive = flags["--archive"], let records = flags["--records"], let output = flags["--output"] else { usage() }
     let hasPrevious = flags["--previous-archive"] != nil || flags["--previous-records"] != nil || flags["--previous-railway"] != nil
     guard !hasPrevious || (flags["--previous-archive"] != nil && flags["--previous-records"] != nil) else { usage() }

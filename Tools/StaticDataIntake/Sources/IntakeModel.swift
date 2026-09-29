@@ -173,10 +173,34 @@ enum SourceList {
         url: nil
     )
 
+    /// GTFS archive sources: the ones intake may read.
     static let all: [SourceDefinition] = [toeiStaticGTFS, tokyoMetroStaticGTFS]
 
     static func source(id: String) -> SourceDefinition? {
         all.first { $0.sourceID == id }
+    }
+
+    /// Registry row DS-03 (route dataset): Tokyo Metro `odpt:Railway`, Basic
+    /// License. Metadata verified 2026-09-28 from the public catalog pages of
+    /// dataset `r_route-tokyometro`. The endpoint requires an account token,
+    /// so the source is credentialed and no URL is recorded.
+    static let tokyoMetroRailway = SourceDefinition(
+        sourceID: "DS-03/tokyometro-railway",
+        provider: "Tokyo Metro",
+        license: "Public Transportation Open Data Basic License",
+        dataset: "r_route-tokyometro",
+        resource: "81d953eb-65f8-4dfd-ba99-cd43d41e8b9b",
+        access: .credentialed,
+        url: nil
+    )
+
+    /// `odpt:Railway` sources, kept apart from `all`: intake reads GTFS
+    /// archives only, and these identify the Railway input of
+    /// review-packet and provisional-registry.
+    static let railway: [SourceDefinition] = [tokyoMetroRailway]
+
+    static func railwaySource(id: String) -> SourceDefinition? {
+        railway.first { $0.sourceID == id }
     }
 }
 
