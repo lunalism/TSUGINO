@@ -2,7 +2,7 @@
 
 **Status: Non-normative evidence note, 2026-09-30; no authorization.**
 
-The design draft has been consolidated into **DEC-071 (Accepted, design only)** in `DECISIONS.md`. That record is the sole authoritative contract; this note retains only the useful read-only inventory from the earlier draft. It does not define selection, revision, search, binding or licensing policy. No source artifacts were changed, and no translation was authored. P2-S7 remains unstarted.
+The design draft has been consolidated into **DEC-071 (Accepted, design only)** in `DECISIONS.md`. That record is the sole authoritative contract; this note retains only the useful read-only inventory from the earlier draft. It does not define selection, revision, search, binding or licensing policy. No source artifacts were changed, and no translation was authored during that inventory. P2-S7 was unstarted at that inspection; subsequent synthetic implementation and remaining acceptance work are recorded in ROADMAP. This inventory was not re-read from real inputs during synthetic implementation.
 
 ## Verified input availability, not accepted canonical names
 

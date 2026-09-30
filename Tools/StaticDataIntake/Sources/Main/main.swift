@@ -45,6 +45,8 @@ func usage() -> Never {
                static-data-intake network-packet --a-source <id> --a-archive <path> --b-source <id> --b-archive <path>
                    --registry <file> [--network-records <file>] [--loop-tail-line <id>]... [--branch-line <id>]... --output <new file>
                static-data-intake network-build (the same) [--previous-coordinates <file>] --output <new directory>
+               static-data-intake name-packet --input <manifest> [--records <file>] [--selections <draft>] --output <new directory>
+               static-data-intake name-build --input <manifest> --records <file> [--previous <history>] --output <new directory>
         sources: \(sources)
 
         """.utf8))
@@ -93,6 +95,22 @@ func parseFlags(_ allowed: Set<String>, repeatable: Set<String> = []) -> (single
         }
     }
     return (single, repeated)
+}
+
+if ["name-packet", "name-build"].contains(CommandLine.arguments.dropFirst().first) {
+    let packet = CommandLine.arguments[1] == "name-packet"
+    let (flags, _) = parseFlags(["--input", "--records", "--previous", "--selections", "--output"])
+    guard let input = flags["--input"], let output = flags["--output"], !packet || flags["--previous"] == nil else { usage() }
+    do {
+        let report = try await RailNameCommand.run(configPath: input, recordsPath: flags["--records"], previousPath: flags["--previous"],
+            outputPath: output, packetOnly: packet, selectionsPath: flags["--selections"], root: toolRepositoryRoot())
+        print(String(decoding: NetworkJSON.encode(report), as: UTF8.self), terminator: "")
+        exit(packet || report.complete ? 0 : 1)
+    } catch {
+        // Decoding/provider text never enters standard output or diagnostics.
+        FileHandle.standardError.write(Data("name command failed: invalid input, review, history, or publication.\n".utf8))
+        exit(1)
+    }
 }
 
 if CommandLine.arguments.dropFirst().first == "mint" {

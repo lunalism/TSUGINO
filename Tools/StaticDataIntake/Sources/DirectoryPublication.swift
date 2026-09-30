@@ -66,7 +66,7 @@ final class DirectoryPublication {
 
     /// Publishes `files` (name → bytes; flat, distinct names) as the new
     /// directory `name`.
-    func publish(_ files: [(name: String, data: Data)]) throws(IntakeError) {
+    func publish(_ files: [(name: String, data: Data)], ownerOnlyFiles: Bool = false) throws(IntakeError) {
         let temporaryName = ".static-data-intake-\(UUID().uuidString).tmp"
         guard mkdirat(parent, temporaryName, 0o700) == 0 else { throw .publicationFailed(errno: errno) }
         let directory = openat(parent, temporaryName, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW)
@@ -83,7 +83,7 @@ final class DirectoryPublication {
         }
 
         for (index, file) in files.enumerated() {
-            let descriptor = openat(directory, file.name, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, 0o644)
+            let descriptor = openat(directory, file.name, O_WRONLY | O_CREAT | O_EXCL | O_CLOEXEC | O_NOFOLLOW, ownerOnlyFiles ? 0o600 : 0o644)
             guard descriptor >= 0 else {
                 let error = errno
                 discard()

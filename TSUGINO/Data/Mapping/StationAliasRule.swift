@@ -12,7 +12,7 @@ import Foundation
 // tool-only (ARCHITECTURE.md §4.1).
 
 /// A provider-orthography or presentation alias rule.
-nonisolated enum StationAliasRule: String, CaseIterable, Hashable, Comparable, Sendable {
+nonisolated enum StationAliasRule: String, Codable, CaseIterable, Hashable, Comparable, Sendable {
     /// ヶ (U+30F6, small) and ケ (U+30B1, full-size) compare as one character.
     /// No other character is folded: not ヵ, not a half-width form, and no
     /// Unicode normalization.

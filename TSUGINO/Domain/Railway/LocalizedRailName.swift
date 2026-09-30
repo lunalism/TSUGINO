@@ -23,6 +23,20 @@ nonisolated struct LocalizedRailName: Hashable, Codable, Sendable {
     let english: String
     let korean: String
 
+    // DEC-071: String equality is canonically equivalent, not scalar-exact.
+    static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs.japanese.unicodeScalars.elementsEqual(rhs.japanese.unicodeScalars)
+            && lhs.english.unicodeScalars.elementsEqual(rhs.english.unicodeScalars)
+            && lhs.korean.unicodeScalars.elementsEqual(rhs.korean.unicodeScalars)
+    }
+
+    func hash(into hasher: inout Hasher) {
+        for text in [japanese, english, korean] {
+            hasher.combine(text.unicodeScalars.count)
+            for scalar in text.unicodeScalars { hasher.combine(scalar.value) }
+        }
+    }
+
     /// Fails when any one of the three names is blank; otherwise preserves all
     /// three exactly. The three values may be identical — some names are written
     /// the same way in more than one language.
