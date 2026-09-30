@@ -4292,6 +4292,7 @@ S6 tests must cover, at minimum: every §D check producing exactly its rejection
 **Status:** Accepted — after product and technical review, including the four P2-S1 reader policies in §D\
 **Date:** 2026-09-25\
 **Amended:** 2026-09-26 — §D narrowed after the P2-S1 implementation review: a repeated `stop_sequence` is invalid, while rows out of `stop_sequence` order in the file are unsupported; blank lines after the header and unread number notations are unsupported; and the additional rules found during implementation are recorded with their source (S, O, or P). The accepted reader policies are unchanged.\
+**Amended:** 2026-09-30 — §E, by DEC-069 (P2-S5 design). Its input clause and target list are revised as the note at the end of §E records. The original text is kept.\
 **Related:** DEC-021, DEC-027, DEC-029, DEC-037, DEC-047, DEC-048, DEC-055 D5, DEC-059, DEC-060 §F, DEC-061 F; `RULES.md` Rule 9, Rule 14, Rule 34, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §40; `ROADMAP.md` Phase 2; `PROVIDER_FEASIBILITY_AUDIT.md` §2.3, §3.5, §3.6.3, §3.11, §3.12, §6.1.3, §6.5, §6.8, §9 (DS-01, DS-03, DS-15)
 
 ## Context
@@ -4397,6 +4398,12 @@ The later cross-operator slice must **reproduce** DEC-048 from pinned inputs, ne
 - **Toei 新宿 and Tokyo Metro 新宿 remain two stations**: the relationship is `explicitly_ambiguous`, and no transfer edge is recorded.
 
 No distance threshold enters the pipeline — the 320 m figure is analytical corroboration only. The analysis group keys are **not** production identifiers.
+
+**Amended 2026-09-30 by DEC-069** (the text above is kept as accepted):
+- **Inputs.** "Reproduce DEC-048 from pinned inputs" now reads: *compare with DEC-048 on the identified snapshots accepted for P2-S4*. The pinned A4 snapshots are unavailable and are historical evidence only. No equivalence is claimed.
+- **Baselines.** 285 input identities; 27 merged, 114 Toei-only, and 117 Tokyo Metro-only groups, **258** in total; 0 duplicate assignments; 0 unmapped identities; and the three explicit exceptions are **expected acceptance baselines** pending the actual run. A mismatch stops acceptance until it is explained and the owner has reviewed it. It never changes a reviewed outcome or forces a merge.
+- **Comparisons.** "54 candidates, of which 27 … 26 distinct, and 1 explicitly ambiguous" is now a **historical comparison**, not a target. The 27 merged groups and the ambiguous 新宿 outcome remain baselines.
+- **Unchanged.** The exceptions, the absence of any distance threshold, and the status of the analysis group keys.
 
 ### F. Boundaries this Decision does not move
 
@@ -4988,6 +4995,182 @@ Heavy work stays off the main actor (Rule 14). No dependency is added.
 - A feed revision produces a conflict (§E3), or an operator publishes a shared cross-operator identifier.
 - A new identifier kind needs minting (`TripID`, `ServiceTypeID`).
 
+---
+
+# DEC-069 — P2-S5 Forms Canonical Stations From Name and Alias Candidates Through Reviewed Cross-Operator Records on the Identified Snapshots
+
+**Status:** Accepted — design only; P2-S5 is not yet implemented\
+**Date:** 2026-09-30\
+**Decides:** the P2-S5 inputs, candidate generation, cross-operator review record, canonical-station formation, and completion contract\
+**Amends, exactly:**
+- **DEC-065 §E:**
+  - Its input clause "must reproduce DEC-048 from pinned inputs" becomes a comparison with DEC-048 on the identified snapshots (§A1).
+  - Its target list changes. 285 input identities, 27 merged groups, 114 + 117 + 27 = 258 groups, 0 duplicate assignments, 0 unmapped identities, and the three explicit exceptions become **expected acceptance baselines** (§A2).
+  - "54 candidates, of which … 26 distinct" become **historical comparisons**, no longer targets (§A3).
+  - The rest of §E is unchanged: the exceptions, "no distance threshold enters the pipeline", and "the analysis group keys are not production identifiers".
+- **`ROADMAP.md` P2-S5 criteria:**
+  - "the same pinned inputs" becomes the identified snapshots;
+  - "reproduces DEC-048's aggregates" becomes §A's baselines and comparisons;
+  - "Production identifiers are minted independently of the analysis group keys" becomes: *provisional* `StationID`s are minted independently of any analysis key, and P2-S5 completes without production identifiers, which wait for DEC-068 §F1;
+  - the §F test criteria are added.
+
+  The criterion "no distance constant exists" is **unchanged**: this design computes no distance.
+
+**Does not amend:**
+- **DEC-048:** outcomes, identity rules 1–7, the 320 m prohibition, and revisit triggers.
+- **Rule 53.**
+- **DEC-067.**
+- **DEC-068 §A–§H.** Station minting was barred only in P2-S4 (§D2), and §C5 already assigns the two alias rules to P2-S5. The alias records that §C5 says P2-S4 "reserves" are not yet in the schema; adding them is implementation.
+- **`ARCHITECTURE.md` §40.** Coordinates here are evidence values only, so "coordinates corroborate identity candidates only" stays accurate.
+
+**Related:** DEC-021, DEC-026, DEC-048, DEC-065 §A and §E, DEC-067, DEC-068; `RULES.md` Rule 9, Rule 39, Rule 40, Rule 53; `ARCHITECTURE.md` §40, §41; `ROADMAP.md` P2-S5, P2-S6; `PROVIDER_FEASIBILITY_AUDIT.md` §6.5
+
+## Context
+
+P2-S5 forms cross-operator canonical stations. Most of its contract was already accepted:
+
+- **Identity rules and named outcomes** (DEC-048, Rule 53):
+  - names and spatial proximity may generate candidates, and never establish identity;
+  - 市ヶ谷 / 市ケ谷 and 押上 / 押上〈スカイツリー前〉 are one station each;
+  - Toei 新宿 and Tokyo Metro 新宿 stay two stations, recorded as explicitly ambiguous, with no transfer edge;
+  - no parent or transfer relation is invented;
+  - 320 m is never a rule.
+- **Identifiers and records** (DEC-068): the `stn` form, explicit minting, `stop_id` and `stop_code` references with exact values and provenance, the alias rules as explicit comparison-key records (§C5), revisions and migrations, and the registry-of-record and publication gates.
+- **Inputs.** P2-S4's reviewed operator-level identities on identified snapshots (141 Toei, 144 Tokyo Metro), and the shared provisional registry.
+
+Three points were undecided:
+
+1. **The pinned inputs are unavailable.** The A4 snapshots are historical evidence only.
+2. **The candidate method.** A4's 54 candidates included 25 found by spatial proximity, and A4 recorded no method or radius for them.
+3. **No reviewed record covers a cross-operator candidate.** DEC-068's grouping record is operator-internal (accept or reject), and cannot record ambiguity.
+
+## Decision
+
+### A. Inputs, expected baselines, and comparisons
+
+1. **Inputs.** P2-S5 runs on the identified snapshots accepted for P2-S4: Toei `dd575706…`, and Tokyo Metro `76f04623…` (static) and `90b16083…` (Railway). It uses P2-S4's reviewed operator records, grouping records, and line bindings, and the shared provisional registry, all outside the repository.
+   - Results are compared with the historical A4 analysis. Nothing claims these snapshots are equivalent to the A4 snapshots.
+2. **Expected acceptance baselines**, pending the actual run. They are DEC-048's historical figures, not a result this slice has already proved:
+   - 285 input identities (141 + 144);
+   - 27 cross-operator merged groups;
+   - 114 Toei-only and 117 Tokyo Metro-only groups;
+   - **258** canonical stations;
+   - 0 duplicate assignments and 0 unmapped identities;
+   - the named outcomes: 市ヶ谷 / 市ケ谷 is one station; 押上 / 押上〈スカイツリー前〉 is one station; Toei 新宿 and Tokyo Metro 新宿 stay separate and ambiguous.
+
+   A mismatch **stops acceptance** until it is explained and the owner has reviewed it. A mismatch never changes a reviewed outcome automatically, never forces a merge or a split, and never licenses a record written to hit a number. The named outcomes stay as DEC-048 accepted them, unless a DEC-048 revisit trigger is met through its own decision.
+3. **Historical comparisons.** A4's 54 candidates, 26 distinct classifications, and 29 name-based and 25 spatial candidates are recorded beside this run's figures, and every difference is explained. They are not pass conditions.
+   - This slice generates no spatial candidates, so its candidate total is expected to differ from 54.
+   - The A4 analysis digests are not compared, since their serialization was not recorded.
+
+### B. Candidate generation — names and the two alias rules only
+
+1. **Keys.** Two operator-level identities of different operators form a candidate when any member value of one equals any member value of the other under any of these keys:
+   - the **exact original Japanese** value;
+   - the **exact original English** value;
+   - the **ヶ / ケ orthographic rule** (DEC-048): U+30F6 and U+30B1 compare as one character;
+   - the **〈…〉 subtitle rule** (DEC-048): a trailing bracketed 〈…〉 subtitle is left out of the comparison.
+
+   Values are compared scalar by scalar (DEC-068 §C2). Each alias rule is an explicit rule record, applied only as a comparison key: no provider value is rewritten, and both originals are preserved.
+2. **Only these two alias rules.** Adding an alias rule, or extending one, needs a new accepted decision. An alias is never created to permit a particular merge.
+3. **Discovery reasons and deduplication.**
+   - A candidate is identified by the unordered pair of its operator-level identities, keyed by their sorted member source references.
+   - A pair found by several keys is **one** candidate. It keeps **every** discovery reason, listed in the fixed order above, with the member values that matched.
+   - Candidates are ordered by their key, so output does not depend on input order.
+4. **Coverage limitation.** Differently named stations not related by one of the two accepted alias rules **may be missed**. Rule 53 permits spatial proximity as a discovery route, but this slice deliberately does not implement it.
+   - **Mutual-nearest spatial generation is deferred.** No spatial algorithm, tie policy, radius, or fallback belongs to this contract.
+   - Adopting spatial discovery later needs its own accepted decision.
+5. **No distance is computed.** Coordinates appear in evidence only as the preserved provider values. No distance threshold, radius, or constant exists.
+
+### C. Reviewed cross-operator records
+
+1. **Evidence.** For each candidate, the tool attaches DEC-048 rule 3's evidence, with an evidence digest:
+   - each side's provider identifiers, codes, and code systems;
+   - line membership and station-order positions;
+   - adjacent stations;
+   - multi-line occurrence;
+   - all original names;
+   - the preserved provider coordinates, as values;
+   - the discovery reasons;
+   - every other candidate involving either side.
+2. **Record.** One reviewed record per candidate names:
+   - both operator-level identities, by their members' source references;
+   - the evidence digest;
+   - the outcome: `same`, `distinct`, or `ambiguous`;
+   - a reason.
+3. **`same`.**
+   - It joins exactly two identities, one per operator.
+   - It is refused while any other candidate involving either side is unreviewed, or is also `same`.
+   - It needs converging structural evidence (Rule 53). Names alone or coordinates alone never suffice.
+   - **If an alias rule was used** to relate the names, the record cites that rule.
+   - **If the names differ and no alias rule applies**, the reviewer may still establish identity from other documented evidence. The record then states the reason explicitly, and names the evidence it relies on by its provenance: which items of the digested evidence, or an external authoritative source with its reference.
+   - An alias rule is never invented to permit a merge.
+4. **`distinct`** records positive conflicting evidence (as in DEC-048).
+5. **`ambiguous`** records that the evidence can justify neither `same` nor `distinct` (Rule 53).
+6. **Unreviewed candidates.** Any unreviewed candidate fails the run.
+
+### D. Canonical stations and ambiguity
+
+1. **Formation.** Each canonical group becomes one `StationID`: an operator-level identity alone, or two joined by `same`.
+   - Its members' `gtfs.stop_id` references attach through the reviewed P2-S4 grouping records and the §C `same` records.
+   - `gtfs.stop_code` attaches as a descriptive code (DEC-068 §E3).
+   - Operator-level identities are not separate registry entities.
+2. **Minting.**
+   - `StationID`s are minted only on explicit request (DEC-068 §B2), into the provisional registry. Enabling the station kind in the tool's `mint` is part of this slice.
+   - They are **provisional**, and minted independently of any analysis key.
+   - Production minting waits for the registry-of-record decision (DEC-068 §F1).
+3. **Ambiguity, operationally.**
+   - An `ambiguous` pair is two separate provisional `StationID`s.
+   - The `ambiguous` record is kept with the other reviewed records, outside the repository.
+   - The registry gains **no** relationship, link, parent, or alias between the two, and no transfer edge exists in any transfer graph.
+   - Resolving it later is a new reviewed decision, and a merge is an identity migration (DEC-068 §E4). DEC-048's revisit triggers apply.
+
+### E. Local validation and the public boundary
+
+- **Local runs.** Real runs happen locally, outside the repository. Only counts, totals, and hashes are recorded (DEC-067 §E).
+- **Not committed:** real cross-operator, grouping, binding, reference, or registry records, for either operator (DEC-068 §F1). Tokyo Metro-derived mappings stay unpublished (DEC-068 §F3).
+- **May be committed:** the two alias rules, as project-owned rule definitions without provider rows; code; schemas; and fully invented synthetic fixtures.
+
+### F. Completion
+
+P2-S5 is **implemented** when synthetic tests on invented feeds cover:
+- each of the four keys;
+- one candidate per pair, with every discovery reason, in a deterministic order;
+- the two alias rules applied as comparison keys, with the originals preserved and the mapping reversible;
+- no candidate from any other name variant;
+- evidence digests;
+- the three outcomes and the refusals of `same`;
+- an alias citation only when an alias rule was used;
+- a differently named `same` that carries a reason and evidence provenance;
+- an invented same-name pair kept `ambiguous`, as two stations with no registry relation or transfer edge;
+- an unreviewed candidate failing the run;
+- no distance constant;
+- station minting and attachment;
+- deterministic output.
+
+The full suite and the Debug and Release builds must also pass.
+
+P2-S5 is **complete** when all of the following hold:
+- a local run on the §A1 inputs meets every §A2 baseline, or each mismatch is explained and owner-reviewed;
+- the §A3 comparisons are recorded;
+- a rerun is byte-identical.
+
+It completes on the provisional registry. Production identifiers, the registry of record, publication, and bundling stay gated.
+
+## Rejected alternatives
+
+- **Mutual-nearest spatial candidates.** Deferred, not rejected on principle. It would add many mostly unrelated review questions, and would need a tie and multi-point policy. The coverage it gives up is stated in §B4.
+- **A radius, such as 320 m, even for candidates only.** It is a distance constant that DEC-048 and the criterion forbid.
+- **54 and 26 as pass conditions.** They cannot be met honestly without A4's unrecorded method.
+- **Treating the historical figures as proven results.** They are expected baselines, confirmed or explained by the actual run.
+- **Reusing DEC-068's accept/reject record.** It cannot express ambiguity.
+
+## Revisit triggers
+
+- A provider publishes a cross-operator identifier, transfer, or parent relation (DEC-048's triggers).
+- The registry-of-record decision is made.
+- A baseline mismatch whose owner review points to a DEC-048 revisit.
+- Evidence of a differently named same station that the two alias rules cannot relate. That would reopen spatial or other discovery through a new decision.
 ---
 
 ## 3. Decision Maintenance Rules

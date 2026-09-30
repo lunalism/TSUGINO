@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 is next and has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 is next: its design is accepted (DEC-069) and its implementation has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -409,7 +409,7 @@ Create a reliable local railway topology foundation.
 | **P2-S2** | implementation | Static source intake in an offline macOS developer tool: archive member policy, streaming of the named tables with the system `bsdtar`, input consistency, and a source manifest (DEC-066) | S1 | **DEC-066 only** (accepted) |
 | P2-S3 | implementation | Tokyo Metro static GTFS through the unchanged P2-S1 reader, plus an `odpt:Railway` DTO reader; invented synthetic fixtures only, real inputs local (DEC-067) | S1, S2 | **DEC-067 only** (accepted) |
 | P2-S4 | implementation | Operator-level identities (149 → 141 Toei, 185 → 144 Tokyo Metro) and line mapping to the 15 baseline `LineID`s, with the Marunouchi branch record as an alias (DEC-057 D6) | S2, S3 (including P2-S3's real-data validation, for completion) | **DEC-068** (accepted) for code and synthetic tests. Completion needs real-data acceptance on identified snapshots (DEC-068 §H). Minting production identifiers, or committing any real mapping record for either operator, needs the pending registry-of-record decision (DEC-068 §F1). Publishing any Tokyo Metro-derived mapping also needs the ODPT Q3 reply or a separate accepted publication decision (DEC-065 §A) |
-| P2-S5 | implementation | Cross-operator station identity, reconciled to DEC-048 (DEC-065 §E) | S4 | as S4 |
+| P2-S5 | implementation | Cross-operator station identity from name and alias candidates, compared with DEC-048 (DEC-065 §E as amended by DEC-069) | S4 | **DEC-069** (accepted), with DEC-068. Production identifiers, committed real records, and Tokyo Metro publication stay gated as for S4 (DEC-068 §F) |
 | P2-S6 | implementation | Representative coordinates and line topology → valid `Station` and `RailwayLine` values | S5 | coordinate-selection policy, including the 27 merged stations; topology evidence source |
 | P2-S7 | implementation | Japanese/English/Korean names, search aliases, search index, local search API | S6 | Korean authorship and review; Tokyo Metro Korean inputs (ODPT Q4) |
 | P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | storage format, after measurement (DEC-029); bundling in the shipped binary stays with ODPT item 5 |
@@ -811,7 +811,7 @@ Create a reliable local railway topology foundation.
     - bundling canonical data in the app (ODPT item 5, P2-S8);
     - canonical stations (P2-S5) and the later Phase 2 slices (P2-S6 to P2-S8);
     - the open Step 4 contract questions: value reuse, conflict-resolution and identity-migration records.
-- **Later steps.** P2-S5, not yet started.
+- **Later steps.** P2-S5 implementation under DEC-069, not yet started.
 
 **Completion rules, proportionate to the kind of slice:**
 
@@ -914,7 +914,30 @@ Create a reliable local railway topology foundation.
     - **Toei:** on an identified snapshot — operator-level identities, reviewed groupings and held-back candidates, and 6 route bindings. On the audited snapshot the expected result is 149 rows forming 141 identities. On any other snapshot, every difference is explained and reviewed.
     - **Tokyo Metro:** on identified owner-only snapshots — 185 rows forming 144 identities; 9 routes and 10 Railway records bound to 9 `LineID`s, with the branch record bound to the Marunouchi `LineID`; the official-field checks agree 9/9.
     - Only counts, totals, and hashes are recorded. Until both operators pass, P2-S4 stays implemented but incomplete, unless a new accepted decision revises this condition.
-- **P2-S5:** a deterministic importer (the same pinned inputs, reviewed records, and registry give byte-identical output) reproduces DEC-048's aggregates (DEC-065 §E). Tests assert that Toei 新宿 and Tokyo Metro 新宿 stay separate with no transfer edge, that both alias rules are explicit and reversible with original strings preserved, and that no distance constant exists. Production identifiers are minted independently of the analysis group keys.
+- **P2-S5 (DEC-069; amended 2026-09-30).** The original criterion is preserved in DEC-069's amendment list: a deterministic importer on the pinned inputs, reproducing DEC-048's aggregates.
+  - **Inputs.** P2-S4's identified snapshots (Toei `dd575706…`; Tokyo Metro `76f04623…` and `90b16083…`), the reviewed P2-S4 records, and the shared provisional registry, all outside the repository. They are compared with the historical A4 analysis, with no equivalence claimed.
+  - **Candidates.** Exact original Japanese, exact original English, and the two accepted alias rules: ヶ / ケ, and the 〈…〉 subtitle.
+    - One candidate per pair, keeping every discovery reason, in a deterministic order.
+    - No spatial candidates. Differently named stations not related by the two alias rules may be missed.
+  - **Review.** Every candidate gets a reviewed `same`, `distinct`, or `ambiguous` record with its evidence digest; an unreviewed candidate fails the run.
+    - `same` joins exactly two identities, needs converging structural evidence, and cites an alias rule only when one was used.
+    - A differently named `same` needs a reason and the provenance of its evidence.
+  - **Synthetic tests** cover:
+    - the keys, deduplication, and discovery reasons;
+    - the alias rules as explicit, reversible comparison keys, with originals preserved;
+    - the outcomes and the refusals of `same`;
+    - an invented same-name pair kept `ambiguous`: two stations, with no registry relation and no transfer edge;
+    - station minting and attachment;
+    - deterministic output.
+
+    Toei 新宿 and Tokyo Metro 新宿 stay separate with no transfer edge, and **no distance constant exists**.
+  - **Suite and builds.** The full suite, and the Debug and Release builds of the app and extension, pass.
+  - **Real-data acceptance, local and not committed.**
+    - A run on the identified inputs is checked against the **expected baselines** (DEC-048's historical figures, pending the actual run): 285 identities; 27 merged, 114 Toei-only, and 117 Tokyo Metro-only groups, 258 in total; 0 duplicates; 0 unmapped; 市ヶ谷 / 市ケ谷 and 押上 / 押上〈スカイツリー前〉 merged; 新宿 separate and ambiguous.
+    - A mismatch stops acceptance until it is explained and the owner has reviewed it. It never changes a reviewed outcome or forces a merge.
+    - A4's 54 candidates and 26 distinct classifications are recorded as comparisons only.
+    - A rerun is byte-identical.
+  - **Identifiers.** `StationID`s are provisional and minted independently of any analysis key. P2-S5 completes without production identifiers, which wait for the registry-of-record decision (DEC-068 §F1). Publication and bundling stay gated.
 - **P2-S6:** every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate.
 - **P2-S7:** through the local search API, every baseline station is found by its Japanese, English, and Korean names and by its recorded aliases, including 市ヶ谷 / 市ケ谷 and 押上〈スカイツリー前〉; both 新宿 stations are returned and can be told apart by operator and lines. Station search UI is Phase 8.
 - **P2-S8:** the storage decision is recorded with measurements; a test proves ordinary use does not re-parse the full static dataset (Rule 15); reopen, data-version, and identifier-retirement migration tests pass.
