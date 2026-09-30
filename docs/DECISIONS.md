@@ -39,6 +39,7 @@ Each decision should include:
 
 Possible statuses:
 
+- `Proposed` — a review draft, not authorization or current policy
 - `Accepted`
 - `Provisional`
 - `Superseded`
@@ -2448,6 +2449,8 @@ A shared, provider-neutral canonical name value used by `Operator` (S2) and by `
 13. This Decision does **not** implement `LanguageResolver`, UI localization, provider mapping, or any canonical railway data.
 
 This supersedes the flat three-property depiction in §5.1, §5.2, and §5.7, which are updated to reference `LocalizedRailName`. Only one representation remains.
+
+**Amendment — DEC-071 (accepted 2026-09-30).** The preservation and required-name rules above remain unchanged. `LocalizedRailName` equality and hashing explicitly compare Unicode-scalar sequences in Japanese/English/Korean order; canonical-equivalent but scalar-distinct strings are distinct values. The String fields, validation and encoded shape stay unchanged. Pipeline ordering follows DEC-071 §A; no Data import or Domain `Comparable` is required. This supplements the original comparison contract without changing entity ID-only identity.
 
 ### `Operator`
 
@@ -4868,6 +4871,8 @@ Rejected alternatives:
 5. **Alias rules.** The ヶ / ケ orthographic rule and the 〈…〉 subtitle rule (DEC-048) are their own explicit records, used only as comparison keys. P2-S5 applies them; P2-S4 only reserves them in the schema.
 6. **Reversibility.** Every mapping traces to its source values, and no mapping is held only in code.
 
+**Amendment to §C1 — DEC-071 (accepted 2026-09-30).** The original general provider-reference rule above is retained. Its sole new exception permits separate reviewed `odpt:Railway` station-title editorial bindings to existing StationIDs for name/alias evidence under DEC-071 §D. These are not general provider-ID resolution or registry references; registry schema/namespaces and §E/§F remain unchanged. This takes up only the title-use work deferred in §D6 below; no minting, merging or implicit migration is permitted.
+
 ### D. P2-S4 mapping contract — nothing is merged or bound without a reviewed record
 
 1. **Operators.** Toei's `agency_id` is bound to one `OperatorID`. Tokyo Metro's `agency_id` and `odpt:operator` are bound to another. Both bindings are explicit, reviewed records. There are two operators.
@@ -5322,6 +5327,99 @@ Four points are undecided:
 - A product use needs a point with a stated meaning.
 - Review shows a feed widely omits pass-through rows, or a real parallel path appears.
 - The registry-of-record decision is made.
+---
+
+# DEC-071 — P2-S7 Uses Scalar-Exact Reviewed Names, Validated Evidence Carry-Forward, and Separate Railway Title Bindings
+
+**Status:** Accepted — design only; P2-S7 is not yet implemented\
+**Date:** 2026-09-30\
+**Amends, exactly:** add scalar-exact name comparison semantics to DEC-053; add the narrowly scoped editorial-binding exception to DEC-068 §C1 described in §D below, taking up the title-use portion deferred by §D6. The original DEC-053 and DEC-068 text is preserved with dated amendment notes.\
+**Unchanged:** DEC-048 identity boundaries; DEC-053 required names and lossless storage; DEC-068 registry schema, reconciliation, identity migrations and §F gates; DEC-069 station formation/reviews; DEC-070 coordinate/topology reviews and history; ODPT Q3/Q4 and P2-S8 gates.\
+**Related:** DEC-041, DEC-042, DEC-053, DEC-065–070; ARCHITECTURE §39.1/§40; ROADMAP P2-S7; PROVIDER_FEASIBILITY_AUDIT §3.12.
+
+## Context and scope
+
+P2-S6 is complete. P2-S7 needs reviewed Japanese/English/Korean names for existing stations, lines and operators, explicit station aliases, deterministic exact lookup, and complete Domain construction. Provider originals are evidence, never automatically canonical. Accepted decisions do not yet define name-selection review validity or Railway station-title bindings. `ExactValue` already compares Unicode scalars, but `LocalizedRailName` currently synthesizes equality/hashing through Swift `String`, which treats canonically equivalent spellings as equal.
+
+This decision separates **authorized synthetic implementation** from **real-data review and acceptance**. No real translation, identifier minting, identity change, UI, fuzzy/prefix search, persistence-format selection, app bundling, or new dependency is included. The companion P2-S7 evidence note retains the dated language inventory, not a competing contract.
+
+## Decision
+
+### A. Exact values and lookup
+
+1. Names, aliases, queries, index keys, and their deduplication/evidence comparisons use **Unicode-scalar-sequence equality**, scalar-based hashing, and lexicographic Unicode-scalar ordering (equivalently unsigned UTF-8 byte ordering for valid decoded strings). Ordinary Swift `String` equality, ordering, `Set<String>` or `Dictionary<String, …>` must not collapse distinct scalar sequences in these roles. Composed and decomposed spellings remain distinct unless two separately reviewed explicit entries intentionally resolve them to the same station.
+2. Reuse `ExactValue` in Data/tool code for nonblank values and keys. Reject blank canonical names/aliases; an empty or whitespace-only query returns no results without being trimmed into a different query. Preserve all other scalars, including surrounding whitespace. No case/width folding, Unicode normalization, transliteration, or automatic subtitle removal.
+3. `LocalizedRailName` keeps its existing String fields, validation and encoded shape, but explicitly compares/hashes each language's scalar sequence, in fixed Japanese/English/Korean order. Domain must not import Data's `ExactValue`; the small Domain comparison implements the same semantics locally. No Domain `Comparable` conformance is required: any pipeline ordering of name triples uses that same fixed field order and scalar lexicographic comparison. Canonical entities retain ID-only equality; payload verification compares their name fields explicitly. This is a comparison-contract addition to DEC-053, not permission to rewrite stored names.
+4. The index maps scalar-exact full names and explicit reviewed station aliases across all three languages to existing `StationID`s. Return every matching station once, in scalar-exact ID order, with its canonical line/operator context. Duplicate search keys across different stations are legal and return all matches; they never merge identities. Preserve the two 新宿 results. Multiple approved entries reaching one station retain their evidence but yield one result.
+5. An alias record names its review ID, existing station, language, exact alias value, supporting name/source evidence, reason, and any cited accepted alias-rule application with both originals. Only the accepted ヶ/ケ and 〈…〉 rules may derive additional keys, through an explicit reviewed application; no new rule is introduced. Historical names become aliases only through explicit review, never by indexing all history. The validation/history rules below apply to aliases too; whether evidence is a current sighting or retained historical evidence is explicit in the reason's dependencies.
+
+### B. Name-review record and evidence
+
+One current approved choice per `(entity kind, existing canonical ID, language)`; an immutable record contains:
+
+- schema version, unique review ID, reviewer, decision date, optional superseded review ID;
+- exact selected value and language; selected source identity/field or an explicit authored-name record with author, reviewer, method, source lineage and authorization/compliance references;
+- every relevant member identity and source-to-entity/line binding, the complete candidate-value set for that entity/language, all alternatives and their provenance, and supporting evidence used by the selection;
+- exact printable selection reason, plus **explicit verifiable dependencies** explaining why this value represents this entity (for example a named source preference, exact member coverage, an accepted exception or author approval). A reason depending on context not captured in verifiable evidence cannot be carried forward unattended;
+- an evidence schema version, `selectionEvidenceSHA256` over the relevant semantic evidence, and `reviewEvidenceSHA256` over the entire original review packet including its input/provenance references.
+
+The semantic evidence includes the exact chosen value and source identity, canonical target, complete relevant member/candidate sets, competing or conflicting alternatives, semantic bindings and line scope, and every reason dependency. Recompute these from the new identified inputs and reconciled registry; do not merely recheck the old list. Discovery is complete for the declared entity/language/source scope, so a new member, candidate or conflict cannot be hidden by omitting it from the record. No runtime narrowing of the reviewed scope is allowed.
+
+Archive/member hashes, obtained-at times and physical array/row locators identify sightings, but are not by themselves selection semantics. Excluding them from the semantic digest never permits skipping byte/hash validation or source resolution. Semantic fields such as provider keys, language, station-order `odpt:index`, scope, identity and the rationale's structural facts remain included. Other languages/fields are relevant when cited as binding or rationale evidence, even if not the selected display language. Authored selections must revalidate their recorded dependencies too; they are not exempt merely because their origin is project-owned.
+
+Both digests use a versioned deterministic encoding: fixed field order, typed values, length-prefixed exact UTF-8 text, numeric ordering for numeric indices, and scalar-exact sorted set members. Hash the full semantic values, not Swift `hashValue`, display strings, or an ambiguously concatenated key. Retain the decoded evidence and full source references beside the digests; a matching digest is not a substitute for validation. A change to the evidence schema or relevant dependency set needs review, not a guessed equivalence conversion.
+
+### C. Validation across identified inputs and history
+
+1. Resolve each new input by its verified hash and all required member hashes. Require the underlying registry to be reconciled under DEC-068/069 with that input. A name validator cannot bypass stale grouping/station/line reviews or reactivate absent/retired references.
+2. Resolve the same selected source identity in the new input, validate its exact scalar value, active source-to-existing-entity binding, all relevant members/candidates and §B reason dependencies, and validate any §D editorial bindings it uses. Names alone, a stable hash, or a review ID alone cannot establish validity.
+3. **Hash changed, relevant evidence unchanged:** the original reviewed choice may carry forward only when all checks pass and the recomputed semantic evidence equals the reviewed evidence scalar-exactly. Append a validation/sighting entry referencing that same choice, the prior validation if any, new input/member hashes and locators, current registry/binding evidence, the new full evidence digest, validator/schema version, and each dependency's passing result. This is validation of the existing review, not a new owner review or new choice. Preserve the original packet, previous sightings, rationale and choices.
+4. **Changed, missing, conflicting or unverifiable relevant evidence:** hold that language/alias back with a specific reason and retain the last choice as history, not current output. This includes a changed candidate set or binding even when the chosen spelling is unchanged. Never choose a different row/value automatically, waive a reason dependency, or accept opaque free-text reasoning as machine-verified. A reviewer must resolve the issue and issue an explicit new review linked to its predecessor.
+5. Merely changing an archive hash does **not** demand a new name-selection review, and merely retaining the selected spelling does **not** make a review valid. A new input with only unrelated schedule data changed can pass; a new member, altered binding, lost selected row, or changed relevant alternative cannot. Historical-alias evidence remains valid only if its explicitly historical source can still be verified and its current identity/binding dependencies pass; historical data must never masquerade as a current provider name.
+6. Persist history append-only. A repeat on identical inputs/records adds no choice, sighting or validation duplicate and produces byte-identical artifacts. Sighting identity uses the choice ID plus complete source identity/input/member/field/location tuple; validation identity uses choice ID plus the identified input set, current evidence digest and validator schema, never wall-clock run time. Existing records are referenced, not recreated on every run.
+
+**Compatibility:** DEC-068 §C4/§E preserves original-name sightings and describes reconciliation, but establishes no canonical-name selection review lifecycle. This lifecycle is new P2-S7 policy, not an amendment to those rules. Existing DEC-069 evidence reviews still govern the registry. DEC-070's coordinate records and strict identified-input checks remain unchanged: this name-only carry-forward rule must not be generalized to coordinates, topology or station-formation records.
+
+### D. Railway station-title bindings: separate, limited editorial evidence
+
+**Accepted narrow exception to DEC-068 §C1:** a source-referenced occurrence of an `odpt:Railway` station title may target an existing `StationID` in the separate reviewed editorial binding file defined here, solely to support canonical-name/alias evidence. It does not become a general provider-ID resolver or an active `ProviderReference`. This takes up the title-use part of the work deferred by DEC-068 §D6. The registry schema and namespace enum remain unchanged; no `odpt.station` namespace, registry attachment, registry revision, station minting/merging or migration is implicit. Any future use as a general station identifier requires its own explicit registry decision/migration. Because §C1 currently says *every* provider identifier is a provider-reference record, this explicit exception is required; calling the file editorial alone does not authorize any broader use.
+
+Minimum binding record:
+
+| Field | Required content |
+|---|---|
+| Review | schema version, binding/review ID, reviewer/date, exact reason with verifiable dependencies, optional predecessor |
+| Source identity and target | declared Railway `sourceID`, full exact `odpt:station` reference (no URI-suffix parsing), existing active `StationID`; source key is `(sourceID, exact station reference)`, not a title or array position |
+| Occurrences and provenance | all occurrences of that source key in the identified Railway snapshot: input SHA-256, enclosing Railway `@id` and `owl:sameAs`, record index, station-order array position and exact `odpt:index`, field/language path and exact published title values. Record indices/array positions locate bytes; they never serve as durable identity |
+| Line scope | each enclosing record's existing reviewed canonical `LineID` binding and input provenance; its actual station-order/branch scope, not an assumed whole-line list. Main and branch records remain distinct evidence under one Marunouchi `LineID` |
+| Existing target evidence | target's active GTFS member references and codes, accepted station/grouping reviews, current route/line membership, and relevant GTFS/P2-S6 order/neighbour evidence, each with source/hash/field or artifact/evidence reference |
+| Positive non-name support | an authoritative crosswalk directly tying the source reference to an existing member, or a documented code correspondence/independently anchored structural correspondence sufficient to distinguish the target from every scoped alternative. Include the authoritative evidence reference or the exact anchors and order/neighbour facts used. Record how support was verified; an unexplained assertion is not evidence |
+| Alternatives and digests | complete candidate/conflict set within every scoped line, reasons for eliminating alternatives, `selectionEvidenceSHA256`, full `reviewEvidenceSHA256`, and append-only validated sightings under §C |
+
+Validation and ambiguity rules:
+
+- Enclosing records and target references must resolve through already accepted bindings. The target must belong to every declared canonical line and have a matching operator's member on that line. Shared stations retain all member identities; another operator's row is not substituted for a missing match. Railway station order is evidence for title attribution only and never modifies P2-S6 topology.
+- Names can discover/check candidates, but names alone, line membership alone, ordinal position alone, URI name fragments or proximity cannot establish identity. Structural evidence must have independently established anchors, not a circular chain of unreviewed name matches. All plausible scoped candidates must be considered. A candidate outside that scope cannot be silently imported to force a match. No positive unique support, multiple plausible targets, conflicting sources or absent required evidence means **held back**, not a best guess.
+- Exactly one current binding per source key and one target across all its occurrences/scopes. Multiple distinct provider keys may target one existing station only through their individually supported reviews, retaining each original. Repeated occurrences in different Railway records are permitted if explicitly listed and consistent. Duplicate review IDs, duplicate occurrence tuples or duplicate current source-key records are rejected even if identical; incompatible targets/scopes are conflicts. Repeated source keys at inconsistent positions within a single enclosing record are held back pending explicit documented resolution. Missing occurrences cannot be silently dropped.
+- Different titles across legitimate occurrences are retained as alternatives; the binding establishes the target, not which title wins. A separate §B name review selects a value. A new conflicting occurrence, changed structural support or unresolved key reuse invalidates carry-forward. Input-hash/physical-locator changes alone may carry under §C when exact source identity, logical order, full occurrence/member scope and rationale remain verifiable.
+- Unknown schema, invalid provenance or malformed/duplicate records fail the records file. Evidence failures produce explicit held-back cases and block affected name construction/real acceptance. No review is counted as used unless validated; unused records are reported and prevent real acceptance. No timestamp or hash replaces the retained record history.
+
+### E. Outputs, authorization and completion
+
+The offline tool produces deterministic owner-only review packets, reviewed-name/alias/binding validation artifacts with all alternatives and original-name history, complete named Domain values where valid, an exact lookup index, and aggregate diagnostics. Preserve existing registry originals; additionally retain source-sighted agency English and Railway titles in the editorial evidence without rewriting registry history. Domain construction requires all three reviewed names plus current validated P2-S6 coordinates/topology/membership; held-back entities never receive placeholders. Construction does not mint or change identity. Mapping/evidence lives in Data and the offline tool; Domain stays provider-neutral; local search has no feature UI or runtime importer.
+
+**Synthetic implementation gate:** acceptance of this decision and a bounded implementation scope; no named Korean author or ODPT reply is needed to test wholly invented data. Required synthetic cases cover scalar-distinct composed/decomposed values through equality/hash/index/query/serialization; whitespace and aliases; same-name distinct stations; complete Domain payloads; changed archive with unchanged relevant evidence; every §C hold reason and no substitution; source bindings, branch/overlap scope, competing/circular evidence, duplicates/conflicts; retained history, no duplicate sightings, and byte-identical reruns. Verification appropriate to the later code change is required then; implementation verification is recorded in ROADMAP.
+
+**Real-data gate:** separately approve authorship/terminology and a Korean-competent reviewer before authoring missing Korean; identify allowed sources and real review scope before selecting names. Human and machine-assisted provenance are distinct; neither bypasses Q4. Existing published Korean is input to review, not permission for new translation. Toei's accepted CC BY compliance route remains unchanged. Q4 still gates new Metro-derived translations; Q3/DEC-068 §F still gate public real records and the production registry; P2-S8/ODPT item 5 still gate bundling. No independently authored label may conceal Metro-derived lineage.
+
+P2-S7 becomes complete only after separate local real acceptance proves reviewed full names for all 258 stations, 15 lines and 2 operators, all required station-name/alias lookups, distinct 新宿 results with line/operator context, no unresolved required binding/name or unused review, retained originals/choices, unchanged identities/P2-S6 artifacts, and a byte-identical repeat. Synthetic success alone is implementation evidence, never completion or publication permission.
+
+## Rationale, consequences and revisit triggers
+
+Exact comparisons prevent Unicode-equivalence collisions without modifying text. Separating semantic evidence from source sightings avoids needless name re-review after unrelated input changes while preserving every provenance link and refusing changed meaning. A limited editorial sidecar is smaller than a registry namespace/schema migration, but its explicit §C1 exception prevents it from becoming a hidden identity registry.
+
+The owner accepted this contract on 2026-09-30, including the narrow §C1 exception and name-only carry-forward. Real author/reviewer appointments and real-data/translation authorization remain later, separate choices, not blockers for synthetic implementation. Revisit before adding search normalization/ranking, using title bindings as a general ID resolver, changing the relevance schema, or incorporating an ODPT reply. None of those changes is approved here.
+
 ---
 
 ## 3. Decision Maintenance Rules

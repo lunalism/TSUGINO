@@ -1775,6 +1775,10 @@ Rules:
 
 Station search aliases should map all supported localized names back to the same canonical `StationID`.
 
+**P2-S7 names and exact search (DEC-071, accepted design).** `LocalizedRailName` equality/hashing use exact Unicode-scalar sequences; its String storage and Codable shape remain unchanged and Domain imports no Data type. Data/tool evidence and name, alias, query and index keys reuse `ExactValue`; comparison and ordering never use Swift canonical-equivalence string semantics. A provider-neutral local station-search boundary returns all exact full-name/explicit-alias matches once, in scalar-exact ID order with line/operator context; no prefix/fuzzy search or UI. Complete named Domain construction requires three reviewed names and validated network inputs.
+
+Name reviews separate semantic selection evidence from byte-identifying provenance. DEC-071 §B–C owns the record, dependency validation, held-back reasons and append-only choices/sightings: a changed archive hash alone is not changed selection evidence, and unchanged spelling alone is not sufficient. Current registry reconciliation remains required. Source originals and alternatives are never overwritten; identical reruns add no history. This carry-forward policy applies only to names/aliases/editorial title evidence, not DEC-070 coordinates or topology. Name validation belongs in Data/Mapping, index/search in Data, and input reading/review export/build in the offline tool. No runtime importer or persistence/delivery format is introduced.
+
 ---
 
 ## 40. Provider Mapping
@@ -1790,6 +1794,8 @@ Canonical StationID
 ```
 
 Provider mapping belongs in Data infrastructure.
+
+**Editorial Railway title evidence (DEC-071 §D).** The limited accepted exception to DEC-068 §C1 keeps reviewed Railway station-title bindings in a separate editorial file, targeting existing StationIDs solely for name/alias evidence. Full source identities, all scoped occurrences, provenance, line bindings, positive non-name support, competitors and review history are required. The registry schema and namespace enum do not change, and these bindings never act as a general provider-ID resolver. Names alone cannot establish identity; ambiguity holds the affected name back. DEC-071 is the authoritative detailed contract; production-registry, Q3/Q4 and P2-S8 gates remain unchanged.
 
 Do not spread mapping logic across features.
 
