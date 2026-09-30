@@ -426,15 +426,22 @@ let provisionalRegistryTests: [TestCase] = [
             SyntheticRun.request(other, registry: registry, output: workspace.output.appendingPathComponent("x"), railwaySourceID: "SYN-04/other-railway"), workspace)
         try check(substituted == .sourceMismatch, "\(substituted)")
     }),
-    ("mint never makes a station identifier", { workspace in
+    ("mint makes provisional station identifiers only on request, adding entities and no reference (DEC-069 §D2)", { workspace in
+        let registry = try SyntheticRun.writeRegistry(SyntheticRun.minted, workspace, "minted.json")
+        let output = workspace.output.appendingPathComponent("s.json")
+        let minted = try ProvisionalMint.run(kind: .station, count: 3, registryPath: registry.path, outputPath: output.path, repositoryRoot: testRepositoryRoot)
+        let stations = minted.entities.filter { $0.id.kind == .station }
+        try check(stations.count == 3 && minted.entities.count == SyntheticRun.minted.entities.count + 3, "three station entities added")
+        try check(minted.references == SyntheticRun.minted.references && minted.revision == SyntheticRun.minted.revision + 1, "no reference, one revision")
+        try check(try MappingRegistry.decoded(from: try Data(contentsOf: output)) == minted, "published as minted")
+        // Zero is not a request.
         do {
-            _ = try ProvisionalMint.run(kind: .station, count: 1, registryPath: nil,
-                                        outputPath: workspace.output.appendingPathComponent("s.json").path, repositoryRoot: testRepositoryRoot)
-            throw TestFailure(message: "a station identifier was minted")
+            _ = try ProvisionalMint.run(kind: .station, count: 0, registryPath: nil,
+                                        outputPath: workspace.output.appendingPathComponent("z.json").path, repositoryRoot: testRepositoryRoot)
+            throw TestFailure(message: "minted zero")
         } catch let error as ProvisionalRegistryError {
             try check(error == .arguments, "\(error)")
         }
-        try check(try workspace.outputEntries().isEmpty, "nothing written")
     }),
     ("review-packet exports the digests a reviewer needs to a new file, printing only counts", { workspace in
         let full = try await SyntheticRun.inputs(workspace, "a")

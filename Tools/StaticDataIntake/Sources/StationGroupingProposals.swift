@@ -176,6 +176,14 @@ enum StationGrouping {
     // MARK: - Proposals
 
     static func propose(_ input: GroupingInput) -> GroupingReport {
+        let evidence = memberEvidence(input)
+        return candidates(input, evidence)
+    }
+
+    /// Every row's evidence, in `stops` order: its code, name hints, and each
+    /// serving route with its operator, neighbours, and code fit. Shared with
+    /// cross-operator candidates (DEC-069 §C1).
+    static func memberEvidence(_ input: GroupingInput) -> [GroupingMemberEvidence] {
         let feed = input.feed
         let stopIDs = feed.stops.map { ExactValue($0.stopID)! }
 
@@ -257,7 +265,10 @@ enum StationGrouping {
                 hasJapaneseAndEnglish: languages.isSuperset(of: ["ja", "en"])
             ))
         }
+        return evidence
+    }
 
+    private static func candidates(_ input: GroupingInput, _ evidence: [GroupingMemberEvidence]) -> GroupingReport {
         // Candidates: rows linked by a shared name value, in any language,
         // within one operator boundary. A row's operator is established when
         // it is served, and every serving route has the same resolved

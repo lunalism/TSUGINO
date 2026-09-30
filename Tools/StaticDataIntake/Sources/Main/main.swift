@@ -4,13 +4,18 @@ import Foundation
 //
 //   static-data-intake --source <id> --archive <path> --obtained-at <UTC> --output <file>
 //   static-data-intake validate-railway --input <file>
-//   static-data-intake mint --kind operator|line --count <n> [--registry <file>] --output <file>
+//   static-data-intake mint --kind operator|line|station --count <n> [--registry <file>] --output <file>
 //   static-data-intake review-packet --source <id> --archive <path> --records <file>
 //       [--railway-source <id> --railway <file>] [--registry <file>] [--select <file>] --output <new file>
 //   static-data-intake provisional-registry --source <id> --archive <path> --records <file>
 //       [--railway-source <id> --railway <file>] [--registry <file>]
 //       [--previous-archive <path> --previous-records <file> [--previous-railway <file>]]
 //       [--launch-input <source-id>=<sha256>]... --output <new directory>
+//   static-data-intake station-packet  <sides> --registry <file> [--cross-records <file>] --output <new file>
+//   static-data-intake station-registry <sides> --registry <file> --cross-records <file>
+//       [<previous sides> --previous-cross-records <file>] --output <new directory>
+//     <sides>: --a-source <id> --a-archive <path> --a-records <file> [--a-railway-source <id> --a-railway <file>]
+//              and the same with --b-; <previous sides>: the same with --previous-a- and --previous-b-.
 //
 // Inputs and outputs must lie outside the repository. The tool performs no
 // network access and reads no credentials. validate-railway is read-only:
@@ -22,13 +27,18 @@ func usage() -> Never {
     FileHandle.standardError.write(Data("""
         usage: static-data-intake --source <id> --archive <path> --obtained-at <YYYY-MM-DDTHH:MM:SSZ> --output <file>
                static-data-intake validate-railway --input <file>
-               static-data-intake mint --kind operator|line --count <n> [--registry <file>] --output <file>
+               static-data-intake mint --kind operator|line|station --count <n> [--registry <file>] --output <file>
                static-data-intake review-packet --source <id> --archive <path> --records <file>
                    [--railway-source <id> --railway <file>] [--registry <file>] [--select <file>] --output <new file>
                static-data-intake provisional-registry --source <id> --archive <path> --records <file>
                    [--railway-source <id> --railway <file>] [--registry <file>]
                    [--previous-archive <path> --previous-records <file> [--previous-railway <file>]]
                    [--launch-input <source-id>=<sha256>]... --output <new directory>
+               static-data-intake station-packet <sides> --registry <file> [--cross-records <file>] --output <new file>
+               static-data-intake station-registry <sides> --registry <file> --cross-records <file>
+                   [<previous sides> --previous-cross-records <file>] --output <new directory>
+                 <sides>: --a-source <id> --a-archive <path> --a-records <file> [--a-railway-source <id> --a-railway <file>]
+                          and the same with --b-; <previous sides>: the same with --previous-a- and --previous-b-
         sources: \(sources)
 
         """.utf8))
@@ -83,7 +93,7 @@ if CommandLine.arguments.dropFirst().first == "mint" {
     let (flags, _) = parseFlags(["--kind", "--count", "--registry", "--output"])
     guard let kindName = flags["--kind"], let countText = flags["--count"], let count = Int(countText),
           let output = flags["--output"] else { usage() }
-    let kinds: [String: CanonicalKind] = ["operator": .railwayOperator, "line": .line]
+    let kinds: [String: CanonicalKind] = ["operator": .railwayOperator, "line": .line, "station": .station]
     guard let kind = kinds[kindName] else { usage() }
     do {
         let root = try toolRepositoryRoot()
@@ -96,6 +106,54 @@ if CommandLine.arguments.dropFirst().first == "mint" {
         exit(0)
     } catch {
         FileHandle.standardError.write(Data("mint failed: \(error)\n".utf8))
+        exit(1)
+    }
+}
+
+/// The two sides (and optional previous sides) of a station command.
+func stationSides(_ flags: [String: String], prefix: String) -> [StationRunRequest.Side]? {
+    var sides: [StationRunRequest.Side] = []
+    for letter in ["a", "b"] {
+        let p = "--\(prefix)\(letter)-"
+        guard let source = flags[p + "source"], let archive = flags[p + "archive"], let records = flags[p + "records"],
+              (flags[p + "railway-source"] == nil) == (flags[p + "railway"] == nil) else { return nil }
+        sides.append(.init(gtfsSourceID: source, archivePath: archive, recordsPath: records,
+                           railwaySourceID: flags[p + "railway-source"], railwayPath: flags[p + "railway"]))
+    }
+    return sides
+}
+
+let stationSideFlags: Set<String> = Set(["", "previous-"].flatMap { prefix in
+    ["a", "b"].flatMap { letter in ["source", "archive", "records", "railway-source", "railway"].map { "--\(prefix)\(letter)-\($0)" } }
+})
+
+if ["station-packet", "station-registry"].contains(CommandLine.arguments.dropFirst().first) {
+    let isRegistry = CommandLine.arguments.dropFirst().first == "station-registry"
+    let (flags, _) = parseFlags(stationSideFlags.union(["--registry", "--cross-records", "--previous-cross-records", "--output"]))
+    guard let sides = stationSides(flags, prefix: ""), let registry = flags["--registry"], let output = flags["--output"],
+          !isRegistry || flags["--cross-records"] != nil else { usage() }
+    let hasPrevious = flags.keys.contains { $0.hasPrefix("--previous-") }
+    var previous: StationRunRequest.Previous?
+    if hasPrevious {
+        guard isRegistry, let previousSides = stationSides(flags, prefix: "previous-"), let cross = flags["--previous-cross-records"] else { usage() }
+        previous = .init(sides: previousSides, crossRecordsPath: cross)
+    }
+    let request = StationRunRequest(sides: sides, registryPath: registry, crossRecordsPath: flags["--cross-records"], previous: previous, outputPath: output)
+    do {
+        let root = try toolRepositoryRoot()
+        if isRegistry {
+            let result = try await StationRegistryCommand.run(request, repositoryRoot: root)
+            print("published provisional station registry and report: \(output)")
+            print(String(decoding: result.report.encoded(), as: UTF8.self), terminator: "")
+        } else {
+            let (_, summary) = try await StationPacketCommand.run(request, repositoryRoot: root)
+            // The packet holds provider values; only its counts are printed.
+            print("published station review packet (provider values; keep outside the repository): \(output)")
+            print(summary.report(), terminator: "")
+        }
+        exit(0)
+    } catch {
+        FileHandle.standardError.write(Data("\(isRegistry ? "station-registry" : "station-packet") failed: \(error)\n".utf8))
         exit(1)
     }
 }

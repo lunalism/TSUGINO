@@ -238,6 +238,8 @@ enum ProvisionalRegistryError: Error, Equatable, CustomStringConvertible {
     case sourceMismatch
     case previousRecords(RecordsProblem)
     case grouping(String)
+    /// Cross-operator station formation or assignment (DEC-069).
+    case stations(String)
     case binding(String)
     case reconciliation(String)
     /// Conflicts that fail the run, as counts by kind.
@@ -256,6 +258,7 @@ enum ProvisionalRegistryError: Error, Equatable, CustomStringConvertible {
         case .sourceMismatch: "railway source: values are held under another source identifier"
         case .previousRecords(let problem): "previous records: \(problem.rawValue)"
         case .grouping(let kind): "grouping: \(kind)"
+        case .stations(let kind): "stations: \(kind)"
         case .binding(let kind): "line binding: \(kind)"
         case .reconciliation(let kind): "reconciliation: \(kind)"
         case .conflicts(let counts): "conflicts: " + counts.keys.sorted().map { "\($0) \(counts[$0]!)" }.joined(separator: ", ")
@@ -267,7 +270,7 @@ enum ProvisionalRegistryError: Error, Equatable, CustomStringConvertible {
 
 /// The error's case name without its payload: review identifiers and values
 /// never leave the run.
-private func kind(_ error: some Error) -> String {
+func kind(_ error: some Error) -> String {
     let text = String(describing: error)
     return String(text.prefix { $0 != "(" })
 }
@@ -615,6 +618,20 @@ enum ProvisionalRegistryCommand {
     // MARK: Grouping
 
     private static func groupingOutcome(_ inputs: RunInputs) throws(ProvisionalRegistryError) -> ProvisionalRegistryReport.Grouping {
+        let (_, outcome) = try appliedGrouping(inputs)
+        return .init(
+            stopRows: inputs.archive.feed.stops.count,
+            operatorLevelIdentities: outcome.identities.count,
+            proposals: outcome.report.proposals.count,
+            heldBack: outcome.report.heldBack.count,
+            accepted: outcome.acceptedReviews.count,
+            rejected: outcome.rejectedReviews.count
+        )
+    }
+
+    /// The input's operator-level identities, from its reviewed grouping
+    /// records (P2-S4 Step 2). Shared with the station commands (DEC-069).
+    static func appliedGrouping(_ inputs: RunInputs) throws(ProvisionalRegistryError) -> (GroupingInput, GroupingOutcome) {
         let input: GroupingInput
         do {
             input = try GroupingInput(
@@ -662,14 +679,7 @@ enum ProvisionalRegistryCommand {
         } catch {
             throw .grouping(kind(error))
         }
-        return .init(
-            stopRows: inputs.archive.feed.stops.count,
-            operatorLevelIdentities: outcome.identities.count,
-            proposals: outcome.report.proposals.count,
-            heldBack: outcome.report.heldBack.count,
-            accepted: outcome.acceptedReviews.count,
-            rejected: outcome.rejectedReviews.count
-        )
+        return (input, outcome)
     }
 
     // MARK: Line binding
@@ -1038,12 +1048,11 @@ extension ProvisionalRegistryCommand {
 
 /// DEC-068 §B2: an identifier is minted only on explicit request. Adds
 /// `count` provisional entities of one kind to a registry; nothing else.
-/// No identifier minted here is a production identifier (§B6).
+/// No identifier minted here is a production identifier (§B6). Station
+/// identifiers were barred only in P2-S4 (§D2); P2-S5 mints them on request
+/// (DEC-069 §D2), never for a group automatically.
 enum ProvisionalMint {
-    enum Refused: Error { case stationKind }
-
     static func mint(_ kind: CanonicalKind, count: Int, into registry: MappingRegistry) throws -> MappingRegistry {
-        guard kind != .station else { throw Refused.stationKind }
         var working = registry
         for _ in 0..<count {
             let id = try IdentifierMinter.mint(kind, for: working)
@@ -1062,8 +1071,7 @@ extension ProvisionalMint {
     static func run(
         kind: CanonicalKind, count: Int, registryPath: String?, outputPath: String, repositoryRoot root: FileIdentity
     ) throws(ProvisionalRegistryError) -> MappingRegistry {
-        // Operators and lines only: no StationID is minted in P2-S4 (DEC-068 §D2).
-        guard (1...1000).contains(count), kind != .station else { throw .arguments }
+        guard (1...1000).contains(count) else { throw .arguments }
         let publication: ManifestPublication
         do {
             let name = (outputPath as NSString).lastPathComponent

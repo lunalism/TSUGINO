@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 is next: its design is accepted (DEC-069) and its implementation has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* on synthetic data (2026-09-30; approved by the owner after the reported verification and adversarial review) and is **not complete**: its real-data acceptance is outstanding. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -811,7 +811,58 @@ Create a reliable local railway topology foundation.
     - bundling canonical data in the app (ODPT item 5, P2-S8);
     - canonical stations (P2-S5) and the later Phase 2 slices (P2-S6 to P2-S8);
     - the open Step 4 contract questions: value reuse, conflict-resolution and identity-migration records.
-- **Later steps.** P2-S5 implementation under DEC-069, not yet started.
+- **P2-S5 implementation record** (2026-09-30; DEC-069; approved by the owner). Synthetic only: no real candidate, decision, assignment, or `StationID` exists, and nothing was minted.
+  - **App (`Data/Mapping/`).**
+    - `StationAliasRule` holds the two accepted rules as explicit comparison keys: ヶ / ケ, and a trailing 〈…〉 subtitle. No other character is folded, and there is no normalization.
+    - A `StationAliasMatch` keeps both original values exactly as decoded, each with its source, so the relation is reversible. The key never replaces a value.
+    - `ReviewedCrossOperatorRecord` has the outcome `same`, `distinct`, or `ambiguous`, with an evidence digest, a reason, cited alias rules (on `same` only), and evidence provenance: an evidence item, or an external reference.
+    - Its set refuses a repeated review or pair, overlapping sides, and an identity in two `same` records.
+    - `ReviewedStationAssignment` assigns one provisional `StationID` to one group.
+  - **Tool.**
+    - **Candidates.** Exact original Japanese, exact original English, and the two alias rules on Japanese values. There is one candidate per pair of operator-level identities, with every discovery reason and match kept, in a deterministic order. No distance is computed.
+    - **Evidence and digest.** Each side's identifiers, codes, names with sources, routes and line titles, neighbours, station-order positions, coordinates as the decoded values, the discovery reasons, and every other candidate involving either side.
+    - **Formation.** Only an accepted `same` joins two identities, one per operator. It must cite each alias rule that related the names. With differing names and no alias, it must name its evidence by provenance. It can never cite a rule that did not apply.
+    - **`station-packet`** is the owner-only review export: every candidate, with its evidence, digest, and record template. Once every candidate is decided, it adds the groups and an assignment proposal from held, unused `StationID`s. It prints only counts.
+    - **`station-registry`** needs every candidate decided and every group assigned.
+      - It refuses a `StationID` that holds another source's references, so nothing joins operators without a reviewed `same`.
+      - It attaches exact `stop_id` references by assignment review, with `stop_code` as a descriptive code. A code shared by two stations of one source is refused by name.
+      - It uses the Step 4 reconciliation per source. The previous inputs are required once station references exist.
+    - **`mint --kind station`** works on explicit request. P2-S4's station-grouping evidence builder is shared, and its behaviour is unchanged.
+  - **Tests and builds.**
+    - Focused app tests: 10 new cases (alias keys and exact scalars, reversibility, records, sets, assignments).
+    - The tool runner passes **144/144**, including 15 station cases on invented two-operator feeds. They cover:
+      - the four keys, deduplication, and discovery reasons;
+      - exact Unicode values (a composed and a decomposed spelling are never joined);
+      - alias reversibility;
+      - determinism under row reordering;
+      - changed evidence: a competing candidate, a new member, a coordinate, or positions;
+      - the three outcomes;
+      - alias-citation and basis rules;
+      - conflicting, overlapping, stale, and foreign decisions;
+      - an ambiguous pair as two stations with no registry relation;
+      - assignment refusals;
+      - rebinding;
+      - a byte-identical repeat run with no revision increase;
+      - the packet.
+    - `TSUGINOTests` passes **1214/1214**. The Debug and clean Release builds of the app and extension succeeded on the iPhone 17 simulator, with the existing 75 Release warnings, none from `Data/Mapping`.
+  - **Review.** One focused adversarial review of the frozen change found five issues, each fixed with a regression test:
+    - **High:** an assignment could reuse a `StationID` that held another source's references, joining operators without a `same`.
+    - **Medium:** rows sharing a `stop_code` failed the run. A code is now one reference per station, and a code shared by two stations is refused by name.
+    - **Medium:** a `same` could replace a required alias citation with provenance.
+    - **Low:** station-order positions were missing from the evidence and digest.
+    - **Low:** the packet's assignment template compared station records unsorted.
+
+    The fixes changed tool code only. The tool runner was rerun: 144/144.
+  - **Remaining for P2-S5 completion (real-data acceptance, local, not committed).**
+    1. `station-packet` on the P2-S4 identified inputs and approved records, with Tokyo Metro's Railway file, and the final shared P2-S4 registry.
+    2. The owner reviews every candidate and writes one decision for each. The candidate total is compared with A4's 29 name-based candidates, and A4's 54 and 26 are comparisons only.
+    3. `mint --kind station` on explicit request, for the number of groups the decided packet reports.
+    4. The owner adopts or writes the station assignments.
+    5. `station-registry`, then a repeat run against its own output.
+    6. The DEC-069 §A2 baselines are checked: 258 stations, 27 merged, 114 and 117 single-operator, 0 duplicates, 0 unmapped, and the three named outcomes. Any mismatch stops acceptance for owner review.
+
+    Production identifiers, the registry of record, publication, and bundling stay gated.
+- **Later steps.** P2-S5 real-data acceptance (above).
 
 **Completion rules, proportionate to the kind of slice:**
 
