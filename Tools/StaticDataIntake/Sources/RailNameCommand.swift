@@ -10,6 +10,7 @@ struct RailNameRun: Codable {
     struct Shape: Codable { let lineID: MintedIdentifier; let kind: String }
     struct Station: Codable { let sourceID: String; let railwaySourceID: String; let gtfsSourceID: String; let path: String; let sha256: String }
     var stationEvidence: Station? = nil
+    var publishedNames: [PublishedRailName]? = nil
     let schemaVersion: Int
     let archives: [Archive]
     let railways: [Railway]
@@ -92,6 +93,7 @@ struct RailNameReport: Encodable {
     let observations: Int
     let registrySHA256: String
     let inputs: [String]
+    var searchValidation: RailNameSearchAudit? = nil
     init(_ o: RailNameOutcome, registrySHA256: String, inputs: [String]) {
         complete = o.complete;networkComplete = o.networkComplete;nameSlots=o.statuses.count;validatedNameSlots=o.statuses.filter { $0.heldBack == nil }.count
         heldNameSlots=nameSlots-validatedNameSlots;validatedBindings=o.titleBindings.accepted.count;heldBindings=o.titleBindings.held.count
@@ -138,10 +140,16 @@ enum RailNameCommand {
             railways.append(.init(sourceID:r.sourceID,sha256:r.sha256,records:read.records))
         }
         var documents: [ExactValue:String] = [:]
+        var documentBytes: [ExactValue:Data] = [:]
+        guard config.documents.count <= 1024, (config.publishedNames?.count ?? 0) <= 1024 else { throw NameReviewError.malformed }
+        var documentTotal = 0
         for d in config.documents {
             let data = try read(d.path,root:root)
+            documentTotal += data.count
+            guard documentTotal <= 64 * 1024 * 1024 else { throw NameReviewError.malformed }
             guard sha256Hex(data) == d.sha256 else { throw NameReviewError.malformed }
             documents[d.id] = d.sha256
+            documentBytes[d.id] = data
         }
         var coordinateRecords: [CoordinateRecord] = [], topologyRecords: [TopologyRecord] = []
         if let p = config.networkRecordsPath { (coordinateRecords,topologyRecords) = try NetworkRecordsFile.decoded(from:read(p,root:root)).validated() }
@@ -155,6 +163,8 @@ enum RailNameCommand {
         }
         let network = try NetworkArtifacts.build(sources.map(\.networkSide),registry:registry,coordinateRecords:coordinateRecords,topologyRecords:topologyRecords,shapes:shapes)
         var input = RailNameInput(sources:sources,railways:railways,historical:historical,registry:registry,registrySHA256:config.registrySHA256,network:network,documents:documents)
+        input.documentBytes = documentBytes
+        input.publishedNames = config.publishedNames ?? []
         if let station = config.stationEvidence {
             guard station.sourceID == SourceList.tokyoMetroStation.sourceID,
                   station.railwaySourceID == SourceList.tokyoMetroRailway.sourceID,
@@ -179,7 +189,8 @@ enum RailNameCommand {
         guard previous?.schemaVersion ?? 1 == 1 else { throw NameReviewError.schema }
         let input = try await load(config,root:root)
         let outcome = try RailNames.build(input,records:records,previousNames:previous?.names ?? .init(),previousTitles:previous?.titles ?? .init())
-        let report = RailNameReport(outcome,registrySHA256:input.registrySHA256,inputs:try RailNameCatalog(input).inputHashes)
+        var report = RailNameReport(outcome,registrySHA256:input.registrySHA256,inputs:try RailNameCatalog(input).inputHashes)
+        report.searchValidation = try RailNameSearchAudit.validate(outcome)
         var files: [(String,Data)] = [
             ("packet.json",NetworkJSON.encode(RailNamePacket(names:outcome.evidence,titles:outcome.titleBindings.evidence,titleSupport:outcome.titleBindings.evidence.map { TitleSupportAssessment.assess($0,approved:outcome.titleBindings.accepted[$0.source] != nil) },titleStatuses:outcome.titleBindings.statuses,statuses:outcome.statuses,aliasStatuses:outcome.aliasStatuses,unusedReviews:outcome.unusedReviews))),
             ("report.json",NetworkJSON.encode(report))

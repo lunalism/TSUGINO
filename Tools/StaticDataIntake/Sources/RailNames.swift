@@ -32,6 +32,14 @@ enum RailNames {
         var candidates = catalog.candidates
         var issues: [MintedIdentifier: Set<NameHold>] = [:]
         var bindingDigests: [MintedIdentifier: [String]] = [:]
+        guard input.publishedNames.count <= 1024, Set(input.publishedNames.map(\.id)).count == input.publishedNames.count else { throw NameReviewError.duplicate }
+        var publishedHolds: [MintedIdentifier:Set<RailNameLanguage>] = [:]
+        var failedPublications: [PublishedRailName] = []
+        for p in input.publishedNames.sorted(by: { $0.id < $1.id }) {
+            guard catalog.entityIDs.contains(p.entityID) else { throw NameReviewError.unknownEntity }
+            do { candidates[p.entityID,default:[]].append(try PublishedNameInput.candidate(p,catalog)) }
+            catch { publishedHolds[p.entityID,default:[]].insert(p.language); failedPublications.append(p) }
+        }
         for e in titles.evidence {
             if let review = titles.accepted[e.source] {
                 bindingDigests[review.stationID,default:[]].append(review.selectionEvidenceSHA256)
@@ -70,12 +78,16 @@ enum RailNames {
                 // Conflicting source cells are never silently resolved.
                 guard Set(rows.map(\.key)).count == rows.count else { throw NameReviewError.duplicate }
                 evidence.append(.init(entityID:id,language:lang,members:catalog.members[id] ?? [],candidates:rows,
-                    bindingDependencies:(bindingDigests[id] ?? []).sorted(),issues:(issues[id] ?? []).sorted { $0.rawValue < $1.rawValue },
+                    bindingDependencies:(bindingDigests[id] ?? []).sorted(),issues:(issues[id] ?? []).union(publishedHolds[id]?.contains(lang) == true ? [.rationaleUnverifiable] : []).sorted { $0.rawValue < $1.rawValue },
                     memberProvenance:catalog.provenance[id] ?? [],inputSHA256:catalog.inputHashes,registrySHA256:input.registrySHA256,
                     registryOriginals:input.registry.references.filter { $0.canonicalID == id }.flatMap { ref in
                         ref.originalNames.map { RetainedRailName(sourceID:ExactValue(ref.sourceID)!,namespace:ref.namespace,providerKey:ref.value,original:$0) }
                     }.sorted(by:RetainedRailName.precedes)))
             }
+        }
+        for i in evidence.indices {
+            let failed = failedPublications.filter { $0.entityID == evidence[i].entityID && $0.language == evidence[i].language }
+            if !failed.isEmpty { evidence[i].unverifiedPublications = failed }
         }
         for e in evidence where !history.observations.contains(where: { NameDigest.of($0) == NameDigest.of(e) }) { history.observations.append(e) }
         var statuses: [RailNameOutcome.Status] = []

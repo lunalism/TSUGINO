@@ -15,6 +15,8 @@ struct RailNameInput {
         let records: [ODPTRailway]
     }
     var stationEvidence: StationEvidenceInput? = nil
+    var publishedNames: [PublishedRailName] = []
+    var documentBytes: [ExactValue: Data] = [:]
     let sources: [Static]
     let railways: [Railway]
     let historical: [Static]

@@ -67,6 +67,9 @@ nonisolated struct NameCandidate: Codable, Hashable, Sendable {
     /// dependency digest. Archive hashes/physical positions are excluded.
     let dependencySHA256: String?
     var authorship: AuthoredRailName? = nil
+    /// Identified published text is never represented as authored translation.
+    /// Optional for lossless compatibility with existing provisional history.
+    var publication: PublishedRailName? = nil
     static func precedes(_ a: Self, _ b: Self) -> Bool {
         let x = [a.key.sourceID.text, a.key.namespace.text, a.key.providerKey.text, a.key.parentKey?.text ?? "", a.key.field.text, a.key.language.rawValue, a.key.historicalInput ?? "", a.value.text]
         let y = [b.key.sourceID.text, b.key.namespace.text, b.key.providerKey.text, b.key.parentKey?.text ?? "", b.key.field.text, b.key.language.rawValue, b.key.historicalInput ?? "", b.value.text]
@@ -121,6 +124,8 @@ nonisolated struct NameEvidence: Codable, Equatable, Sendable {
     let inputSHA256: [String]
     let registrySHA256: String
     var registryOriginals: [RetainedRailName] = []
+    /// Failed imports remain inspectable; never selectable while issues hold.
+    var unverifiedPublications: [PublishedRailName]? = nil
 
     struct Semantic: Codable, Equatable {
         let entityID: MintedIdentifier
