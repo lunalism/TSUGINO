@@ -5173,6 +5173,157 @@ It completes on the provisional registry. Production identifiers, the registry o
 - Evidence of a differently named same station that the two alias rules cannot relate. That would reopen spatial or other discovery through a new decision.
 ---
 
+# DEC-070 — P2-S6 Selects One Exact Published Provider Point per Station and Builds Undirected Line Topology From Reviewed GTFS Sequence Evidence
+
+**Status:** Accepted — design only; P2-S6 is not yet implemented\
+**Date:** 2026-09-30\
+**Amends, exactly:** the `ROADMAP.md` P2-S6 slice-table content "→ valid `Station` and `RailwayLine` values", narrowed by §D, and the P2-S6 criteria, extended by §D. The criteria's existing coordinate, connectedness, membership, and shape statements are unchanged.\
+**Does not amend:** DEC-048; DEC-053; DEC-056 (value, meaning, required field, validity, holding back, no implicit averaging); DEC-057 (undirected adjacency, invariants, one Marunouchi `LineID`, D9 membership, D10 Trip ownership of direction); DEC-061 F; DEC-068; DEC-069\
+**Related:** DEC-021, DEC-053, DEC-055, DEC-056, DEC-057, DEC-061 F, DEC-068, DEC-069; `RULES.md` Rule 9, Rule 16, Rule 39, Rule 53; `ARCHITECTURE.md` §5.1.1, §5.2.1, §40; `ROADMAP.md` P2-S6, P2-S7, P2-S8; `PROVIDER_FEASIBILITY_AUDIT.md` §6.5, §6.8
+
+## Context
+
+P2-S6 derives coordinates and line topologies for the 258 provisional canonical stations and 15 lines of P2-S5. Already decided:
+
+- **DEC-056:** a `GeoCoordinate` is WGS 84 decimal degrees, validated and stored exactly, and required on `Station`. Averaging needs an explicit policy. A station without a selectable point is held back. Phase 2 chooses among provider points and records the rationale and provenance in mapping data.
+- **DEC-057:** the canonical topology is an **undirected** simple graph of `StationAdjacency` values. Direction and traversal belong to `Trip` (D1, D10). The graph must be non-empty and connected, Marunouchi is one `LineID`, and membership must equal every `Station.lineIDs` (D9).
+- **DEC-068, DEC-069:** the provisional registry, provider references with provenance, and the canonical stations.
+
+The P2-S5 registry holds 200 stations with one provider row and 58 with several: 31 within one operator, 27 across two.
+
+Four points are undecided:
+
+1. How a multi-point station's point is chosen and recorded, and what happens when a later input changes it.
+2. How GTFS trip sequences become adjacency evidence, what counts as a shortcut, and which cases need review.
+3. Where the results live.
+4. Scope: complete `Station` and `RailwayLine` values need canonical Korean names (DEC-053), and those come in P2-S7.
+
+## Decision
+
+### A. Representative coordinate — one exact published member-row point
+
+1. **One row.** A station whose registry references name one `stops` row uses that row's decoded `stop_lat` / `stop_lon`, validated as a `GeoCoordinate`.
+   - Provenance: the row's source reference (source, input and member hashes, table, field, `stop_id`) and the exact decoded point.
+   - No selection review exists: there is nothing to select.
+2. **Several rows, all publishing exactly the same decoded point.** That point is used, with every row as provenance. There is no selection review, because the choice has no consequence.
+3. **Several rows with different points.** The point of exactly **one** member row is used, named by a **reviewed coordinate record**. This is a semantic judgement about which published point best represents the station, and the record must say why. It holds:
+   - the review identifier and the `StationID`;
+   - every member row's source reference;
+   - the selected row: its source identifier, input SHA-256, and `stop_id`;
+   - the selected **exact point**, as decoded;
+   - the **selection reason**, as printable text;
+   - the evidence digest. The evidence is every member row's decoded point, source, and names.
+
+   The tool proposes no default.
+4. **Meaning.** A selected point is recorded as *the published stop point of that provider row*, and nothing more. TSUGINO does not claim it marks a station centre, an entrance, or a platform.
+5. **Excluded.** Averages, centroids, midpoints, other derived points, and distance-based selection. No distance is computed.
+6. **Invalid.** A selected point that is not a valid `GeoCoordinate` holds the station back. It is never clamped, never replaced by (0, 0), and never filled from another row.
+7. **Revisions.** On each identified input (reconciled as in DEC-068 §E), every station's observed member points are **classified again** under rules 1–3.
+   - **Automatic becomes several different points.** A station formerly selected automatically, by one row or by identical points, whose members now publish several different points needs a reviewed record. Until then it is held back.
+   - **A reviewed choice changes or disappears.** The station is held back until a new review. Another member's point is never substituted.
+   - **Still automatic.** A station whose points are still one row, or still identical, keeps the automatic rule. A changed value is reported as a descriptive change with its provenance.
+   - **No member rows.** The station is held back.
+   - **History.** Previous selections and their provenance are **kept as history**: never overwritten, deleted, or silently replaced.
+   - **Identical points.** A station keeps the provenance of every member row, with no selection review.
+
+### B. Line topology — undirected adjacency from reviewed GTFS sequence evidence
+
+1. **Sequences.** For each canonical line *L*, the trips T(*L*) are the trips of every route bound to *L* in the registry. For a trip *t*, seq(*t*) is its `stop_times` rows in `stop_sequence` order, each mapped through the registry to its canonical station.
+   - Every row is kept, including rows the trip passes without stopping: they are evidence of order, not of passenger service (DEC-061 F).
+2. **Candidates and direction.** Each consecutive pair (seq*ᵢ*, seq*ᵢ₊₁*) of different stations supports the unordered candidate {seq*ᵢ*, seq*ᵢ₊₁*}. This maps a directed traversal onto DEC-057's undirected `StationAdjacency`: the direction of travel is discarded, and stays `Trip` evidence (D10).
+   - **Support** S(*C*) of a candidate *C* is the set of trips in which it is consecutive, in either direction.
+   - A candidate is **evidence of observed consecutive stations**. It is not proof of physical adjacency.
+3. **Self-pair.** Two consecutive rows mapped to one canonical station, which could only come from canonical grouping. Nothing is inferred: the line needs a reviewed topology record, and its topology is held back until then.
+4. **Alternative run.** For a candidate *C* = {a, b}, an alternative run is a trip *u* in T(*L*) and positions *i* < *j* such that:
+   - {seq(*u*)*ᵢ*, seq(*u*)*ⱼ*} = {a, b};
+   - *j* − *i* ≥ 2;
+   - neither a nor b occurs strictly between *i* and *j*.
+
+   Its intermediates *I* are the stations strictly between.
+5. **Possible-shortcut heuristic** — a review trigger, **not** a complete classifier of physical adjacency.
+   - *C* is flagged as a **possible shortcut** exactly when **there exists** an alternative run (*u*, *I*) such that **for every** trip in S(*C*), that trip contains **no** station of *I* anywhere in its sequence.
+     - With several alternative runs, one qualifying run is enough to flag *C*.
+     - A run for which some supporting trip does visit an intermediate does not, by itself, flag *C*.
+   - It detects the pattern of rows omitted from a trip, using only observed ordered sequences on the same line. General graph reachability, or another path in the graph, never flags *C* by itself.
+   - It does **not** reliably tell a genuine loop from a shortcut. A loop adjacency supported by a trip that also runs round the rest of the loop is not flagged. One supported only by trips that cover part of the loop may be flagged, and is then reviewed.
+   - A flagged candidate is **never removed automatically**.
+6. **Triangle trigger.** Three candidates {a, b}, {b, c}, {a, c} forming a triangle, none of which is a possible shortcut, are held for review.
+   - A triangle may indicate contradictory order, but it does not prove it.
+   - Not every structural contradiction forms a triangle. Unexpected topology is also held for review through the connectedness and membership checks (§B9) and the identified-line shape checks (§C).
+7. **Treatment.**
+   - Every candidate that is not a possible shortcut, not part of a contradictory triangle, and not a self-pair is **included**.
+   - Every possible shortcut and every triangle trigger needs a **reviewed topology record** that includes or excludes each candidate concerned, with a reason, citing the line's evidence digest. When one candidate has several alternative runs with different intermediates, the record addresses each of them.
+   - **Nothing is excluded automatically.** An unreviewed case holds that line's topology back.
+8. **Evidence kept.** For every candidate, included or excluded, the output keeps:
+   - its supporting trips and the observed directions;
+   - its alternative runs with their intermediates;
+   - its classification;
+   - the review that decided it, if any.
+9. **Validity.** The included adjacencies must build a valid `RailwayLineTopology` (non-empty, connected). Its derived membership must equal the set of stations whose rows *L*'s routes serve, which is also every such station's `lineIDs` (DEC-057 D9). Any failure holds the line back and is reported.
+10. **Railway station order is not used.** Its station identifiers are unmapped (DEC-068 §D6). The Marunouchi branch comes from the GTFS branch trips, onto the one Marunouchi `LineID` (DEC-057 D6).
+
+### C. Shape validation without seeding
+
+- **No seeding.** No station list, adjacency, or count is supplied to the builder. Each topology is built only from §B's evidence and reviewed records.
+- **Acceptance checks.** The built graphs are then checked against DEC-057's evidence statement:
+  - **Oedo:** the graph is connected and contains **exactly one cycle**, **exactly one degree-3 station** (the junction), and **exactly one degree-1 station** (the tail end); every other station has degree 2.
+  - **Marunouchi:** the graph is acyclic, with **exactly one degree-3 station** and **exactly three degree-1 stations**; every other station has degree 2.
+- **Identifying the two lines.** By their reviewed line bindings in the registry, not by name matching in code.
+- **Mismatch.** A mismatch stops acceptance for owner review. It never edits the graph.
+- **Everything generic.** The code has no Oedo or Marunouchi special case (DEC-057 D7, D8).
+
+### D. Outputs and scope
+
+- **What is produced.** A deterministic, provisional output, published outside the repository beside the registry:
+  - per `StationID`: its coordinate, provenance, and rule (one row, identical points, or reviewed selection), or a held-back reason;
+  - per `LineID`: included adjacencies, the §B8 evidence, and the review decisions, or a held-back reason.
+- **Registry.** The schema is unchanged.
+- **Records.** Reviewed coordinate and topology records are kept with the other reviewed records.
+- **Not committed:** none of this until the registry-of-record decision (DEC-068 §F1). Tokyo Metro-derived output stays unpublished (§F3).
+- **Scope.** P2-S6 produces validated coordinate selections, topology, and membership artifacts. Complete `Station` and `RailwayLine` construction waits for P2-S7's required canonical names (DEC-053). Bundling waits for P2-S8.
+- **Implemented** when synthetic tests on invented feeds cover:
+  - the one-row and identical-point rules;
+  - a reviewed selection with its source, input hash, exact point, and reason;
+  - refusal of a record whose point or row no longer matches;
+  - the §A7 revisions: reclassification, automatic-to-reviewed, a changed or absent reviewed point, and history kept;
+  - held-back invalid points;
+  - undirected mapping of directed evidence, including pass-through rows;
+  - the possible-shortcut heuristic with its exact quantifiers: a flagged omitted-row shortcut; a loop adjacency supported by a full-loop trip, not flagged; a loop adjacency supported only by partial trips, flagged for review and not removed;
+  - several alternative runs, where one qualifying run flags;
+  - triangle triggers;
+  - self-pairs;
+  - the review requirements, with nothing excluded automatically;
+  - disconnection and membership failures;
+  - loop-plus-tail and branch shape checks;
+  - deterministic output;
+  - no distance constant.
+
+  The full suite and the Debug and Release builds must also pass.
+- **Complete** when a local run on the P2-S5 provisional registry and identified inputs gives:
+  - every station with a coordinate and provenance, or explicitly held back;
+  - every line's topology built, reviewed where §B7 requires, connected, and agreeing in membership;
+  - the §C shape checks passing;
+  - a byte-identical rerun.
+
+  The counts are recorded, not assumed.
+
+## Rejected alternatives
+
+- **Averages, centroids, derived points, or distance-based selection.** They invent points no provider published, or add distance computation, for no evidential gain.
+- **A default or automatic choice among different points.** It would be a silent semantic selection, which DEC-056 forbids.
+- **Removing an edge because another path exists.** It would break genuine loops, and is not evidence that rows were omitted.
+- **Excluding flagged candidates automatically.** The heuristic cannot tell omitted rows from a real parallel path or a partially covered loop, so a review decides.
+- **`odpt:Railway` station order.** It is Tokyo Metro only, with unmapped identifiers.
+- **Complete values with placeholder names.** DEC-053 forbids them.
+
+## Revisit triggers
+
+- A provider publishes what its points mark, or their accuracy.
+- A product use needs a point with a stated meaning.
+- Review shows a feed widely omits pass-through rows, or a real parallel path appears.
+- The registry-of-record decision is made.
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

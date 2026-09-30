@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met, on synthetic tests and a provisional real-data run that met every baseline. Production identifiers, the registry of record, publication, and app bundling remain gated. P2-S6 is next and has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30); P2-S6 design accepted with DEC-070 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met, on synthetic tests and a provisional real-data run that met every baseline. Production identifiers, the registry of record, publication, and app bundling remain gated. P2-S6 is next: its design is accepted (DEC-070) and its implementation has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -410,7 +410,7 @@ Create a reliable local railway topology foundation.
 | P2-S3 | implementation | Tokyo Metro static GTFS through the unchanged P2-S1 reader, plus an `odpt:Railway` DTO reader; invented synthetic fixtures only, real inputs local (DEC-067) | S1, S2 | **DEC-067 only** (accepted) |
 | P2-S4 | implementation | Operator-level identities (149 → 141 Toei, 185 → 144 Tokyo Metro) and line mapping to the 15 baseline `LineID`s, with the Marunouchi branch record as an alias (DEC-057 D6) | S2, S3 (including P2-S3's real-data validation, for completion) | **DEC-068** (accepted) for code and synthetic tests. Completion needs real-data acceptance on identified snapshots (DEC-068 §H). Minting production identifiers, or committing any real mapping record for either operator, needs the pending registry-of-record decision (DEC-068 §F1). Publishing any Tokyo Metro-derived mapping also needs the ODPT Q3 reply or a separate accepted publication decision (DEC-065 §A) |
 | P2-S5 | implementation | Cross-operator station identity from name and alias candidates, compared with DEC-048 (DEC-065 §E as amended by DEC-069) | S4 | **DEC-069** (accepted), with DEC-068. Production identifiers, committed real records, and Tokyo Metro publication stay gated as for S4 (DEC-068 §F) |
-| P2-S6 | implementation | Representative coordinates and line topology → valid `Station` and `RailwayLine` values | S5 | coordinate-selection policy, including the 27 merged stations; topology evidence source |
+| P2-S6 | implementation | Validated representative coordinates, undirected line topology, and membership artifacts (DEC-070). Complete `Station` and `RailwayLine` construction waits for P2-S7's required names (DEC-053) | S5 | **DEC-070** (accepted), with DEC-056, DEC-057, DEC-068, DEC-069. Production identifiers, committed real records, and Tokyo Metro publication stay gated (DEC-068 §F) |
 | P2-S7 | implementation | Japanese/English/Korean names, search aliases, search index, local search API | S6 | Korean authorship and review; Tokyo Metro Korean inputs (ODPT Q4) |
 | P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | storage format, after measurement (DEC-029); bundling in the shipped binary stays with ODPT item 5 |
 | P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | whether Phase 2 imports `Trip` records at all |
@@ -910,7 +910,7 @@ Create a reliable local railway topology foundation.
     - P2-S6 to P2-S8;
     - the Step 4 contract questions;
     - the P2-S5 coverage limit: differently named stations that the two alias rules do not relate are not candidates, and spatial discovery is deferred.
-- **Later steps.** P2-S6, not yet started.
+- **Later steps.** P2-S6 implementation under DEC-070, not yet started.
 
 **Completion rules, proportionate to the kind of slice:**
 
@@ -1037,7 +1037,23 @@ Create a reliable local railway topology foundation.
     - A4's 54 candidates and 26 distinct classifications are recorded as comparisons only.
     - A rerun is byte-identical.
   - **Identifiers.** `StationID`s are provisional and minted independently of any analysis key. P2-S5 completes without production identifiers, which wait for the registry-of-record decision (DEC-068 §F1). Publication and bundling stay gated.
-- **P2-S6:** every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate.
+- **P2-S6 (DEC-070; accepted 2026-09-30).** The original criterion still applies: every canonical station has exactly one `GeoCoordinate` with recorded provenance, or is held back; every topology is connected, and its derived membership equals every `Station.lineIDs` (DEC-057 D9); the Oedo loop-plus-tail shape and the Marunouchi branch validate. DEC-070 narrows the output and adds:
+  - **Coordinates.**
+    - One row, or several rows with an identical point: that exact published point, with the provenance of every row and no selection review.
+    - Several different points: one member row's exact point, chosen by a reviewed record giving the row's source, input hash, `stop_id`, the exact point, and a reason.
+    - On each input the points are classified again. A formerly automatic station whose points now differ, or a reviewed choice that changes or disappears, is held back for review.
+    - Previous selections are kept as history. A point is never substituted.
+    - No derived point and no distance.
+  - **Topology.**
+    - Consecutive GTFS rows, including pass-through rows, give undirected adjacency candidates (DEC-057). They are trip evidence, not proof of physical adjacency.
+    - The possible-shortcut heuristic (a review trigger, not a classifier): a candidate {a, b} is flagged when there exists an alternative run of the same line between a and b, with intermediates, such that every trip showing a and b consecutive visits none of them.
+    - Flagged candidates, triangle triggers, and self-pairs need a reviewed record. Nothing is removed automatically, and graph reachability alone never flags.
+    - Unexpected topology is also held back by the connectedness, membership, and shape checks.
+    - Evidence is kept for every candidate.
+  - **Shapes.** Oedo (one cycle, one degree-3 junction, one tail end) and Marunouchi (acyclic, one degree-3 junction, three ends) are checked on graphs built without seeding. A mismatch stops acceptance for owner review.
+  - **Synthetic tests** cover the coordinate rules and revisions; the heuristic with its quantifiers, including partial-loop support flagged but not removed; triangle triggers and self-pairs; review enforcement; the failure checks; the shape checks; determinism; and no distance constant. The full suite and the Debug and Release builds pass.
+  - **Real-data acceptance, local and not committed.** Every station has a coordinate with provenance, or is explicitly held back. Every line is built, reviewed where required, connected, and agrees in membership. The shape checks pass, the rerun is byte-identical, and the counts are recorded, not assumed.
+  - **Boundary.** P2-S6 produces coordinate, topology, and membership artifacts only. Complete `Station` / `RailwayLine` values wait for P2-S7 names.
 - **P2-S7:** through the local search API, every baseline station is found by its Japanese, English, and Korean names and by its recorded aliases, including 市ヶ谷 / 市ケ谷 and 押上〈スカイツリー前〉; both 新宿 stations are returned and can be told apart by operator and lines. Station search UI is Phase 8.
 - **P2-S8:** the storage decision is recorded with measurements; a test proves ordinary use does not re-parse the full static dataset (Rule 15); reopen, data-version, and identifier-retirement migration tests pass.
 - **P2-S10 / P2-S11:** evidence is recorded as dated aggregates with its sources, under the authorization given; nothing is declared or promoted by the evidence alone.
