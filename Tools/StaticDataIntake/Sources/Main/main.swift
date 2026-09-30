@@ -16,6 +16,9 @@ import Foundation
 //       [<previous sides> --previous-cross-records <file>] --output <new directory>
 //     <sides>: --a-source <id> --a-archive <path> --a-records <file> [--a-railway-source <id> --a-railway <file>]
 //              and the same with --b-; <previous sides>: the same with --previous-a- and --previous-b-.
+//   static-data-intake network-packet --a-source <id> --a-archive <path> --b-source <id> --b-archive <path>
+//       --registry <file> [--network-records <file>] [--loop-tail-line <id>]... [--branch-line <id>]... --output <new file>
+//   static-data-intake network-build  (the same) [--previous-coordinates <file>] --output <new directory>
 //
 // Inputs and outputs must lie outside the repository. The tool performs no
 // network access and reads no credentials. validate-railway is read-only:
@@ -39,6 +42,9 @@ func usage() -> Never {
                    [<previous sides> --previous-cross-records <file>] --output <new directory>
                  <sides>: --a-source <id> --a-archive <path> --a-records <file> [--a-railway-source <id> --a-railway <file>]
                           and the same with --b-; <previous sides>: the same with --previous-a- and --previous-b-
+               static-data-intake network-packet --a-source <id> --a-archive <path> --b-source <id> --b-archive <path>
+                   --registry <file> [--network-records <file>] [--loop-tail-line <id>]... [--branch-line <id>]... --output <new file>
+               static-data-intake network-build (the same) [--previous-coordinates <file>] --output <new directory>
         sources: \(sources)
 
         """.utf8))
@@ -126,6 +132,43 @@ func stationSides(_ flags: [String: String], prefix: String) -> [StationRunReque
 let stationSideFlags: Set<String> = Set(["", "previous-"].flatMap { prefix in
     ["a", "b"].flatMap { letter in ["source", "archive", "records", "railway-source", "railway"].map { "--\(prefix)\(letter)-\($0)" } }
 })
+
+if ["network-packet", "network-build"].contains(CommandLine.arguments.dropFirst().first) {
+    let isBuild = CommandLine.arguments.dropFirst().first == "network-build"
+    let (flags, repeated) = parseFlags(["--a-source", "--a-archive", "--b-source", "--b-archive", "--registry", "--network-records",
+                                        "--previous-coordinates", "--output"], repeatable: ["--loop-tail-line", "--branch-line"])
+    guard let aSource = flags["--a-source"], let aArchive = flags["--a-archive"], let bSource = flags["--b-source"], let bArchive = flags["--b-archive"],
+          let registry = flags["--registry"], let output = flags["--output"], isBuild || flags["--previous-coordinates"] == nil else { usage() }
+    var shapes: [(MintedIdentifier, ShapeKind)] = []
+    for (flag, kind) in [("--loop-tail-line", ShapeKind.loopPlusTail), ("--branch-line", .branch)] {
+        for value in repeated[flag, default: []] {
+            guard let line = MintedIdentifier(value), line.kind == .line else { usage() }
+            shapes.append((line, kind))
+        }
+    }
+    let request = NetworkRequest(
+        sides: [.init(gtfsSourceID: aSource, archivePath: aArchive), .init(gtfsSourceID: bSource, archivePath: bArchive)],
+        registryPath: registry, recordsPath: flags["--network-records"], previousCoordinatesPath: flags["--previous-coordinates"],
+        shapes: shapes, outputPath: output
+    )
+    do {
+        let root = try toolRepositoryRoot()
+        if isBuild {
+            let outcome = try await NetworkCommand.build(request, repositoryRoot: root)
+            print("published provisional coordinates, topology, membership, and report: \(output)")
+            print(String(decoding: NetworkJSON.encode(outcome.report), as: UTF8.self), terminator: "")
+        } else {
+            let (packet, _) = try await NetworkCommand.packet(request, repositoryRoot: root)
+            // The packet holds provider values; only its counts are printed.
+            print("published network review packet (provider values; keep outside the repository): \(output)")
+            print("coordinate review cases: \(packet.coordinateCases.count)\ntopology review cases: \(packet.topologyCases.count)")
+        }
+        exit(0)
+    } catch {
+        FileHandle.standardError.write(Data("\(isBuild ? "network-build" : "network-packet") failed: \(error)\n".utf8))
+        exit(1)
+    }
+}
 
 if ["station-packet", "station-registry"].contains(CommandLine.arguments.dropFirst().first) {
     let isRegistry = CommandLine.arguments.dropFirst().first == "station-registry"

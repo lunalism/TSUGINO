@@ -12,5 +12,9 @@ xcrun swiftc -swift-version 5 -Onone -D INTAKE_TESTING -module-name StaticDataIn
     "$here"/Sources/*.swift "$here"/Tests/*.swift \
     "$repo"/TSUGINO/Data/GTFS/Static/*.swift \
     "$repo"/TSUGINO/Data/ODPT/Railway/*.swift \
-    "$repo"/TSUGINO/Data/Mapping/*.swift
+    "$repo"/TSUGINO/Data/Mapping/*.swift \
+    "$repo"/TSUGINO/Domain/Identifiers/CanonicalIdentifiers.swift \
+    "$repo"/TSUGINO/Domain/Railway/GeoCoordinate.swift \
+    "$repo"/TSUGINO/Domain/Railway/StationAdjacency.swift \
+    "$repo"/TSUGINO/Domain/Railway/RailwayLineTopology.swift
 exec "$here/.build/static-data-intake-tests"

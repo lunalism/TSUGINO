@@ -11,5 +11,9 @@ xcrun swiftc -swift-version 5 -O -module-name StaticDataIntake \
     "$here"/Sources/*.swift "$here"/Sources/Main/main.swift \
     "$repo"/TSUGINO/Data/GTFS/Static/*.swift \
     "$repo"/TSUGINO/Data/ODPT/Railway/*.swift \
-    "$repo"/TSUGINO/Data/Mapping/*.swift
+    "$repo"/TSUGINO/Data/Mapping/*.swift \
+    "$repo"/TSUGINO/Domain/Identifiers/CanonicalIdentifiers.swift \
+    "$repo"/TSUGINO/Domain/Railway/GeoCoordinate.swift \
+    "$repo"/TSUGINO/Domain/Railway/StationAdjacency.swift \
+    "$repo"/TSUGINO/Domain/Railway/RailwayLineTopology.swift
 echo "built $here/.build/static-data-intake"

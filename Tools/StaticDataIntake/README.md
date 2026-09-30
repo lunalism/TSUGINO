@@ -75,6 +75,33 @@ Tools/StaticDataIntake/.build/static-data-intake station-registry <the same side
 
 The cross-operator records file has a `schemaVersion` of 1, and the two `inputs` by source and archive SHA-256. It also holds the reviewer's `decisions`, one per candidate, and `stations`, one per group. Keep it, the packet, and the registry outside the repository.
 
+### Coordinates, topology, and membership (DEC-070, P2-S6)
+
+Both commands read two operators' identified GTFS archives and the provisional registry left by P2-S5. Every stop row and route must hold an active reference last reconciled with those exact archives. The registry is read, never written. No distance is computed.
+
+- **Coordinates.** Each station's member points are classified again on every run.
+  - One row, or rows publishing exactly the same point: that exact published point, with every row as provenance.
+  - Different points: a reviewed record names one member row, its input hash, its exact point, and a reason.
+  - A changed or absent chosen row, or a record reviewed on another input (so each new snapshot is reviewed again), holds the station back. Another point is never substituted. An active station with no row is listed as held back.
+  - `--previous-coordinates` carries earlier selections forward as append-only history.
+- **Topology.** Each line's trips, in `stop_sequence` order and including pass-through rows, give undirected adjacency candidates: trip evidence, not proof.
+  - The possible-shortcut heuristic flags a candidate when some observed alternative run between its stations has intermediates that no supporting trip visits.
+  - Flagged candidates, triangles, and self-pairs are review triggers. Each decision lists the intermediates of every alternative run it addresses. Nothing is removed automatically, and an unreviewed case holds the line back.
+  - Included adjacencies must form a connected topology whose membership equals the stations the line serves.
+  - `--loop-tail-line` and `--branch-line` name lines for shape checks on the built graphs.
+- **`network-packet`** exports the review cases, with every row's point, each candidate's evidence, and empty record templates. It prints only counts.
+- **`network-build`** publishes `coordinates.json`, `topology.json`, `membership.json`, and `report.json` together, with the report holding aggregates only.
+
+```sh
+Tools/StaticDataIntake/.build/static-data-intake network-packet --a-source <id> --a-archive <path> --b-source <id> --b-archive <path> \
+    --registry <file> [--network-records <file>] --output <new file>
+Tools/StaticDataIntake/.build/static-data-intake network-build --a-source <id> --a-archive <path> --b-source <id> --b-archive <path> \
+    --registry <file> [--network-records <file>] [--previous-coordinates <file>] \
+    [--loop-tail-line <lineID>]... [--branch-line <lineID>]... --output <new directory>
+```
+
+Complete `Station` and `RailwayLine` values are not built here: they need P2-S7's canonical names.
+
 The tool performs no network access and reads no credentials; the operator supplies the archive and its obtained-at time. It refuses archive and output paths inside the repository, never overwrites an existing file, and publishes nothing when any check fails. Only the nine GTFS table members are read and integrity-checked; other members are recorded by name only.
 
 Never commit archives, extracted tables, or manifests (DEC-065 §A).

@@ -240,6 +240,8 @@ enum ProvisionalRegistryError: Error, Equatable, CustomStringConvertible {
     case grouping(String)
     /// Cross-operator station formation or assignment (DEC-069).
     case stations(String)
+    /// Coordinates, topology, or membership (DEC-070).
+    case network(String)
     case binding(String)
     case reconciliation(String)
     /// Conflicts that fail the run, as counts by kind.
@@ -259,6 +261,7 @@ enum ProvisionalRegistryError: Error, Equatable, CustomStringConvertible {
         case .previousRecords(let problem): "previous records: \(problem.rawValue)"
         case .grouping(let kind): "grouping: \(kind)"
         case .stations(let kind): "stations: \(kind)"
+        case .network(let kind): "network: \(kind)"
         case .binding(let kind): "line binding: \(kind)"
         case .reconciliation(let kind): "reconciliation: \(kind)"
         case .conflicts(let counts): "conflicts: " + counts.keys.sorted().map { "\($0) \(counts[$0]!)" }.joined(separator: ", ")

@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30); P2-S6 design accepted with DEC-070 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met, on synthetic tests and a provisional real-data run that met every baseline. Production identifiers, the registry of record, publication, and app bundling remain gated. P2-S6 is next: its design is accepted (DEC-070) and its implementation has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30); P2-S6 design accepted with DEC-070 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met, on synthetic tests and a provisional real-data run that met every baseline. Production identifiers, the registry of record, publication, and app bundling remain gated. P2-S6 (DEC-070) is *implemented* on synthetic data (2026-09-30; approved by the owner after the reported verification and adversarial review) and is **not complete**: its real-data acceptance is outstanding. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -910,7 +910,53 @@ Create a reliable local railway topology foundation.
     - P2-S6 to P2-S8;
     - the Step 4 contract questions;
     - the P2-S5 coverage limit: differently named stations that the two alias rules do not relate are not candidates, and spatial discovery is deferred.
-- **Later steps.** P2-S6 implementation under DEC-070, not yet started.
+- **P2-S6 implementation record** (2026-09-30; DEC-070; approved by the owner). Synthetic only: no real coordinate or topology decision exists, and the real registry was not touched.
+  - **Tool** (offline; app code unchanged). The build now compiles the Domain `GeoCoordinate`, `StationAdjacency`, `RailwayLineTopology`, and identifier types, so validation uses the real Domain rules.
+    - **Inputs.** Two identified archives and the P2-S5 registry. Every stop row and route must resolve to an active reference last reconciled with those exact inputs. The registry is read, never written.
+    - **Coordinates.** Every active station is classified again on each run.
+      - One row, or identical points: the exact published point, with every row as provenance.
+      - Different points: a reviewed record, checked for the member set, the chosen row, its exact point, the input it was reviewed on, and the evidence digest.
+      - Held-back reasons: `reviewRequired`, `selectedPointChanged`, `selectedRowAbsent`, `selectedInputChanged`, `reviewStale`, `invalidPoint`, `noMemberRows`.
+      - Another point is never substituted.
+      - `--previous-coordinates` carries earlier selections forward as append-only history. A changed or lost selection is appended, never overwritten, and an absent station keeps its history.
+    - **Topology.**
+      - Each line's trips, in `stop_sequence` order and including pass-through rows, give undirected candidates, with their support, observed directions, and alternative runs kept.
+      - The possible-shortcut heuristic uses DEC-070's exact quantifiers. Triangles among the other candidates are triggers. Self-pairs need a stated treatment.
+      - Each topology decision lists every alternative run it addresses. Nothing is removed automatically.
+      - Held-back reasons: `noRoutes`, `reviewRequired`, `reviewStale`, `empty`, `disconnected`, `membershipMismatch`.
+      - Shape checks (loop plus tail, branch) run on the built graphs of lines named by `--loop-tail-line` / `--branch-line`, with nothing seeded.
+    - **Outputs.**
+      - `network-packet` is the owner-only review export: every different-point station with every row's point and names, and every line's review cases with full evidence, each with an empty template.
+      - `network-build` publishes `coordinates.json`, `topology.json`, `membership.json` (with DEC-057 D9 agreement per line), and an aggregate-only `report.json`, as one new directory.
+      - The same inputs give byte-identical outputs.
+  - **Tests and builds.**
+    - The tool runner passes **167/167**, including 23 network cases. They cover:
+      - coordinates: one-row and identical-point provenance; reviewed selections; changed, absent, stale, and other-input choices; invalid points; unused and duplicate records; no-row stations;
+      - revisions and append-only history;
+      - topology: a loop plus tail from full-loop trips, unflagged; a branch; a partial-loop edge flagged for review and never removed; pass-through rows versus an omitted row; one qualifying run of several flagging, with every run addressed; triangle triggers; decision mismatch; membership, empty, and disconnected lines; self-pairs; stale reviews; no-route lines;
+      - shape pass and fail with the graph unchanged;
+      - membership agreement;
+      - determinism under row reordering;
+      - registry reconciliation;
+      - no distance code;
+      - the two commands, including a byte-identical rerun with the registry untouched.
+    - `TSUGINOTests` passes **1214/1214**. The Debug and clean Release builds of the app and extension succeeded on the iPhone 17 simulator, with the existing 75 Release warnings.
+  - **Review.** One focused adversarial review confirmed the heuristic's quantifiers, run and triangle logic, digests, history, shape math, and determinism. It found four issues, each fixed with a regression test:
+    - **Medium:** an active station without rows, or a line without routes, was omitted instead of held back, and a leftover record for it aborted the run.
+    - **Medium:** a coordinate record's input hash was not checked. A record reviewed on another input now holds the station back, so each new snapshot is reviewed again.
+    - **Low/medium:** a topology decision did not address each alternative run.
+    - **Low:** stale records were counted as used.
+
+    The fixes changed tool code only. The tool runner was rerun: 167/167.
+  - **Remaining for P2-S6 completion (real-data acceptance, local, not committed).**
+    1. `network-packet` on the P2-S5 identified inputs and final provisional registry.
+    2. The owner reviews each different-point station (58 expected from the P2-S5 counts, recorded rather than assumed) and every topology review case, and writes the records.
+    3. `network-build` with those records, naming Oedo and Marunouchi by their reviewed line bindings for the shape checks.
+    4. A rerun with `--previous-coordinates`, which must be byte-identical.
+    5. Verify every station has a coordinate with provenance, or is explicitly held back; every line is built, reviewed where required, connected, and agrees in membership; and the shape checks pass.
+
+    Complete `Station` / `RailwayLine` construction waits for P2-S7. Production identifiers, the registry of record, publication, and bundling stay gated.
+- **Later steps.** P2-S6 real-data acceptance (above).
 
 **Completion rules, proportionate to the kind of slice:**
 
