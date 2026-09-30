@@ -400,7 +400,7 @@ Create a reliable local railway topology foundation.
 
 ### Slice Plan (DEC-065)
 
-**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* on synthetic data (2026-09-30; approved by the owner after the reported verification and adversarial review) and is **not complete**: its real-data acceptance is outstanding. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
+**Status: accepted with DEC-065 (2026-09-25; §D amended 2026-09-26); P2-S2 design accepted with DEC-066 (2026-09-26); P2-S3 design accepted with DEC-067 (2026-09-27); P2-S4 design accepted with DEC-068 (2026-09-28); P2-S5 design accepted with DEC-069 (2026-09-30).** P2-S0, P2-S1, P2-S2, P2-S3, and P2-S4 are complete; P2-S3's real-feed validation passed on 2026-09-29 on newly identified Tokyo Metro inputs (recovery record below). P2-S4 is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met. Its provisional real-data runs passed for both operators, and the owner accepted the newer Toei snapshot and its recorded difference explanation on 2026-09-30 (P2-S4 real-data acceptance record, below). Production identifiers, the registry of record, Tokyo Metro publication, and app bundling remain gated. P2-S5 (DEC-069) is *implemented* and **complete** (2026-09-30): the criteria audit found every criterion met, on synthetic tests and a provisional real-data run that met every baseline. Production identifiers, the registry of record, publication, and app bundling remain gated. P2-S6 is next and has not started. Each slice starts only when the decisions listed for it are accepted. Answering a later slice's questions is **not** a precondition for an earlier slice.
 
 | Slice | Kind | Content | Depends on | Decisions needed before it starts |
 |---|---|---|---|---|
@@ -853,16 +853,64 @@ Create a reliable local railway topology foundation.
     - **Low:** the packet's assignment template compared station records unsorted.
 
     The fixes changed tool code only. The tool runner was rerun: 144/144.
-  - **Remaining for P2-S5 completion (real-data acceptance, local, not committed).**
-    1. `station-packet` on the P2-S4 identified inputs and approved records, with Tokyo Metro's Railway file, and the final shared P2-S4 registry.
-    2. The owner reviews every candidate and writes one decision for each. The candidate total is compared with A4's 29 name-based candidates, and A4's 54 and 26 are comparisons only.
-    3. `mint --kind station` on explicit request, for the number of groups the decided packet reports.
-    4. The owner adopts or writes the station assignments.
-    5. `station-registry`, then a repeat run against its own output.
-    6. The DEC-069 §A2 baselines are checked: 258 stations, 27 merged, 114 and 117 single-operator, 0 duplicates, 0 unmapped, and the three named outcomes. Any mismatch stops acceptance for owner review.
+- **P2-S5 real-data acceptance record** (2026-09-30; DEC-069 §A, §F). Everything was produced locally, outside the repository, and nothing generated is committed. The registry is provisional (DEC-068 §B6): none of its identifiers is a production identifier.
+  - **Inputs** (re-verified by hash): Toei `dd575706…2b42d8c4`; Tokyo Metro `76f04623…a277e1`, with Railway `90b16083…3b97f6c`; P2-S4's approved records; the final shared P2-S4 registry (2 operators, 15 lines, 48 references). The results are compared with A4, with no equivalence claimed.
+  - **Candidates.** `station-packet` gave 29 candidates, one-to-one, with no competing candidate. By key: exact Japanese 27, exact English 28, ヶ / ケ 1, 〈…〉 1. The combinations: 27 exact Japanese and English, 1 English plus ヶ / ケ, and 1 subtitle only.
+  - **Decisions.** The owner approved all 29 worksheet recommendations after ChatGPT reviewed the supplied worksheet. No physical survey, and no verification beyond that evidence, is claimed. The records copy each candidate's sides and evidence digest exactly from the packet, which was checked against the worksheet first.
+    - 27 `same`, among them 市ヶ谷 / 市ケ谷, citing the orthographic rule, and 押上 / 押上〈スカイツリー前〉, citing the subtitle rule.
+    - 1 `distinct`: 早稲田 (audit §6.5).
+    - 1 `ambiguous`: 新宿.
+  - **Derived count.** The regenerated packet derived 258 groups from these outcomes, not from a seeded figure. It matched the baseline, so minting went ahead.
+  - **Minting and assignment.** On the owner's explicit authorization, `mint --kind station` added exactly 258 provisional `StationID`s to a copy of the shared registry. The packet's complete assignment proposal was adopted: 258 station records, each group once, and each `StationID` once.
+  - **Runs.** `station-registry`, then a repeat run against its own output, supplying the previous inputs and records.
+    - The repeat gave a byte-identical registry (SHA-256 `9fda4419…8364b`), with the revision unchanged at 6, and zero new, changed, absent, or unassigned references.
 
-    Production identifiers, the registry of record, publication, and bundling stay gated.
-- **Later steps.** P2-S5 real-data acceptance (above).
+    | Measure | Result | DEC-069 §A2 baseline |
+    |---|---|---|
+    | Input rows → operator-level identities | 149 → 141 (Toei), 185 → 144 (Tokyo Metro): 285 | 285 |
+    | Canonical stations | 258 | 258 |
+    | Cross-operator merged | 27 | 27 |
+    | Toei-only / Tokyo Metro-only | 114 / 117 | 114 / 117 |
+    | Duplicate assignments / unmapped identities | 0 / 0 | 0 / 0 |
+    | 市ヶ谷 / 市ケ谷 | one station; both originals kept | one station |
+    | 押上 / 押上〈スカイツリー前〉 | one station; the subtitle string kept | one station |
+    | 新宿 | two stations; no reference or relation links them | two stations, ambiguous |
+
+  - **Registry.**
+    - Entities: 2 operators, 15 lines, and 258 stations. The 48 operator and line references are unchanged.
+    - References: 334 `stop_id` (149 + 185), all active. Each was attached by its assignment's review, with `stops.txt` provenance on the accepted archives.
+    - 334 `stop_code` references are descriptive codes.
+    - The registry holds only entities and references: no relationship, link, or transfer edge exists.
+  - **Historical comparisons** (DEC-069 §A3; not pass conditions).
+    - Candidates: 29 here, against A4's 54. A4's 25 spatial-only candidates are not generated, by design (§B4).
+    - Distinct: 1 here, against A4's 26. A4's other 25 distinct classifications were exactly those spatial-only candidates.
+    - A4 resolved all 27 of its merges from name-based candidates, and this run also has 27.
+    - **Totals reproduced, not equivalence.** The aggregate totals match A4's. Whether they are the same station pairs is **unverified**: A4's 285-row mapping was never recorded, and these snapshots differ from A4's (the Toei archive is newer; the Tokyo Metro static archive is newer, and the Railway file's identity is unknown). Only the three named outcomes and 早稲田 are checked pair by pair.
+  - **Criteria audit** (2026-09-30):
+
+    | Criterion | Evidence | Verdict |
+    |---|---|---|
+    | Inputs: the identified snapshots, compared without an equivalence claim | this record | met |
+    | Candidates: the four keys, one per pair, every reason kept, deterministic | synthetic station cases; the real packet | met |
+    | Review: a record for every candidate with its digest; an unreviewed candidate fails | synthetic cases; 29 of 29 decided | met |
+    | `same` rules: converging evidence, citations only when used, provenance for a differently named `same`, no invented alias | synthetic cases (including the review fix); real citations for 市ヶ谷 and 押上 | met |
+    | Ambiguity: two stations, no registry relation or transfer edge | a synthetic case; real 新宿 | met |
+    | Aliases explicit and reversible, originals preserved | app and tool cases; real originals kept | met |
+    | No distance constant | code search; no distance computed | met |
+    | Station minting and attachment; deterministic output | synthetic cases; the real run and byte-identical repeat | met |
+    | Suite and builds | tool runner 144/144; `TSUGINOTests` 1214/1214; Debug and clean Release on the P2-S5 tree, whose code is unchanged since | met |
+    | Real-data baselines (§A2) and comparisons (§A3) | the table above | met |
+    | Provisional identifiers; production minting waits for DEC-068 §F1 | this record | met |
+
+    **Verdict: P2-S5 is implemented and complete** (2026-09-30).
+  - **Gates that stay open:**
+    - production identifiers and the registry of record (DEC-068 §F1);
+    - publishing any Tokyo Metro-derived mapping (DEC-068 §F3);
+    - app bundling (ODPT item 5, P2-S8);
+    - P2-S6 to P2-S8;
+    - the Step 4 contract questions;
+    - the P2-S5 coverage limit: differently named stations that the two alias rules do not relate are not candidates, and spatial discovery is deferred.
+- **Later steps.** P2-S6, not yet started.
 
 **Completion rules, proportionate to the kind of slice:**
 
