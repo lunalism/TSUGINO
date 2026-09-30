@@ -194,6 +194,14 @@ enum SourceList {
         url: nil
     )
 
+    /// DS-03 Station catalog metadata; editorial evidence only, never GTFS intake.
+    static let tokyoMetroStation = SourceDefinition(
+        sourceID: "DS-03/tokyometro-station", provider: "Tokyo Metro",
+        license: "Public Transportation Open Data Basic License",
+        dataset: "r_station-tokyometro", resource: "9a17b58f-9258-431b-a006-add6eb0cacc6",
+        access: .credentialed, url: nil
+    )
+
     /// `odpt:Railway` sources, kept apart from `all`: intake reads GTFS
     /// archives only, and these identify the Railway input of
     /// review-packet and provisional-registry.

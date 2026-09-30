@@ -63,18 +63,20 @@ nonisolated struct TitleEvidence: Codable, Equatable, Sendable {
     let registrySHA256: String
     var memberProvenance: [NameSighting] = []
     var networkEvidenceSHA256: [String] = []
+    var stationCodes: StationCodeEvidence? = nil
     var semanticSHA256: String {
         struct Semantic: Encodable {
             let source: EditorialStationKey
             let occurrences: [TitleOccurrence.Semantic]
             let candidates: [TitleTarget]
             let crosswalks: [TitleCrosswalk]
+            let stationCodes: StationCodeEvidence.Semantic?
         }
-        return NameDigest.of(Semantic(source: source, occurrences: occurrences.map(\.semantic), candidates: candidates, crosswalks: crosswalks))
+        return NameDigest.of(Semantic(source: source, occurrences: occurrences.map(\.semantic), candidates: candidates, crosswalks: crosswalks, stationCodes: stationCodes?.semantic))
     }
 }
 nonisolated struct TitleBindingReview: Codable, Equatable, Sendable {
-    enum Basis: String, Codable, Sendable { case authoritativeCrosswalk, anchoredNeighbours }
+    enum Basis: String, Codable, Sendable { case authoritativeCrosswalk, anchoredNeighbours, stationCode }
     var schemaVersion: Int = 1
     let reviewID: ExactValue
     let reviewer: ExactValue

@@ -553,10 +553,11 @@ enum ProvisionalRegistryCommand {
     // MARK: Reading
 
     static func readFile(
-        _ checked: (resolved: String, identity: FileIdentity), _ role: String, _ root: FileIdentity
+        _ checked: (resolved: String, identity: FileIdentity), _ role: String, _ root: FileIdentity,
+        limit: Int64 = fileLimit
     ) throws(ProvisionalRegistryError) -> Data {
         do {
-            let file = try ArchiveFile(resolvedPath: checked.resolved, limit: fileLimit)
+            let file = try ArchiveFile(resolvedPath: checked.resolved, limit: limit)
             guard let opened = descriptorPath(file.descriptor), !isInsideRepository(opened, repositoryRoot: root) else {
                 throw IntakeError.pathInsideRepository(role: role)
             }

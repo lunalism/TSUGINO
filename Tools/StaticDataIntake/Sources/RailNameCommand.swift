@@ -8,6 +8,8 @@ struct RailNameRun: Codable {
     struct Railway: Codable { let sourceID: String; let path: String; let sha256: String }
     struct Document: Codable { let id: ExactValue; let path: String; let sha256: String }
     struct Shape: Codable { let lineID: MintedIdentifier; let kind: String }
+    struct Station: Codable { let sourceID: String; let railwaySourceID: String; let gtfsSourceID: String; let path: String; let sha256: String }
+    var stationEvidence: Station? = nil
     let schemaVersion: Int
     let archives: [Archive]
     let railways: [Railway]
@@ -28,6 +30,7 @@ struct RailNamePacket: Encodable {
     let notice = "Provider-bearing review evidence: owner-only, outside the repository. No choice is proposed or authorized. DEC-071."
     let names: [NameEvidence]
     let titles: [TitleEvidence]
+    let titleSupport: [TitleSupportAssessment]
     let titleStatuses: [TitleBindingResult.Status]
     let statuses: [RailNameOutcome.Status]
     let aliasStatuses: [RailNameOutcome.Status]
@@ -75,6 +78,7 @@ struct RailNameReport: Encodable {
     let heldNameSlots: Int
     let validatedBindings: Int
     let heldBindings: Int
+    let bindingSupportCounts: [String:Int]
     let heldAliases: Int
     let networkComplete: Bool
     let unusedReviews: Int
@@ -91,6 +95,10 @@ struct RailNameReport: Encodable {
     init(_ o: RailNameOutcome, registrySHA256: String, inputs: [String]) {
         complete = o.complete;networkComplete = o.networkComplete;nameSlots=o.statuses.count;validatedNameSlots=o.statuses.filter { $0.heldBack == nil }.count
         heldNameSlots=nameSlots-validatedNameSlots;validatedBindings=o.titleBindings.accepted.count;heldBindings=o.titleBindings.held.count
+        let assessed = o.titleBindings.evidence.map { TitleSupportAssessment.assess($0,approved:o.titleBindings.accepted[$0.source] != nil) }
+        bindingSupportCounts = Dictionary(uniqueKeysWithValues:TitleSupportAssessment.Status.allCases.map { status in
+            (status.rawValue,assessed.filter { $0.status == status }.count)
+        })
         heldAliases=o.aliasStatuses.filter { $0.heldBack != nil }.count
         unusedReviews=o.unusedReviews;unusedAuthored=o.unusedAuthored;unusedCrosswalks=o.unusedCrosswalks
         constructedOperators=o.operators.count;constructedLines=o.lines.count;constructedStations=o.stations.count
@@ -146,7 +154,18 @@ enum RailNameCommand {
             }
         }
         let network = try NetworkArtifacts.build(sources.map(\.networkSide),registry:registry,coordinateRecords:coordinateRecords,topologyRecords:topologyRecords,shapes:shapes)
-        return .init(sources:sources,railways:railways,historical:historical,registry:registry,registrySHA256:config.registrySHA256,network:network,documents:documents)
+        var input = RailNameInput(sources:sources,railways:railways,historical:historical,registry:registry,registrySHA256:config.registrySHA256,network:network,documents:documents)
+        if let station = config.stationEvidence {
+            guard station.sourceID == SourceList.tokyoMetroStation.sourceID,
+                  station.railwaySourceID == SourceList.tokyoMetroRailway.sourceID,
+                  station.gtfsSourceID == SourceList.tokyoMetroStaticGTFS.sourceID,
+                  sources.contains(where: { $0.sourceID == station.gtfsSourceID }),
+                  railways.contains(where: { $0.sourceID == station.railwaySourceID }) else { throw NameReviewError.malformed }
+            input.stationEvidence = try StationEvidenceInput.read(read(station.path,root:root),
+                sourceID:RailNameCatalog.exact(station.sourceID),railwaySourceID:RailNameCatalog.exact(station.railwaySourceID),
+                gtfsSourceID:RailNameCatalog.exact(station.gtfsSourceID),sha256:station.sha256)
+        }
+        return input
     }
     /// Packet and build both publish a NEW owner-only directory. A build with
     /// held names publishes explicit diagnostics/history but no named dataset.
@@ -156,13 +175,13 @@ enum RailNameCommand {
         let publication = try StationRegistryCommand.outputDirectory(outputPath,root)
         let config = try decode(RailNameRun.self,data:read(configPath,root:root))
         let records = try recordsPath.map { try decode(RailNameRecords.self,data:read($0,root:root)) } ?? .init()
-        let previous = try previousPath.map { try decode(RailNameHistoryArtifact.self,data:read($0,root:root)) }
+        let previous = try previousPath.map { try RailNameHistoryFile.read($0,root:root) }
         guard previous?.schemaVersion ?? 1 == 1 else { throw NameReviewError.schema }
         let input = try await load(config,root:root)
         let outcome = try RailNames.build(input,records:records,previousNames:previous?.names ?? .init(),previousTitles:previous?.titles ?? .init())
-        let report = RailNameReport(outcome,registrySHA256:input.registrySHA256,inputs:(input.sources.map { $0.archive.sha256 } + input.railways.map(\.sha256)).sorted())
+        let report = RailNameReport(outcome,registrySHA256:input.registrySHA256,inputs:try RailNameCatalog(input).inputHashes)
         var files: [(String,Data)] = [
-            ("packet.json",NetworkJSON.encode(RailNamePacket(names:outcome.evidence,titles:outcome.titleBindings.evidence,titleStatuses:outcome.titleBindings.statuses,statuses:outcome.statuses,aliasStatuses:outcome.aliasStatuses,unusedReviews:outcome.unusedReviews))),
+            ("packet.json",NetworkJSON.encode(RailNamePacket(names:outcome.evidence,titles:outcome.titleBindings.evidence,titleSupport:outcome.titleBindings.evidence.map { TitleSupportAssessment.assess($0,approved:outcome.titleBindings.accepted[$0.source] != nil) },titleStatuses:outcome.titleBindings.statuses,statuses:outcome.statuses,aliasStatuses:outcome.aliasStatuses,unusedReviews:outcome.unusedReviews))),
             ("report.json",NetworkJSON.encode(report))
         ]
         if let selectionsPath {
@@ -171,7 +190,7 @@ enum RailNameCommand {
             files.append(("review-templates.json", NetworkJSON.encode(try selections.templates(outcome,records:records))))
         }
         if !packetOnly {
-            files += [("history.json",NetworkJSON.encode(RailNameHistoryArtifact(names:outcome.history,titles:outcome.titleBindings.history))),
+            files += [("history.json",try RailNameHistoryFile.encode(RailNameHistoryArtifact(names:outcome.history,titles:outcome.titleBindings.history))),
                 ("names.json",NetworkJSON.encode(NamedNetworkArtifact(outcome))),
                 ("index.json",NetworkJSON.encode(outcome.index?.entries ?? []))]
         }

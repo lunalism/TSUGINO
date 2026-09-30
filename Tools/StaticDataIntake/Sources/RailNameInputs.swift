@@ -14,6 +14,7 @@ struct RailNameInput {
         let sha256: String
         let records: [ODPTRailway]
     }
+    var stationEvidence: StationEvidenceInput? = nil
     let sources: [Static]
     let railways: [Railway]
     let historical: [Static]
@@ -32,7 +33,7 @@ struct RailNameCatalog {
     var lineOperators: [MintedIdentifier: MintedIdentifier] = [:]
     var occurrences: [EditorialStationKey: [TitleOccurrence]] = [:]
     var entityIDs: [MintedIdentifier] { input.registry.entities.filter { $0.status == .active }.map(\.id).sorted() }
-    var inputHashes: [String] { (input.sources.map { $0.archive.sha256 } + input.railways.map(\.sha256) + input.historical.map { $0.archive.sha256 }).sorted() }
+    var inputHashes: [String] { (input.sources.map { $0.archive.sha256 } + input.railways.map(\.sha256) + input.historical.map { $0.archive.sha256 } + (input.stationEvidence.map { [$0.sha256] } ?? [])).sorted() }
 
     static func exact(_ s: String) throws -> ExactValue {
         guard let e = ExactValue(s) else { throw NameReviewError.malformed }; return e

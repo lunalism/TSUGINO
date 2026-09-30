@@ -34,11 +34,15 @@ enum RailwayTitleBindings {
                 }
                 return TitleTarget(stationID:id,members:catalog.members[id] ?? [],neighbours:Set(scopes.flatMap(\.neighbours)).sorted(),lineScopes:scopes)
             }
-            return TitleEvidence(source:key,occurrences:occurrences,candidates:candidates,
+            var evidence = TitleEvidence(source:key,occurrences:occurrences,candidates:candidates,
                 crosswalks:crosswalks.filter { $0.source == key }.sorted { $0.id < $1.id },
                 inputSHA256:catalog.inputHashes,registrySHA256:catalog.input.registrySHA256,
                 memberProvenance:(candidates.flatMap { catalog.provenance[$0.stationID] ?? [] } + lines.sorted().flatMap { catalog.provenance[$0] ?? [] }).sorted(by:NameSighting.precedes),
                 networkEvidenceSHA256:catalog.input.network.lines.filter { lines.contains($0.lineID) }.map(\.evidenceSHA256).sorted())
+            if let station = catalog.input.stationEvidence, station.railwaySourceID == key.sourceID {
+                evidence.stationCodes = station.assess(evidence,catalog:catalog)
+            }
+            return evidence
         }
     }
     static func basicHold(_ review: TitleBindingReview, _ evidence: TitleEvidence) -> NameHold? {
@@ -52,6 +56,24 @@ enum RailwayTitleBindings {
         guard !evidence.occurrences.isEmpty else { return .selectedMissing }
         guard review.semanticDigest(evidence) == review.selectionEvidenceSHA256 else { return .relevantEvidenceChanged }
         return nil
+    }
+    static func codeTarget(_ evidence: TitleEvidence) -> MintedIdentifier? {
+        guard let codes = evidence.stationCodes, codes.status == .supported,
+              codes.railwaySourceID == evidence.source.sourceID,
+              codes.rows.count == 1, codes.rows[0].sameAs == evidence.source.stationReference,
+              evidence.occurrences.allSatisfy({ $0.sameAs == codes.rows[0].railway }),
+              let code = codes.rows[0].code, !codes.matches.isEmpty,
+              codes.matches.allSatisfy({ match in
+                  match.gtfsSourceID == codes.gtfsSourceID && match.code == code && evidence.candidates.contains { target in
+                      target.stationID == match.stationID && target.members.contains { member in
+                          member.sourceID == match.gtfsSourceID && member.namespace == .gtfsStopID && member.value == match.stopID
+                              && member.codes.contains(code) && evidence.occurrences.allSatisfy { member.lineIDs.contains($0.lineID) }
+                      }
+                  }
+              }), Set(codes.matches.map(\.stationID)).count == 1 else { return nil }
+        let target = codes.matches[0].stationID
+        if !evidence.crosswalks.isEmpty && directTarget(evidence) != target { return nil }
+        return target
     }
     static func directTarget(_ evidence: TitleEvidence) -> MintedIdentifier? {
         var targets = Set<MintedIdentifier>()
@@ -116,7 +138,9 @@ enum RailwayTitleBindings {
             guard validation.evidenceSHA256 == NameDigest.of(validation.evidence), validation.previousValidationSHA256 == prior[validation.reviewID],
                   validation.validatorVersion == 1, let review = previous.choices.first(where: { $0.reviewID == validation.reviewID }),
                   basicHold(review,validation.evidence) == nil else { throw NameReviewError.invalidHistory }
-            if review.basis == .authoritativeCrosswalk {
+            if review.basis == .stationCode {
+                guard codeTarget(validation.evidence) == review.stationID, validation.anchorEvidence.isEmpty else { throw NameReviewError.invalidHistory }
+            } else if review.basis == .authoritativeCrosswalk {
                 guard directTarget(validation.evidence) == review.stationID, validation.anchorEvidence.isEmpty else { throw NameReviewError.invalidHistory }
             } else {
                 var direct: [EditorialStationKey:TitleBindingReview] = [:]
@@ -143,7 +167,11 @@ enum RailwayTitleBindings {
         for e in all {
             guard let review = records.titles.first(where: { $0.evidence.source == e.source }) else { held[e.source] = .reviewRequired;continue }
             if let h = basicHold(review,e) { held[e.source] = h;continue }
-            if review.basis == .authoritativeCrosswalk {
+            if e.stationCodes != nil && codeTarget(e) != review.stationID { held[e.source] = .bindingUnresolved;continue }
+            if review.basis == .stationCode {
+                guard review.anchors.isEmpty, review.anchorReviewDigests.isEmpty, codeTarget(e) == review.stationID else { held[e.source] = .bindingUnresolved;continue }
+                accepted[e.source] = review
+            } else if review.basis == .authoritativeCrosswalk {
                 guard review.anchors.isEmpty, review.anchorReviewDigests.isEmpty, directTarget(e) == review.stationID else { held[e.source] = .bindingUnresolved;continue }
                 accepted[e.source] = review
             }
@@ -151,7 +179,7 @@ enum RailwayTitleBindings {
         for review in history.choices where !history.choices.contains(where: { $0.supersedes == review.reviewID }) && !all.contains(where: { $0.source == review.evidence.source }) {
             held[review.evidence.source] = .selectedMissing
         }
-        let direct = accepted
+        let direct = accepted.filter { $0.value.basis == .authoritativeCrosswalk }
         for e in all {
             guard let review = records.titles.first(where: { $0.evidence.source == e.source }), review.basis == .anchoredNeighbours,
                   held[e.source] == nil else { continue }
