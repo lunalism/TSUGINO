@@ -2225,6 +2225,115 @@ validated import, registry/publication/translation/delivery/bundling/expansion g
 remain. Scoped success/profile design, failure additions, engine/completeness and
 connection policies stay deferred. Launch scope and Phase 3 exit are unchanged.
 
+
+### Proposed internal-search profile/scope contract (2026-10-01)
+
+Documentation-only **Proposed DEC-080** and [consumer amendment §9](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#9-internal-search-profile-and-effective-scope--proposed-dec-080)
+separate embedded immutable profile definitions, request/view-bound effective scopes,
+coverage evidence, completion, admission accounting and presentation. Recommend
+inclusive request lower/final-arrival bounds, parameterized horizon/ride limits and
+explicit canonical domain/policy resolution; no production numbers or algorithm.
+Eight invented cases include midnight service dates, missing coverage with valid
+routes, budget cutoff and display truncation. Parameterized local values can be
+accepted independently of the separately Proposed enumeration objective/defaults.
+Next task: focused documentation review, then owner consideration; no implementation
+or acceptance occurs here. DEC-079 remains context-only implemented. P2-S9, interpreted
+validated import and all applicable retained gates/launch/Phase 3 exit remain unchanged.
+Verified clean starting branch `phase/03-route-search`, fetched HEAD/upstream
+`10a0c372c22d1203c1eac7a4b41e653488d5f1cd`; main unchanged at
+`e8a463d51f14b3cb1027960c63244b694579a71b`. No research/tests/builds or acquisition.
+
+
+### DEC-080 bounded acceptance preparation (2026-10-02 Asia/Seoul)
+
+Independent documentation review found no material findings; DEC-080 remains Proposed.
+[Consumer §9.9](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#99-bounded-owner-acceptance-package--proposed-2026-10-02-asiaseoul)
+selects exact V1–V7 paragraphs for P1–P4/P6 local value contracts and separates runtime
+obligations. P5, production profiles/defaults, enumeration/completeness, connection
+resolution/policies, algorithms and engine ownership remain deferred. S9/S10 clarify
+non-advancing floating-point bounds and complete-negative versus unknown connectivity.
+Next: owner consideration only; after acceptance and separate authorization, A is pure
+profile/scope values and B is locally validated scoped success. No tests/builds, runtime
+search, acceptance or code changes. P2-S9, interpreted/validated import and all retained
+gates/launch/Phase 3 exit remain unchanged. Refs verified locally (no fetch required),
+HEAD/upstream `10a0c372c22d1203c1eac7a4b41e653488d5f1cd`, 0 ahead/behind.
+
+
+### DEC-080 bounded acceptance and slice A — 2026-10-02 Asia/Seoul
+
+Owner accepted precisely consumer §9.9 V1–V7 (P1–P4/P6); DECISIONS records the
+paragraph-level boundary. P5 and every explicit non-selected policy remain
+Proposed/undecided. Only slice A was authorized. Prior proposal/preparation entries
+above remain historical; they do not override this bounded acceptance.
+
+Implemented in three Domain/Routing files: `InternalSearchProfileIdentity.swift`
+(including versioned policy reference), `InternalSearchProfileDefinition.swift`,
+and `InternalSearchScope.swift`. Full immutable canonical domain sets, positive
+finite duration/ride cap, supplied semantic key/revision and policy references are
+preserved. Scope retains original request, full profile and view; validates endpoint
+membership and inclusive exact finite advancing L/U. Rounded/unrepresentable sums,
+including positive-duration U==L, fail. Explicit full-definition comparison detects
+conflicts only among supplied values, not global registry history. No persistent
+identity, serialization, policy resolver or mutable shared state was introduced.
+
+`InternalSearchScopeTests.swift`: **11 functions / 18 executed cases passed**, zero
+failures/skips/runtime warnings on iPhone 17 / iOS 26.5 Simulator. Focused Debug
+command selected only `TSUGINOTests/InternalSearchScopeTests`; app and Live Activity
+extension dependencies built. Saved result:
+`/private/tmp/tsugino-p3-scope-a-r3.xcresult`; log:
+`/private/tmp/tsugino-p3-scope-a-r3.log`.
+The sandboxed r1 attempt failed CoreSimulator access (no test evidence); r2 failed
+new test macro compilation (nested require/missing inner try), corrected before r3.
+Unrelated existing actor-isolation warnings and AppIntents metadata-skipped warning
+were observed; no new scope-source/test warning. No full-suite or Release run.
+Existing routing/timetable/context evidence is retained, not claimed rerun.
+
+Constructor subcases cover full preservation, independently empty domain sets,
+nonfinite/nonpositive duration, invalid/extreme ride caps, wrong request membership,
+inclusive boundaries, overflow, no advance, rounded advance, exact cross-zero and
+subnormal bounds, complete supplied-definition comparison, revision/key differences,
+and transfer of independent values across tasks. These exercise local portions of
+V1–V4 and S9, not full DEC-080 or producer/search compatibility. V5 scoped success
+(slice B), failure additions, coverage/completion/accounting execution, policy
+resolution, service-date enumeration, connections and engine remain unimplemented.
+No constructor authenticates source correspondence, membership, calendar activation,
+view coherence or required coverage. No production default/domain was selected.
+
+Self-review found no remaining material issue in this bounded implementation;
+**independent implementation review is pending**. Review should assess constructor
+bypasses, exact arithmetic, immutable constraint/identity semantics and acceptance
+bookkeeping, without extending to slice B or runtime policies. Documentation paths,
+acceptance selectors and unchanged accepted history were checked; `git diff --check`
+passed. Original three-document work is retained; ARCHITECTURE was minimally updated.
+No branch creation, fetch (refs locally recorded), commit, push or merge. P2-S9 before
+real Trip consumption/import, feed-specific interpretation/validated import and all
+rights/registry/publication/translation/delivery/bundling/expansion gates, launch and
+Phase 3 exit requirements remain unchanged.
+
+### DEC-080 slice A independent approval — 2026-10-02 Asia/Seoul
+
+A fresh reviewer context with no prior exposure inspected the actual contracts,
+source, tests and acceptance records: **approve slice A; no material findings or
+mandatory outstanding checks**. Approval covers local profile/scope values only.
+V1–V7 / P1–P4/P6 acceptance is unchanged; P5 remains Proposed. Slice B is accepted
+but unimplemented and is not authorized by this publication.
+
+The reviewer confirmed rounded-sum rejection implements V3's exact/no-rounding
+requirement. Optional policy-key variation and same-time/different-endpoint tests
+are nonblocking observations; no optional changes were made. Independent inspection
+confirmed r3's 11 functions / 18 executed cases, zero failures/skips/runtime warnings,
+and Debug app/extension dependencies. Earlier r1 access and r2 compilation failures,
+isolation/AppIntents build warnings and their evidence distinctions remain as recorded.
+No tests/builds were rerun during review or publication. SHA-256 comparison against
+the independent-review manifest confirmed unchanged source/test bytes before staging.
+
+Publication checks include a fresh origin fetch, exact eight-file inventory,
+documentation/reference consistency, staged-diff inspection and `git diff --check`.
+No credentials, private source artifacts, real payload fixtures or generated build
+files are included. Coverage/policy resolution, runtime scoped results, engine and
+real-data/ODPT compatibility remain excluded; all P2-S9/import, rights/delivery and
+Phase 3 exit gates remain unchanged.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

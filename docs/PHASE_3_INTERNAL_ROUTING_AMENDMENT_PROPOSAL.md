@@ -3,6 +3,8 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented; slice B and runtime obligations remain unimplemented.**
+
 ## Current acceptance and implementation boundary — 2026-10-01 Asia/Seoul
 
 Accepted DEC-079: Consumer §§2–5 and C1–C6 are accepted conditional on DEC-078.
@@ -378,3 +380,381 @@ enumeration/pruning/order/completeness design; applicable justified connection
 policies; algorithm/component ownership; and, for real consumers, S9 plus feed-specific
 interpretation, validated T1 import, continuity/connection evidence and applicable
 rights. None is supplied by accepting this package.
+
+## 9. Internal-search profile and effective scope — Proposed DEC-080
+
+**Originally proposed separately from DEC-079; bounded DEC-080 acceptance is
+recorded in §9.10. Only §9.9 V1–V7 is accepted; all other recommendations remain
+Proposed.** This section refines §4's scope obligation; §§1–8 retain their
+historical/accepted boundaries above. No algorithm, production profile, launch
+restriction or permission is selected. Slice A implements local profile/scope
+values only; conceptual success/runtime notation is not implemented API.
+
+### 9.1 Separate responsibilities and proposed values
+
+| Concept | Proposed content / meaning | Never proves |
+|---|---|---|
+| Stable `InternalSearchProfileDefinition` | Immutable profile key + revision and actual constraints: nonempty canonical station, line and recurring TripID sets; finite positive maximum elapsed search duration; positive maximum rail-ride count; supported forms below; versioned connection-policy and service-date-enumeration interpretation references | Available inputs, reviewed source correspondence or operational coverage |
+| Request-specific `InternalSearchScope` | Full definition value, original RouteSearchRequest, one TimetableViewID for the coherent canonical/schedule/connection view, effective lower and final-arrival upper instants | Successful computation or complete data merely because construction succeeds |
+| Input coverage assessment (Data) | Evidence that the entire required domain/date window, calendars, schedules, occurrence joins, eligibility and connections are complete, valid and compatible with that view; known exclusions and unknown gaps kept distinct | Search completion or no route |
+| Execution completion (search component) | Proof/record that the accepted enumeration contract was satisfied in this scope, with all required input checks and no unhandled cutoff | Authenticity of stipulated input or ranking optimality |
+| Admission accounting | Frozen complete handoffs, one admitted candidate or omission per position, existing N/count/index rules | Coverage or completeness of pre-handoff search work |
+| Presentation limit | A separately named display subset of an already complete canonical batch | Permission to truncate the batch or call unfinished work complete |
+
+Proposed definition is an explicit allow-list domain, not a list reverse-engineered
+from loaded data. TripID here denotes a recurring service, **not ServiceTypeID**, a
+brand, operator or dated instance. The station set describes represented passenger
+stops/transfer endpoints; the line set describes allowed ridden movements. Names,
+coordinates and guessed service labels play no role. Exact Trip snapshots still
+come from the coherent view. A partial snapshot may serve a represented subinterval;
+unused continuation outside the supported domain is not required to become supported.
+Any ridden movement outside the profile's station/line/service constraints is excluded;
+missing data about an included service is not an exclusion. Domain membership must be
+checked for represented passenger stops inside each ridden interval, not merely its
+anchors. Passing infrastructure absent from the accepted passenger-stop model is not
+invented as an additional stop requirement.
+
+A future launch profile must demonstrate the accepted 15-line/service scope and
+required itinerary behavior. A smaller synthetic/development profile is visibly named
+and cannot discharge launch or Phase 3 exit. Changes to source availability never
+silently edit the definition, drop a service or shrink the horizon. Supported domain
+outside a request is a disclosed profile restriction; absent required facts within
+it cause dataUnavailable even when one good route is already known. Active canonical
+endpoint validation retains DEC-079 precedence; an active endpoint excluded by this
+profile is unsupported. No automatic retired-ID successor handling.
+
+### 9.2 Identity, resolution and local construction
+
+Recommend **embedding the entire immutable definition in each scope**, rather than
+returning an opaque profile label alone. A key/revision identifies the definition;
+its typed fields carry the constraints. Profile sets must be nonempty and contain
+canonical IDs; max rides > 0; maximum duration must be finite and > 0. No numeric
+production values are selected. All values immutable, nonisolated and Sendable;
+failable constructors without Codable, persistent registry or snapshot equality/hash.
+Exact Swift naming and storage collection choices are routine implementation choices.
+
+References to connection/time-interpretation policies are versioned, immutable
+contracts whose actual definitions must resolve in the retained view **before use**.
+Data retains the definitions, evidence and source details, and the future Application
+consumer must be able to obtain the relevant constraint descriptions through a typed
+resolver. A bare key or mutable “latest policy” lookup is insufficient. Resolution
+lifetime covers search and consumption/revalidation; stale/unresolvable prerequisites
+fail under DEC-079 preflight, not a silent fallback. These references do not embed raw
+provider metadata in Domain. This draft does not design a policy store or persistence.
+
+Within one configuration, the same profile key/revision may identify only one exact
+constraint definition. Changing any domain member, bound policy, ride limit or policy
+reference requires a new revision and explicit selection. A display label is not
+identity. A value constructor cannot detect registry history; configuration/admission
+must reject a reused identity with conflicting contents (configurationUnavailable
+at profile resolution; incompatible shared-view resolution is dataUnavailable).
+No comparison by profile label alone may authorize association.
+
+A scope captures its request, so two endpoint pairs at the same instant are distinct
+searches. Construction checks origin/destination inclusion, exact lower=request
+.departNotBefore, finite ordered bounds and the derivation below. All timetable
+contexts in an internal batch must use this scope's view. Equal view labels alone
+cannot authenticate compatible revisions; Data checks actual snapshot bindings.
+Dates may differ between rides; view coherence does not require a single service date.
+
+### 9.3 Temporal formulation and service dates
+
+| Formulation | Tradeoff |
+|---|---|
+| Bound only first boarding in [L,U] | Finite departure window does not bound arbitrarily late final arrival; misleading as an arrival horizon |
+| Independent departure window and arrival deadline | Flexible but adds a second policy/parameter without a present accepted request need |
+| **Recommend: depart-not-before L plus final-arrival horizon U** | One finite whole-itinerary window; clear limit on arrival, possibly excludes useful later journeys; must be disclosed |
+
+Proposed minimum: `L = request.departNotBefore`, `U = L + profile.maximumElapsedDuration`
+in absolute elapsed seconds with checked finite arithmetic, no rounding. `L < U`;
+both boundaries **inclusive**. Every ridden departure/arrival must satisfy
+`L <= event <= U`, with existing itinerary chronology. Equivalently, with complete
+ordered pairs, first departure >= L and final arrival <= U imply these inequalities;
+validate each pair explicitly for clear local invariants. This does not constrain
+unused Trip events or require its service origin to depart after L. Equality is
+ordering only, never proof of a connection. No request-time profile override or
+adaptive shortening is added. Overflow/unrepresentable effective bounds fail intent
+admission as unsupportedRequest; value construction returns failure.
+
+Service-date labels remain opaque. The Data producer/interpretation layer must supply
+a finite, evidenced enumeration of all dated occurrences whose **possible ridden
+events** intersect [L,U], including earlier service dates with extended-hour events.
+Never select just the civil dates containing L/U, subtract one date by convention,
+parse TimetableServiceDate.label, or enumerate only runs departing their service origin
+inside the window. A prior-day run can have a usable later boarding occurrence.
+Reviewed conversion profiles and source bounds/index coverage must prove no omitted
+service date can contribute; no fixed lookback is assumed. Missing extended-hour or
+calendar coverage yields dataUnavailable. Failure to finish enumeration with usable
+inputs yields searchIncomplete. Actual feed conversion and date enumeration remain
+unimplemented and require source-specific evidence; this is not a GTFS/ODPT rule.
+
+### 9.4 Itinerary forms and connection policy
+
+Recommend parameterized `maximumRailRides = M`, positive finite integer, with no
+production default. At most M rail rides implies at most M−1 genuine transfers;
+no redundant independent transfer cap. Through service on one existing spanning
+Trip is **one ride**, however many line/operator boundaries it crosses. It still
+needs affirmative correspondence. Retain distinct rail endpoints, rail first/last,
+no consecutive walks, canonical continuity and no duplicate matched TripID within
+one candidate, even across service dates. No unresolved graph rides, access/egress
+walks or fabricated fragment joins. Optional inter-ride walking is only the existing
+exact directional transfer; same-station interchange also needs evidence.
+
+Connection-policy references resolve to justified total allowances for the exact
+alight/board pair, direction, line/service context and time applicability. Every
+component (alight, interchange/walk/access, boarding) is included once. Finite
+nonnegative allowance and safe comparison are required; no universal guessed time,
+no implicit zero for same-station change, and no reverse-edge inference. A justified
+zero is representable but must be evidenced, not defaulted. A failed known allowance
+rejects a handed-off proposal as infeasibleConnection; missing required connection
+inventory/policy prevents whole-call success. This proposal selects no numeric
+allowance, margin or accessibility policy.
+
+### 9.5 Scoped success and completeness boundary
+
+Proposed shape, extending RouteSearchResult while preserving external cases:
+
+```text
+RouteSearchResult:
+  noResults                              // existing external meaning
+  alternatives(RouteSearchBatch)          // existing external meaning
+  internalSuccess(InternalSearchSuccess)  // new validated payload
+InternalSearchSuccess:
+  scope: InternalSearchScope
+  outcome: noResults | alternatives(RouteSearchBatch)
+```
+
+The payload constructor checks each candidate: exact request endpoints; all rail
+rides matched with timetable contexts; same scope view; snapshot/index attachment;
+profile domain and ride-count constraints; all ridden endpoints within [L,U]; existing
+structure/duplicate-Trip/chronology invariants. It reuses batch/omission validation.
+No provider/nil context enters internal success; external results remain unchanged.
+Construction with noResults checks the scope's structure only. An exposed enum case
+must not bypass the validated payload. These checks prove **local consistency only**;
+no boolean `isComplete` or arbitrary token can authenticate coverage/computation.
+
+Before producing internal success, the implementation must separately establish:
+1. complete relevant inputs for the fixed scope, including activation and required
+   schedule/connection facts (unknown is not inactive/unreachable);
+2. completion of an accepted enumeration/pruning/duplicate/order contract;
+3. exact one-to-one accounting of every complete proposal handed to admission.
+
+Genuine scoped noResults requires zero complete handoffs after valid completed
+search, not zero admitted candidates. Positive handoffs all rejected produce the
+existing **unscoped** noUsableAlternatives failure with contiguous omissions. Shared
+input defects yield dataUnavailable even with valid candidates. Unproved completion
+or budget exhaustion yields searchIncomplete, no partial batch. Observed cancellation
+wins as CancellationError before result/failure; owned work cancels. Preserve the
+accepted configuration → shared view → endpoints → intent → required coverage order;
+no lower-priority fault probing. Other canonical failures retain their meanings.
+
+Recommend the first completion contract seek all distinct admissible itineraries
+within the declared domain/window/ride cap, with identity based on ordered dated
+Trip occurrences, original ridden intervals and directional walking connections.
+Different implementations may choose different algorithms but must prove equivalent
+coverage under the later accepted enumeration contract. Exact duplicate elimination
+may be designed before handoff; a distinct admissible itinerary must not disappear
+under “ranking.” Do not adopt dominance pruning, tie rules or a generation order by
+implication: their precise proof and deterministic ordering remain engine prerequisites.
+Infeasibility pruning must be justified; input contradictions cannot be relabeled as
+pruning to manufacture completion. Finite source occurrences and a finite ride cap
+bound the intended space, but are not themselves a termination/completeness proof.
+
+All admitted handoffs remain in the canonical batch, preserving generated order.
+A top-N UI selection is a consumer view over that batch, not new omission records.
+If memory/runtime limits prevent producing the complete batch, return searchIncomplete;
+do not stop at N and call it completed. Ranking and presentation remain separate,
+unselected policies. A later bounded-optimal/top-K search guarantee would need an
+explicit contract amendment, not a hidden replacement for this recommendation.
+
+### 9.6 Ownership and independently acceptable boundary
+
+Proposed ownership: Domain owns immutable profile/scope/success values and structural
+validation; Data owns coherent input views, source interpretation, policy resolution
+and coverage evidence. A future isolated internal-search component consumes those
+inputs and owns computation completion/admission accounting behind RouteSearching.
+Application chooses an accepted configured profile, manages task lifetime and
+presentation, and receives the complete definition/effective scope. No route logic
+in UI. The component's precise Domain/Application/Data placement and algorithm remain
+an explicit engine-design task; values need neither decision to be useful.
+
+RouteSearching may retain its current async signature: a configured implementation
+uses one fixed accepted profile and returns scope. The new result branch makes scope
+observable without changing RouteSearchRequest. Runtime profile selection/configuration
+and typed policy resolver APIs require a separate bounded design. Current code only
+has context support and external-shaped results; none of §9 is implemented.
+
+**Independently approvable package:** §9.1–9.3 parameterized definition/scope structure,
+§9.4 structural ride constraints, and §9.5 locally checked success payload/unchanged
+failure distinctions. Accepting these would not approve any production domain, numeric
+horizon/ride cap, policy resolution implementation, completeness algorithm or engine.
+§9.5's all-distinct-itinerary objective is a separate Proposed engine policy choice;
+pure values can be accepted without it. Definitions can be constructed from entirely
+invented constraints; that does not make them accepted runtime profiles.
+
+Smallest later implementation after explicit acceptance/authorization: pure definition
+and scope values, followed by validated internal-success payload and result branch,
+using invented candidates. Test finite/overflow boundaries, explicit membership,
+request association, same-view timetable-only batches, ride caps and existing
+accounting; include invalid enum payload construction. A noResults constructor test
+is not a proof of engine completeness. Updating exhaustive result switches is mechanical;
+no real search implementation may emit these until coverage/completion obligations
+are satisfied. No persistent identity, source registry or provider-context changes.
+
+### 9.7 Worked examples — wholly invented specification cases
+
+All IDs, labels, dates and values below are synthetic. Hypothetical profile P/r1
+contains stations A/B/C/D/X/Y, lines L1/L2 and recurring services T1/T2/T3, allows at
+most **3 rail rides** and a **2-hour elapsed horizon**, and references invented policies
+K1/C1. These numbers illustrate parameters, **not recommended production defaults**.
+View V supplies stipulated compatible facts only where explicitly stated. Request
+A→D has L = `2034-06-02T00:00:00+09:00`, U = `2034-06-02T02:00:00+09:00`.
+
+| Case | Synthetic input | Proposed outcome and responsibility |
+|---|---|---|
+| S1 Inclusive departure | T1 departs A exactly L, arrives D 00:20; all other evidence stipulated | Locally valid scoped candidate; runtime success still needs coverage/completion. L−1 second rejects bound validation |
+| S2 Arrival horizon | Same ride arrives exactly U; variant U+1 second | Equality allowed. Later arrival outside fixed domain; legitimate pre-handoff exclusion or invalidScheduledContext omission if handed off. Does not justify changing U or claiming no network route |
+| S3 Earlier service date | Producer-qualified T2 service label `synthetic-prior-day`, authoritative mapping to 2034-06-01 operation, extended time 24:10 maps to civil June 2 00:10; arrival 00:30 | Include the dated occurrence despite previous service day. No label parsing/rollover here. Missing interpretation/enumeration proof yields dataUnavailable, not noResults |
+| S4 Good route plus gap | T1 route is valid; required included T3 calendar or X→Y inventory is unknown | Whole-call dataUnavailable, no partial successful batch; do not remove T3/X→Y from P/r1 |
+| S5 Resource cutoff | Required inputs valid, one candidate found, enumeration stops at an execution budget | searchIncomplete; no partial success or noResults. Observed cancellation instead yields CancellationError |
+| S6 Through boundary | T1 A→B→D traverses L1 then L2 with affirmative stay-aboard evidence and one spanning snapshot | One ride, zero transfers. Two line names do not consume two ride slots. Without continuity, no invented same-station change; no successful completeness claim with missing required evidence |
+| S7 Display limit | Completed search hands off 7 distinct valid itineraries, presentation wants 3 | Canonical batch retains all 7 in generated order; presentation may display a clearly limited subset. Stopping search at 3 is not equivalent; no fabricated omissions for the other 4 |
+| S8 Identity reuse | P/r1 originally uses a 2-hour duration; configuration reuses P/r1 for 1 hour or removes T3 | Reject conflicting profile resolution; require a new revision/explicit selection. Scope embeds original constraints, so an old result cannot silently inherit changed limits |
+| S9 Positive duration with no representable advance | Invented binary64 absolute-second coordinate L = 2^53; positive duration 0.25 seconds. Ordinary floating-point addition returns U == L | Scope construction fails: finite positive duration alone is insufficient; L < U and representable checked bounds are required. Never substitute nextUp, round to a minute or silently enlarge the horizon. This is a numeric specification example, not a calendar/source conversion or executed test |
+| S10 Known absent directional connection | Authoritative complete inventory proves no feasible X→Y connection in the fixed scope. Stipulate all other required inputs complete and no other feasible itinerary; separately accepted execution completes with zero handoffs | Scoped noResults is permitted only on those runtime premises. Unknown required X→Y coverage instead yields dataUnavailable; an execution cutoff yields searchIncomplete. If complete proposals were handed off and all rejected, use noUsableAlternatives. Values alone establish none of these evidence/completion facts |
+
+### 9.8 Owner choices and exact remaining gates
+
+| Choice | Recommended selection / tradeoff |
+|---|---|
+| P1 Definition transport | Embed full immutable typed constraints, with resolvable immutable policy references; larger values, fewer opaque-label ambiguities. No production registry |
+| P2 Temporal bounds | Inclusive request lower bound and inclusive final-arrival U=L+positive finite parameter. One window; longer journeys excluded explicitly. No numerical default |
+| P3 Itinerary cap | Positive parameter M rail rides; through counts once, transfer maximum derived M−1; preserve duplicate-TripID prohibition. Choose production M only after launch behavior assessment |
+| P4 Coverage/completion | Fail whole call for missing required evidence or incomplete computation; accept local values separately from authenticating those obligations |
+| P5 Enumeration objective | Propose all distinct admissible scoped itineraries; potentially expensive. Separately review deduplication/order/pruning proof before engine execution; do not silently replace with top-K |
+| P6 Result/presentation separation | Scope-bearing internal success, full admitted batch, unscoped failures; display limits outside accounting. No partial-success fallback |
+
+No numeric production horizon/ride cap is recommended without workload and launch
+behavior evidence. Small parameterized values do not depend on those defaults.
+The next bounded task is focused independent documentation review of DEC-080/§9,
+then separate owner consideration of the value package versus engine objective.
+Before engine execution: accepted configured domain/defaults, authoritative service-date
+enumeration and coverage assessment, resolvable connection policies/allowances,
+deterministic enumeration/pruning/order/completion rules, and component ownership.
+Before real use: P2-S9, feed-specific interpretation/validated T1 import, source and
+through/transfer correspondence, freshness/rights and all applicable registry,
+publication/translation/delivery/bundling/expansion gates. ODPT-only compatibility,
+commercial resumption, launch reduction and Phase 3 exit are not approved.
+
+
+### 9.9 Bounded owner-acceptance package — Proposed, 2026-10-02 Asia/Seoul
+
+Independent review found no material contract findings and readiness for owner
+consideration only. A fresh context could not be created because of the thread
+limit; the assigned reviewer confirmed no prior exposure to DEC-080. This package
+records no acceptance and authorizes no implementation. S9/S10 clarify the existing
+rules without selecting an arithmetic implementation or runtime search policy.
+
+**Recommended single approval:** accept the value-contract selections V1–V7 below,
+mapped to P1–P4 and P6, with runtime obligations distinguished from local checks.
+Do not accept §9 wholesale. Paragraphs are identified by their exact opening words;
+tables/code blocks are explicitly named to avoid accidental paragraph-count drift.
+This table is the precise selection if it is later approved, not a new decision layer.
+
+| Selection / owner choice | Exact proposed text selected | What acceptance would establish / limit |
+|---|---|---|
+| V1 — P1, P4, P6 | §9.1 entire concept table and paragraphs beginning “Proposed definition is an explicit allow-list domain” and “A future launch profile must demonstrate” | Full immutable definition, scope/evidence/completion/accounting/presentation distinction and explicit domain semantics. Membership/shape are local; authoritative membership, coverage and launch sufficiency remain runtime/evidence obligations |
+| V2 — P1 | §9.2 all four paragraphs beginning “Recommend”, “References to connection/time-interpretation policies”, “Within one configuration” and “A scope captures its request” | Embed actual definition; key/revision denotes fixed contents; preserve original request/view. Local checks do not enforce identity history or authenticate a view. Before runtime use, referenced policy definitions must resolve immutably; no resolver API/store/implementation is accepted |
+| V3 — P2 | §9.3 paragraph beginning “Proposed minimum” (the preceding alternatives table is rationale only) | Exact L=request bound, U=L+positive finite duration; inclusive events, finite representable checked bounds and L<U; no adaptive horizon or inferred dates. Overflow, unrepresentable/no-advance results fail construction; runtime intent failure remains unsupportedRequest |
+| V4 — P3 | §9.4 paragraph beginning “Recommend parameterized” | Positive M, at most M rail rides/M−1 transfers, through service counted once, existing matched-ride/duplicate-TripID/structural restrictions. No production M, continuity inference or launch reduction |
+| V5 — P4, P6 | §9.5 introductory “Proposed shape” and its complete code block; paragraph beginning “The payload constructor checks each candidate” | New internal success payload containing scope plus noResults or batch; immutable/failable payload validation prevents enum bypass. Exact request/domain/view/ride/context/time association and existing batch invariants are local. Neither a noResults value nor a valid batch authenticates coverage or execution |
+| V6 — P4, P6 | §9.5 “Before producing internal success” and its three numbered obligations; paragraph beginning “Genuine scoped noResults requires” | Preserve whole-call input/completion/cancellation failures and one-handoff/one-outcome accounting. Runtime success requires a separately accepted completed execution contract. NoResults requires zero handoffs, not all-rejected; failures remain unscoped. No proof mechanism or enumeration policy is accepted |
+| V7 — P6 | §9.5 paragraph beginning “All admitted handoffs remain”, **only its first three sentences**, ending “do not stop at N and call it completed.” | Preserve every admitted handoff and its order in the canonical batch; display limits do not create omissions or truncate computation. “Complete batch” means all admitted handoffs from execution satisfying its separately accepted contract; it does not yet mean all mathematically possible routes |
+
+These selections recommend P1–P4/P6 only. §9.7 S1–S10 are illustrative specification
+cases for the selected boundaries, not new defaults, authenticated inputs or test
+results. In particular S7's complete seven-item batch presupposes a separately
+accepted execution contract; it is not acceptance of P5's search objective.
+
+**Explicit deferrals and non-selected text:**
+
+- P5 and the entire §9.5 paragraph beginning “Recommend the first completion
+  contract seek all distinct admissible itineraries” remain Proposed. Also defer
+  the final two sentences of “All admitted handoffs remain” (beginning “Ranking
+  and presentation remain separate” and “A later bounded-optimal/top-K search
+  guarantee…”). No all-distinct/top-K/dominance objective or ranking/order policy
+  is selected by this package. Existing accounting cannot be weakened regardless
+  of which execution contract is later accepted.
+- §9.3 paragraph “Service-date labels remain opaque” is retained as evidence/design
+  guidance consistent with DEC-078/079, not acceptance of a concrete enumeration
+  policy. Its prohibitions on label parsing, guessed lookback and hiding missing
+  coverage continue as accepted upstream obligations; enumeration, calendar/source
+  interpretation and compatibility must be separately designed/evidenced.
+- §9.4 paragraph “Connection-policy references resolve” restates retained DEC-079
+  evidence obligations; accepting V2's resolution obligation accepts no concrete
+  allowance policy, resolution API, data store, default margin or connection admission.
+- §9.6's ownership, configured implementation and implementation recommendations
+  are planning guidance, not an engine/component-placement decision. §§9.8/9.9
+  distinguish the selection; they do not accept every earlier recommendation by
+  reference. Production domain sets, horizon/ride numbers, profile selection,
+  enumeration/pruning/duplicate/order/completeness policies, algorithms, ranking,
+  policy resolution implementation and runtime component ownership remain undecided.
+
+**Remaining choice:** owner approval or rejection of V1–V7 as one bounded package.
+No further semantic choice blocks the parameterized local values once that package
+is accepted. Exact type/file names, typed key/revision wrappers and collection layout
+are routine representation choices; they must not introduce persistent IDs or permit
+label-only substitution. Concrete policy-reference resolution and runtime evidence
+remain blockers to actual internal search, not to synthetic value construction.
+
+**Smallest implementation sequence, each requiring explicit acceptance and separate
+authorization:**
+
+A. Pure profile/scope values: full immutable constraints, typed versioned references,
+request/view association, domain inclusion, positive parameters and checked inclusive
+absolute bounds. Test invalid/empty domains, wrong request membership, nonfinite or
+nonpositive duration, overflow/no advance, boundary equality and preservation of full
+constraints. S9 is a negative numeric constructor case. Do not implement a profile
+registry, policy resolver, coverage or calendar/date enumeration.
+
+B. Locally validated scoped-success payload plus internal RouteSearchResult branch,
+after A: the V5 shape/invariants are sufficiently specified. Reuse current candidate,
+timetable context and batch values; validate endpoints, every represented ridden
+stop/line/Trip membership, same view, exact matched contexts, ride cap and [L,U].
+Reject provider/nil contexts and invalid payload construction; mechanically adapt
+exhaustive result switches. Preserve external cases and unscoped failures. Test
+noResults structure without claiming an execution occurred. No new failure vocabulary,
+preflight, real producer/search or completeness-proof implementation is needed for B.
+
+Neither slice authenticates occurrence snapshots from a real source, active calendars,
+eligibility, policy resolution, coverage, execution completion or connection feasibility.
+Runtime search/admission, calendars/conversion, real data/import, persistence,
+Journey/UI and engine work remain excluded. No internal implementation may emit
+successful results until the separate runtime obligations are satisfied.
+P2-S9 before real Trip consumption/import, feed-specific interpretation/validated
+import, rights/registry/publication/translation/delivery/bundling/expansion gates,
+launch requirements and Phase 3 exit remain unchanged.
+
+### 9.10 Bounded acceptance and slice A implementation — 2026-10-02 Asia/Seoul
+
+The owner accepted precisely §9.9 V1–V7, not all of §9. Historical Proposed
+headings and preparation wording above preserve the original recommendations.
+P5 and §9.9's explicit deferrals remain Proposed/undecided. Slice B has no
+implementation authorization in this turn; scoped result construction and runtime
+success obligations remain unimplemented.
+
+Slice A uses `InternalSearchProfileIdentity` and `InternalSearchPolicyReference`
+(key/revision pairs), `InternalSearchProfileDefinition` (nonempty canonical domain
+sets, finite positive elapsed duration, positive ride cap and versioned references),
+and `InternalSearchScope` (full definition, original request, view, checked [L,U]).
+Both endpoints must belong to the declared station set. Exact representable addition
+rejects overflow, no advance and an advancing but rounded sum. Bounds are inclusive.
+These are local constraints, not production defaults.
+
+Explicit comparison of supplied definitions includes every field; equal key/revision
+alone does not establish equal contents. Constructors neither enforce global identity
+history nor resolve policy references. They cannot authenticate membership, view,
+source correspondence, calendars, input coverage, service-date enumeration or completed
+execution. Domain relationships absent from the inputs are not guessed. No opaque
+service-date interpretation, result/failure changes or runtime search is implemented.
+Independent implementation review approved slice A only; ROADMAP records focused evidence and review scope.

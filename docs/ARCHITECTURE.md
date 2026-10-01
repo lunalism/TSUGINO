@@ -1028,6 +1028,17 @@ Only the streamed members are integrity-checked; other members are recorded by n
 ## 10. Route Search Architecture
 
 **Current contract extension (2026-10-01 Asia/Seoul): Accepted DEC-078/079.**
+DEC-080 is accepted only for consumer §9.9 V1–V7 (P1–P4/P6). P5 and the
+non-selected engine/profile policies remain Proposed. Its slice A adds immutable
+`InternalSearchProfileIdentity`, `InternalSearchPolicyReference`,
+`InternalSearchProfileDefinition` and `InternalSearchScope` in Domain/Routing.
+Local constructors validate nonempty declared sets, request membership, positive
+parameters and exact finite advancing [L,U] bounds. Full definition comparison can
+expose conflicts in supplied inputs; it is not a registry or policy resolver.
+No constructor proves canonical membership, coherent input coverage or completed
+search. Slice B scoped-success values and runtime obligations remain unimplemented;
+existing RouteSearchResult/failure APIs are unchanged. Independent review approved slice A only; see ROADMAP.
+
 DEC-078 separates dated timetable facts from recurring Trip identity; DEC-079 partially
 supersedes DEC-076 for an internal consumer's timetable context, association,
 generated accounting, scoped success, unscoped failures/preflight and evidenced

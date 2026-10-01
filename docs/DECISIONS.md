@@ -7138,6 +7138,98 @@ change or Phase 3 exit approval is implied.
 
 ---
 
+# DEC-080 — Explicit Internal Search Profiles and Request-Specific Scope
+
+**Status:** Accepted in bounded part — §9.9 V1–V7 (P1–P4/P6); P5 and non-selected policies remain Proposed. Slice A implemented and independently approved\
+**Date:** 2026-10-01\
+**Related:** DEC-060–064, DEC-076–079; ARCHITECTURE §10; ROADMAP Phase 3
+
+## Context
+
+Accepted DEC-079 requires scoped internal success but leaves profile/horizon and
+completeness design deferred. The published context-only slice does not implement
+scope or internal results. An opaque label cannot explain a no-results claim.
+DEC-080 was verified unused in repository Markdown before this draft.
+
+## Original proposal — acceptance limited by the record below
+
+Recommend [consumer amendment §9](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#9-internal-search-profile-and-effective-scope--proposed-dec-080):
+
+1. Separate immutable profile constraints, effective request scope, Data input coverage,
+   execution completion, admission accounting and presentation limits.
+2. Carry the full profile definition with canonical station/line/recurring-service
+   domain, positive parameterized rail-ride cap and elapsed horizon, plus immutable
+   resolvable interpretation/connection-policy references. Bind scope to request/view;
+   changed constraints need a new profile revision, never a reused label.
+3. Use inclusive depart-not-before L and inclusive final-arrival U=L+duration, with
+   finite checked arithmetic; all ridden endpoints remain within that window.
+   Enumerate applicable service dates from reviewed qualified source rules, including
+   prior-day occurrences; never derive dates from opaque labels.
+4. Add validated scope-bearing internal success alongside unchanged external result
+   cases. Reuse local candidate/accounting invariants, require matched timetable-only
+   scoped candidates, and preserve DEC-079 unscoped failure/cancellation precedence.
+5. Keep local value consistency separate from coverage/completion proof. Missing
+   required data cannot narrow the profile or coexist with a successful partial batch.
+6. Separately propose an all-distinct-admissible-itinerary completion objective and
+   presentation-only top-N, with precise enumeration/pruning/order proof still needed.
+   Accepting the parameterized value package need not accept this engine objective.
+
+## Consequences, alternatives and acceptance boundary
+
+§9 compares first-boarding-only, dual-window and final-arrival formulations and gives
+P1–P6 choices plus ten wholly invented cases. Embedded definitions improve clarity
+at a size cost; complete batches can be expensive and resource cutoffs must fail
+honestly. No production horizon, ride cap, numeric connection allowance, algorithm,
+source interpretation or reduced launch profile is selected. The two-hour/three-ride
+example is not a default, ODPT fact or launch commitment.
+
+No Accepted record is changed. This would refine DEC-079 §4 and affect future Domain
+profile/scope/success values, RouteSearchResult and consuming exhaustive switches;
+RouteSearching's async request signature can remain. Current provider/context,
+Trip/Journey and duplicate-TripID contracts are preserved. Exact typed resolver APIs
+and runtime component placement remain separate design; no new persistent identity.
+
+## Acceptance preparation — 2026-10-02 Asia/Seoul; still Proposed
+
+Independent review found no material contract findings; readiness is not acceptance.
+[Consumer amendment §9.9](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#99-bounded-owner-acceptance-package--proposed-2026-10-02-asiaseoul)
+defines the exact recommended V1–V7 value package for P1–P4/P6, with paragraph-level
+selections and explicit runtime/engine deferrals. P5 remains separately Proposed;
+acceptance of the value package would not accept the all-distinct objective. S9/S10
+add numeric no-advance and known-absent-versus-unknown connectivity examples.
+No accepted decision or implemented behavior changes. After explicit acceptance and
+separate authorization, A supplies pure profile/scope values; B supplies locally
+validated scoped-success payloads. Neither establishes coverage or completed search.
+
+## Bounded owner acceptance — 2026-10-02 Asia/Seoul
+
+The owner accepts exactly consumer §9.9 selections V1–V7 for P1, P2, P3, P4
+and P6. The paragraph selectors in that historical preparation table are normative;
+§9 is not accepted wholesale. V1 selects §9.1's concept table and its two named
+paragraphs; V2 selects §9.2's four named paragraphs; V3 selects only §9.3's
+“Proposed minimum” paragraph; V4 selects only §9.4's “Recommend parameterized”
+paragraph. V5 selects §9.5's shape/code and constructor paragraph; V6 selects
+its pre-success obligations and genuine-noResults paragraph; V7 selects only the
+first three sentences of “All admitted handoffs remain”.
+
+P5, the all-distinct objective, V7's unselected final two sentences and every
+explicit §9.9 deferral remain Proposed/undecided. No production parameters/domain,
+enumeration, pruning, ordering, completeness policy, resolver, algorithm or engine
+ownership is selected. Historical proposal/preparation statements above describe
+their original date, not current acceptance status.
+
+Only slice A is authorized and implemented: immutable parameterized profile/scope
+values and local validation. V5 scoped success (slice B) remains unimplemented and
+unauthorized in this turn. V6/V7 runtime coverage/completion/accounting duties are
+accepted obligations, not implemented proofs. Existing result/failure APIs and
+DEC-076 history are unchanged. Independent implementation review approved slice A; see ROADMAP.
+
+Real consumption/import still requires P2-S9 and feed-specific validated T1 inputs;
+rights/registry/publication/translation/delivery/bundling/expansion gates remain.
+No engine, ODPT compatibility or launch/Phase 3 exit change is established.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
