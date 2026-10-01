@@ -1061,12 +1061,30 @@ ordering only, never transfer feasibility. Context is provider-scheduled asserti
 not imported timetable truth or realtime; no calendar/service-date semantics enter
 Trip. DEC-076 §§A–F defines the full failure and evidence requirements.
 
-The authorized first slice implements pure values and local validation only.
-The async protocol, synthetic adapter/harness, provider-time interpretation,
-mapping/evidence admission, request-relative checks, failures/cancellation behavior
-and Application supersession remain later implementation. No networking, DTOs,
-provider metadata, fare, persistence, UI or Journey binding is added. Provider IDs
-and raw evidence stay in Data. P2-S9, P3-T1 and all applicable retained gates remain.
+The first slice supplies pure values/local validation. The next owner-authorized
+synthetic slice supplies `RouteSearching` and Data-owned `RouteScheduleAdmission`
+for already-qualified ridden endpoints. `SyntheticRouteSearcher` and its internal
+input/view vocabulary are **Debug-only**, with no app composition or real provider.
+Its `@concurrent` search method runs off the main actor and retains one immutable,
+identified view per call. Controlled clients and invented evidence fixtures live
+only in test support; no public evidence-token API is introduced. Mutable test
+stores/barriers use actors, and search batches remain request-local.
+
+The synthetic normalizer checks references, stipulated continuity/train/transfer
+evidence, original occurrence indices, request endpoints and pre-omission times.
+It fails each alternative at its first deterministic rejection, returns canonical
+omissions in source order, and keeps malformed shared envelopes, genuine empty
+results and all-rejected failures distinct. Cancellation checks surround suspension
+and normalization boundaries; injected async work inherits the caller's task (no
+owned detached I/O). A changed store does not mutate a retained view; incompatible
+view stamps fail the whole call as `dataUnavailable`.
+
+Synthetic review flags/qualified instants are assumptions, not authenticated real
+evidence. Real-provider DTO/time interpretation, mappings/joins/rights verification
+and integration remain open. Application supersession is not implemented. No
+networking, provider metadata, fare, caching, persistence, UI, timetable import or
+Journey binding is added. P2-S9, P3-T1 and all applicable retained gates remain.
+See ROADMAP for exact synthetic case coverage and independent-review status.
 
 ---
 

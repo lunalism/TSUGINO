@@ -1653,6 +1653,210 @@ retained gate remain intact. The owner subsequently authorized recording this
 approval and committing/pushing only the approved ten-file inventory on
 `phase/03-route-search`; no main merge or next-slice implementation is authorized.
 
+### Synthetic async boundary and admission slice (2026-10-01)
+
+**Authorization / scope lock.** The owner separately authorized this next slice
+under Accepted DEC-076 after the pure-values commit `3972b6583a8c7a9582cd8fa83c34207470bf5017`.
+Fetched origin and verified `phase/03-route-search` and its upstream at that commit,
+0 ahead/behind, a clean tree, and `main` at `e8a463d51f14b3cb1027960c63244b694579a71b`.
+This subsequent authorization does not change DEC-076 semantics or accept the
+entire historical Phase 3 sequence. No real provider or acquisition is authorized.
+
+**Ownership.** `Domain/Routing/RouteSearching.swift` adds only the Sendable async
+throwing protocol. `Data/Routing/RouteScheduleAdmission.swift` checks qualified
+absolute ridden endpoints before pair omission. Three Debug-only synthetic Data
+files define the invented decoded schema/view, admission and search orchestration.
+Test-only fixtures, fake clients and actor barriers live under `TSUGINOTests`.
+They stipulate evidence rather than prove provider compatibility. No generic
+provider framework, public proof token, production composition or Domain revision
+field is introduced. Existing pure values and Trip/Journey behavior are unchanged.
+
+**Implemented boundary.** Each call retains one identified immutable view; invalid
+requested endpoints fail before client I/O. The normalizer preserves complete
+rides, verifies required references and affirmative continuity/change/connection
+assertions, uses reviewed original occurrence indices for matches and requires
+independent complete-ride evidence for unresolved output. It never crops a route
+or follows a retired successor. Known qualified ridden times satisfy the inclusive
+request bound and itinerary order before incomplete pairs are omitted; unused Trip
+endpoints are excluded. Complete pairs remain provider schedule context only.
+
+Each delimited alternative produces one candidate or one ordered omission. The
+synthetic implementation reports its first deterministic failed check (one canonical
+reason); it does not claim an exhaustive diagnosis of every defect in an alternative.
+Malformed shared envelopes, all-omitted responses, genuine no-results and typed
+client failures remain distinct. Calls run off the main actor with local batches;
+checks surround client/view suspension, each alternative, inner normalization
+loops and final return. The test checkpoint controls normalization cancellation
+without sleeps. There are no detached production tasks or child I/O to orphan.
+
+**New verification ownership (synthetic adapter subcases, not prior constructor reruns):**
+
+| Cases | Bounded coverage / limitation |
+|---|---|
+| R01–R05, R07/R09/R11/R12/R29 | Direct/transfer/multiple-transfer/directional-walk/through-service admission, repeated original occurrences, supplied limited-stop/partial snapshots and movement-only line projection. Explicit snapshot fields compared. No real continuity or passenger-stop evidence asserted. |
+| R06/R08/R10/R26/R27/R28 | Missing transfer or continuity evidence, ambiguous run/occurrence fallback, positive train contradictions, invalid/duplicate selection structure and dataset membership/service-type rejection. No name/time/shape-based train join. |
+| R13a–c, R14–R19 | Requested endpoint failures before I/O; unsupported ridden interiors; insufficient snapshot with independent route fallback versus actual missing/conflicting evidence; exact canonical identity and required mappings. No successor following. |
+| R20–R23 | Ordered mixed/all-omitted/genuine-empty results and malformed shared versus individually delimited input; canonical diagnostics contain no raw references. |
+| R24/R25/R35 | Controlled cancellation before work, during view/client suspension, normalization and final checkpoint, plus cancelling one concurrent call without affecting another; raw client errors contained; explicit unsupported-intent failure. No networking or provider horizon verification. |
+| R30/R31a–c/R32a–f | Already-qualified finite instants; incomplete pairs; all known ridden endpoints obey bound/order across nil contexts; equality and midnight crossing; unused endpoints excluded. Real timestamp qualification, bare extended-hour parsing and timetable/service dates remain unimplemented. |
+| R33/R34 | Coherent-view failures and independent concurrent calls retaining separate immutable same-ID snapshots, with controlled reverse completion. Application supersession is excluded. |
+| R36 | Canonical-only output with distinct invented X/Y identities; no real names/translations or localization UI claim. |
+
+**Verification / self-review:** final focused Debug execution passed **28 test
+functions / 33 executed cases**, zero failures, skips or runtime warnings, on
+**iPhone 17 / iOS 26.5 Simulator**. The test action built the app and Live Activity
+extension. A separate Release app/extension build passed to check exclusion of the
+new Debug-only synthetic path. Later corrections touched Debug-only admission/test
+code; the Release-visible source did not change after that build. Existing
+canonical-model isolation and AppIntents metadata build warnings remain; this is
+not a claim of warning-free builds.
+
+Exact final commands (repository root):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/RouteAdmissionTests -only-testing:TSUGINOTests/RouteSearchingTests -resultBundlePath /private/tmp/tsugino-p3-admission-r5.xcresult > /private/tmp/tsugino-p3-admission-r5.log 2>&1
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd > /private/tmp/tsugino-p3-admission-release.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-p3-admission-r5.xcresult
+git diff --check
+```
+
+Earlier attempts used the same focused test command with result/log suffixes
+`r1`, `r2`, `r3`: `r1` failed compilation at a test barrier continuation inference
+(then fixed with an explicit continuation type); `r2` passed 26 functions / 31
+cases; `r3` passed 28 functions / 33 cases. A subsequent `r4` attempt replaced both
+suite selectors with
+`-only-testing:TSUGINOTests/RouteAdmissionTests/positiveTrainContradictionsAreNeverDowngraded`:
+it selected **zero tests** and is not verification evidence despite Xcode success.
+The final `r5` reran both focused suites after self-review corrected out-of-range
+occurrence diagnostics, rejection of a known duplicate run even with ambiguous
+occurrence fallback, and a test-barrier cancellation registration race.
+
+Documentation/reference and scope checks plus `git diff --check` passed. Accepted
+DEC-076, existing Domain values/Trip/Journey, historical planning/review records
+and Phase 3 exit criteria are unchanged. **Independent review remains pending.**
+No full-suite, prior constructor-suite rerun, physical-device or real-provider
+verification occurred. No full Phase 3 case or exit completion is claimed. The
+earlier 16-function/26-case constructor evidence remains historical and is not
+counted as a new execution here.
+
+**Independent review correction (2026-10-01).** Review requested changes for one
+P2 defect: a reviewed complete L1-only Trip could be asserted as an L2 ride and
+silently downgraded to unresolved when either occurrence was unavailable. Before
+attachment/fallback, admission now rejects any asserted ride line absent from the
+reviewed snapshot when both service-coverage flags are true, as
+`inconsistentTrainEvidence`. This necessary compatibility check is not whole-run
+line equality, a proof of correspondence, or an inferred occurrence. Partial
+snapshots cannot exclude lines in unseen extensions. Existing exact ridden-line
+validation still applies when both occurrence indices resolve.
+
+Two added admission tests exercise missing-alighting and missing-boarding
+regressions, plus positive partial-extension and repeated-occurrence/subinterval
+controls. Existing R13c and R10 checks remain. The affected admission suite passed
+**20 test functions / 25 executed cases**, zero failures, skips or runtime warnings,
+on iPhone 17 / iOS 26.5 Simulator. Both regression directions and positive controls
+passed; the Debug test action built the app with its extension dependency.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/RouteAdmissionTests -resultBundlePath /private/tmp/tsugino-p3-admission-fix-r2.xcresult > /private/tmp/tsugino-p3-admission-fix-r2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-p3-admission-fix-r2.xcresult
+git diff --check
+```
+
+The initial sandboxed attempt used the same command with `fix-r1` paths and failed
+at Simulator destination access (CoreSimulator unavailable, exit 70); no tests
+executed. The authorized Simulator-access retry above passed. Unchanged async
+search/cancellation tests retain their prior `r5` evidence; the prior Release
+app/extension build remains applicable because this correction changes only
+Debug-guarded implementation/tests and ROADMAP. No full-suite or Release rerun,
+networking, private data or physical-device access occurred. Final diff/scope review
+and `git diff --check` passed; only these three files changed during the correction.
+Independent re-review of this correction and unresolved fallback remains pending;
+the slice is not approved. DEC-076 and production behavior are unchanged.
+
+**Follow-up contradiction correction (2026-10-01).** Focused re-review found the
+whole-run line-set check above insufficient: missing correspondence could still
+hide an absent endpoint or movement available only on the wrong side of a known
+occurrence. That check is now replaced by an existential traversal check before
+unresolved fallback, under the same reviewed-evidence gate. Fully resolved index,
+anchor, line and dataset validation remains unchanged.
+
+For an unresolved endpoint, consider every exact station occurrence in the
+snapshot plus an unknown region before/after it only where the corresponding
+origin/destination coverage flag permits one. A resolved occurrence remains fixed.
+Consider only forward intervals; both unresolved endpoints may lie wholly in the
+same unseen region. Clip the represented interval by movement, excluding boundary
+contact. Its line sequence must occur contiguously and in order in the asserted
+ride sequence, anchored at either end whose endpoint is represented. Unknown
+extensions may add leading/trailing lines (or continue the boundary line), but
+cannot erase or reorder known movement. Non-adjacent repeated lines are preserved.
+If no possibility is compatible, reject `inconsistentTrainEvidence`; otherwise
+retain unresolved output, still requiring independent complete-ride evidence.
+Even a single compatible possibility never supplies a correspondence or returned
+index. No Trip is extended, no stop is inferred, and partial absence alone does
+not prove impossibility. This is contradiction detection, not evidence approval.
+
+Three added tests cover absent alighting/boarding endpoints, movement before known
+boarding/after known alighting, reverse reachability, wrong traversal order, all
+four independent coverage combinations, and valid/noncollapsed L1–L2–L1 traversal.
+Prior repeated-occurrence, partial-extension and valid subinterval controls remain.
+Focused Debug admission verification passed **23 test functions / 28 executed
+cases**, zero failures, skips or runtime warnings, on iPhone 17 / iOS 26.5 Simulator.
+All new regressions and retained positive controls passed. One test action was
+executed in this follow-up; it built the Debug app with its extension dependency.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/RouteAdmissionTests -resultBundlePath /private/tmp/tsugino-p3-fallback2-r1.xcresult > /private/tmp/tsugino-p3-fallback2-r1.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-p3-fallback2-r1.xcresult
+git diff --check
+```
+
+Unchanged async/cancellation and Release evidence is reused, not rerun: the
+correction is limited to Debug-guarded admission/tests and this record. Final diff,
+preservation and `git diff --check` checks passed. The ten-file uncommitted slice
+remains on the same HEAD/upstream; only those three files changed in this follow-up.
+No essential semantic gap was identified for this bounded contradiction check;
+unknown extensions remain uncertainty, not authenticated evidence. No production
+or contract change is introduced. Independent re-review remains pending and the
+slice is not approved.
+
+**Final independent approval / publication authorization (2026-10-01).** The
+initial review found incomplete correspondence could conceal a complete-run line
+contradiction. The first correction checked absent whole-run lines; focused
+re-review then found absent endpoints and wrong-side movement still concealed.
+The second correction replaced that check with the possible-forward-traversal
+algorithm recorded above. A fresh independent re-review of that algorithm and its
+fallback interactions returned **approve: no material findings and no mandatory
+outstanding verification check**. Earlier pending-review statements are historical
+checkpoints; this is the current review status.
+
+Final affected admission evidence is **23 functions / 28 executed cases**, zero
+failures, skips or runtime warnings (`tsugino-p3-fallback2-r1.xcresult`). The earlier
+`r5` execution of both synthetic suites (28 functions / 33 cases) remains separate
+historical evidence; its unaffected async/cancellation coverage is reused. Debug
+app/extension test-action evidence and the separate successful Release app/extension
+build are reused as recorded above. No combined post-correction suite count is
+claimed. No tests or builds were rerun during final review or publication.
+
+Approval covers only the async boundary and corrected synthetic admission slice.
+It establishes neither evidence authenticity, real-provider compatibility,
+Application supersession nor Phase 3 exit readiness. Accepted DEC-076 and all
+retained gates remain unchanged. The owner authorizes this review-completion
+record and one commit/normal push of the reviewed ten-file slice on
+`phase/03-route-search`; no main merge or further implementation is authorized.
+
+**Retained limitations / next step.** Review flags, occurrence maps, connection
+sets and qualification in the synthetic schema are stipulated fixtures, not an
+authentication mechanism or provider adapter. P2-S9 remains mandatory before real
+Trip consumption and P3-T1 real import. P3-T1 semantics, provider selection/evidence,
+production registry/delivery, Q3/Q4, expansion and applicable publication/bundling
+gates remain intact. No networking, acquisition, private evidence, translations,
+caching/persistence, UI, Application supersession or Journey binding is included.
+Independent review is complete under the bounded approval above. Next recommended
+step is an existing-evidence-only provider suitability/gap assessment against
+DEC-076, with any later access, selection or implementation separately authorized.
+The publication authorization above permits only this slice's commit/normal push;
+no main merge or further implementation is authorized.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
