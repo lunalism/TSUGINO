@@ -1027,6 +1027,31 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Current contract extension (2026-10-01 Asia/Seoul): Accepted DEC-078/079.**
+DEC-078 separates dated timetable facts from recurring Trip identity; DEC-079 partially
+supersedes DEC-076 for an internal consumer's timetable context, association,
+generated accounting, scoped success, unscoped failures/preflight and evidenced
+connections. DEC-079 is **not implemented**: current routing code remains the DEC-076
+provider-context shape below. External semantics and Trip/Journey invariants remain.
+
+The bounded DEC-078 implementation lives in `Domain/Timetable`: immutable `nonisolated`
+Sendable addresses, bindings, time/eligibility states, visit/occurrence facts and
+bounded diagnostics. TimetableViewID wraps a caller-supplied UUID identifying an
+immutable view, not a production registry entity. TimetableServiceDate preserves a
+nonblank opaque operating-day label; it does not validate a calendar or convert time.
+Data must supply profile-canonical labels and reviewed one-execution-per-date joins.
+A binding stores the entire existing Trip; local association compares ID, ordered
+stops, line segments, coverage and service-type segments explicitly (Trip equality
+remains ID-only). Visits retain their dated binding and original index; whole-facts
+construction requires exactly one correctly ordered slot per snapshot stop. Finite
+instant wrappers protect both exact/estimated enum payloads. Only exact events enter
+arrival/departure chronology, across missing/estimated gaps; equal instants are valid.
+Diagnostics carry bounded reasons and optional visit/event positions, never raw data.
+No snapshot-containing Codable/equality/hash, calendar/activation outcome, source
+parsing, view registry, persistence, routing integration or Journey binding is added.
+These values prove local structure, not activation, rights or source authenticity.
+P2-S9 and accepted feed-specific interpretation/validated import precede real use.
+
 **Accepted contract: DEC-076 (2026-10-01).** Phase 3 owns `RouteSearching`,
 `RouteCandidate` and `TrainCandidate` (DEC-064). The provider remains unselected.
 

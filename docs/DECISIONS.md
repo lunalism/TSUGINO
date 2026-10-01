@@ -6234,6 +6234,14 @@ own authorized scope and applicable prerequisites.
 
 # DEC-076 — Route Search Returns Canonical Proposals Without Selecting Trains or Creating Journey State
 
+**Current applicability — 2026-10-01 Asia/Seoul:** superseded in part by Accepted
+DEC-079 for the internal timetable consumer contract only (A/B/C/D/E: context,
+association, generated accounting, scoped success, failure/preflight and evidenced
+movement/connection requirements). External-provider semantics, Trip/Journey identity
+and duplicate-Trip rules remain current. DEC-079 is not yet implemented. The original
+DEC-076 record, including its historical status and implementation evidence, follows
+unchanged.
+
 **Status:** Accepted — owner-approved contract; implementation completion tracked separately\
 **Date:** 2026-10-01\
 **Accepted:** 2026-10-01 — owner explicitly approved the revised contract and all five recommended policies\
@@ -6778,6 +6786,343 @@ and Phase 3 exit remain later, separately evidenced work.
 - Transfer evidence ownership or a provider join conflicts with the accepted mapping contracts.
 - A consumer needs stable candidate identity, deep equality, persistence, cache policy or fares.
 - P3-T1 acceptance supplies a schedule/occurrence binding that needs an explicit consumer contract.
+
+---
+
+# DEC-077 — Evaluate ODPT-First Internal Route Computation Before Commercial Route APIs
+
+**Status:** Accepted — ODPT-first evaluation priority only, not engine adoption\
+**Date:** 2026-10-01\
+**Related:** DEC-004 (Provisional), DEC-009, DEC-020/021, DEC-037/038, DEC-046/047/048, DEC-058/059, DEC-060–064, DEC-065/068/073–076; ARCHITECTURE §§4/10/21/40; ROADMAP Phase 3
+
+## Bounded owner acceptance — 2026-10-01
+
+The owner explicitly accepts **only the priority of evaluating ODPT-sourced,
+internally computed routes before commercial APIs, with commercial evaluation/contact
+paused and commercial research preserved as dated history**. The proposal was
+checked: its numbered clauses preserve existing constraints and defer adoption;
+none supplies an algorithm or accepted engine contract. Their future-work wording
+is not authority to implement or amend DEC-076.
+
+This acceptance establishes no ODPT-only feasibility, engine/provider selection,
+algorithm, ranking, timetable semantics, production rights, launch-scope change or
+Phase 3 exit change. P2-S9, separate P3-T1 semantic acceptance and all applicable
+registry, publication, translation, delivery/bundling and expansion gates remain.
+DEC-004 remains Provisional; DEC-076 remains unchanged. The historical proposal
+below is preserved; references there to a future acceptance describe its draft date.
+
+The separately authorized [input/consumer outline](PHASE_3_INTERNAL_ROUTING_CONTRACT_OUTLINE.md)
+is **Proposed**, including every amendment option and worked example. It is not
+accepted by this record.
+
+## Historical proposal context
+
+The owner directs TSUGINO to prefer ODPT-sourced data where feasible, assess
+internally computed routes before commercial route APIs, and pause commercial
+evaluation/contact. This instruction sets the current work priority; it does not
+accept this decision or establish ODPT-only sufficiency. DEC-004's preference for
+an external routing service remains a **Provisional** historical decision, not an
+Accepted engine prohibition or an automatically superseded record.
+
+The [feasibility matrix](PHASE_3_INTERNAL_ROUTING_FEASIBILITY.md) reuses dated audit
+records: Toei and Metro GTFS cover the 15 launch lines at source-structure level,
+but canonical passenger-stop acceptance, timetable semantics, through joins and
+complete transfer evidence remain open. ODPT distributes differently licensed
+operator data; it is neither a unified itinerary provider nor a universal license.
+The [commercial comparison](PHASE_3_PROVIDER_EVIDENCE_GAPS.md) remains useful dated
+evidence, with its conditional evaluation order now paused.
+
+## Historical proposed decision
+
+1. Prioritize an ODPT-first internal-search **feasibility and contract assessment**.
+   Preserve the commercial alternatives as comparison/fallback candidates; resuming
+   their evaluation/contact requires a new owner instruction. This is not provider
+   selection, algorithm selection or authorization to build a routing engine.
+2. Evaluate against the unchanged DEC-047/058 launch set: all 13 Tokyo subway lines,
+   including Marunouchi branch scope, plus Sakura Tram and Nippori-Toneri Liner.
+   Preserve capability tiers and Phase 3's usable canonical-plan exit. A direct-only
+   proof is incremental validation, not a reduction of supported launch behavior.
+3. Preserve P2-S9 before real canonical passenger-stop Trip consumption; S9 supplies
+   no times. P3-T1 retains its accepted planning ownership and separately unaccepted
+   semantic/import design. Internal imported-schedule consumers must wait for T1
+   acceptance and data validation. Invented-data design may proceed independently.
+4. Reuse canonical identity, RouteSearching's async boundary, candidate structural
+   invariants and explicit selection/Journey separation. Before internal adoption,
+   propose a precise DEC-076 amendment for generated alternatives, computed ride
+   evidence and timetable-derived context. Existing evidence obligations must not
+   be weakened by treating the internal engine as its own proof source.
+5. Keep source provenance, coverage, temporal validity, version coherence and
+   operational accuracy limits explicit. No topology-to-passenger-stop conversion,
+   guessed transfer, automatic retired-ID following, stitched Trip or fabricated
+   missing time. Incomplete inputs must not be reported as proof of no route.
+6. Preserve production registry, delivery, Q3/Q4, publication/bundling and expansion
+   gates. ODPT-first implies neither zero cost nor complete/offline-permitted data,
+   nor an on-device or server deployment choice.
+
+## Exact compatibility and future adoption boundary
+
+No Accepted decision is amended by this Proposed record. If internal search is
+later adopted, explicitly review:
+
+- **DEC-004 (Provisional):** record the changed provider strategy with history.
+- **Accepted DEC-076 §B:** decoded alternatives/source ordering and truthful empty
+  results need a defined internal enumeration/completeness boundary, without losing
+  deterministic omissions or confusing exhausted budgets with no-results.
+- **Accepted DEC-076 §C3/§D:** graph-generated unresolved line sequences are expressly
+  excluded; current admission expects provider run/itinerary assertions. Define
+  sufficient reviewed source and computed feasibility evidence before changing
+  that restriction; adjacency/names/timestamps alone remain insufficient.
+- **Accepted DEC-076 §E and ARCHITECTURE §10:** ProviderScheduledContext means
+  provider-supplied assertion. Imported timetable-derived results require explicit
+  provenance/contract treatment and T1 dependency, not silent reuse of that meaning.
+  Inclusive endpoint checks still do not prove transfer feasibility.
+- **Phase 3 Included/Tasks/tests/decision gate:** an internal solver introduces
+  search/validation work beyond client/DTO integration. Record its bounded scope
+  and ownership before implementation. Do not silently reinterpret the current
+  phase or change its acceptance/exit criteria.
+
+Future affected code/tests include Domain/Routing, RouteScheduleAdmission and the
+routing/admission/async tests; their existing structural checks can be retained but
+are not solver proof. No change to Trip equality, indices, coverage, Journey binding,
+canonical identity or DEC-060–064 invariants is proposed. Source acquisition and
+normalization stay behind Data boundaries; algorithm/component placement needs a
+separate design consistent with ARCHITECTURE, not an engine hidden in UI or a DTO.
+
+## Rationale and consequences
+
+Potential advantages are control of evidence, deterministic behavior and reduced
+commercial API dependence. Costs shift to schedule import, search correctness,
+transfer/through coverage, updates, validation and possibly distribution/server
+operations. Historical ODPT payload structure is promising, not sufficient proof.
+Operator rights differ: Toei CC BY permissions must not be confused with Metro
+Basic-License derivative/bundling/deletion limits. Commercial research is preserved
+so an unresolved ODPT gap can later inform an owner choice without restarting it.
+
+## Smallest next task and acceptance boundary
+
+Recommend a **documentation-only internal-search input/consumer contract outline
+with invented acceptance cases**, focusing on one complete scheduled direct ride
+and explicit DEC-076 amendment options. It should expose, not decide by omission,
+service activation, missing times, horizon, generated-result completeness and
+scheduled provenance. No algorithm or implementation is selected. Follow with
+separately reviewed S9/T1 semantics and authorized evidence closure; only then
+consider engine adoption and a bounded implementation authorization.
+
+Acceptance of this record, if later granted, would accept only the stated evaluation
+priority and boundaries. It would not accept the still-undesigned engine, amend
+DEC-076 automatically, authorize real inputs or change launch/exit criteria. This
+turn accepts nothing; commercial work is paused by the owner's direct instruction.
+
+## Revisit triggers
+
+Revisit after source-backed stop/timetable/transfer/through feasibility findings,
+rights or update constraints, measured implementation/operating costs, or an owner
+request to compare commercial alternatives again. An unresolved gap requires an
+explicit evidence or product decision, not invented support or silent scope loss.
+
+---
+
+# DEC-078 — Separate Dated Timetable Facts from Recurring Trip Identity and Routing Policy
+
+**Status:** Accepted — minimum producer semantics; bounded value slice only implemented\
+**Date:** 2026-10-01\
+**Related:** DEC-009/020/021, DEC-060–064, DEC-068/073–077; ARCHITECTURE §§5.3/10/40; ROADMAP P2-S9/P3-T1
+
+## Owner acceptance — 2026-10-01 Asia/Seoul
+
+The owner accepts the prepared producer package §§2–4 and recommended O1–O6,
+including exact view/date/snapshot/original-index association, the reviewed
+one-execution-per-date limitation, activation-first inactive/event precedence,
+qualified time-quality distinctions, chronology, eligibility and bounded diagnostics.
+O6 preserves existing duplicate-Trip rules; DEC-079 has separate owner acceptance.
+Source profiles/interpretation, actual activation/conversion and real import remain
+unimplemented and separately evidenced. P2-S9 precedes real Trip consumption/import.
+The same authorization permits only the first pure-values/local-validation slice;
+see ARCHITECTURE and ROADMAP for its implemented boundary and verification. No engine,
+ODPT compatibility, production rights, launch change or Phase 3 exit is approved.
+
+The proposal and acceptance-preparation text below is retained as historical
+reasoning. Its “Proposed”, pending-choice and next-task wording describes that stage,
+not this current acceptance; it does not authorize additional implementation.
+
+## Context
+
+DEC-074 assigns P3-T1 timetable contract/import ownership but accepts no timetable
+semantics. DEC-077 accepts only ODPT-first evaluation priority and pauses commercial
+work. A future internal consumer needs qualified dated facts, not raw calendar/time
+strings or a recurring Trip mistaken for a dated execution. The existing internal
+consumer outline and its DEC-076 amendment options remain Proposed.
+
+## Proposed decision
+
+Recommend the minimum producer contract in
+[Timetable producer-output proposal](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md) §§2–4:
+
+1. Keep source interpretation in Data and emit separate immutable, view-bound dated
+   occurrence facts. Preserve exact existing Trip snapshots, original passenger-stop
+   indices, repeated visits, line traversal and independent coverage flags. P2-S9
+   owns those facts; T1 cannot reconstruct, reorder or mint them.
+2. Address occurrences by coherent view, TripID and service date only where reviewed
+   mapping proves one execution per recurring run/date; otherwise hold for further
+   identity design. Do not change Trip equality or mint TripIDs per date.
+3. Use a reviewed calendar profile, unique exception override, explicit coverage and
+   unique time conversion. Service date differs from an event's civil date. Duplicate
+   exceptions, ambiguous conversion and unknown activation are unavailable, not
+   guessed. Validate activation first; conclusively inactive dates skip event validation
+   and emit no occurrence facts. Ambiguous activation never takes that shortcut.
+   Extended-hour conversion requires source semantics, not clock wrapping.
+4. Preserve exact, missing and estimated fields separately at each original visit.
+   Never interpolate or promote estimates. Validate the known exact-event subsequence
+   arrival/departure in traversal order across gaps. Hold the whole occurrence for
+   malformed or contradictory exact facts on active dates; legitimate missing fields
+   remain explicit. Bounded diagnostic reasons carry original index/event kind where
+   applicable; raw source details remain in Data.
+5. Preserve tri-state boarding/alighting eligibility and require separate affirmative
+   through correspondence. Facts do not imply transfer feasibility or actual operation.
+6. Keep producer validity independent of requests/search horizons. Route-relative
+   admission, alternatives, connections, ranking, realtime and Journey binding remain
+   consumer responsibilities. Preserve ProviderScheduledContext's accepted meaning;
+   review a distinct timetable-derived consumer representation separately.
+
+These are recommendations for owner review, not an accepted type design or input
+profile. The linked document's O1–O6 enumerate exact pending choices, alternatives,
+tradeoffs and eleven invented cases (including revision mismatch and inactive/malformed
+precedence). The latest independent review found no material blockers in the
+refinements for owner consideration only. The linked §8 now presents the separately
+approvable package and a future pure-value slice; this record remains Proposed.
+No actual ODPT feed compatibility is asserted.
+
+## Compatibility, consequences and alternatives
+
+DEC-060 recurring Trip identity/order/coverage, DEC-061 passenger-stop evidence and
+DEC-062/076 duplicate matched TripID rules remain unchanged. The producer may describe
+two service dates for one Trip; current candidates cannot contain that Trip twice,
+even on different dates. Occurrence-aware uniqueness would require an explicit
+later amendment, including Journey selection/recovery/persistence implications.
+
+Separate facts avoid mutating Trip with dated state. Embedding schedules in Trip
+would broaden that contract and is not recommended. A future explicit timetable
+context branch (IR-E1) is preferred for review over IR-E2's separate positional
+result envelope; neither is selected or implemented here. RouteScheduleAdmission's
+arithmetic is relevant, but its provider-context output/intent flag does not qualify
+internally imported times. DEC-076 A–E and ARCHITECTURE require explicit consumer
+review before adoption. No accepted text is superseded or amended by this proposal.
+
+Conservative whole-occurrence rejection reduces partial-data availability but avoids
+silently salvaging contradictions. Supporting uncertain estimates, frequency instances
+or ambiguous clock transitions later requires an evidenced extension. This minimum
+profile is a development boundary, not a reduction of accepted launch requirements.
+
+## Dependencies and acceptance boundary
+
+Design uses invented inputs only. Real canonical Trip consumption and real T1 import
+require P2-S9 acceptance, authorized identified sources and applicable rights. T1
+semantic acceptance precedes implementation; validated import precedes consumers.
+No engine, algorithm, provider, schema, deployment or Phase 3 exit is approved.
+DEC-077's limited acceptance, commercial pause, registry/publication/translation/
+delivery/bundling and expansion gates remain intact.
+
+## Next review and revisit triggers
+
+Owner acceptance preparation is complete as documentation: consider O1–O6 and the
+producer proposal §8 independently of DEC-079. No acceptance is recorded. A first
+synthetic pure-value/local-validation slice would require explicit acceptance and
+separate implementation authorization, not a completed routing engine. Neither
+decision accepts the other. Revisit on source evidence requiring multiple
+executions per service date, different calendar/time interpretation, partial-data
+support or occurrence-aware candidate identity. No such evidence is presumed here.
+
+---
+
+# DEC-079 — Internal Timetable Routing Context, Admission and Scoped Results
+
+**Status:** Accepted — conditional internal-consumer amendment; not implemented\
+**Date:** 2026-10-01\
+**Related:** DEC-060–064/074–078; ARCHITECTURE §§4/10/21/40; ROADMAP Phase 3
+
+## Owner acceptance — 2026-10-01 Asia/Seoul
+
+The owner separately accepts the prepared consumer package §§2–5 and recommended
+C1–C6, conditional on Accepted DEC-078 producer semantics. This partially supersedes
+DEC-076 A/B/C/D/E for internal timetable consumption: distinct matched timetable
+context/association, scoped internal success, unscoped all-rejected failures,
+generated handoff accounting, searchIncomplete and added rejection reasons,
+configuration → shared-view validity → endpoints → profile intent/bounds → required
+coverage preflight (observed cancellation first), and evidenced movement/connection
+requirements. No lower-priority fault probing is required. ProviderScheduledContext,
+external behavior, original indices and duplicate-TripID restrictions are preserved.
+
+This is contract acceptance, not DEC-079 implementation. Finite search profile,
+enumeration/pruning/completeness, connection policies, algorithm/component ownership
+and real evidence remain prerequisites; no defaults or engine adoption are approved.
+Only DEC-078's producer-value slice is authorized now. Registry/publication/
+translation/delivery/bundling/expansion gates and launch/exit requirements remain.
+The original proposal/preparation text below is historical, not current pending
+acceptance status; its implementation exclusions remain applicable to this slice.
+
+## Context
+
+DEC-077 approves ODPT-first evaluation priority only. Proposed DEC-078 supplies a
+reviewable producer boundary but no accepted timetable semantics. Accepted DEC-076
+uses provider-scheduled assertions and decoded-provider alternative accounting;
+internal computation cannot adopt those meanings silently. DEC-079 was unused in
+repository Markdown records before this draft.
+
+## Proposed decision
+
+Recommend the precise, separately scoped additions in
+[Internal-routing consumer amendment proposal](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md)
+§§2–5, subject to owner choices C1–C6:
+
+1. Follow IR-E1: introduce an explicit timetable context alongside the unchanged
+   ProviderScheduledContext origin. Bind active dated facts to the exact matched
+   Trip snapshot/view/date/original indices; require exact ridden endpoint pairs.
+2. Apply request-relative finite/bound/chronology checks without reinterpreting source
+   times. Preserve missing/estimated producer facts; no nil or generic intent bypass.
+3. Count complete generated proposals at an explicit admission handoff, preserving
+   one candidate/omission per position. Search states are not source alternatives.
+4. Require an explicit internal result scope and separately accepted search profile;
+   noResults needs complete relevant input and completed search in that domain.
+   Missing required coverage fails dataUnavailable; interrupted enumeration fails
+   proposed searchIncomplete; observed cancellation yields CancellationError. Successful
+   results carry scope; noUsableAlternatives retains its unscoped omission payload
+   and cannot assert no routes. Preflight order is configuration, shared-view validity,
+   endpoints, profile intent/bounds, then request-specific coverage; observed cancellation
+   takes precedence. Stop at the first failing stage without probing lower faults.
+5. Require affirmative ride/train-change evidence, directional connectivity and a
+   justified total connection allowance. Append unverifiedEligibility,
+   infeasibleConnection and insufficientScheduledEvidence rejection reasons.
+6. Permit graph computation only over evidenced matched occurrence movements in the
+   minimum profile. Preserve original movement-based lines and all duplicate-TripID
+   rules; no graph-generated unresolved ride or stitched Trip is authorized.
+
+## Consequences and alternatives
+
+A timetable context union prevents provider-assertion semantics from masquerading
+as imported facts; IR-E2's positional sidecar remains a deferred alternative.
+Whole-call failure for missing coverage sacrifices partial results for a simpler
+truthful completeness boundary. Exact endpoints and matched-only output exclude
+uncertain forms without claiming that launch requirements can be narrowed.
+
+Affected future contracts: DEC-076 A–E, route context/result/failure values and
+admission/chronology tests, ARCHITECTURE §§4/10/21/40 and Phase 3 planning. No accepted
+text or code changes here. Trip identity/equality, Journey selection and duplicate
+matched Trip rules remain intact. Any later adoption must record the precise
+supersession scope; DEC-076 remains fully Accepted and unchanged for this draft.
+
+## Dependencies and next review
+
+The latest independent review found no material blockers for owner consideration.
+The linked §8 contains the final separately approvable C1–C6 package; §§3/4 resolve
+its optional preflight/failure-scope clarifications. No acceptance is recorded.
+Numeric horizons, stable enumeration/pruning, connection policy and algorithms remain
+unaccepted prerequisites to engine execution. Independent producer pure-value work
+may follow DEC-078 acceptance and separate scope authorization without this engine.
+DEC-078 semantic acceptance is separate. Real Trip consumption/real T1 import wait
+for P2-S9; imported-time consumers need accepted T1 and validated inputs. Registry,
+publication, translation, delivery/bundling and expansion gates remain applicable.
+Commercial work stays paused. No engine adoption, provider compatibility, launch
+change or Phase 3 exit approval is implied.
 
 ---
 

@@ -1857,6 +1857,200 @@ DEC-076, with any later access, selection or implementation separately authorize
 The publication authorization above permits only this slice's commit/normal push;
 no main merge or further implementation is authorized.
 
+### Provider evidence-gap assessment (2026-10-01)
+
+Documentation-only [comparison against DEC-076](PHASE_3_PROVIDER_EVIDENCE_GAPS.md)
+records DS-11–13 evidence and missing proof separately for route-only admission,
+verified train attachment and later guidance. It uses repository records only;
+historical ODPT observations do not prove commercial-provider compatibility.
+The proposed next task is separately authorized official public-document research
+before evaluation access, requests or provider contact. No candidate is selected,
+price/rights refreshed, access authorized or decision changed. P2-S9 moves before
+any proposed real canonical passenger-stop Trip consumer; it does not block this
+assessment. P3-T1 and all applicable retained gates remain unchanged.
+
+Subsequent owner-authorized **official public-document research (2026-10-01)** is
+recorded in the same matrix with dated product-specific sources, published costs,
+rights restrictions and remaining payload gaps. Earlier repository-only findings
+above remain historical. Conditional evaluation order: Ekispert Standard with
+licensed timetable access, then NAVITIME direct with the timetable option; no
+provider is selected. Next proposed task is owner review of a rights/access
+clarification packet before separately authorized contact or evaluation. No account,
+API request, contact, terms acceptance, implementation or test/build occurred.
+P2-S9 still precedes real canonical Trip consumption; all retained gates are unchanged.
+
+### ODPT-first internal-search assessment (2026-10-01)
+
+The owner now prioritizes ODPT-sourced data and internal-computation assessment;
+commercial evaluation/contact is **paused**, superseding the preceding next-task
+recommendation without erasing its dated research. [Feasibility matrix](PHASE_3_INTERNAL_ROUTING_FEASIBILITY.md)
+and **Proposed DEC-077** record historical input coverage, transfer/through/time
+gaps and the necessary DEC-076 contract review. ODPT-only feasibility remains
+unresolved. Next proposed task: documentation-only input/consumer contract outline
+and invented cases; no algorithm or engine implementation is authorized. S9 and
+T1 designs can proceed independently, but real canonical Trip consumption requires
+S9 and imported-schedule search requires accepted T1 data/semantics. DEC-004 remains
+Provisional; Accepted DEC-076, launch scope, Phase 3 exit and retained gates remain
+unchanged. No decision acceptance, acquisition, private access or test/build occurred.
+
+### Bounded DEC-077 acceptance and Proposed consumer outline (2026-10-01)
+
+The owner accepted **only DEC-077's ODPT-first evaluation priority and commercial
+pause**. The preceding Proposed record is historical; no engine, algorithm,
+timetable semantics, ODPT-only feasibility, launch or exit amendment is accepted.
+The [internal-routing input/consumer outline](PHASE_3_INTERNAL_ROUTING_CONTRACT_OUTLINE.md)
+remains **Proposed**: input/gate boundaries, precise DEC-076 amendment options and
+three wholly invented direct/walking-transfer/through-service cases. DEC-076 and
+ARCHITECTURE remain unchanged. Next recommended task is a separately authorized,
+documentation-only P3-T1 producer-output proposal with invented temporal cases;
+real Trip/time consumers still wait for S9/T1 acceptance and all applicable gates.
+No research, acquisition, private access, implementation or tests/builds occurred.
+
+### Proposed P3-T1 producer output (2026-10-01)
+
+[Timetable producer-output proposal](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md) and
+**Proposed DEC-078** separate recurring Trip identity from dated scheduled facts,
+source interpretation from validation, and producer validity from search policy.
+Nine invented cases expose calendar exceptions, extended hours, repeated visits,
+multiple dates, missing/estimated times, chronology and unverified continuity.
+O1–O6 remain owner decisions; no new semantics, consumer amendment or engine is
+accepted. Next task recommended: focused documentation review before acceptance
+or separately authorized DEC-076 amendment drafting. P2-S9 precedes real Trip
+consumption/real T1 import; T1 semantic acceptance and validated output precede
+imported-time consumers. DEC-077 priority/commercial pause, existing proposals,
+launch/exit and all applicable rights/delivery/expansion gates remain unchanged.
+
+### Proposed producer refinement and consumer amendment (2026-10-01)
+
+Independent review found no material blocker in the original DEC-078 proposal for
+owner consideration only. DEC-078 remains **Proposed**. Its
+[producer document](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md) now specifies bounded
+index/event diagnostics, activation-first inactive/event precedence and T1-10/11
+revision/precedence cases, preserving the original nine cases.
+[Proposed DEC-079](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md) separately drafts
+DEC-076 amendments: IR-E1 exact matched timetable contexts, generated accounting,
+scoped results/completeness failures, connection allowances and movement evidence.
+C1–C6 and DEC-078 O1–O6 require owner review; no accepted contract is amended.
+Next task: focused documentation review of these refinements and I1–I7 before
+acceptance preparation. Horizon/profile, algorithm and implementation remain deferred.
+No tests/builds, research or acquisition occurred. S9 before real Trip consumption/
+T1 import, separate T1 acceptance and all applicable retained gates remain unchanged.
+
+### Owner acceptance preparation — DEC-078/079 still Proposed (2026-10-01)
+
+Latest independent documentation review found no material blockers for owner
+consideration only. Separate final packages now live in
+[producer §8](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md) and
+[consumer §8](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md); no new decision layer.
+Consumer clarifications retain unscoped all-rejected failures (never no-route proof)
+and define ordered preflight with observed cancellation precedence and no lower-fault
+probing. Accepted DEC-076/077 and ARCHITECTURE remain unchanged.
+Next owner action: separately consider DEC-078 O1–O6 and conditional DEC-079 C1–C6.
+After acceptance and separate scope authorization, recommend producer pure values/
+local validation with invented already-qualified facts. No calendar interpreter,
+real import or engine is required for that slice. Engine horizon/profile,
+enumeration/completeness, connection policies, ownership and real evidence remain
+separate prerequisites. No tests/builds or acquisition occurred; all retained gates,
+launch scope and Phase 3 exit are unchanged.
+
+
+### Accepted DEC-078/079 and bounded producer values (2026-10-01 Asia/Seoul)
+
+The owner accepted DEC-078 O1–O6 and DEC-079 C1–C6 as prepared, including unscoped
+failures, scoped internal success and deterministic internal preflight. DEC-076 is
+partially superseded for internal consumption; its historical text and external
+semantics are preserved. DEC-078 semantics are accepted, but only the following
+local value slice is implemented. DEC-079 has **no implementation** in this slice.
+Earlier Proposed/preparation entries above are dated history, not current status.
+
+**Scope lock and ownership:** five new `Domain/Timetable` files plus
+`TSUGINOTests/TimetableValueTests.swift`; acceptance/current-truth docs only otherwise.
+No existing Trip/Journey/routing source, project settings, dependencies or composition
+changes. `TimetableOccurrenceAddress.swift` defines caller-supplied opaque UUID view
+identity, preserved nonblank service-date label and view/Trip/date address. This is
+not a registry, calendar validator or authentication of one-execution-per-date.
+`TimetableOccurrenceBinding.swift` retains an existing exact Trip; its explicit
+comparison includes ID, stops, lines, both coverage flags and service types.
+`TimetableTime.swift` provides a finite wrapper so exact/estimated enum payloads
+cannot bypass finite validation; missing remains distinct. Eligibility is tri-state.
+`TimetableDiagnostic.swift` validates bounded reason/location shapes; location kind
+may be absent for a whole-visit fault. `TimetableOccurrenceFacts.swift` requires one
+original-index visit per represented stop, each with the same dated binding/snapshot,
+and validates all exact arrivals/departures in order across missing/estimated gaps.
+No memberwise, mutation, Codable or snapshot equality/hash path bypasses these checks.
+
+**Verification:** final focused evidence recorded below. An initial sandboxed
+Simulator inventory attempt failed CoreSimulator access; it was not test evidence.
+The first focused build (`r1`) failed before execution on nested Swift Testing
+`#require` macros in new fixtures; those were flattened. `r2` passed 16 functions /
+21 executed cases, zero failures/skips/runtime warnings. Self-review strengthened
+T1-10's constructor regression to exercise inserted-stop mismatch with both identical
+and different view IDs, preventing the view check from masking snapshot checking.
+The final `r3` run follows that test-only change; counts are not added across runs.
+
+Final `r3`: **16 test functions / 21 executed cases passed**, zero failures, skips
+or runtime warnings, iPhone 17 / iOS 26.5 Simulator (arm64), Xcode's iOS Simulator
+27.0 SDK. Debug app/extension build succeeded through the test action. `r1`/`r2`
+logs include compiler isolation warnings in unchanged canonical/test code; no new
+timetable source warning was reported. Final incremental `r3` reports only the
+AppIntents metadata-extraction warning (no AppIntents dependency). This is not a
+warning-free broad-build claim. Result/log artifacts are local `/private/tmp` evidence,
+not repository fixtures:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/TimetableValueTests -resultBundlePath /private/tmp/tsugino-p3-timetable-values-r3.xcresult > /private/tmp/tsugino-p3-timetable-values-r3.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-p3-timetable-values-r3.xcresult
+```
+
+| Specification subcases covered | Limit of coverage |
+|---|---|
+| T1-01, T1-05 | Ordinary/repeated original visits and explicit snapshot-content preservation; no activation or source occurrence proof |
+| T1-06, T1-10 | Different dates/views, same-ID inserted stop, same-view stop/line/coverage/service-type changes rejected; no production revision registry |
+| T1-07 | Missing and estimated values remain distinct, even estimates outside the exact envelope; no interpolation or estimate-consumer policy |
+| T1-08 | Nonfinite payload rejection, within-visit ordering, equality and exact chronology across missing/estimated gaps; no source clock parsing |
+| Eligibility/coverage/diagnostics | All eligibility states, all four structural coverage shapes, invalid/extreme indices, duplicate/missing/reordered slots, bounded diagnostic shape/order, Sendable task transfer |
+
+T1-02/03/04/09/11 activation, conversion and through-evidence behavior is **not tested
+or implemented**. No complete T1 case/feed compatibility claim follows from these
+constructor subcases. `r2`/`r3` test actions compile Debug app and Live Activity
+extension. No full suite, separate Release build or physical device work is claimed.
+Unchanged routing/async evidence remains historical and was not rerun. There is no
+Debug-only path or Release-excluded declaration in these new Domain values.
+
+**Self-review:** verified immutable/failable construction, wrapper-only finite enum
+payloads, index comparisons before access, binding-before-chronology precedence,
+first descending exact-event diagnostics, and all snapshot fields explicitly checked.
+No material local defect remains identified. Construction does not authenticate
+view identity, calendar activation, correspondence, eligibility evidence or rights.
+Snapshot comparison is bounded by supplied values; no performance claim or index is
+introduced. Concrete future profiles must canonicalize operating-day labels. The
+local facts deliberately contain no active/inactive producer outcome or profile
+interpreter. Type shape/finite checks cannot satisfy accepted producer evidence.
+
+**Independent review complete — approved (2026-10-01 Asia/Seoul).** The read-only
+review found no material findings or mandatory outstanding checks. The reviewer had
+no prior exposure to this implementation; creating a new reviewer context was not
+possible because the thread limit was reached. The review assessed actual code,
+tests and accepted contracts rather than treating the author's self-review as proof.
+Optional segment-range-only revision and qualified-midnight tests remain nonblocking
+observations; neither is added for publication.
+
+The reviewer assessed the saved final `r3` evidence: 16 functions / 21 cases passed,
+zero failures/skips/runtime warnings, with Debug app/Live Activity extension
+dependencies built. The AppIntents metadata warning remains recorded above. No
+tests/builds were rerun during review or publication. Approval covers pure values
+and local validation only, not full producer operation, evidence authentication,
+ODPT compatibility, DEC-079 implementation, engine readiness or Phase 3 exit.
+The owner authorizes publication of the reviewed fourteen-file documentation/value
+slice, including this approval record, on `phase/03-route-search`; no main merge
+or next-slice work is authorized.
+
+P2-S9 precedes real canonical Trip consumption and real T1 import. Feed-specific
+interpretation, validated import and correspondence remain separate. Engine horizon,
+enumeration/pruning/completeness, connection policies and component ownership remain
+undecided. Registry, Q3/Q4, delivery, publication/bundling and expansion gates, launch
+scope and Phase 3 exit are unchanged; no real artifact or provider acquisition occurred.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
