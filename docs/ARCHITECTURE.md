@@ -1031,8 +1031,10 @@ Only the streamed members are integrity-checked; other members are recorded by n
 DEC-078 separates dated timetable facts from recurring Trip identity; DEC-079 partially
 supersedes DEC-076 for an internal consumer's timetable context, association,
 generated accounting, scoped success, unscoped failures/preflight and evidenced
-connections. DEC-079 is **not implemented**: current routing code remains the DEC-076
-provider-context shape below. External semantics and Trip/Journey invariants remain.
+connections. DEC-079 is **partially implemented**: only timetable context and local
+route-value association/chronology are supplied. Scoped success, added failures,
+internal admission/preflight and search remain deferred. External semantics and
+Trip/Journey invariants remain.
 
 The bounded DEC-078 implementation lives in `Domain/Timetable`: immutable `nonisolated`
 Sendable addresses, bindings, time/eligibility states, visit/occurrence facts and
@@ -1052,6 +1054,22 @@ parsing, view registry, persistence, routing integration or Journey binding is a
 These values prove local structure, not activation, rights or source authenticity.
 P2-S9 and accepted feed-specific interpretation/validated import precede real use.
 
+The bounded DEC-079 context slice adds `TimetableRideContext` constructed from a
+TrainCandidate and locally valid TimetableOccurrenceFacts. It retains the exact
+binding/date/view and original ridden indices, extracts only exact boarding departure
+and alighting arrival, and reuses full snapshot comparison before indexing. Missing
+or estimated required endpoints fail; unused counterparts may remain missing.
+`RouteScheduledContext` distinguishes provider and timetable origins with shared
+instant projections. RouteRailProposal construction is failable: timetable context
+requires matched travel with the same complete snapshot and ridden indices.
+RouteCandidate compares retained pairs across both origins and nil/walking gaps;
+its existing structure and duplicate-TripID rules remain. The synthetic external
+adapter only wraps provider context; ProviderScheduledContext and provider endpoint
+admission are unchanged. Constructors do not authenticate activation, eligibility,
+correspondence, candidate/result-wide coherent Data views, continuity or connections.
+Mixed-origin arithmetic support does not authorize mixed-source search composition.
+No internal result is emitted through the existing unscoped search boundary.
+
 **Accepted contract: DEC-076 (2026-10-01).** Phase 3 owns `RouteSearching`,
 `RouteCandidate` and `TrainCandidate` (DEC-064). The provider remains unselected.
 
@@ -1063,7 +1081,7 @@ RouteSearchResult: noResults | alternatives(nonempty RouteSearchBatch)
 RouteSearchBatch: ordered candidates + ordered, privacy-safe omissions
 RouteCandidate: ordered rail/walking legs
 RouteRailProposal: unresolved validated anchors/line sequence/reason | matched TrainCandidate
-                   + optional ProviderScheduledContext
+                   + optional RouteScheduledContext (provider | timetable)
 TrainCandidate: existing Trip snapshot + original boarding/alighting indices
 ProviderScheduledContext: finite departure <= arrival absolute instants
 ```
@@ -1082,9 +1100,10 @@ those facts. Every qualified scheduled ridden endpoint must pass the request low
 bound and itinerary ordering **before** incomplete pairs are omitted. Known
 contradictions cannot be hidden by nil context. Pure values validate retained
 complete pairs, including chronology across intervening nil contexts. Equality is
-ordering only, never transfer feasibility. Context is provider-scheduled assertion,
-not imported timetable truth or realtime; no calendar/service-date semantics enter
-Trip. DEC-076 §§A–F defines the full failure and evidence requirements.
+ordering only, never transfer feasibility. The provider branch remains a provider
+assertion; the timetable branch retains a separate dated binding. Neither asserts
+realtime operation; no calendar or service-date fields enter Trip. DEC-076 §§A–F
+and DEC-079 define the applicable failure and evidence requirements.
 
 The first slice supplies pure values/local validation. The next owner-authorized
 synthetic slice supplies `RouteSearching` and Data-owned `RouteScheduleAdmission`

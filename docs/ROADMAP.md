@@ -2051,6 +2051,180 @@ enumeration/pruning/completeness, connection policies and component ownership re
 undecided. Registry, Q3/Q4, delivery, publication/bundling and expansion gates, launch
 scope and Phase 3 exit are unchanged; no real artifact or provider acquisition occurred.
 
+
+### Next DEC-079 slice assessment (2026-10-01 Asia/Seoul)
+
+Assessment only; no implementation authorization or new semantic acceptance.
+Verified clean starting branch `phase/03-route-search`, HEAD/fetched upstream
+`7d0a045d033e6aee66326cda39b41df5e3cc4b88`; main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`.
+
+**Recommended smallest slice: timetable context plus local route-value integration.**
+Accepted DEC-079 C1/C6 and [consumer amendment §2](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md)
+provide sufficient semantics; no new owner policy choice is needed before this
+slice, only separate implementation authorization. Use existing DEC-078 facts;
+engine/profile decisions do not block this work.
+
+- Add `Domain/Routing/TimetableRideContext.swift`: immutable nonisolated Sendable
+  context constructed failably from `TrainCandidate` and `TimetableOccurrenceFacts`.
+  Retain the exact occurrence binding/address and original ridden indices; derive
+  departure only from boarding departure and arrival only from alighting arrival.
+  Require exact states at both endpoints, full snapshot-content compatibility and
+  inclusive finite ordering. Never accept independently supplied replacement dates,
+  indices or timestamps, promote estimates, copy counterparts or crop a snapshot.
+  Reuse `TimetableOccurrenceBinding.matches` via a binding for the supplied train;
+  no Trip equality shortcut, persistent identity, Codable or snapshot equality/hash.
+- Add `Domain/Routing/RouteScheduledContext.swift` with distinct provider/timetable
+  branches and shared departure/arrival access for chronology. Preserve
+  `ProviderScheduledContext` unchanged. Update `RouteRailProposal.swift` to use the
+  union and failable association validation: timetable context requires matched
+  travel with the exact retained snapshot and identical original ridden indices.
+  The occurrence's date/view travels with the context, never inferred from TrainCandidate
+  (which has neither). A single context cannot authenticate a coherent result view.
+- Update `RouteCandidate.swift` chronology to compare retained pairs from either
+  branch across nil contexts/walks; preserve all structural and duplicate-TripID
+  rules, including different dates of one template. Mixed-branch constructor checks
+  prove arithmetic only, not authorization for mixed-source search composition.
+- Migrate provider construction explicitly to `.provider` and handle failable rail
+  construction in `Data/Routing/SyntheticRouteAdmission.swift`; update affected
+  `RoutingValueTests.swift` helpers/call sites. `RouteScheduleAdmission` continues
+  producing provider contexts and checking incomplete provider inputs unchanged.
+  Provider nil-context, unresolved-travel and failure behavior must remain intact;
+  admission/async tests provide regression coverage, not new internal admission.
+
+Proposed verification boundary for that future implementation: new
+`TSUGINOTests/TimetableRideContextTests.swift`, affected routing-value tests and
+focused provider-admission/async regressions for migrated call sites; reuse unchanged
+producer evidence except where a shared binding change justifies focused reruns.
+Synthetic constructor subcases cover ordinary/repeated original visits, every
+snapshot field (including segment ranges/optional service types/coverage), inserted
+same-ID stops, different dates/views retained without relabeling, wrong-train/index
+reattachment, unresolved travel rejection, missing/estimated required endpoints,
+valid missing unused counterparts, equality/qualified midnight and chronology across
+nil/walking/context-origin boundaries. Verify duplicate TripIDs, extreme-index safety,
+immutable/Sendable construction and provider-only behavior. None is full I1–I7,
+producer activation, transfer feasibility or feed-compatibility coverage.
+
+**Ready but separate:** DEC-079 §3/C2–C3 permits `searchIncomplete` and appending
+`unverifiedEligibility`, `infeasibleConnection`, `insufficientScheduledEvidence`
+in that order in `RouteSearchResult.swift`. Existing batch/rejection constructors
+already enforce numeric accounting and unscoped all-rejected payloads. A later
+small vocabulary slice can test reason ordering/uniqueness, old ordering stability,
+source-position reconstruction and contiguous rejection indices without a generator.
+Do not add unused vocabulary to the context slice or claim it implements preflight,
+completion proof or one-handoff/one-outcome runtime behavior.
+
+**Scoped success remains deferred:** §4/C4 defines required view/profile/bounds and
+coverage-reference concepts, but not the caller-resolvable profile/constraint
+representation, boundary subjects (boarding/arrival/both), inclusivity or linkage
+between that definition and effective bounds. The next scope-design task must specify
+that immutable typed definition or resolvable reference contract and local checks;
+an opaque label alone cannot describe the supported search domain. This need not
+choose a numeric default, algorithm or complete engine. `RouteSearchResult`/search
+success remains external-shaped until that work; do not emit internal alternatives
+through unscoped success as a substitute.
+
+Local extraction/association is not Data admission. Data must still establish active
+calendars, one-execution correspondence, qualified facts, coherent retained views,
+allowed eligibility, supported coverage, continuity and directional connections with
+justified total allowances. Request-relative checks, ordered preflight/cancellation,
+generation/accounting evidence, scope/completeness and actual search stay excluded.
+No calendars/conversion, import, persistence, Journey/Application/UI binding or
+composition changes. Engine prerequisites remain finite profile/horizon, date
+enumeration/pruning/order/completeness, connection policies and component ownership.
+P2-S9 precedes real Trip consumption/real T1 import; feed-specific interpretation,
+validated import and all registry/publication/translation/delivery/bundling/expansion
+gates remain. Commercial evaluation stays paused; launch scope and Phase 3 exit are
+unchanged. This assessment ran no tests/builds and acquired no data.
+
+
+### DEC-079 context-only implementation (2026-10-01 Asia/Seoul)
+
+Owner-authorized execution of the preceding plan; that assessment is preserved.
+Baseline/fetched upstream remains `7d0a045d033e6aee66326cda39b41df5e3cc4b88` on
+`phase/03-route-search`; only the preceding ROADMAP plan was modified at start.
+No branch, decision acceptance, commit or publication is part of this slice.
+
+**Implemented:** `Domain/Routing/TimetableRideContext.swift` retains an exact
+TimetableOccurrenceBinding and original ridden indices, with exact departure/arrival
+extracted from whole locally validated occurrence facts. Binding comparison precedes
+indexing and includes every Trip field; no independent timestamp/address setter or
+snapshot equality/hash/Codable is added. Required missing/estimated endpoints fail;
+unused counterparts may remain missing. `RouteScheduledContext.swift` adds explicit
+provider/timetable branches. RouteRailProposal is now failable and requires a matching
+TrainCandidate for timetable context; original indices and full snapshot must match.
+RouteCandidate uses the union's instant projections for its existing inclusive
+chronology across nil contexts/walks, retaining duplicate-TripID and structural rules.
+SyntheticRouteAdmission mechanically wraps provider context and handles construction
+failure. ProviderScheduledContext, RouteScheduleAdmission, TrainCandidate, Trip and
+the producer values remain byte-unchanged. Existing provider behavior is preserved.
+
+A TrainCandidate carries no independent service date/view: the context preserves its
+own binding, while Data must validate candidate/result-wide coherent view association
+and authenticated producer output. Local construction does not claim activation,
+eligibility, one-execution correspondence, source qualification, continuity or transfer
+feasibility. Mixed-origin arithmetic tests are not mixed-source search authorization.
+There is no internal search/result production, scope, new error vocabulary, preflight,
+request admission, calendar conversion, connection allowance, graph/engine, persistence
+or Application/Journey/UI/composition implementation.
+
+**Focused verification:** first attempt `context-r1` failed at test compilation
+because a new fixture used an optional service-type array; changed it to the existing
+Trip contract's explicit array (`[]` for unknown). No tests executed in that attempt.
+Corrected `context-r2` passed **59 functions / 78 executed cases**, zero failures,
+skips or runtime warnings, iPhone 17 / iOS 26.5 Simulator (arm64). Counts by suite:
+
+| Suite | Functions | Executed cases | Coverage boundary |
+|---|---:|---:|---|
+| TimetableRideContextTests | 10 | 14 | I1/I5/I6 local association/extraction subcases; repeated indices, exact snapshot fields including segment-range-only revisions, all four coverage shapes, date/view preservation, wrong index/unresolved attachment, missing/estimated rejection, missing counterparts, equality/qualified midnight, cross-origin/gap chronology and Sendable transfer |
+| RoutingValueTests | 16 | 26 | Existing rail/walk structure, movement clipping/non-adjacent lines, invalid/extreme indices, duplicate TripIDs, provider pairs and accounting under migrated constructors |
+| RouteAdmissionTests | 23 | 28 | Existing synthetic provider mapping/evidence, fallback contradictions, time admission and omissions preserved |
+| RouteSearchingTests | 10 | 10 | Existing synthetic provider errors, independent concurrent calls and owned cancellation preserved |
+
+Debug test action built app and Live Activity extension dependencies. The build
+reported existing isolation warnings in unchanged railway models/capability and
+station/line/service tests, and the AppIntents metadata-extraction warning (no
+AppIntents dependency); no new context source/test warning was identified. This is
+not a warning-free full-build claim. The result summary initially needed escalation
+for xcresulttool's report cache; the successful read confirms the counts above.
+Saved evidence (outside Git): `/private/tmp/tsugino-p3-context-r2.xcresult` and
+`/private/tmp/tsugino-p3-context-r2.log` (failed compile log uses `r1`). Command:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/TimetableRideContextTests -only-testing:TSUGINOTests/RoutingValueTests -only-testing:TSUGINOTests/RouteAdmissionTests -only-testing:TSUGINOTests/RouteSearchingTests -resultBundlePath /private/tmp/tsugino-p3-context-r2.xcresult
+```
+
+No full suite, Release build, physical-device or producer-suite rerun. Prior DEC-078
+producer evidence is reused for its unchanged constructors; these tests do not claim
+full I1–I7, timetable activation, evidence authentication or feed compatibility.
+
+**Self-review:** no material defect identified in immutable/failable construction,
+exact binding before indexing, required endpoint extraction, matched-only reattachment,
+chronology, original line/index preservation or provider migration. Existing snapshot
+comparison is reused unchanged. Per-ride validation is not candidate-wide Data proof;
+no additional view/profile policy was invented. Scope and documentation/diff checks
+remain bounded to the nine-file inventory, including the preserved ROADMAP plan.
+**Independent review complete — approve the bounded context-only slice.** A fresh
+reviewer context was successfully created with no prior exposure to this implementation
+and without inheriting author self-review conclusions. It inspected actual code and
+accepted contracts. No material findings or mandatory outstanding checks remain.
+Its optional current-status documentation observation is resolved for publication by
+status-only updates to DECISIONS and the consumer amendment header; historical bodies
+and accepted semantics are preserved. Saved `context-r2` evidence was independently
+confirmed: 59 functions / 78 cases passed, zero failures/skips/runtime warnings, with
+Debug app/extension dependencies built. Existing unrelated isolation and AppIntents
+warnings remain recorded above. No tests/builds were rerun during review/publication.
+Approval covers context construction, branch separation, exact rail attachment and
+local chronology only, not Data authentication/admission, real provider/ODPT
+compatibility, internal search readiness or Phase 3 exit. The owner authorizes only
+the eleven-file slice/status publication on `phase/03-route-search`; no merge or
+next-slice implementation is authorized.
+
+P2-S9 before real canonical Trip consumption/import, feed-specific interpretation and
+validated import, registry/publication/translation/delivery/bundling/expansion gates
+remain. Scoped success/profile design, failure additions, engine/completeness and
+connection policies stay deferred. Launch scope and Phase 3 exit are unchanged.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

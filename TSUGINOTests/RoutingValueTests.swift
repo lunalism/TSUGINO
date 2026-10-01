@@ -17,7 +17,7 @@ struct RoutingValueTests {
     private func rail(_ from: String, _ to: String, context: ProviderScheduledContext? = nil) throws -> RouteCandidateLeg {
         let unresolved = try #require(UnresolvedRouteRailTravel(
             anchors: anchors(from, to), lineSequence: [line("L1")], reason: .notSupplied))
-        return .rail(RouteRailProposal(travel: .unresolved(unresolved), scheduledContext: context))
+        return .rail(try #require(RouteRailProposal(travel: .unresolved(unresolved), scheduledContext: context.map(RouteScheduledContext.provider))))
     }
     private func walk(_ from: String, _ to: String) throws -> RouteCandidateLeg {
         .walkingTransfer(try #require(WalkingTransfer(fromStationID: station(from), toStationID: station(to))))
@@ -44,8 +44,8 @@ struct RoutingValueTests {
                                  serviceTypeSegments: [service]))
     }
     private func matched(_ trip: Trip, _ board: Int, _ alight: Int) throws -> RouteCandidateLeg {
-        .rail(RouteRailProposal(travel: .matched(try #require(TrainCandidate(
-            trip: trip, boardingIndex: board, alightingIndex: alight))), scheduledContext: nil))
+        let train = try #require(TrainCandidate(trip: trip, boardingIndex: board, alightingIndex: alight))
+        return .rail(try #require(RouteRailProposal(travel: .matched(train), scheduledContext: nil)))
     }
     private func candidate(_ from: String = "A", _ to: String = "D") throws -> RouteCandidate {
         try #require(RouteCandidate(legs: [rail(from, to)]))

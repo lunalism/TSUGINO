@@ -116,7 +116,9 @@ nonisolated enum SyntheticRouteAdmission {
             else { throw RouteAdmissionRejection(.invalidStructure) }
             travel = .unresolved(unresolved)
         }
-        return RouteRailProposal(travel: travel, scheduledContext: context)
+        guard let proposal = RouteRailProposal(travel: travel, scheduledContext: context.map(RouteScheduledContext.provider))
+        else { throw RouteAdmissionRejection(.invalidStructure) }
+        return proposal
     }
 
     /// Existential contradiction check only: no possible index is selected or

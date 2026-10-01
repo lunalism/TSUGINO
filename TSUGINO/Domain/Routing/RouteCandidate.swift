@@ -24,7 +24,8 @@ nonisolated enum RouteCandidateLeg: Sendable {
 }
 
 /// A structurally valid search proposal, not selection or an active Journey.
-/// No request, provenance, provider metadata or dataset revision is stored.
+/// Contexts retain their origin and timetable binding; this constructor does not
+/// authenticate result-wide Data coherence, activation or connection feasibility.
 nonisolated struct RouteCandidate: Sendable {
     let legs: [RouteCandidateLeg]
 
@@ -42,7 +43,7 @@ nonisolated struct RouteCandidate: Sendable {
             if case .matched(let train) = ride.travel,
                !seenTrips.insert(train.trip.id).inserted { return nil }
             if let context = ride.scheduledContext {
-                // Do not reset across nil contexts or walking legs. Ordered pairs
+                // Compare either context origin without resetting across nil/walks. Ordered pairs
                 // make checking consecutive retained pairs transitively sufficient.
                 if let previousArrival, previousArrival > context.departure { return nil }
                 previousArrival = context.arrival

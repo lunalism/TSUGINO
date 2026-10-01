@@ -1,16 +1,19 @@
 # Phase 3 — Internal-routing consumer amendment proposal
 
-**Status:** Accepted conditional amendment — DEC-079; not implemented\
+**Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
 ## Current acceptance and implementation boundary — 2026-10-01 Asia/Seoul
 
-Accepted DEC-079: Consumer §§2–5 and C1–C6 are accepted conditional on DEC-078; no consumer amendment code is implemented.
-Owner acceptance includes the prepared recommended package, not engine adoption,
-source compatibility or production delivery. See DECISIONS for the authoritative
-acceptance and ROADMAP for exact slice evidence. No calendar interpretation,
-conversion, real import or DEC-079 implementation is supplied by the value slice.
-P2-S9 and all applicable retained gates remain in force.
+Accepted DEC-079: Consumer §§2–5 and C1–C6 are accepted conditional on DEC-078.
+Timetable context construction, separate provider/timetable branches, exact matched
+rail attachment and retained-context chronology are implemented and independently
+approved as local values/validation only. Scoped internal results, failure/rejection
+additions, internal preflight/admission, connection policy and engine obligations
+remain deferred. Owner acceptance does not establish engine adoption, source
+compatibility or production delivery. See DECISIONS for the authoritative acceptance
+and ROADMAP for saved verification. Calendar interpretation/conversion and real
+import remain unimplemented; P2-S9 and all applicable retained gates remain in force.
 
 The body below preserves the historical proposal and acceptance-preparation wording
 (including its original “Proposed” labels and undecided implementation choices).

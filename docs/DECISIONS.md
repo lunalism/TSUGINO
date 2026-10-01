@@ -6238,7 +6238,8 @@ own authorized scope and applicable prerequisites.
 DEC-079 for the internal timetable consumer contract only (A/B/C/D/E: context,
 association, generated accounting, scoped success, failure/preflight and evidenced
 movement/connection requirements). External-provider semantics, Trip/Journey identity
-and duplicate-Trip rules remain current. DEC-079 is not yet implemented. The original
+and duplicate-Trip rules remain current. DEC-079 now has context-only partial
+implementation; its current status below records the bounded scope. The original
 DEC-076 record, including its historical status and implementation evidence, follows
 unchanged.
 
@@ -7036,9 +7037,20 @@ support or occurrence-aware candidate identity. No such evidence is presumed her
 
 # DEC-079 — Internal Timetable Routing Context, Admission and Scoped Results
 
-**Status:** Accepted — conditional internal-consumer amendment; not implemented\
+**Status:** Accepted — conditional internal-consumer amendment; context-only partial implementation independently approved\
 **Date:** 2026-10-01\
 **Related:** DEC-060–064/074–078; ARCHITECTURE §§4/10/21/40; ROADMAP Phase 3
+
+## Current implementation status — context-only slice
+
+Timetable context construction, separate provider/timetable context branches, exact
+matched-rail attachment and retained-context chronology are implemented and
+independently approved. Approval covers local values/validation only. Scoped internal
+results, failure/rejection additions, internal preflight/admission, connection policy,
+search profiles/completeness and engine obligations remain deferred. See ROADMAP for
+the reviewed scope and saved verification; no real-source compatibility is established.
+The owner-acceptance record below describes its original authorization; subsequent
+bounded implementation authorization does not change its accepted semantics.
 
 ## Owner acceptance — 2026-10-01 Asia/Seoul
 

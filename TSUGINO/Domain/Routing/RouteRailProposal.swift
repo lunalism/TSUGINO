@@ -43,9 +43,12 @@ nonisolated enum RouteRailTravel: Sendable {
 
 nonisolated struct RouteRailProposal: Sendable {
     let travel: RouteRailTravel
-    let scheduledContext: ProviderScheduledContext?
+    let scheduledContext: RouteScheduledContext?
 
-    init(travel: RouteRailTravel, scheduledContext: ProviderScheduledContext?) {
+    init?(travel: RouteRailTravel, scheduledContext: RouteScheduledContext?) {
+        if case .timetable(let context) = scheduledContext {
+            guard case .matched(let train) = travel, context.matches(train) else { return nil }
+        }
         self.travel = travel
         self.scheduledContext = scheduledContext
     }
