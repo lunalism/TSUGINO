@@ -4849,6 +4849,8 @@ Rejected alternatives:
 5. **Determinism.** The same inputs, the same reviewed records, and the same registry give byte-identical importer output. Randomness enters only when an explicitly requested identifier is minted.
 6. **Only provisional registries exist until §F.** Every registry an importer writes before the registry-of-record decision is **provisional**: it is kept outside the repository and may be discarded. **No identifier minted into a provisional registry is a production identifier.** The first registry of record fixes identity from then on.
 
+**Amendment to §B3/§B4 — DEC-073 (accepted 2026-10-01).** Historical text above is retained. Reviewed pure retirement may declare zero successors; replacement, merge and split use fresh successors. Exactly one binding version is current per provider key/revision; a reviewed canonical migration may introduce a new version under DEC-073. No canonical ID is reused, rebound or deleted.
+
 ### C. Provider references, original values, and provenance
 
 1. **Every provider value that identifies an entity is a provider-reference record**, holding:
@@ -4932,6 +4934,8 @@ Rejected alternatives:
 
    An omission never deletes history and never implies that an old reference is still current.
 4. **Canonical identity changes only by migration.** A canonical identifier never changes because a provider value changed. Merging or splitting canonical entities requires an explicit identity migration: a reviewed record naming the old and new identifiers and their successors, versioned with the registry (Rule 39). It is never an in-place edit.
+
+**Amendment to §C1/§E4 — DEC-073 (accepted 2026-10-01).** `attachedBy` identifies the authority for that binding version. Only the reviewed canonical-transition workflow may change a held key’s current target, preserving immutable predecessor bindings and their authority. Ordinary reconciliation still cannot reassign held keys; provider-value reuse is not authorized. Pure retirement, replacement, merge and split, explicit dispositions and version conversion follow DEC-073. This narrowly supersedes the earlier nonempty-successor requirement; all historical text and other DEC-068 rules remain retained.
 
 ### F. Registry of record and the public-repository boundary
 
@@ -5422,6 +5426,447 @@ The owner accepted this contract on 2026-09-30, including the narrow §C1 except
 
 ---
 
+# DEC-072 — Prefer System SQLite for Indexed Local Railway Storage After Synthetic Measurement
+
+**Status:** Accepted — SQLite storage design; bounded synthetic implementation authorized
+**Date:** 2026-09-30
+**Related:** DEC-029, DEC-051, DEC-065, DEC-068 §B/§E/§F, DEC-071; Rule 14, Rule 15, Rule 39; P2-S8
+
+## Context and evidence
+
+P2-S8 requires a measured storage decision, a `RailwayDataRepository`, data-version
+metadata and migration checks. The isolated synthetic prototype compares an
+indexed compact file with system SQLite using unchanged Domain models and exact
+search contracts. [Method and complete measurements](../Tools/StorageMeasurement/RESULTS.md)
+record five repetitions at 258 and 25,800 stations, environment, ranges,
+correctness checks and limitations. No real provider data was used.
+
+On the measured macOS host, SQLite open-to-first-query medians were 3.08/95.96 ms
+at the two sizes, versus compact-file 9.12/660.44 ms. Scale-case ordinary peak RSS
+was 26.45 versus 56.56 MiB. Compact was smaller and faster for warm queries.
+Preparation varied widely and does not establish a reliable winner. These are
+prototype observations, not physical-iPhone/app startup performance claims.
+
+## Decision
+
+Use **system SQLite** for the later local railway-data storage implementation,
+behind a provider-neutral repository protocol with Data owning the concrete
+adapter. Preserve scalar-exact keys and ordering (BLOB UTF-8 keys are the tested
+approach), all same-name results and explicit aliases. Keep heavy loading off the
+main actor and avoid repeated full-dataset parsing. Use the system library;
+no third-party wrapper dependency is proposed. The prototype's SQL layout,
+record cache and JSON payload encoding are not a frozen production schema.
+
+The compact-file alternative remains measured evidence, not a second production
+backend. SQLite's faster opens and lower scale memory favor it here; avoiding
+custom offset/index-format maintenance is an additional engineering rationale.
+Revisit if representative iPhone measurements or later access requirements
+materially change this balance. Do not expand into speculative tuning now.
+
+## Narrow compatibility and retirement plan
+
+The next implementation should distinguish storage-schema version from dataset
+revision and identify the registry revision and content it was built against.
+Validate compatibility before exposing a store. Test close/reopen, a supported
+data revision, supported schema conversion where one actually exists, and
+unsupported/future or malformed versions. Reject unsupported stores with a typed
+failure, leaving the existing compatible store and source material unchanged;
+never silently reinterpret them. Only rebuildable derived storage/indexes may be
+invalidated through an explicit path, never the authoritative identity registry
+or original review history. The prototype's version-rejection checks do not
+constitute migration implementation or P2-S8 completion.
+
+Retirement tests must preserve old identifiers, retirement state and all declared
+successor metadata, never reuse/delete/rebind an identifier, and preserve reviewed
+history through any supported conversion. Merely storing successor metadata does
+not authorize following it. No automatic merge, split, successor selection or
+successor-following behavior is proposed; unresolved identity migrations still
+need their reviewed contract under DEC-068. No general migration engine is needed.
+
+## Unchanged gates
+
+The owner accepted this storage design on 2026-09-30 after reviewing the measurements, and separately authorized a bounded synthetic repository implementation. This acceptance does not establish iPhone performance or authorize production identity, publication or bundling. The
+registry-of-record location, backup/delivery and production-ID decision remain
+pending. Provisional IDs are not promoted. Real records remain outside the public
+repository under DEC-065/DEC-068. Q3/publication, Q4/new Metro-derived translation,
+and written ODPT item 5/app-bundling gates remain separate and unchanged.
+P2-S8 delivery, real artifact inclusion, UI, physical-device work and final backend
+implementation were not authorized by the measurement prototype alone. The subsequent owner authorization covers the synthetic repository only. P2-S8 stays incomplete until its remaining criteria pass.
+
+---
+
+# DEC-073 — Reviewed Canonical Transitions Use Exact Registry Snapshots and Explicit Reference Dispositions
+
+**Status:** Accepted — reviewed identity-transition design; bounded synthetic implementation authorized
+**Date:** 2026-10-01
+**Related:** DEC-021, DEC-026, DEC-048, DEC-051, DEC-068 §B/§C/§E/§F, DEC-069, DEC-070, DEC-071, DEC-072; Rule 9, Rule 39, Rule 53; P2-S8
+
+## Context and distinctions
+
+P2-S8 requires identifier-retirement migration tests, not just preservation of a
+retirement already present in an initial fixture. The synthetic SQLite builder
+currently refuses every entity-state change. DEC-068 §E4 permits reviewed identity
+migrations but does not specify their record or application contract.
+
+| Change | Authority and effect |
+|---|---|
+| Provider-reference revision | DEC-068 §E: sightings, descriptions, active/absent status, reviewed attachment of a previously unheld key, or reviewed reference withdrawal. A provider change alone never changes canonical identity. Existing `ReviewedRevisionRecord` does not transfer held keys or merge/split identities. |
+| Canonical transition | This contract: exact active identities retire with an explicitly reviewed empty or nonempty successor set, with each continuing provider reference assigned through a reviewed binding-version disposition. Old canonical IDs continue to denote their old identities. |
+| Runtime storage migration | DEC-072: compatible data rebuild or explicit schema conversion/invalidation. Changing SQLite schema/bytes is not an identity decision and must not mint, merge, split or follow successors. |
+
+Names, proximity, source order, changed archive hashes and graph heuristics cannot
+infer a canonical transition. The separate Shinjuku identities remain separate
+unless a future case-specific review authorizes otherwise. No actual transition,
+new identifier, real review or production registry is authorized by this decision.
+
+## Accepted contract
+
+### A. Bounded scope and successor semantics
+
+Use **reviewed previous/target registry snapshots plus explicit transition
+records**. The applier verifies the entire delta; it does not generate a target,
+choose successors or edit either input snapshot. Each snapshot has an explicitly
+supported schema; the bounded version transition is specified in §C below.
+The target revision is exactly previous revision + 1;
+ordinary provider reconciliation and unrelated identity additions occur in
+separate checkpoints, under their existing contracts.
+
+For each record, all sources are distinct active identities in the previous
+snapshot; all targets are distinct active identities in the target snapshot,
+absent from the previous registry's complete active/retired history. Targets
+must already have been allocated through a separately authorized identifier
+step and explicitly included in the reviewed target snapshot. The transition
+applier never mints. Fixtures use invented fixed IDs; production minting stays
+blocked by DEC-068 §F.
+
+| Operation | Sources → targets | Target snapshot |
+|---|---|---|
+| `retire` (pure retirement) | 1 → 0 | Source becomes retired with an explicit empty successor list; no target is fabricated. |
+| `replace` | 1 → 1 | Source becomes retired, naming exactly one fresh successor. |
+| `merge` | 2 or more → 1 | Every source becomes retired, each naming the one target. |
+| `split` | 1 → 2 or more | Source becomes retired, naming all and only the listed targets. |
+
+All participants have the declared same canonical kind (station, line or
+operator). **Fresh targets are the recommended bounded default**, rather than
+silently enlarging the meaning of a surviving source ID. The freshness requirement
+applies to every successor in replacement, merge and split; pure retirement has
+no target allocation or target-data requirement. Absorption into an already-held
+ID and many-to-many transformations remain outside this contract.
+
+**Accepted DEC-068 retirement amendment.** DEC-068 §B3 says
+retired entities retain successor identifier(s); the accepted registry contract
+and its validator enforce a nonempty list. Acceptance amends §B3/§E4 to
+permit reviewed `retire` with zero successors and to distinguish it from
+`replace`, `merge` and `split`. An explicit retired state with `successors: []`
+is not active, missing evidence or an unknown successor. Old successor lists
+remain immutable. DEC-072 already requires preserving *all declared* successor
+metadata without following it; its storage choice need not be reopened. The
+semantic format change nevertheless needs the explicit version handling in §C.
+
+An identity appears in at most one transition record in a batch, in one role.
+No target can also be a source in that batch. Earlier retired identities and
+their direct successor lists are immutable, even if a successor retires in a
+later separately reviewed checkpoint. Validate the whole target successor graph
+for cycles, self-links, missing IDs and wrong kinds; do not flatten successor
+chains. No ID is reused, rebound to another identity, deleted or reactivated.
+
+### B. Minimum reviewed record and provenance
+
+A version-1 record contains:
+
+| Field | Required content |
+|---|---|
+| Identity | `schemaVersion`, unique immutable `transitionID`, operation and canonical kind. |
+| Snapshot scope | Previous and target registry schema version, revision and SHA-256 of the **exact retained registry bytes**. No latest-file lookup, semantic-hash substitution or automatic rebase. |
+| Entity delta | Sorted source IDs, sorted target IDs, full before/after entity digests and explicit source-to-successor sets. They must equal the operation's cardinality and the snapshot diff. |
+| Reference dispositions | The complete affected-key inventory and one disposition per key as specified in §C, including immutable disposition/review ID, before/after record digests and the binding-version predecessor/authority fields specified below. |
+| Evidence | Identified retained evidence objects: source/document identity, capture kind, input/artifact hash, locator, relevant entity/member scope, and the facts supporting identity continuity or separation and each reference assignment. Non-name support is required; names alone are insufficient. Raw responses and extracts remain distinct; a hash does not authenticate a remote publisher. |
+| Rationale and dependencies | Case-specific reason; relevant grouping, station formation, line binding and other review identifiers/digests; all competing assignments and their resolution. Record missing evidence instead of guessing. |
+| Approval | Approver/reviewer identity and role, review time, explicit approval reference and digest of the exact reviewed payload. Distinguish technical authoring/checks from owner approval and any independent verification actually performed. A proposal without explicit approval is not an approved record. No survey or model details are invented. |
+
+Digest encodings are versioned, deterministic and scalar-exact: fixed field
+names, sorted object keys, prescribed set order, preserved ordered history and
+exact string scalars. The reviewed-payload digest excludes its approval envelope;
+the final record's byte hash covers the envelope too. Reference-record digests
+cover every decoded field, not just the provider key. Exact registry byte hashes
+remain separate from these record digests. Reuse existing exact-value and hashing
+primitives; do not introduce normalization or a signing/identity service.
+
+Approval of the transition does not approve names, aliases, coordinates,
+topology or unrelated bindings. Target data must independently satisfy the
+applicable DEC-069/070/071 reviews against its new target identities; no review
+is silently retargeted. Missing target names/network validation holds the build.
+
+### C. Explicit provider-reference dispositions; reuse stays separate
+
+An affected key is every reference held on a retiring source in the previous
+snapshot, including active, absent and retired references. Every such key must
+appear exactly once in its source transition's dispositions. Keys are the full
+`(sourceID, namespace, exact scalar value)`, never names or URI suffixes.
+
+| Disposition | Permitted before → after |
+|---|---|
+| `retainHistorical` | An absent or retired reference stays on its original, now-retired identity, with all fields/status unchanged. It does not resolve. A retired reference cannot transfer or reactivate. |
+| `transfer` | An active or absent, continuing provider identity moves to **one explicitly named direct successor** of its source. Preserve its key, active/absent status, original values, earliest/latest sightings and source provenance. Only its current canonical target and attaching-review authority change as described below. |
+
+**Operation-specific dispositions:**
+
+| Operation | Required reference handling | Runtime inspection |
+|---|---|---|
+| Pure retirement | Every affected reference must already be absent or retired and explicitly `retainHistorical`. Any active reference holds the transition. | Old ID is retired with exactly zero successors; active lookup is nil. |
+| Replacement | Every active reference transfers to the sole fresh successor. Absent references explicitly transfer or remain historical; retired references remain historical. | Old ID is retired with exactly one successor; lookup does not redirect. |
+| Merge | For each source, every active reference transfers to the one fresh target. Absent/retired handling is as above. Different keys may converge; no key acquires two current versions. | Each source exposes its one declared successor; the new entity is accessed by its own ID. |
+| Split | Every active reference explicitly transfers to exactly one of the fresh direct successors. Absent references explicitly transfer to one target or remain historical; retired references remain historical. | Source exposes the exact full successor list without choosing one. |
+
+For pure retirement, this deliberately uses the smallest existing withdrawal
+route: reconcile genuine missing/withdrawn references under DEC-068 §E in a
+separate previous checkpoint, retaining that evidence and its review. Do not
+mark a continuing active key absent or withdrawn just to permit retirement.
+Identity retirement alone is not evidence of provider withdrawal. A returning
+absent reference held on a retired canonical identity cannot reactivate through
+ordinary reconciliation; it is a conflict requiring review, not an inferred
+successor. A retired key returning remains a conflict under the existing rule.
+
+No active reference may remain on a retired identity. A split never fans one
+provider key out to multiple canonical IDs. Ambiguity means held, even if names
+or line membership favor one target. New keys, new sightings, provider status
+changes and genuine reference withdrawals remain separate DEC-068 checkpoints.
+The identity-transition snapshot pair freezes the key/status set and accounts
+for every changed canonical status and every changed current binding.
+
+A `transfer` is a narrowly authorized **binding-version transition under reviewed
+canonical identity migration**. It changes a held provider-reference key's
+current canonical target; calling all provider-reference rebinding absolutely
+prohibited would be inaccurate. It does not reuse a provider value for a different
+real provider entity. Continuity must be supported by the reviewed evidence;
+suspected value reuse or unverifiable continuity remains held. This exception
+creates no provider-value-reuse route.
+
+**Accepted DEC-068 binding amendment:** §C1 identifies
+`attachedBy` as the attachment authority of that particular binding version,
+and §B4/§E4 permit one reviewed current-target change only through this
+complete identity-transition workflow. The following constraints are mandatory:
+
+- The entire predecessor binding, original values, provenance, first/last
+  sightings and original `attachedBy` (including absence of that field) remain
+  immutable and inspectable in retained snapshots/history. Old approval does
+  not authorize the new attachment.
+- Each new binding version has an immutable `bindingVersionID`, full key,
+  canonical target, record digest, introducing registry schema/revision/hash,
+  and its own `reviewAuthority` equal to the unique approved `transfer`
+  disposition ID. Its current registry record's `attachedBy` has that same ID.
+  Use the unique disposition ID as `bindingVersionID`, avoiding another ID
+  allocation mechanism. The enclosing transition and approval reference are retained.
+- Its explicit `predecessor` identifies the exact previous registry hash,
+  full key and full prior record digest, plus the prior `bindingVersionID` when
+  one exists. A legacy first attachment is identified by its snapshot and record
+  digest without fabricating an earlier review ID. The predecessor must be the
+  current version at the previous checkpoint, never a stale historical version.
+- Exactly one binding version is current for every held provider-reference key
+  in each registry revision. Here *current version* means the record selected
+  by that snapshot; it does not mean reference status `active`. Absent/retired
+  references also have one current version but never resolve. Snapshots select
+  current versions; earlier versions do not have mutable `isCurrent` flags.
+  An unchanged reference carries its same attachment version forward. Later
+  ordinary sightings retain the attachment version and authority; they append
+  snapshot evidence under DEC-068 without rewriting the stored introducing
+  record. Two current versions are rejected even if they name the same target.
+- Ordinary reconciliation still cannot rebind a held key. Its new-key-only
+  `ReviewedRevisionRecord.attach` cannot perform the same reassignment, even
+  when handed a transition disposition ID. Only the dedicated applier with
+  the verified snapshot pair and complete approved history may do so. A bare
+  target registry or sidecar without that validation is insufficient.
+
+This amends the *current provider binding* rule, not the prohibition on changing
+what a canonical ID denotes. No canonical ID reuse/rebinding/deletion,
+reactivation, silent successor following or mutable historical review is allowed.
+Binding-version metadata lives in the external reviewed sidecar, with the target
+registry retaining one current record per key. No general provider-history store
+or runtime provider resolver is introduced.
+
+**Explicit semantic versions and bounded conversion.** Recommend registry schema
+3 and runtime artifact schema 2 for this extension; existing registry schema 2
+and runtime schema 1 keep their nonempty-successor semantics. The supported
+transition snapshot pairs are registry 2 → 3 for first application and 3 → 3
+thereafter. An initial v2 input must pass its original strict validator before
+conversion: an invalid v2 empty-successor entity cannot be legitimized by
+relabelling it. The lossless comparison view maps every v2 entity/reference field
+unchanged into v3 semantics, preserving the exact original v2 bytes and their
+hash. Then only the explicitly reviewed identity/binding delta is allowed.
+The target revision still advances once, not once per format step. Record the
+schema conversion separately from the identity delta in the deterministic
+receipt; schema conversion is not review authority for any identity change.
+
+The new runtime artifact is rebuilt offline from validated target inputs and
+retains all prior identity/build history. A schema-1 predecessor is read under
+its original rules; the output uses schema 2, with its own data version and
+exact target registry revision/hash. Unknown versions fail without mutation;
+old readers must reject the new version rather than reinterpret it. No in-place
+upgrade, reverse conversion or general schema-migration engine is proposed.
+This is the minimum explicit compatibility path needed by the newly permitted
+empty successor set, consistent with DEC-072. These explicit version numbers are part of the accepted contract; implementation
+and verification status are recorded separately in ROADMAP.
+
+### D. Exact delta, retained history and rejection
+
+The target entity set equals the previous set plus exactly the listed fresh
+targets. Only listed sources change active → retired; every other entity is
+unchanged. The target reference key set equals the previous set. Every reference
+outside a listed source is unchanged; each affected reference matches its exact
+reviewed disposition. Reject any unrecorded addition, deletion, current-binding
+reassignment, status or provenance change. Both registries independently pass
+the strict rules for their declared supported schema; only the explicit §C
+version conversion and reviewed delta are permitted.
+
+Reject duplicate binding-version or review/disposition IDs (including collisions with retained
+review history, except exact already-applied reruns under §E), duplicate keys or
+participants, even when identical; conflicting operations/targets; unused records/dispositions;
+wrong kinds, cardinality or namespace; unknown/retired sources; already-held
+targets; cycles/self-successors; incomplete or stale snapshots/evidence; altered
+review payloads; missing approval; and any uncovered delta. A review for an older
+snapshot pair is not automatically valid for a newer pair. DEC-071's narrower
+name-evidence carry-forward exception does not rebase identity transitions.
+
+Retain exact previous and target snapshots, all original reference versions,
+first sightings, names/provenance, prior reviews and every applied transition.
+Use one append-only, versioned transition-history manifest that identifies the
+initial snapshot and the ordered snapshot-pair/record hashes thereafter; require
+its previous digest to match the prior accepted history. A single boundary may
+contain disjoint records, deterministically sorted by transition ID. Altered,
+missing or duplicated history fails closed. This is a bounded evidence manifest,
+not a general event store, provider-history redesign or production delivery system.
+
+The hash dependency is acyclic: registry snapshots do not embed the transition
+manifest hash; records bind the snapshot bytes; the manifest binds records and
+snapshot lineage; the runtime artifact's build metadata binds the manifest hash
+as an `identity-transitions` input. Full reviews, reference history and source
+captures remain outside runtime storage. Retention limits must fail rather than
+truncate history, and explicit format evolution remains subject to DEC-072.
+
+### E. Offline application, atomicity and reruns
+
+1. Read only the supplied identified snapshots, reviews, prior manifest and
+   previous runtime artifact. Verify hashes and approvals, and that the previous
+   artifact's registry hash/revision and identity state match the previous
+   checkpoint. No discovery, acquisition or source-preference policy is added.
+2. Validate the entire batch, complete registry diff, reference dispositions and
+   history before applying anything. Stage the target canonical data and its
+   separately valid name/network inputs; validate all active identities, topology,
+   membership, complete names, aliases and scalar-exact search together.
+3. Apply the reviewed delta **to a new derived artifact**, never by updating the
+   old registry/artifact in place. Append one transition boundary to the external
+   history and one build revision to runtime metadata; retain all retired entities
+   and direct successors. Reopen and validate the staged result before publication.
+4. Publish one new, exclusively named output package only when its artifact,
+   updated history manifest and digest receipt are complete and mutually checked.
+   The deterministic receipt lists registry, record-set, history and artifact
+   hashes; it includes neither its own hash nor invocation-specific fields.
+   Stage together on the same filesystem and use an exclusive atomic directory
+   rename (or equivalent single commit boundary). No multi-file partial success,
+   overwrite or replacement of an existing package is allowed. On failure, publish
+   nothing, leave all input/previous outputs unchanged and report the exact blocker.
+   This is offline output atomicity, not a production installer or crash-recovery
+   service; parent-directory durability claims require their own actual checks.
+
+Rerunning the same previous/target pair and byte-identical approved record set
+produces identical artifact/manifest/receipt bytes. With the resulting artifact
+and history supplied as previous output, recognize the exact already-applied
+boundary, revalidate it and the supplied target build inputs, and make no new
+transition, registry increment, build revision or history entry. A reused review
+ID with different bytes, a different review for an already-applied effect, a
+nonmatching current target or missing historical inputs is a conflict, not a
+second application. Invocation time, temporary paths and randomness are not
+persisted. Changed descriptive build inputs instead use DEC-072's ordinary
+data-revision path with existing transition history retained; they are not an
+idempotent transition replay and confer no new identity approval. Measure SQLite
+byte equality with the pinned implementation/engine as
+DEC-072 requires; do not assume equality across engine upgrades.
+
+Missing review or unresolved reference/target data holds the whole batch. Return
+`identityMigrationRequired` or a specific stale/conflict/incomplete-review reason;
+never partially retire sources, silently drop keys or replace a choice.
+
+### F. Runtime behavior and synthetic acceptance
+
+The read-only repository exposes the old ID's retired status and exact declared
+successor list as metadata, including an explicit empty list for pure retirement.
+Looking up the old ID yields no active Domain value;
+it never redirects to a successor. Target identities are available only under
+their own IDs. Active name/alias search contains only explicitly approved target
+entries, never aliases automatically copied from retired entities. No saved
+journey/recent-search remapping, recursive successor API or UI behavior is added.
+
+The focused synthetic acceptance plan must demonstrate **application of new
+transitions**, not an initially retired fixture alone:
+
+- Begin with an artifact whose source identities are active. For each supported
+  operation, supply a reviewed next registry, disjoint records and explicit
+  active/absent/historical reference dispositions. Apply to a new package and
+  assert the source status changed and the exact declared targets/successors exist,
+  held references resolve only as reviewed, and all old snapshots/records remain
+  byte-identical. Include multiple successors in a split and multiple sources in
+  a merge; exercise same-kind validation for all three canonical kinds.
+- Apply pure retirement to an active source with no references, and separately
+  with explicitly retained absent/retired references. Assert zero new identities,
+  retired status with exactly zero successors, no fabricated target, nil active
+  lookup, and preserved nonresolving references after reopen and both repeat
+  modes. An active continuing reference must hold the whole transition; a
+  prior genuinely reviewed withdrawal may satisfy the prerequisite without
+  changing its historical authority or being confused with identity retirement.
+- Reject duplicate current versions for one key, both with equal and different
+  targets; stale/missing predecessors; altered prior provenance or `attachedBy`;
+  and use of old attachment approval as the new version's authority. Read back
+  both versions and prove the old authority is byte-identical and the new one
+  names its own reviewed disposition. Feed the same reassignment to ordinary
+  reconciliation and prove rejection without mutation, even with a copied
+  transition authority ID. A fresh target's prior allocation alone is not authority.
+- Prove registry 2 → 3 conversion preserves every pre-transition field and
+  retained original byte stream, while only reviewed deltas change the target;
+  preserve schema-1 build history in schema-2 output. Reject an empty-successor
+  v2 registry, malformed/unknown versions and conversion without required review.
+- Reopen the new artifact and check full Domain payloads, cross-references,
+  exact Unicode names/explicit aliases, stable same-name results, retired-ID
+  inspection and nil active lookup for retired IDs without successor following.
+  Read back the external history and original `attachedBy`/first-sighting values.
+- Repeat from original inputs and from the already-applied output. Compare all
+  artifact/manifest/receipt bytes; prove no duplicate entry, second retirement or
+  revision increment. A later separate transition may retire a prior successor;
+  old direct successor lists remain intact and no lookup follows the chain.
+- Reject missing, duplicate, altered or stale approvals; hidden delta; duplicate
+  or ambiguous reference assignment; wrong-kind/cardinality; retained active
+  reference on a retired source; provider-value reuse/retired-key reactivation;
+  already-held target; cycle; lost history; unsupported schema; and invalid target
+  names/network. Inject failure before publication: no partial package appears,
+  no existing artifact changes, and the old repository remains usable.
+- Retain existing ordinary-query/no-full-reparse, resource-bound, data-version,
+  schema rejection and deterministic-build checks. Run affected checks and an
+  appropriate final integration gate after implementation, not in this decision.
+
+## Accepted defaults and unchanged gates
+
+Recommend the snapshot-pair approach; the four cardinalities above; fresh
+successors wherever successors exist; a frozen provider key/status set; explicit
+one-target binding-version transfers with immutable predecessor authority; pure
+retirement only after no affected active reference remains; and one external
+append-only manifest and atomic output package. The bounded semantic version
+conversion preserves prior values/history rather than reinterpreting old formats.
+No arbitrary-registry mutation scripts, general migration engine or provider-value
+reuse policy are needed.
+
+The owner accepted the revised contract and both explicit DEC-068 amendments
+on 2026-10-01, authorizing bounded synthetic implementation. Historical proposal
+reasoning is retained above; acceptance does not approve any real transition.
+Absorption into existing identities and provider-value reuse remain outside scope.
+
+DEC-068 §F, Q3/publication, Q4/new Metro-derived translations and ODPT item 5/app
+bundling remain unchanged. No production registry location, backup/delivery,
+identifier promotion/minting, real transition approval or distribution is decided.
+P2-S8 completion requires verified implementation and all accepted slice criteria.
+This acceptance changes only the identified DEC-068 provisions; DEC-072 storage
+design and all registry/delivery gates remain unchanged.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
@@ -5510,17 +5955,16 @@ Related:
 
 ### Static Rail Storage Format
 
-Potential options include:
-
-- SQLite
-- compact binary
-- generated indexed files
-- compact JSON
-
-Selection should follow prototype measurement.
+Resolved for the bounded storage design by **Accepted DEC-072**: system SQLite,
+following the retained compact-file/SQLite comparison. DEC-073 supplies the
+accepted reviewed identity-transition contract. Implementation and subsequent
+validated-repository/device evidence are recorded in ROADMAP; neither design
+acceptance nor synthetic verification authorizes real-data delivery or bundling.
 
 Related:
 - DEC-029
+- DEC-072
+- DEC-073
 
 ### Exact Realtime Refresh Cadence
 

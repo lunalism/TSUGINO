@@ -1,0 +1,321 @@
+{
+  "date": "2026-10-01",
+  "baseHead": "31732d77910cd2d96cf4858a95a50f2b2ab3a922",
+  "branch": "phase/02-static-data",
+  "upstream": "origin/phase/02-static-data",
+  "trackedUpstreamAhead": 0,
+  "trackedUpstreamBehind": 0,
+  "freshRemoteQueryPerformed": false,
+  "stagedPaths": [],
+  "review": "One focused in-session final review; no new material implementation defect; documentation accuracy fixes only.",
+  "newTestsBuildsMeasurements": false,
+  "sourceCoverage": {
+    "dec073Matched": 172,
+    "dec073Total": 175,
+    "laterMembershipFilesMatched": 2,
+    "finalValidatedMeasurementSourcesMatched": 62,
+    "savedTestBuildLogsMatched": 14,
+    "appHookAndBothPhysicalProbeSourcesMatched": true,
+    "allPriorInventoriedCodeScriptsUnchanged": true
+  },
+  "commitPlan": [
+    {
+      "order": 1,
+      "message": "Record synthetic compact-file and SQLite storage comparison"
+    },
+    {
+      "order": 2,
+      "message": "Implement validated SQLite storage and reviewed identity transitions"
+    }
+  ],
+  "paths": [
+    {
+      "path": "TSUGINO/App/RepositoryDeviceMeasurement.swift",
+      "commit": 2,
+      "sha256": "3324a279a0211d9b36b11d1b053e395f30af04b37737cf2621de2f56e31d7291"
+    },
+    {
+      "path": "TSUGINO/App/RepositoryStartupMeasurement.swift",
+      "commit": 2,
+      "sha256": "72d1aed5a26af51a555a1035fb7d03cb8ee90cd0cf7e74daa92938eeef93e940"
+    },
+    {
+      "path": "TSUGINO/App/TSUGINOApp.swift",
+      "commit": 2,
+      "sha256": "d97e62deb0751f9bcf858603fff4e87e10fdc6ea51d0c95c9132d4290f78a580"
+    },
+    {
+      "path": "TSUGINO/Data/Mapping/MappingRegistry.swift",
+      "commit": 2,
+      "sha256": "a9825f45bb48cbaa58f641dcdd64396cf9138e9fe4dc7aa1533fbe416974a928"
+    },
+    {
+      "path": "TSUGINO/Data/Mapping/ProviderReference.swift",
+      "commit": 2,
+      "sha256": "8f1fdeef8eeffa57509f162862fb82456073412fa5a9b07b66e4c78b0eb21c05"
+    },
+    {
+      "path": "TSUGINO/Data/Search/ExactStationIndex.swift",
+      "commit": 2,
+      "sha256": "3742d581bdab54814635e599bff452a3fbe14c95e3d07810a9b38e449d4e95e2"
+    },
+    {
+      "path": "TSUGINO/Data/Storage/RailwayArtifact.swift",
+      "commit": 2,
+      "sha256": "d55d90d1677b0cca70e72ac13992089f747ad8f06786959cc3087f9ad6f0f55c"
+    },
+    {
+      "path": "TSUGINO/Data/Storage/RailwaySQLiteConnection.swift",
+      "commit": 2,
+      "sha256": "04226dad12c68ebd9c1c9253815e088bfb49a977541887bd781d5b4a1698a40b"
+    },
+    {
+      "path": "TSUGINO/Data/Storage/SQLiteRailwayRepository.swift",
+      "commit": 2,
+      "sha256": "f91fab2b5f0bd599fc983347c7c93d992d80b40e80dfcfafc1176b89d219394e"
+    },
+    {
+      "path": "TSUGINO/Domain/Repositories/RailwayDataRepository.swift",
+      "commit": 2,
+      "sha256": "4c1490b79a98d41a31328891eaeca1c6e56ebf9e37decf58c13b976c1593c2a5"
+    },
+    {
+      "path": "TSUGINOTests/ExactStationIndexTests.swift",
+      "commit": 2,
+      "sha256": "f8d0369cf6dfbbbd5199bd619966bf7f094a7835594439f5b32cad6991c96ec2"
+    },
+    {
+      "path": "TSUGINOTests/RailwayRepositoryTests.swift",
+      "commit": 2,
+      "sha256": "fd546e6e6f3c0cc6fd428d9be27e597177f5378cde60c1a1cb3dfb091c1081b8"
+    },
+    {
+      "path": "Tools/RailwayStorage/.gitignore",
+      "commit": 2,
+      "sha256": "99921edb369e12a35a87d768ae481f8c944573626abd4b8f3a1fe78846f30ba7"
+    },
+    {
+      "path": "Tools/RailwayStorage/DEC073_VERIFICATION.md",
+      "commit": 2,
+      "sha256": "680724829b329e610abe156ef66e8071f04fafe50ab1a3c73f8991c1c58e68ba"
+    },
+    {
+      "path": "Tools/RailwayStorage/FINAL_REVIEW.md",
+      "commit": 2,
+      "sha256": "c031eb1d44f3d4cb8f0a2104eade63fa3291847ebc31b53b3a0958f9d1f172d9"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/DEVICE_PROCEDURE.md",
+      "commit": 2,
+      "sha256": "fa0c68a5fe127311463b07317f5a81bdc5461c5850a873968f6a7c14e89dde41"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/METHOD.md",
+      "commit": 2,
+      "sha256": "e4929e9d309bf56ed1c279de0c81442cfba3cf5e131db9523e8b6395b85818d9"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Physical/METHOD.md",
+      "commit": 2,
+      "sha256": "896098f099d2d2c9c3e2445bb3366554a5e2ab0eec3a682abe3f54b39bc945eb"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Physical/RESULTS.md",
+      "commit": 2,
+      "sha256": "5224d726301944299f75a09583795c6008a7f7ef375b8e1f35feb91c02d2200f"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Physical/startup-results.json",
+      "commit": 2,
+      "sha256": "cc41c88ccd080ad9c925d5050dd9c1df34c9e7481e2f179f74d44ad7b3ae1fcb"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Physical/workload-results.json",
+      "commit": 2,
+      "sha256": "3e3196f34427383e305858d3a8c9f842de2ba69618a1778500decee685bd2196"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/RESULTS.md",
+      "commit": 2,
+      "sha256": "30289335b5b389eb561bed8ca8109dad7061aaa95b4e3fbcb39c11f97dbb0626"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Startup/METHOD.md",
+      "commit": 2,
+      "sha256": "d24823ab336be3397c7f5efc7ff26b570b8a78c4674dd6e7487d6669134b66ce"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Startup/RESULTS.md",
+      "commit": 2,
+      "sha256": "8125bccab9e87c8175ba96e43d173fdf17a56257a077fd934ee9e7b0903dab0b"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Startup/results.json",
+      "commit": 2,
+      "sha256": "0b768df7017b026dce6384f07f342d7fc831d650b4a88ac338d657dc77c70b20"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/Startup/run.py",
+      "commit": 2,
+      "sha256": "39f3c39afb24d3ee0f78719b492e818f329d6b5f68b8c341065bd41a28e10c77"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/before-membership-fix.json",
+      "commit": 2,
+      "sha256": "429b95f9c46988d1c600af90567fa8d761c6d157e98a99250212ab298c1ab756"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/build.sh",
+      "commit": 2,
+      "sha256": "e869680ab35c6753d9007a34090e4029caa3c1a48c34b038e58626065b481546"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/environment.json",
+      "commit": 2,
+      "sha256": "fcc460128c8bf12f0840b28ff3f871f351ef1fd936e190e588cc376291d83440"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/main.swift",
+      "commit": 2,
+      "sha256": "38d9c515b23cee436452350516ec71d3eb87547a5932d58655b29c0905c15cc1"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/results.json",
+      "commit": 2,
+      "sha256": "4346acddc717f1e7a5f5af5f57505e6cec2058e319db33021c1d204a6c8c7255"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/run.py",
+      "commit": 2,
+      "sha256": "7aea8c5ab9d09c692c005e4d40ecb290520b346df20ec63faf2d97698ea607aa"
+    },
+    {
+      "path": "Tools/RailwayStorage/Measurement/verification.json",
+      "commit": 2,
+      "sha256": "7cbf643cd744b17c7d18d9b292f1ab06ddc8ce7274fb3d97ecb54ccd5a3c8aa7"
+    },
+    {
+      "path": "Tools/RailwayStorage/README.md",
+      "commit": 2,
+      "sha256": "0266f5cf12e1ec74b34be81a092fcfd67d8f28052f65b50a8ef59fd71b59732d"
+    },
+    {
+      "path": "Tools/RailwayStorage/Sources/IdentityTransition.swift",
+      "commit": 2,
+      "sha256": "7d7c699841f043bdc4722dbac5801630f8700b34ee1ee0e93b41608c6714c435"
+    },
+    {
+      "path": "Tools/RailwayStorage/Sources/RailwayArtifactBuilder.swift",
+      "commit": 2,
+      "sha256": "c7b8eafe0730fb6b47bb25b0c6dbced0fe78c4bee52643e57a37b60ff612616b"
+    },
+    {
+      "path": "Tools/RailwayStorage/Tests/StorageTests.swift",
+      "commit": 2,
+      "sha256": "cbd9c8116a648e8b8d53583aaf513dc7fe7882b48e46d61a1bf91bb85cd6f917"
+    },
+    {
+      "path": "Tools/RailwayStorage/Tests/TransitionTests.swift",
+      "commit": 2,
+      "sha256": "3f2c9132d55fcb11b5fc8c1a4b570167b7327a6a8a3f4823c4ac1d666b41f2bb"
+    },
+    {
+      "path": "Tools/RailwayStorage/VERIFICATION.md",
+      "commit": 2,
+      "sha256": "6931d440923a0ab69c8563b5a96b990dcab60acc07c4705040a1011e007e010c"
+    },
+    {
+      "path": "Tools/RailwayStorage/dec073-verification.json",
+      "commit": 2,
+      "sha256": "2c1bb5a230a2e7a909b99dd6dd69395d11fab303487d59b190695d9394bd4eed"
+    },
+    {
+      "path": "Tools/RailwayStorage/final-review.json",
+      "commit": 2,
+      "sha256": null
+    },
+    {
+      "path": "Tools/RailwayStorage/test.sh",
+      "commit": 2,
+      "sha256": "f5ec0941254123d29097ad558e72a2a1c84562fbe88de9653ce6bf59195e2c83"
+    },
+    {
+      "path": "Tools/RailwayStorage/verification.json",
+      "commit": 2,
+      "sha256": "be9296a7c9515bcba73fca46526e0e3c825c3aad0160eba72a50e4e189239f18"
+    },
+    {
+      "path": "Tools/StaticDataIntake/Tests/RevisionTests.swift",
+      "commit": 2,
+      "sha256": "e2b78905acfc412dcd374f7f3b855ed563947b4a5f3a2024dc44e1eda29d9907"
+    },
+    {
+      "path": "Tools/StorageMeasurement/.gitignore",
+      "commit": 1,
+      "sha256": "99921edb369e12a35a87d768ae481f8c944573626abd4b8f3a1fe78846f30ba7"
+    },
+    {
+      "path": "Tools/StorageMeasurement/CSQLite/module.modulemap",
+      "commit": 1,
+      "sha256": "bbfe59a972a3e8e09e347c04bc22c0eacd2544881af8a4b6068bfc30b38466e8"
+    },
+    {
+      "path": "Tools/StorageMeasurement/CSQLite/shim.h",
+      "commit": 1,
+      "sha256": "b052d8e561e942f97b503033ecd2eaa2b35213bdbf374983efe9e68eabdfc024"
+    },
+    {
+      "path": "Tools/StorageMeasurement/README.md",
+      "commit": 1,
+      "sha256": "f19948f131ceee8d629314e4a68565828b3548182d765d6b37b26c6a5022ec7f"
+    },
+    {
+      "path": "Tools/StorageMeasurement/RESULTS.md",
+      "commit": 1,
+      "sha256": "b6e7588c204522a7a19a4efe22d292b50e44072334de147a5646c67a4dce549b"
+    },
+    {
+      "path": "Tools/StorageMeasurement/build.sh",
+      "commit": 1,
+      "sha256": "69916944af8c57b6483103a4b776206295f85ef31b0aa3787c2e13b205d91ad6"
+    },
+    {
+      "path": "Tools/StorageMeasurement/main.swift",
+      "commit": 1,
+      "sha256": "3002eba620f8a43e4afd94ce10d5b2d512cdc3bf3c511d9699b1b444872cfc63"
+    },
+    {
+      "path": "Tools/StorageMeasurement/results.json",
+      "commit": 1,
+      "sha256": "7aeaa079f3c0c4f459c74327dac3f38f60be1b7c69b5ca698508341003635c37"
+    },
+    {
+      "path": "Tools/StorageMeasurement/run.py",
+      "commit": 1,
+      "sha256": "4b46e6cd1585f44120483f0a735c8ed3b5697acbed85b09339b3b27589ba33d8"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "commit": 2,
+      "sha256": "06a1e7f46c01c3e3ed0da39bdafdb990cff839cb138b129cba21c2415465bad0"
+    },
+    {
+      "path": "docs/DECISIONS.md",
+      "commit": 2,
+      "sha256": "2815462fd97b77eab24091fce1806d7e12252fa4662e6363d245c37fa5e281ba"
+    },
+    {
+      "path": "docs/ROADMAP.md",
+      "commit": 2,
+      "sha256": "9dfaec44903657852e67f21ebba68e59fc57517f792f9948e5380048ceaf72c5"
+    }
+  ],
+  "selfHashOmitted": true,
+  "excluded": "Ignored build products, runtime artifacts, raw logs/device results, owner-only evidence and all real provider records.",
+  "commitPreflightCorrection": {
+    "path": "Tools/RailwayStorage/Measurement/build.sh",
+    "previousSHA256": "69b3551ea0502ea39c6f303c4cf12c4b9c969a451c4ce373073f77201c0be776",
+    "currentSHA256": "e869680ab35c6753d9007a34090e4029caa3c1a48c34b038e58626065b481546",
+    "change": "Removed one extra blank line at EOF; shell syntax checked; no executable statement changed."
+  }
+}

@@ -1,0 +1,854 @@
+{
+  "environment": {
+    "device": "iPhone 17 Pro Max",
+    "os": "iOS 27.0",
+    "configuration": "Release, Swift -O, measurement-only flag",
+    "offline": "Owner confirmed Airplane Mode on and Wi-Fi off; USB connected. Startup probe does not resample network/thermal/battery.",
+    "cache": "Process-cold; XCTest preliminary launch, OS caches uncontrolled.",
+    "recoveryChecksExcluded": 2
+  },
+  "cohorts": {
+    "ordinary": {
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "passedTests": 20,
+      "samples": [
+        {
+          "testIndex": 0,
+          "metric": "firstFrame",
+          "pair": 1,
+          "mode": "baseline",
+          "durationMs": 136.727583,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3000",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 1,
+          "metric": "firstFrame",
+          "pair": 1,
+          "mode": "enabled",
+          "durationMs": 136.931458,
+          "probe": {
+            "firstQueryMs": 0.077875,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 38.112334,
+            "openStartAfterHookMs": 2.557083,
+            "readyAfterHookMs": 40.750917,
+            "sample": "3001",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 2,
+          "metric": "firstFrame",
+          "pair": 2,
+          "mode": "enabled",
+          "durationMs": 137.62633300000002,
+          "probe": {
+            "firstQueryMs": 0.061458,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 44.437666,
+            "openStartAfterHookMs": 2.400542,
+            "readyAfterHookMs": 46.901375,
+            "sample": "3002",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 3,
+          "metric": "firstFrame",
+          "pair": 2,
+          "mode": "baseline",
+          "durationMs": 133.991916,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3003",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 4,
+          "metric": "firstFrame",
+          "pair": 3,
+          "mode": "baseline",
+          "durationMs": 136.370958,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3004",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 5,
+          "metric": "firstFrame",
+          "pair": 3,
+          "mode": "enabled",
+          "durationMs": 135.486375,
+          "probe": {
+            "firstQueryMs": 0.098541,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.955167,
+            "openStartAfterHookMs": 2.562416,
+            "readyAfterHookMs": 43.631166,
+            "sample": "3005",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 6,
+          "metric": "firstFrame",
+          "pair": 4,
+          "mode": "enabled",
+          "durationMs": 132.960958,
+          "probe": {
+            "firstQueryMs": 0.099209,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.377625,
+            "openStartAfterHookMs": 2.23625,
+            "readyAfterHookMs": 42.716042,
+            "sample": "3006",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 7,
+          "metric": "firstFrame",
+          "pair": 4,
+          "mode": "baseline",
+          "durationMs": 134.75175000000002,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3007",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 8,
+          "metric": "firstFrame",
+          "pair": 5,
+          "mode": "baseline",
+          "durationMs": 135.313875,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3008",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 9,
+          "metric": "firstFrame",
+          "pair": 5,
+          "mode": "enabled",
+          "durationMs": 132.699875,
+          "probe": {
+            "firstQueryMs": 0.206458,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.928375,
+            "openStartAfterHookMs": 2.232208,
+            "readyAfterHookMs": 43.370916,
+            "sample": "3009",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 10,
+          "metric": "responsive",
+          "pair": 1,
+          "mode": "baseline",
+          "durationMs": 133.637875,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3010",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 11,
+          "metric": "responsive",
+          "pair": 1,
+          "mode": "enabled",
+          "durationMs": 137.637583,
+          "probe": {
+            "firstQueryMs": 0.059459,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 42.796,
+            "openStartAfterHookMs": 3.501542,
+            "readyAfterHookMs": 46.359084,
+            "sample": "3011",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 12,
+          "metric": "responsive",
+          "pair": 2,
+          "mode": "enabled",
+          "durationMs": 134.5375,
+          "probe": {
+            "firstQueryMs": 0.104292,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.7715,
+            "openStartAfterHookMs": 2.284917,
+            "readyAfterHookMs": 43.164042,
+            "sample": "3012",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 13,
+          "metric": "responsive",
+          "pair": 2,
+          "mode": "baseline",
+          "durationMs": 136.61283300000002,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3013",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 14,
+          "metric": "responsive",
+          "pair": 3,
+          "mode": "baseline",
+          "durationMs": 133.023458,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3014",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 15,
+          "metric": "responsive",
+          "pair": 3,
+          "mode": "enabled",
+          "durationMs": 133.975208,
+          "probe": {
+            "firstQueryMs": 0.069125,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 41.543042,
+            "openStartAfterHookMs": 2.439625,
+            "readyAfterHookMs": 44.054334,
+            "sample": "3015",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 16,
+          "metric": "responsive",
+          "pair": 4,
+          "mode": "enabled",
+          "durationMs": 135.98612500000002,
+          "probe": {
+            "firstQueryMs": 0.100333,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 39.952166,
+            "openStartAfterHookMs": 2.48625,
+            "readyAfterHookMs": 42.542208,
+            "sample": "3016",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 17,
+          "metric": "responsive",
+          "pair": 4,
+          "mode": "baseline",
+          "durationMs": 137.979666,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3017",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 18,
+          "metric": "responsive",
+          "pair": 5,
+          "mode": "baseline",
+          "durationMs": 133.054584,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3018",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 19,
+          "metric": "responsive",
+          "pair": 5,
+          "mode": "enabled",
+          "durationMs": 132.048875,
+          "probe": {
+            "firstQueryMs": 0.131958,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 41.209875,
+            "openStartAfterHookMs": 2.514542,
+            "readyAfterHookMs": 43.859458,
+            "sample": "3019",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        }
+      ],
+      "summary": {
+        "firstFrame": {
+          "baseline": {
+            "median": 135.313875,
+            "minimum": 133.991916,
+            "maximum": 136.727583
+          },
+          "enabled": {
+            "median": 135.486375,
+            "minimum": 132.699875,
+            "maximum": 137.62633300000002
+          },
+          "pairedEnabledMinusBaselineMs": [
+            0.20387499999998226,
+            3.6344170000000133,
+            -0.8845829999999921,
+            -1.7907920000000104,
+            -2.6140000000000043
+          ],
+          "pairedDifference": {
+            "median": -0.8845829999999921,
+            "minimum": -2.6140000000000043,
+            "maximum": 3.6344170000000133
+          },
+          "enabledProbeMs": {
+            "openIncludingValidationMs": {
+              "median": 40.928375,
+              "minimum": 38.112334,
+              "maximum": 44.437666
+            },
+            "firstQueryMs": {
+              "median": 0.098541,
+              "minimum": 0.061458,
+              "maximum": 0.206458
+            },
+            "readyAfterHookMs": {
+              "median": 43.370916,
+              "minimum": 40.750917,
+              "maximum": 46.901375
+            }
+          }
+        },
+        "responsive": {
+          "baseline": {
+            "median": 133.637875,
+            "minimum": 133.023458,
+            "maximum": 137.979666
+          },
+          "enabled": {
+            "median": 134.5375,
+            "minimum": 132.048875,
+            "maximum": 137.637583
+          },
+          "pairedEnabledMinusBaselineMs": [
+            3.9997079999999983,
+            -2.075333000000029,
+            0.9517500000000041,
+            -1.9935409999999933,
+            -1.005708999999996
+          ],
+          "pairedDifference": {
+            "median": -1.005708999999996,
+            "minimum": -2.075333000000029,
+            "maximum": 3.9997079999999983
+          },
+          "enabledProbeMs": {
+            "openIncludingValidationMs": {
+              "median": 41.209875,
+              "minimum": 39.952166,
+              "maximum": 42.796
+            },
+            "firstQueryMs": {
+              "median": 0.100333,
+              "minimum": 0.059459,
+              "maximum": 0.131958
+            },
+            "readyAfterHookMs": {
+              "median": 43.859458,
+              "minimum": 42.542208,
+              "maximum": 46.359084
+            }
+          }
+        }
+      }
+    },
+    "history": {
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "passedTests": 20,
+      "samples": [
+        {
+          "testIndex": 0,
+          "metric": "firstFrame",
+          "pair": 1,
+          "mode": "baseline",
+          "durationMs": 132.607584,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3000",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 1,
+          "metric": "firstFrame",
+          "pair": 1,
+          "mode": "enabled",
+          "durationMs": 135.465375,
+          "probe": {
+            "firstQueryMs": 0.099167,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 42.20525,
+            "openStartAfterHookMs": 2.690334,
+            "readyAfterHookMs": 44.997459,
+            "sample": "3001",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 2,
+          "metric": "firstFrame",
+          "pair": 2,
+          "mode": "enabled",
+          "durationMs": 135.20337500000002,
+          "probe": {
+            "firstQueryMs": 0.067833,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.904834,
+            "openStartAfterHookMs": 2.491916,
+            "readyAfterHookMs": 43.466541,
+            "sample": "3002",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 3,
+          "metric": "firstFrame",
+          "pair": 2,
+          "mode": "baseline",
+          "durationMs": 134.99804200000003,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3003",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 4,
+          "metric": "firstFrame",
+          "pair": 3,
+          "mode": "baseline",
+          "durationMs": 134.322458,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3004",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 5,
+          "metric": "firstFrame",
+          "pair": 3,
+          "mode": "enabled",
+          "durationMs": 136.28020800000002,
+          "probe": {
+            "firstQueryMs": 0.115792,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 41.678125,
+            "openStartAfterHookMs": 2.450542,
+            "readyAfterHookMs": 44.253167,
+            "sample": "3005",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 6,
+          "metric": "firstFrame",
+          "pair": 4,
+          "mode": "enabled",
+          "durationMs": 133.991542,
+          "probe": {
+            "firstQueryMs": 0.092917,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.628708,
+            "openStartAfterHookMs": 2.370375,
+            "readyAfterHookMs": 43.094042,
+            "sample": "3006",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 7,
+          "metric": "firstFrame",
+          "pair": 4,
+          "mode": "baseline",
+          "durationMs": 137.655958,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3007",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 8,
+          "metric": "firstFrame",
+          "pair": 5,
+          "mode": "baseline",
+          "durationMs": 137.748625,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3008",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 9,
+          "metric": "firstFrame",
+          "pair": 5,
+          "mode": "enabled",
+          "durationMs": 132.641041,
+          "probe": {
+            "firstQueryMs": 0.094291,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.290708,
+            "openStartAfterHookMs": 2.765084,
+            "readyAfterHookMs": 43.1525,
+            "sample": "3009",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 10,
+          "metric": "responsive",
+          "pair": 1,
+          "mode": "baseline",
+          "durationMs": 132.748584,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3010",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 11,
+          "metric": "responsive",
+          "pair": 1,
+          "mode": "enabled",
+          "durationMs": 134.286542,
+          "probe": {
+            "firstQueryMs": 0.092167,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 42.186666,
+            "openStartAfterHookMs": 2.336334,
+            "readyAfterHookMs": 44.618084,
+            "sample": "3011",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 12,
+          "metric": "responsive",
+          "pair": 2,
+          "mode": "enabled",
+          "durationMs": 135.770083,
+          "probe": {
+            "firstQueryMs": 0.055542,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 40.818375,
+            "openStartAfterHookMs": 2.264625,
+            "readyAfterHookMs": 43.140583,
+            "sample": "3012",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 13,
+          "metric": "responsive",
+          "pair": 2,
+          "mode": "baseline",
+          "durationMs": 132.9635,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3013",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 14,
+          "metric": "responsive",
+          "pair": 3,
+          "mode": "baseline",
+          "durationMs": 138.532667,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3014",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 15,
+          "metric": "responsive",
+          "pair": 3,
+          "mode": "enabled",
+          "durationMs": 134.651542,
+          "probe": {
+            "firstQueryMs": 0.150208,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 41.103541,
+            "openStartAfterHookMs": 2.502875,
+            "readyAfterHookMs": 43.760166,
+            "sample": "3015",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 16,
+          "metric": "responsive",
+          "pair": 4,
+          "mode": "enabled",
+          "durationMs": 133.898708,
+          "probe": {
+            "firstQueryMs": 0.055584,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 42.351083,
+            "openStartAfterHookMs": 2.4415,
+            "readyAfterHookMs": 44.850167,
+            "sample": "3016",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        },
+        {
+          "testIndex": 17,
+          "metric": "responsive",
+          "pair": 4,
+          "mode": "baseline",
+          "durationMs": 136.43,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3017",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 18,
+          "metric": "responsive",
+          "pair": 5,
+          "mode": "baseline",
+          "durationMs": 131.98854200000002,
+          "probe": {
+            "instrumentation": 1,
+            "mode": "baseline",
+            "sample": "3018",
+            "status": "ok"
+          }
+        },
+        {
+          "testIndex": 19,
+          "metric": "responsive",
+          "pair": 5,
+          "mode": "enabled",
+          "durationMs": 136.12608300000002,
+          "probe": {
+            "firstQueryMs": 0.081541,
+            "fullLoads": 0,
+            "instrumentation": 1,
+            "matchedDistinctStations": 2,
+            "mode": "enabled",
+            "openIncludingValidationMs": 44.004625,
+            "openStartAfterHookMs": 2.342625,
+            "readyAfterHookMs": 46.431458,
+            "sample": "3019",
+            "status": "ok",
+            "validationPasses": 1
+          }
+        }
+      ],
+      "summary": {
+        "firstFrame": {
+          "baseline": {
+            "median": 134.99804200000003,
+            "minimum": 132.607584,
+            "maximum": 137.748625
+          },
+          "enabled": {
+            "median": 135.20337500000002,
+            "minimum": 132.641041,
+            "maximum": 136.28020800000002
+          },
+          "pairedEnabledMinusBaselineMs": [
+            2.8577909999999918,
+            0.205332999999996,
+            1.9577500000000043,
+            -3.6644159999999886,
+            -5.107584000000003
+          ],
+          "pairedDifference": {
+            "median": 0.205332999999996,
+            "minimum": -5.107584000000003,
+            "maximum": 2.8577909999999918
+          },
+          "enabledProbeMs": {
+            "openIncludingValidationMs": {
+              "median": 40.904834,
+              "minimum": 40.290708,
+              "maximum": 42.20525
+            },
+            "firstQueryMs": {
+              "median": 0.094291,
+              "minimum": 0.067833,
+              "maximum": 0.115792
+            },
+            "readyAfterHookMs": {
+              "median": 43.466541,
+              "minimum": 43.094042,
+              "maximum": 44.997459
+            }
+          }
+        },
+        "responsive": {
+          "baseline": {
+            "median": 132.9635,
+            "minimum": 131.98854200000002,
+            "maximum": 138.532667
+          },
+          "enabled": {
+            "median": 134.651542,
+            "minimum": 133.898708,
+            "maximum": 136.12608300000002
+          },
+          "pairedEnabledMinusBaselineMs": [
+            1.5379580000000033,
+            2.806582999999989,
+            -3.8811249999999973,
+            -2.5312920000000076,
+            4.137540999999999
+          ],
+          "pairedDifference": {
+            "median": 1.5379580000000033,
+            "minimum": -3.8811249999999973,
+            "maximum": 4.137540999999999
+          },
+          "enabledProbeMs": {
+            "openIncludingValidationMs": {
+              "median": 42.186666,
+              "minimum": 40.818375,
+              "maximum": 44.004625
+            },
+            "firstQueryMs": {
+              "median": 0.081541,
+              "minimum": 0.055542,
+              "maximum": 0.150208
+            },
+            "readyAfterHookMs": {
+              "median": 44.618084,
+              "minimum": 43.140583,
+              "maximum": 46.431458
+            }
+          }
+        }
+      }
+    }
+  }
+}

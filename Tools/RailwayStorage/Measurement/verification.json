@@ -1,0 +1,39 @@
+{
+  "base_head": "31732d77910cd2d96cf4858a95a50f2b2ab3a922",
+  "scope": "Invented validated-repository measurements and bounded exact-membership validation optimization",
+  "prechange_saved_fingerprints_matched": 175,
+  "before_samples": 20,
+  "final_samples": 20,
+  "artifact_bytes_unchanged_before_after": true,
+  "affected_name_tool_checks": {
+    "passed": 25,
+    "failed": 0
+  },
+  "affected_app_checks": {
+    "passedTests": 8,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "storage_transition_runner": "Passed; legacy fixture hash unchanged; applied transition/reopen/history/atomicity/repeat checks passed",
+  "builds": "Optimized macOS harness; affected Debug Simulator test build. No broad suite, clean build or new Release app build.",
+  "remaining": "Paired actual-app startup hook/attribution and explicitly authorized physical-iPhone procedure; separate production registry, real delivery and publication/bundling gates.",
+  "changed_implementation": {
+    "TSUGINO/Data/Search/ExactStationIndex.swift": "3742d581bdab54814635e599bff452a3fbe14c95e3d07810a9b38e449d4e95e2",
+    "TSUGINOTests/ExactStationIndexTests.swift": "f8d0369cf6dfbbbd5199bd619966bf7f094a7835594439f5b32cad6991c96ec2"
+  },
+  "logs": {
+    "Tools/RailwayStorage/.build/measurement-build-fixed.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "Tools/RailwayStorage/.build/measurement-storage-checks.log": "2e8e37d5f5ac9a89449ed562611171902cbfc725008a7565eb89f882665c946e",
+    "Tools/RailwayStorage/.build/measurement-name-checks.log": "4470712f4eecf03fa9f6ab8db37218f14b5d55b2fed04905ef3b5eef1422fb02",
+    "Tools/RailwayStorage/.build/measurement-app-checks.log": "2dbbc8d43fd28790bfb82195546a561283a7f52a21f441858781e2ace911fed4",
+    "Tools/RailwayStorage/.build/measurement-app-summary.json": "470b07e729fb0f1f15ad2dd55e0e106a5fc648e1b1a97b98799ec440b4b543c9",
+    "Tools/RailwayStorage/.build/validated-measurement-fixed-run.log": "67eb6b751f16fb2f8148215070d7fd8e7d97ab33d944f6f65919ffa9c170ef3a"
+  },
+  "evidence": {
+    "Tools/RailwayStorage/Measurement/results.json": "4346acddc717f1e7a5f5af5f57505e6cec2058e319db33021c1d204a6c8c7255",
+    "Tools/RailwayStorage/Measurement/before-membership-fix.json": "429b95f9c46988d1c600af90567fa8d761c6d157e98a99250212ab298c1ab756",
+    "Tools/RailwayStorage/Measurement/METHOD.md": "e4929e9d309bf56ed1c279de0c81442cfba3cf5e131db9523e8b6395b85818d9",
+    "Tools/RailwayStorage/Measurement/RESULTS.md": "30289335b5b389eb561bed8ca8109dad7061aaa95b4e3fbcb39c11f97dbb0626",
+    "Tools/RailwayStorage/Measurement/DEVICE_PROCEDURE.md": "22815333913c900baf987d35b8db9ef2782608c626c4d86ff796a5990e842db7"
+  }
+}

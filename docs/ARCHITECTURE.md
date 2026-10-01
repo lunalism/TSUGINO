@@ -1213,6 +1213,33 @@ This enables:
 
 ---
 
+**P2-S8 synthetic repository (DEC-072 accepted, 2026-09-30).** Domain's async
+`RailwayDataRepository` exposes prepared local Domain data and scalar-exact search.
+Data's `SQLiteRailwayRepository` actor owns a read-only system-SQLite connection;
+opening/validation runs off the main actor. The offline synthetic builder lives
+in `Tools/RailwayStorage/` and is not compiled into the app. There is no app data
+installation, runtime importer or UI wiring.
+
+The runtime artifact contains canonical Domain payloads, explicit aliases, the
+persisted exact index, canonical identity/retirement state and compact chained
+build metadata (separate schema/data/registry versions and input/content hashes).
+Editorial evidence and full choice/sighting histories stay outside it. Open
+validates the entire artifact once; ordinary queries use the index without full
+reparsing. Read-only failure preserves the artifact. Compatibility preserves runtime schema v1 semantics and adds explicit schema v2
+under DEC-073, with identified data revisions and no successor following.
+The [storage implementation notes](../Tools/RailwayStorage/README.md) document
+bounds, input tracing, deterministic encoding and verification. Accepted DEC-073
+places reviewed transition application in the offline builder: exact previous/target
+registries, complete reviewed delta and immutable binding versions are validated
+before atomic publication of a new package. Registry v2 retains its old semantics;
+the explicit v2→v3 path permits reviewed empty-successor retirement. Full review
+and snapshot history stays in an external manifest, with only its hash and compact
+build history in runtime storage. Ordinary reconciliation cannot reassign held keys.
+Production delivery remains pending; no provisional ID is promoted and Q3/Q4/bundling gates are unchanged. The earlier prototype's
+measurements are not performance claims for this more thoroughly validated reader.
+
+---
+
 ## 17. Persistence Technology
 
 SwiftData may be used for application-owned structured persistence when appropriate.

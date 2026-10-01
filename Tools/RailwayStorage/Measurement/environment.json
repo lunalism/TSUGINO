@@ -1,0 +1,9 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "os": "26.6.2",
+  "chip": "Apple M2",
+  "memoryBytes": "17179869184",
+  "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx26.0",
+  "configuration": "-O, Swift language mode 5; macOS CLI; no testing fault hook",
+  "artifactFilesystem": "system temporary directory; workspace preparation returned unavailable, root cause unverified; hard-link probes succeeded at both locations"
+}

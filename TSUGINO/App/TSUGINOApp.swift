@@ -7,6 +7,9 @@ struct TSUGINOApp: App {
     private let environment: AppEnvironment
 
     init() {
+        #if REPOSITORY_STARTUP_MEASUREMENT
+        RepositoryStartupMeasurement.start()
+        #endif
         let environment = AppEnvironment.live()
         environment.logging.log(.environmentComposed(buildMode: environment.configuration.buildMode))
         self.environment = environment

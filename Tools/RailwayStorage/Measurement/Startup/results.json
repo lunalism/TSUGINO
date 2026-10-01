@@ -1,0 +1,212 @@
+{
+  "environment": {
+    "simulator": "iPhone 17; iOS 26.5 (23F77)",
+    "host": "Apple M2, 16 GiB, macOS 26.6.2",
+    "build": "Release -O, Swift 5, REPOSITORY_STARTUP_MEASUREMENT",
+    "artifactBytes": 184320,
+    "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+    "preparedArtifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+    "installedExecutableSHA256": "a63d5cd6685609e46fddcef0ce7e8840347bd2164a26ef33fa07387dcb917cf9"
+  },
+  "samples": [
+    {
+      "test": "StartupLaunchTests/test00Baseline()",
+      "order": 0,
+      "firstFrameMs": 843.581625,
+      "probe": {
+        "instrumentation": 1,
+        "mode": "baseline",
+        "sample": "0",
+        "status": "ok"
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test01Enabled()",
+      "order": 1,
+      "firstFrameMs": 810.6648749999999,
+      "probe": {
+        "firstQueryMs": 0.172959,
+        "fullLoads": 0,
+        "instrumentation": 1,
+        "matchedDistinctStations": 2,
+        "mode": "enabled",
+        "openIncludingValidationMs": 43.728125,
+        "openStartAfterHookMs": 2.5385,
+        "readyAfterHookMs": 46.445875,
+        "sample": "0",
+        "status": "ok",
+        "validationPasses": 1
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test02Enabled()",
+      "order": 2,
+      "firstFrameMs": 826.623541,
+      "probe": {
+        "firstQueryMs": 0.106291,
+        "fullLoads": 0,
+        "instrumentation": 1,
+        "matchedDistinctStations": 2,
+        "mode": "enabled",
+        "openIncludingValidationMs": 36.734166,
+        "openStartAfterHookMs": 3.033209,
+        "readyAfterHookMs": 39.87675,
+        "sample": "1",
+        "status": "ok",
+        "validationPasses": 1
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test03Baseline()",
+      "order": 3,
+      "firstFrameMs": 906.693041,
+      "probe": {
+        "instrumentation": 1,
+        "mode": "baseline",
+        "sample": "1",
+        "status": "ok"
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test04Baseline()",
+      "order": 4,
+      "firstFrameMs": 803.520375,
+      "probe": {
+        "instrumentation": 1,
+        "mode": "baseline",
+        "sample": "2",
+        "status": "ok"
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test05Enabled()",
+      "order": 5,
+      "firstFrameMs": 818.334416,
+      "probe": {
+        "firstQueryMs": 0.10275,
+        "fullLoads": 0,
+        "instrumentation": 1,
+        "matchedDistinctStations": 2,
+        "mode": "enabled",
+        "openIncludingValidationMs": 37.831667,
+        "openStartAfterHookMs": 2.388083,
+        "readyAfterHookMs": 40.325833,
+        "sample": "2",
+        "status": "ok",
+        "validationPasses": 1
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test06Enabled()",
+      "order": 6,
+      "firstFrameMs": 844.312166,
+      "probe": {
+        "firstQueryMs": 0.12025,
+        "fullLoads": 0,
+        "instrumentation": 1,
+        "matchedDistinctStations": 2,
+        "mode": "enabled",
+        "openIncludingValidationMs": 64.215833,
+        "openStartAfterHookMs": 3.971042,
+        "readyAfterHookMs": 68.313083,
+        "sample": "3",
+        "status": "ok",
+        "validationPasses": 1
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test07Baseline()",
+      "order": 7,
+      "firstFrameMs": 841.142166,
+      "probe": {
+        "instrumentation": 1,
+        "mode": "baseline",
+        "sample": "3",
+        "status": "ok"
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test08Baseline()",
+      "order": 8,
+      "firstFrameMs": 783.751708,
+      "probe": {
+        "instrumentation": 1,
+        "mode": "baseline",
+        "sample": "4",
+        "status": "ok"
+      }
+    },
+    {
+      "test": "StartupLaunchTests/test09Enabled()",
+      "order": 9,
+      "firstFrameMs": 805.859542,
+      "probe": {
+        "firstQueryMs": 0.146625,
+        "fullLoads": 0,
+        "instrumentation": 1,
+        "matchedDistinctStations": 2,
+        "mode": "enabled",
+        "openIncludingValidationMs": 36.653792,
+        "openStartAfterHookMs": 2.549583,
+        "readyAfterHookMs": 39.353666,
+        "sample": "4",
+        "status": "ok",
+        "validationPasses": 1
+      }
+    }
+  ],
+  "pairedDeltaMs": [
+    -32.91675000000009,
+    -80.06949999999995,
+    14.814041000000088,
+    3.1700000000000728,
+    22.107834000000025
+  ],
+  "summary": {
+    "baselineFirstFrameMs": {
+      "median": 841.142166,
+      "min": 783.751708,
+      "max": 906.693041
+    },
+    "enabledFirstFrameMs": {
+      "median": 818.334416,
+      "min": 805.859542,
+      "max": 844.312166
+    },
+    "openIncludingValidationMs": {
+      "median": 37.831667,
+      "min": 36.653792,
+      "max": 64.215833
+    },
+    "firstQueryMs": {
+      "median": 0.12025,
+      "min": 0.10275,
+      "max": 0.172959
+    },
+    "readyAfterHookMs": {
+      "median": 40.325833,
+      "min": 39.353666,
+      "max": 68.313083
+    },
+    "openStartAfterHookMs": {
+      "median": 2.549583,
+      "min": 2.388083,
+      "max": 3.971042
+    },
+    "pairedEnabledMinusBaselineMs": {
+      "median": 3.1700000000000728,
+      "min": -80.06949999999995,
+      "max": 22.107834000000025
+    }
+  },
+  "inputAndExecutableUnchanged": true,
+  "metric": "XCTApplicationLaunchMetric default first frame; not responsive initializer",
+  "limitations": [
+    "Simulator only",
+    "five process-cold pairs, preliminary XCTest launches excluded by metric",
+    "OS caches uncontrolled",
+    "repository readiness is App.init hook-relative, not process-launch-relative",
+    "no separate validator-only timer: open includes full validation and context preparation",
+    "Workspace access failed during collection; measurements used the already-installed app and local Simulator storage. Recovery preserved prior files."
+  ]
+}

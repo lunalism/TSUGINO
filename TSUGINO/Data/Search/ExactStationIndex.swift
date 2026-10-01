@@ -20,7 +20,9 @@ nonisolated struct ExactStationIndex: StationSearching {
         let byOperator = Dictionary(uniqueKeysWithValues: operators.map { ($0.id, $0) })
         var results: [StationID: StationSearchResult] = [:]
         var keys: [ExactValue: Set<StationID>] = [:]
+        var declaredMembers: [LineID: Set<StationID>] = [:]
         for station in stations {
+            for lineID in station.lineIDs { declaredMembers[lineID, default: []].insert(station.id) }
             let context = station.lineIDs.compactMap { byLine[$0] }.sorted { $0.id.rawValue.utf8.lexicographicallyPrecedes($1.id.rawValue.utf8) }
             guard !context.isEmpty, context.count == station.lineIDs.count,
                   context.allSatisfy({ byOperator[$0.operatorID] != nil }) else { throw Invalid.missingContext }
@@ -32,7 +34,7 @@ nonisolated struct ExactStationIndex: StationSearching {
             }
         }
         for line in lines {
-            guard Set(line.topology.stationIDs) == Set(stations.filter { $0.lineIDs.contains(line.id) }.map(\.id)) else { throw Invalid.membershipMismatch }
+            guard Set(line.topology.stationIDs) == (declaredMembers[line.id] ?? []) else { throw Invalid.membershipMismatch }
         }
         for alias in aliases {
             guard results[alias.stationID] != nil else { throw Invalid.unknownAlias }

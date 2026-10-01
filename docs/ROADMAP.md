@@ -412,7 +412,7 @@ Create a reliable local railway topology foundation.
 | P2-S5 | implementation | Cross-operator station identity from name and alias candidates, compared with DEC-048 (DEC-065 §E as amended by DEC-069) | S4 | **DEC-069** (accepted), with DEC-068. Production identifiers, committed real records, and Tokyo Metro publication stay gated as for S4 (DEC-068 §F) |
 | P2-S6 | implementation | Validated representative coordinates, undirected line topology, and membership artifacts (DEC-070). Complete `Station` and `RailwayLine` construction waits for P2-S7's required names (DEC-053) | S5 | **DEC-070** (accepted), with DEC-056, DEC-057, DEC-068, DEC-069. Production identifiers, committed real records, and Tokyo Metro publication stay gated (DEC-068 §F) |
 | P2-S7 | implementation | Reviewed Japanese/English/Korean names, explicit aliases, scalar-exact index/lookup, complete named Domain construction | S6 | **DEC-071 is accepted (2026-09-30).** Implementation and separate local real acceptance are complete; the criteria audit and verification are recorded below. This does not authorize publication or bundling. Real name selection/authorship and Korean review are separate; Q4 still gates new Tokyo Metro-derived translations. Q3, production-registry and P2-S8 gates remain unchanged |
-| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | storage format, after measurement (DEC-029); bundling in the shipped binary stays with ODPT item 5 |
+| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | **DEC-072 Accepted** for system SQLite after measurement. Bounded synthetic repository implementation is recorded below; **DEC-073 is Accepted** for reviewed canonical transitions; synthetic implementation/verification is recorded below. Bounded synthetic technical acceptance is complete (final review below); real repository delivery and applicable production/publication/bundling gates remain open. No Phase 2 completion is declared |
 | P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | whether Phase 2 imports `Trip` records at all |
 | P2-S10 | evidence | Tier 1 payload evidence (DEC-058 §4, DEC-059); no capability declaration | S0 | explicit authorization for Basic-License data access; whether it counts toward Phase 2 exit |
 | P2-S11 | evidence | Physical-device measurements (cold launch, search speed, memory, offline search) | S7, S8 | explicit device authorization (`AGENTS.md` §22); `LunaTestphone` is never used |
@@ -1091,6 +1091,23 @@ Create a reliable local railway topology foundation.
 
 - **P2-S7 commit finalization** (2026-09-30). The owner authorized committing the published-source importer, synthetic regressions and local provisional acceptance record, followed by a normal push of `phase/02-static-data`; no merge or P2-S8 work is authorized. Pre-commit HEAD is `5d4a29c`, three ahead/zero behind the tracked upstream, with exactly twelve intended code/test/documentation paths and nothing staged. All 64 saved source/test fingerprints, the CLI binary and saved acceptance-package hashes match the final verified version. The 33 affected checks, 211 tool tests, 16 focused Simulator tests, CLI build, 825/825 names, six aliases, 186 bindings, complete Domain/search validation, retained history and five byte-identical repeat artifacts are reused; no code change or verification gap required rerunning tests/builds. Earlier uncommitted-status statements describe their original runs. Only intended source, invented fixtures and documentation enter this commit; real artifacts remain unchanged and outside Git. Q3/Q4, production-registry and P2-S8 gates remain unchanged.
 
+
+**P2-S8 synthetic storage-measurement prototype** (2026-09-30; bounded owner authorization, not slice completion). Starting HEAD `31732d7` on `phase/02-static-data` matched both tracked and live upstream; the working tree was clean. The isolated `Tools/StorageMeasurement/` macOS CLI compares indexed compact-file and system SQLite representations, using unchanged Domain types and the existing exact-search oracle. No final `RailwayDataRepository`, app wiring, real artifacts, production identities, translation or delivery is introduced. No new package dependency is added.
+
+- **Method and observations:** [measurement report](../Tools/StorageMeasurement/RESULTS.md), [predeclared method](../Tools/StorageMeasurement/README.md), and [raw aggregate samples/fingerprints](../Tools/StorageMeasurement/results.json). Identical invented fixtures at 258 stations/15 lines/two operators/six aliases and 25,800/1,500/200/600; five fresh-process repetitions per backend/size, alternating order, optimized Swift macOS CLI. Cold means process-cold with uncontrolled OS caches, not a physical-iPhone or app launch. Artifact size, preparation, open/first query, warm search, full decode/load, peak RSS, ordinary-access counters and close/reopen are separately recorded, including ranges. Preparation outliers are retained and their cause is not claimed.
+- **Results:** SQLite open-to-first-query medians 3.08/95.96 ms versus compact 9.12/660.44 ms; scale ordinary peak RSS 26.45 versus 56.56 MiB. Compact files are smaller and warm lookup is faster. Both show zero full-fixture parses during ordinary repeated access. These observations support **Proposed DEC-072**, not an accepted storage choice or iPhone performance claim. The provisional name-history v2 envelope does not choose the app format.
+- **Focused verification:** optimized standalone prototype build; 20/20 artifact/oracle checks comprising 787,920 exact queries plus complete Domain payload/context and reopen comparisons; independent Unicode composition, same-name identity and explicit-alias assertions; stable ordering and bounded-cache counters; eight unsupported-version/framing/size checks, with clean error exits confirmed. Saved source/binary fingerprints match measured code. No broad suite, app/extension build, UI or device test ran; none is claimed.
+- **Remaining:** accept or revise the measured storage proposal before implementing the final backend, repository contract, version metadata and supported migration/retirement checks. The narrow compatibility plan is in DEC-072; no merge/split or successor-following policy is invented. Registry-of-record/production-ID, Q3/publication, Q4 translation and item 5/bundling gates are unchanged. **P2-S8 remains incomplete.** Prototype code, invented-data measurements and documentation are left uncommitted; real evidence was neither read nor modified.
+
+**P2-S8 bounded synthetic SQLite repository** (2026-09-30; DEC-072 accepted by the owner for storage design). Domain now owns the async `RailwayDataRepository` boundary; Data owns its read-only system-SQLite actor backend, canonical storage DTOs and validation. The offline deterministic builder and invented checks live in `Tools/RailwayStorage/`; no app importer, data installation, UI or new package dependency is introduced. The original measurement prototype and all its saved source fingerprints remain unchanged. Its historical Proposed wording is evidence from the measurement stage; DEC-072 is now Accepted.
+
+- **Artifact/compatibility:** canonical stations/lines/operators, explicit aliases, persisted scalar-exact search, complete canonical identity/retirement state, separate schema/data/registry metadata, input/content hashes and chained revision metadata. Editorial originals, alternatives, captures and full choice/sighting histories remain outside runtime storage. Open performs one complete integrity/semantic/index validation, then ordinary access uses SQLite without re-parsing the dataset or rebuilding the index. Those semantics are more conservative than the prototype, so its startup measurements are not claimed for the repository. Read-only failures, unsupported versions and incompatible pinned revisions do not mutate artifacts. The [implementation notes](../Tools/RailwayStorage/README.md) document bounds and input-tracing limits.
+- **Verification:** focused synthetic storage checks pass; full app suite **590/590**, zero failures/skips, with Debug app/extension build on iPhone 17 Simulator (iOS 26.5). A final diagnostic-only correction was covered by the focused storage checks and **2/2** repository app integration tests; the broad suite was not repeated. **Clean Release app/extension build passed** on the same Simulator. No physical device was touched. Existing unrelated Swift 6 warnings remain; no new storage-path diagnostic was found.
+- **Determinism/history:** fresh-process, reordered-input and previous-history outputs compare byte-for-byte. Fixed invented artifact: 32,768 bytes, SHA-256 `7b81c41b6e4ccb960c8011297332c91b36fff9e48f508887752febe1e4938bc0`, SQLite 3.51.0. Two-revision repeats are also identical, with no duplicate history. Identity/retirement metadata remains unchanged across supported descriptive-data revisions. Cross-engine byte equality is not assumed.
+- **Focused review:** one in-session adversarial review found and fixed unbound earlier revision metadata (digest chain plus tamper regression), missing reader enforcement of same-registry-revision/hash consistency, and a fixed rather than measured validation-pass diagnostic. Relevant checks were rerun; no repeated broad review or unrelated cleanup occurred. [Verification record and fingerprints](../Tools/RailwayStorage/VERIFICATION.md).
+- **Verdict:** the authorized synthetic repository is implemented and verified; **P2-S8 is not complete**. DEC-068 requires reviewed canonical identity transitions, but their input contract remains unresolved. The builder rejects entity-state changes rather than inventing merge/split or successor-following behavior. Existing-retirement preservation is proven; execution of a new retirement migration is not. Unsupported schema handling is rejection without mutation, not an invented conversion of a nonexistent predecessor. No real repository acceptance/production delivery is claimed. Registry-of-record/production-ID, Q3/publication, Q4 translation and ODPT item 5/bundling gates remain unchanged. All implementation/docs are uncommitted; real evidence was neither read nor changed.
+
+**P2-S8 canonical-transition design draft** (2026-10-01; documentation only). Git was verified at `31732d7` on `phase/02-static-data`, synchronized with tracked and live upstream; all uncommitted SQLite and measurement work is preserved. **DEC-073 is Proposed, not accepted.** It is the sole proposed authority for the remaining reviewed canonical identity-transition contract and its synthetic application/reopen/repeat acceptance plan. It distinguishes provider reconciliation, canonical identity changes and storage migration; identifies two prospective DEC-068 amendments: reviewed current provider-binding version transitions with immutable predecessor/attachment authority, and pure retirement with zero successors, distinguished from replacement, merge and split. The refinement specifies one current version per key/revision, explicit reference dispositions, bounded version conversion, and focused application/reopen/repeat and ordinary-reconciliation rejection cases. Provider-value reuse stays separate. No accepted identity, review or storage rule is amended by this draft. See DEC-073 rather than duplicating its schema here. No code, test/build, real-artifact change, minting, commit, push or merge occurred. The existing fail-closed implementation and P2-S8 migration criterion are unchanged; **P2-S8 remains incomplete**. Q3/Q4, registry-of-record/production-ID and delivery/bundling gates remain intact.
 
 **Completion rules, proportionate to the kind of slice:**
 
@@ -2271,3 +2288,177 @@ If implementation requires moving a feature between phases:
 > **Build the railway truth first, then the experience around it.**
 
 TSUGINO should never gain visual polish faster than it gains trustworthiness.
+
+
+**P2-S8 DEC-073 acceptance and bounded synthetic implementation** (2026-10-01). Starting branch `phase/02-static-data`, HEAD `31732d7`, zero ahead/behind tracked upstream. The owner accepted revised DEC-073 and both explicit DEC-068 amendments. The prior draft/implementation entries remain historical; DECISIONS contains the single authoritative contract. All existing measurement work is preserved byte-for-byte.
+
+- **Implementation:** pure retirement 1→0, replacement 1→1, merge many→1 and split 1→many through exact approved snapshot pairs, full delta accounting and explicit per-reference dispositions. Old bindings/first sightings/original names/provenance/attachment authority remain immutable in retained snapshots. New versions name predecessors and their own authority; one current version per key/revision. Ordinary reconciliation cannot reassign keys and provider-value reuse remains outside scope.
+- **Versions and publication:** legacy registry v2/runtime v1 keep their semantics. The explicit registry v2→v3 comparison/runtime v1→v2 rebuild supports empty-successor retirement while retaining prior history; malformed/unsupported and reverse conversions fail without mutation. Complete validation and staged reopen precede exclusive atomic publication of a new runtime/history/receipt package. Runtime exposes retirement and compact build history without following successors; editorial evidence stays external, pinned by manifest hash.
+- **Verification:** final synthetic storage runner passed eight applied scenarios, a second linked transition, exact reference/authority checks, stale/conflicting/wrong-kind/circular/unaccounted-change rejection, resource bounds, no-overwrite/early/late failure atomicity and reopen. All three package files repeat byte-identically from original and carried-forward inputs; a separate process also produces an identical package. No duplicate history or flattened successor chains. Full tool suite **211/211**; full app suite **591/591**, zero failures/skips, with Debug app/extension build on iPhone 17 Simulator (iOS 26.5); Release app/extension build passed. A final actor annotation correction passed **40/40** affected app checks and an incremental Release build, recorded in the linked verification record; broad suites are not repeated. No physical device or real artifact was used.
+- **Review:** one focused in-session adversarial review fixed an unintended reverse-conversion path and missing collision checks against legacy attachment/withdrawal authority, with regressions. Final build diagnostics exposed a new actor-isolation warning on the decoder configuration key; the annotation was corrected. No repeated clean-review round or unrelated warning cleanup occurred. [Detailed evidence, boundaries and audit](../Tools/RailwayStorage/DEC073_VERIFICATION.md); final source/test/log fingerprints in the adjacent verification JSON.
+- **Accepted-criteria audit:** the listed synthetic P2-S8 checks now pass: measured storage choice, complete repository/search behavior, no ordinary full-dataset reparse, reopen, data-version history and newly applied identity-retirement migrations. No known failure remains in this bounded migration scope. The prototype does not measure this implementation’s validation-on-open cost; validated-repository startup/load/memory evidence and broader Phase 2 physical performance acceptance remain separate outstanding work. **P2-S8 and Phase 2 are not declared complete.** Registry-of-record/production IDs, actual real-data repository delivery, Q3 publication, Q4 new Metro-derived translations and item 5/bundling gates remain unchanged. No provisional IDs are promoted. All implementation/tests/docs remain uncommitted; no acquisition, minting, UI, real transition, bundling, publication, push or merge occurred.
+
+
+**P2-S8 final validated-repository performance evidence** (2026-10-01). Branch `phase/02-static-data`, HEAD `31732d7`, zero ahead/behind tracked upstream; existing SQLite/transition implementation and the earlier measurement prototype were preserved. All 175 saved correctness fingerprints matched before this work. [Predeclared method](../Tools/RailwayStorage/Measurement/METHOD.md), [full report](../Tools/RailwayStorage/Measurement/RESULTS.md), [raw final samples](../Tools/RailwayStorage/Measurement/results.json) and [verification record](../Tools/RailwayStorage/Measurement/verification.json) identify the actual measured code.
+
+- **Method/environment:** native macOS CLI, Apple M2/16 GiB, macOS 26.6.2, Swift 6.4 `-O`/language mode 5, SQLite 3.51.0. Five fresh-process repetitions for each of 258/15/2/6 and 25,800/1,500/200/600 invented station/line/operator/alias datasets, with baseline and one applied replacement-history case. Normal full open-time validation stays enabled. Setup/build is separate; OS caches and host activity are uncontrolled. All artifacts use the system temporary filesystem. Workspace preparation returned `unavailable`; its precise cause is unverified (minimal hard-link probes worked at both locations). This is not app-startup, Simulator timing or physical-iPhone evidence.
+- **Final runtime medians, baseline/history respectively:** artifact size **184,320 / 184,320 bytes** at launch size and **15,974,400 / 15,974,400 bytes** at scale; validated open **23.86 / 23.74 ms** and **2,245.84 / 2,178.05 ms**; first query **0.116 / 0.097 ms** and **0.657 / 0.808 ms**; post-open full Domain load **3.50 / 3.52 ms** and **448.59 / 344.21 ms**; warm median exact query **0.036 / 0.036 ms** and **0.220 / 0.198 ms**; ordinary peak RSS **11.73 / 11.70 MiB** and **202.91 / 202.88 MiB**. The report retains min/max, p95, all memory checkpoints and close/reopen samples. Warm RSS growth was at most **0.078 MiB** across three passes; this includes harness/allocator effects and is not a leak proof.
+- **Observed bounded issue/fix:** the membership check scanned all stations for each line (38.7 million probes at scale). It now accumulates declared members once, retaining exact two-way set validation. Original scale open medians **5,276.42 / 5,393.40 ms** fell to the final values above, with roughly **2.5 MiB** additional peak RSS. Original/final cohorts and all ranges are retained, not a claimed controlled speed ratio. Launch-sized ranges overlap. Scale startup still takes seconds and roughly 203 MiB on this Mac; no device-readiness claim follows. All four runtime artifact hashes are unchanged before/after and across repetitions.
+- **Ordinary-use and history:** every process measured one validation invocation at open and zero additional validation/full station loads during ordinary queries; 3,589 matched station decodes include first/correctness/priming/timed queries. Source-derived oracle construction is once per validation, not a new measured counter; persisted index rebuilding is absent from the read-only path. Reopen revalidates normally. The applied history adds one retired ID and a second build revision; runtime metadata grows from 467 to 1,092 bytes, while full external history is 57,151 / 5,502,151 bytes. Overlapping timing ranges establish no measurable single-boundary history penalty, not a maximum-history guarantee.
+- **Affected verification only:** optimized harness compilation; **40 total pre/post samples** with exact query, deterministic artifact and read-immutability checks; storage/transition runner passed; **25/25** filtered name-tool cases; **8/8** Simulator index/repository tests including shared and contradictory membership cases, zero failures/skips. No broad suite or repeated clean build ran. Earlier full-suite/Release evidence remains historical; unchanged paths retain their fingerprints. Original prototype files and existing real artifacts were not changed.
+- **Criteria audit:** measured storage choice, actual validated-repository size/open/query/load/memory/reopen evidence, ordinary-use no repeated full parse, deterministic storage and existing version/retirement migration checks are satisfied for the synthetic scope. **At that measurement stage, paired app-startup attribution and P2-S11 physical evidence remained outstanding. The subsequent recovered Simulator attribution is recorded below; physical checks remain outstanding.** At that stage the app had no repository startup hook; the [minimal paired app/device procedure](../Tools/RailwayStorage/Measurement/DEVICE_PROCEDURE.md) identifies measurement-only instrumentation and explicit owner selection/authorization of a supported iPhone (never `LunaTestphone`). CLI timings do not substitute for those requirements. **P2-S8 and Phase 2 are not declared complete.** Production-registry/IDs, real-data delivery, Q3 publication, Q4 translation and item 5 bundling remain separate unchanged gates. No provider data, production IDs, acquisition, publication, UI feature, physical-device interaction, commit, push or merge occurred.
+
+
+**P2-S8 recovered Simulator app-startup attribution** (2026-10-01). Original
+`phase/02-static-data`, HEAD `31732d7`, zero ahead/behind tracked upstream. Recovery
+verified all 229 pre-startup files: none missing, only the expected app-entry hook
+changed; the three expected probe/method/runner files were added. Existing
+implementation and prior measurements remain unchanged. Saved evidence hashes
+and metric exports validate; originals, logs, runner and physical procedure are
+preserved in durable owner-only evidence, outside Git.
+
+- **Completed Simulator attribution:** [report](../Tools/RailwayStorage/Measurement/Startup/RESULTS.md),
+  [method](../Tools/RailwayStorage/Measurement/Startup/METHOD.md) and
+  [samples/hashes](../Tools/RailwayStorage/Measurement/Startup/results.json).
+  Release optimized app; iPhone 17/iOS 26.5 Simulator on M2 macOS. Five alternating
+  baseline/enabled pairs, **10/10** saved focused checks; no reruns during recovery.
+  First-frame medians 841.142 / 818.334 ms; paired delta median **+3.170 ms**, range
+  **−80.069…+22.108 ms**. **No demonstrated improvement or regression.**
+- **Repository attribution:** open including normal validation median 37.832 ms,
+  first query 0.120 ms, app-init-hook-relative ready 40.326 ms. Compile-flagged
+  instrumentation schedules a detached task; repository open/validation stays
+  off the main actor and initial rendering does not await it. One validation pass,
+  zero explicit full loads, two distinct same-name results in each enabled probe.
+  Synthetic artifact and installed executable hashes remain unchanged. No
+  validator-only or process-launch-to-readiness timing is claimed.
+- **Limits/gates:** caches uncontrolled; Simulator/automation overhead applies.
+  Physical cold-launch, search, memory and offline checks remain outstanding and
+  require authorization for a specific supported iPhone. The
+  [physical procedure](../Tools/RailwayStorage/Measurement/DEVICE_PROCEDURE.md)
+  separates that work. **P2-S8 and Phase 2 remain open.** Production registry/IDs,
+  real-data delivery, Q3/Q4 and publication/bundling gates remain unchanged. No
+  recovery code change, measurements/builds/tests rerun, real-artifact change,
+  commit, push or merge.
+
+
+**P2-S8/P2-S11 authorized physical-device evidence, partial** (2026-10-01). Only
+the explicitly authorized paired iPhone 17 Pro Max was targeted: USB, iOS 27.0,
+Developer Mode verified after owner setup. Temporary signing overrides only; no
+existing TSUGINO installation was found, no uninstall or data reset performed.
+[Physical report](../Tools/RailwayStorage/Measurement/Physical/RESULTS.md),
+[method](../Tools/RailwayStorage/Measurement/Physical/METHOD.md) and
+[workload samples](../Tools/RailwayStorage/Measurement/Physical/workload-results.json).
+
+- **Completed:** five process repetitions each for invented launch-sized ordinary
+  and applied-transition-history artifacts. Exact Unicode/explicit alias/miss,
+  stable ordering, distinct same-name stations, reopen and full Domain checks
+  passed in all ten. Owner confirmed Airplane Mode/Wi-Fi off; all before/after
+  network checkpoints were unavailable, thermal nominal, battery 100%/charging.
+  Ordinary access performed no additional full validation or full dataset load;
+  artifact hashes remained unchanged.
+- **Observed medians, ordinary/history:** validated open 24.164/19.711 ms; warm
+  exact-query median 0.0129/0.0126 ms; ordinary peak RSS 31.875/31.875 MiB. Warm-pass
+  RSS growth at most 0.047 MiB. All samples/ranges retained; not a leak proof or
+  an invented performance pass threshold. Build/setup excluded, caches uncontrolled.
+- **Historical interruption:** physical launch-to-first-frame and responsiveness
+  pairs were blocked by an Instruments attachment timeout and a generic XCTest
+  developer-trust rejection. The bounded diagnosis below supersedes the earlier
+  assumption that a Settings Verify/Trust action was required; prior Simulator
+  and correctness evidence remain valid and were not repeated.
+- **Scope:** only compile-flagged measurement instrumentation was extended for the
+  device workload; no runtime repository or production wiring change. **P2-S8 and
+  Phase 2 remain open.** Production registry/IDs, real delivery, Q3/Q4 and bundling
+  gates are unchanged. No real-artifact changes, publication, commit, push or merge.
+
+
+**P2-S8 physical startup runner blocker resolved** (2026-10-01; bounded diagnosis,
+not performance acceptance). The installed runner and working app share valid
+signing/provisioning; filtered device-side Console evidence specifically reported
+`Profile Needs Network Validation`. The generic developer-trust message did not
+justify repeated requests for a Settings button. Owner-enabled temporary Wi-Fi
+allowed the unchanged installed runner to launch; after the owner restored
+Wi-Fi off/Airplane Mode on, it relaunched offline. No rebuild, re-sign, reinstall,
+security bypass or app-data deletion was needed.
+
+Documented `UseDestinationArtifacts` reused existing installed apps for only two
+previously unrun baseline/enabled startup connection checks: **2/2 passed offline**.
+Enabled repository validation/readiness passed and the artifact stayed byte-identical.
+Original errors, the labeled Console extract and successful results remain owner-only.
+[Corrected report](../Tools/RailwayStorage/Measurement/Physical/RESULTS.md) and
+[procedure](../Tools/RailwayStorage/Measurement/DEVICE_PROCEDURE.md) distinguish
+setup/recovery from performance samples. No already-passed workload, Simulator or
+correctness checks were rerun; no app code changed. At that recovery checkpoint, the complete five-pair physical
+first-frame/responsiveness cohorts remained outstanding (subsequently collected below); Instruments' separate
+attachment timeout was not claimed fixed. **P2-S8 and Phase 2 remain open** with
+production identity, real delivery, Q3/Q4 and publication/bundling gates unchanged.
+No commit, push or merge.
+
+
+**P2-S8 remaining physical startup evidence collected** (2026-10-01).
+The same explicitly authorized iPhone 17 Pro Max ran the existing optimized app
+and XCTest runner without building/installing: **40/40 passed**, five alternating
+baseline/enabled pairs for each of first-frame and responsive metrics, separately
+for ordinary and applied-transition-history synthetic artifacts. The earlier 2/2
+recovery checks are excluded. [Report and criteria audit](../Tools/RailwayStorage/Measurement/Physical/RESULTS.md),
+[predeclared method](../Tools/RailwayStorage/Measurement/Physical/METHOD.md),
+[all samples and paired differences](../Tools/RailwayStorage/Measurement/Physical/startup-results.json).
+
+- First-frame baseline/enabled medians: ordinary 135.314/135.486 ms; history
+  134.998/135.203 ms. Responsive: ordinary 133.638/134.538 ms; history
+  132.964/134.652 ms. Paired differences include both signs, with overlapping
+  ranges; no improvement, regression, equivalence or invented pass threshold is claimed.
+- Responsive means first frame displayed and main thread ready to accept input
+  in the title-only shell, not search-UI readiness or touch latency. Repository
+  validation runs off the main actor; readiness is separately app-init-hook-relative.
+- Owner-confirmed Airplane Mode on/Wi-Fi off and verified USB connection; the
+  startup probe does not resample network/thermal/battery. Prior workload snapshots
+  remain separate. Process-cold with uncontrolled OS caches, not guaranteed disk-cold.
+- All enabled probes: one validation, zero full loads, two distinct same-name
+  matches. Both synthetic artifact hashes unchanged before/after; original probe
+  files and every cohort retained separately. No source change or passed workload,
+  correctness, Simulator or broad build rerun.
+- **Technical audit:** accepted synthetic storage/repository/migration checks and
+  bounded validated-repository/startup/search/memory/offline measurement evidence
+  are now recorded. No additional mandatory synthetic technical measurement was
+  identified; a future shipping composition needs its own relevant validation.
+  **P2-S8 overall and Phase 2 remain open**: registry-of-record/production IDs,
+  real delivery, Q3/Q4 and publication/app-bundling gates are unchanged. Phase 2
+  exit and S9/S10 planning relevance are separate; these measurements do not
+  authorize distribution, promote IDs or close the phase.
+
+Git remains on `phase/02-static-data` at `31732d7`, synchronized with upstream.
+Existing implementation and measurements are preserved uncommitted. This
+continuation changes only measurement documentation/safe synthetic results; no
+real artifacts, app-data deletion, commit, push or merge.
+
+
+**P2-S8 final bounded technical review** (2026-10-01; no code/test/build/device
+rerun). One focused review found no new material implementation defect; storage,
+reviewed transitions and compile-flagged measurement isolation were inspected.
+The saved final source/log hashes cover the current code through the recorded
+transition, membership-optimization and startup stages. Earlier broad gates are
+not described as rerun after later bounded changes. The stale current-open-decision
+entry for storage format now points to Accepted DEC-072.
+
+[Final review, accepted-criteria audit and deliverable-specific gate matrix](../Tools/RailwayStorage/FINAL_REVIEW.md)
+and [exact proposed commit inventory](../Tools/RailwayStorage/final-review.json)
+record the intended changes. **Synthetic P2-S8 implementation and technical
+acceptance are complete; overall real delivery and Phase 2 exit are not declared
+complete.** Production-registry choice blocks production identity and committed
+real registry records; Q3 blocks affected Metro-derived publication; Q4 blocks new
+Metro-derived translations; item 5 blocks applicable shipped-data bundling. None
+blocks committing synthetic implementation or separately authorizing an owner-only
+provisional repository rehearsal. That real SQLite integration remains unperformed;
+it is an integration task, not an unresolved storage-format decision.
+
+S9 depends on S4 and conditionally imports Trip stop sequences without times,
+requiring passenger-stop verification (DEC-061 §F). S10 depends on S0 and covers
+authorized Tier 1 evidence, not capability declaration (DEC-058 §4 / DEC-059).
+Neither is an S8 prerequisite. The accepted roadmap explicitly leaves their Phase 2
+exit relevance open; resolve inclusion/deferral before phase closure without adding
+a timetable or promoting expansion candidates. This audit makes no such decision.
+
+Git remains `phase/02-static-data` at `31732d7`, zero ahead/behind tracked upstream,
+nothing staged. All implementation and owner-only evidence are preserved. Only
+documentation and a safe review inventory changed; no commit, push, merge or real
+data change.

@@ -285,6 +285,13 @@ let revisionTests: [TestCase] = [
         let rebind = try SyntheticRevision.record("SYN-REVIEW-A2", SyntheticRevision.key("syn-s1x"), .attach(to: SyntheticRevision.station2))
         let rebound = try SyntheticRevision.reconcile(respelled, records: [rebind], registry: first.registry, previous: try SyntheticRevision.input(respelled))
         try check(rebound == .failure(.record(.attachToHeldReference, reviewID: "SYN-REVIEW-A2")), "\(rebound)")
+        // DEC-073 authority is not a capability in ordinary reconciliation.
+        // Even a copied transition disposition ID cannot reassign a held key.
+        let beforeTransitionAttempt = try first.registry.encoded()
+        let copiedAuthority = try SyntheticRevision.record("disposition-0", SyntheticRevision.key("syn-s1x"), .attach(to: SyntheticRevision.station2))
+        let deniedTransition = try SyntheticRevision.reconcile(respelled, records: [copiedAuthority], registry: first.registry, previous: try SyntheticRevision.input(respelled))
+        try check(deniedTransition == .failure(.record(.attachToHeldReference, reviewID: "disposition-0")), "ordinary reconciliation cannot apply identity migration")
+        try check(try first.registry.encoded() == beforeTransitionAttempt, "old authority/provenance retained")
         let sameIdentity = try SyntheticRevision.record("SYN-REVIEW-A3", SyntheticRevision.key("syn-s2"), .attach(to: SyntheticRevision.station2))
         try check(try SyntheticRevision.reconcile(records: [sameIdentity]) == .failure(.record(.attachToHeldReference, reviewID: "SYN-REVIEW-A3")), "first seen elsewhere")
         // Retired by another review.

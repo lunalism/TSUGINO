@@ -1,0 +1,2690 @@
+{
+  "method": "METHOD.md",
+  "environment": {
+    "platform": "macOS-26.6.2-arm64-arm-64bit",
+    "os": "26.6.2",
+    "chip": "Apple M2",
+    "memoryBytes": "17179869184",
+    "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx26.0",
+    "configuration": "-O, Swift language mode 5; macOS CLI; no testing fault hook",
+    "artifactFilesystem": "system temporary directory; workspace preparation returned unavailable, root cause unverified; hard-link probes succeeded at both locations"
+  },
+  "repetitions": 5,
+  "summary": {
+    "1-baseline": {
+      "artifactBytes": {
+        "min": 184320,
+        "median": 184320,
+        "max": 184320
+      },
+      "openMs": {
+        "min": 21.614,
+        "median": 23.856,
+        "max": 32.564833
+      },
+      "firstQueryMs": {
+        "min": 0.09675,
+        "median": 0.115542,
+        "max": 0.163
+      },
+      "warmMedianMs": {
+        "min": 0.030417,
+        "median": 0.036208,
+        "max": 0.044958
+      },
+      "warmP95Ms": {
+        "min": 0.049625,
+        "median": 0.056083,
+        "max": 0.114833
+      },
+      "closeMs": {
+        "min": 0.097084,
+        "median": 0.127791,
+        "max": 0.211209
+      },
+      "reopenMs": {
+        "min": 17.347917,
+        "median": 18.05825,
+        "max": 27.343459
+      },
+      "reopenFirstMs": {
+        "min": 0.061125,
+        "median": 0.101333,
+        "max": 0.13875
+      },
+      "openPlusFirstMs": {
+        "min": 21.71075,
+        "median": 23.971542000000003,
+        "max": 32.727833
+      },
+      "fullLoadMs": {
+        "min": 3.21025,
+        "median": 3.500208,
+        "max": 5.915709
+      },
+      "ordinaryPeakMiB": {
+        "min": 11.671875,
+        "median": 11.734375,
+        "max": 11.8125
+      },
+      "fullPeakMiB": {
+        "min": 11.59375,
+        "median": 11.65625,
+        "max": 11.703125
+      },
+      "warmRSSDeltaMiB": {
+        "min": 0.0,
+        "median": 0.046875,
+        "max": 0.046875
+      },
+      "fixtureMs": {
+        "min": 4.105333,
+        "median": 5.885292,
+        "max": 9.75375
+      },
+      "baselineBuildMs": {
+        "min": 39.480583,
+        "median": 53.850334,
+        "max": 57.793375
+      }
+    },
+    "1-history": {
+      "artifactBytes": {
+        "min": 184320,
+        "median": 184320,
+        "max": 184320
+      },
+      "openMs": {
+        "min": 21.581292,
+        "median": 23.743208,
+        "max": 31.364458
+      },
+      "firstQueryMs": {
+        "min": 0.088209,
+        "median": 0.096583,
+        "max": 0.223083
+      },
+      "warmMedianMs": {
+        "min": 0.030375,
+        "median": 0.036167,
+        "max": 0.042542
+      },
+      "warmP95Ms": {
+        "min": 0.048708,
+        "median": 0.055792,
+        "max": 0.089375
+      },
+      "closeMs": {
+        "min": 0.098375,
+        "median": 0.115417,
+        "max": 0.155167
+      },
+      "reopenMs": {
+        "min": 17.432417,
+        "median": 19.6385,
+        "max": 26.177333
+      },
+      "reopenFirstMs": {
+        "min": 0.06175,
+        "median": 0.087042,
+        "max": 0.124417
+      },
+      "openPlusFirstMs": {
+        "min": 21.669501,
+        "median": 23.835791999999998,
+        "max": 31.480916999999998
+      },
+      "fullLoadMs": {
+        "min": 3.20125,
+        "median": 3.518542,
+        "max": 5.267959
+      },
+      "ordinaryPeakMiB": {
+        "min": 11.65625,
+        "median": 11.703125,
+        "max": 11.84375
+      },
+      "fullPeakMiB": {
+        "min": 11.53125,
+        "median": 11.609375,
+        "max": 11.6875
+      },
+      "warmRSSDeltaMiB": {
+        "min": 0.0,
+        "median": 0.03125,
+        "max": 0.078125
+      },
+      "fixtureMs": {
+        "min": 5.00575,
+        "median": 5.874875,
+        "max": 8.06125
+      },
+      "baselineBuildMs": {
+        "min": 38.886542,
+        "median": 44.998292,
+        "max": 58.932667
+      },
+      "transitionBuildMs": {
+        "min": 65.42675,
+        "median": 79.828792,
+        "max": 100.823875
+      },
+      "historyBytes": {
+        "min": 57151,
+        "median": 57151,
+        "max": 57151
+      }
+    },
+    "100-baseline": {
+      "artifactBytes": {
+        "min": 15974400,
+        "median": 15974400,
+        "max": 15974400
+      },
+      "openMs": {
+        "min": 1799.647916,
+        "median": 2245.836792,
+        "max": 2694.967625
+      },
+      "firstQueryMs": {
+        "min": 0.632958,
+        "median": 0.656709,
+        "max": 0.794625
+      },
+      "warmMedianMs": {
+        "min": 0.17825,
+        "median": 0.220125,
+        "max": 0.226834
+      },
+      "warmP95Ms": {
+        "min": 0.34475,
+        "median": 0.433875,
+        "max": 0.535625
+      },
+      "closeMs": {
+        "min": 0.41475,
+        "median": 0.53575,
+        "max": 1.197792
+      },
+      "reopenMs": {
+        "min": 1777.92375,
+        "median": 2491.432542,
+        "max": 2856.224208
+      },
+      "reopenFirstMs": {
+        "min": 0.575625,
+        "median": 0.711,
+        "max": 0.948083
+      },
+      "openPlusFirstMs": {
+        "min": 1800.295833,
+        "median": 2246.631417,
+        "max": 2695.624334
+      },
+      "fullLoadMs": {
+        "min": 317.956833,
+        "median": 448.586125,
+        "max": 544.698833
+      },
+      "ordinaryPeakMiB": {
+        "min": 202.65625,
+        "median": 202.90625,
+        "max": 203.53125
+      },
+      "fullPeakMiB": {
+        "min": 200.046875,
+        "median": 202.640625,
+        "max": 206.0
+      },
+      "warmRSSDeltaMiB": {
+        "min": 0.0,
+        "median": 0.046875,
+        "max": 0.078125
+      },
+      "fixtureMs": {
+        "min": 383.062875,
+        "median": 473.589167,
+        "max": 529.100875
+      },
+      "baselineBuildMs": {
+        "min": 3065.12125,
+        "median": 3764.338709,
+        "max": 5964.416333
+      }
+    },
+    "100-history": {
+      "artifactBytes": {
+        "min": 15974400,
+        "median": 15974400,
+        "max": 15974400
+      },
+      "openMs": {
+        "min": 1802.638584,
+        "median": 2178.050666,
+        "max": 2948.522708
+      },
+      "firstQueryMs": {
+        "min": 0.575584,
+        "median": 0.808167,
+        "max": 1.816041
+      },
+      "warmMedianMs": {
+        "min": 0.176625,
+        "median": 0.197709,
+        "max": 0.208917
+      },
+      "warmP95Ms": {
+        "min": 0.341083,
+        "median": 0.420042,
+        "max": 0.621125
+      },
+      "closeMs": {
+        "min": 0.434417,
+        "median": 0.474291,
+        "max": 0.571625
+      },
+      "reopenMs": {
+        "min": 1751.221125,
+        "median": 2249.390958,
+        "max": 2615.597125
+      },
+      "reopenFirstMs": {
+        "min": 0.576,
+        "median": 0.633167,
+        "max": 1.445125
+      },
+      "openPlusFirstMs": {
+        "min": 1803.214168,
+        "median": 2178.8588330000002,
+        "max": 2949.88875
+      },
+      "fullLoadMs": {
+        "min": 325.602583,
+        "median": 344.20775,
+        "max": 444.898458
+      },
+      "ordinaryPeakMiB": {
+        "min": 202.46875,
+        "median": 202.875,
+        "max": 203.46875
+      },
+      "fullPeakMiB": {
+        "min": 202.75,
+        "median": 202.859375,
+        "max": 202.890625
+      },
+      "warmRSSDeltaMiB": {
+        "min": 0.0,
+        "median": 0.03125,
+        "max": 0.078125
+      },
+      "fixtureMs": {
+        "min": 461.970709,
+        "median": 509.453792,
+        "max": 696.184584
+      },
+      "baselineBuildMs": {
+        "min": 3128.927916,
+        "median": 3620.114042,
+        "max": 4115.71775
+      },
+      "transitionBuildMs": {
+        "min": 6013.3855,
+        "median": 7011.732417,
+        "max": 9396.800417
+      },
+      "historyBytes": {
+        "min": 5502151,
+        "median": 5502151,
+        "max": 5502151
+      }
+    }
+  },
+  "samples": [
+    {
+      "repetition": 0,
+      "scale": 1,
+      "case": "baseline",
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "prepare": {
+        "baselineBuildMs": 57.793375,
+        "fixtureMs": 9.75375,
+        "history": false,
+        "memory": {
+          "peak": 14237696,
+          "rss": 14024704
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12189696,
+          "rss": 12189696
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12500992,
+          "rss": 12288000
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.127791,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.115542,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 23.856,
+        "ordinaryPeakMemory": {
+          "peak": 12304384,
+          "rss": 12304384
+        },
+        "primedMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.101333,
+        "reopenMs": 17.967583,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.036958,
+        "warmP95Ms": 0.056083,
+        "warmPassMemory": [
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          },
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          },
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.21025,
+        "history": false,
+        "loadedMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "mode": "full",
+        "openMs": 21.564875,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 0,
+      "scale": 1,
+      "case": "history",
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "prepare": {
+        "baselineBuildMs": 38.886542,
+        "fixtureMs": 5.235458,
+        "history": true,
+        "historyBytes": 57151,
+        "memory": {
+          "peak": 16728064,
+          "rss": 16547840
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 65.42675
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12451840,
+          "rss": 12238848
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.10775,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.088209,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 21.581292,
+        "ordinaryPeakMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "primedMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.066375,
+        "reopenMs": 17.701417,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.03725,
+        "warmP95Ms": 0.055792,
+        "warmPassMemory": [
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          },
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          },
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.20125,
+        "history": true,
+        "loadedMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "mode": "full",
+        "openMs": 21.160875,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 0,
+      "scale": 100,
+      "case": "baseline",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "d0b3723e3ada48831ecf3851be01c831340ef545fd8b7b5fe9c47ef9fbcc062e",
+      "prepare": {
+        "baselineBuildMs": 3175.893458,
+        "fixtureMs": 391.021875,
+        "history": false,
+        "memory": {
+          "peak": 278249472,
+          "rss": 225787904
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212680704,
+          "rss": 201900032
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244318208,
+          "rss": 235520000
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.41475,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.632958,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 1814.175916,
+        "ordinaryPeakMemory": {
+          "peak": 212680704,
+          "rss": 203358208
+        },
+        "primedMemory": {
+          "peak": 212680704,
+          "rss": 203259904
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.575625,
+        "reopenMs": 1777.92375,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.17825,
+        "warmP95Ms": 0.34475,
+        "warmPassMemory": [
+          {
+            "peak": 212680704,
+            "rss": 203292672
+          },
+          {
+            "peak": 212680704,
+            "rss": 203341824
+          },
+          {
+            "peak": 212680704,
+            "rss": 203341824
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212451328,
+          "rss": 201687040
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 317.956833,
+        "history": false,
+        "loadedMemory": {
+          "peak": 212451328,
+          "rss": 202932224
+        },
+        "mode": "full",
+        "openMs": 1817.280167,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 0,
+      "scale": 100,
+      "case": "history",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "522574d800d83f6535ff41a8e89d3b9fd2c3c9f8422ce5fe81a52c26fe1c8dc8",
+      "prepare": {
+        "baselineBuildMs": 3456.183833,
+        "fixtureMs": 472.20725,
+        "history": true,
+        "historyBytes": 5502151,
+        "memory": {
+          "peak": 349044736,
+          "rss": 349044736
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 7011.732417
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212303872,
+          "rss": 201572352
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244891648,
+          "rss": 236093440
+        },
+        "beforeMemory": {
+          "peak": 6160384,
+          "rss": 6160384
+        },
+        "closeMs": 0.552125,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.6355,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 2415.031334,
+        "ordinaryPeakMemory": {
+          "peak": 212303872,
+          "rss": 202997760
+        },
+        "primedMemory": {
+          "peak": 212303872,
+          "rss": 202981376
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.633167,
+        "reopenMs": 2615.597125,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.197709,
+        "warmP95Ms": 0.559875,
+        "warmPassMemory": [
+          {
+            "peak": 212303872,
+            "rss": 202981376
+          },
+          {
+            "peak": 212303872,
+            "rss": 202981376
+          },
+          {
+            "peak": 212303872,
+            "rss": 202981376
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212746240,
+          "rss": 201965568
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 344.20775,
+        "history": true,
+        "loadedMemory": {
+          "peak": 212746240,
+          "rss": 203227136
+        },
+        "mode": "full",
+        "openMs": 2076.343542,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 1,
+      "scale": 1,
+      "case": "history",
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "prepare": {
+        "baselineBuildMs": 44.998292,
+        "fixtureMs": 5.874875,
+        "history": true,
+        "historyBytes": 57151,
+        "memory": {
+          "peak": 16924672,
+          "rss": 16744448
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 79.828792
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12206080,
+          "rss": 12206080
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12517376,
+          "rss": 12304384
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.115417,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.092584,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 23.743208,
+        "ordinaryPeakMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "primedMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.087042,
+        "reopenMs": 19.6385,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.032417,
+        "warmP95Ms": 0.053959,
+        "warmPassMemory": [
+          {
+            "peak": 12255232,
+            "rss": 12255232
+          },
+          {
+            "peak": 12255232,
+            "rss": 12255232
+          },
+          {
+            "peak": 12271616,
+            "rss": 12271616
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12091392,
+          "rss": 12091392
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.518542,
+        "history": true,
+        "loadedMemory": {
+          "peak": 12091392,
+          "rss": 12091392
+        },
+        "mode": "full",
+        "openMs": 23.983542,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 1,
+      "scale": 1,
+      "case": "baseline",
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "prepare": {
+        "baselineBuildMs": 41.672375,
+        "fixtureMs": 4.575584,
+        "history": false,
+        "memory": {
+          "peak": 14221312,
+          "rss": 14008320
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12500992,
+          "rss": 12288000
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.098917,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.096916,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 23.277542,
+        "ordinaryPeakMemory": {
+          "peak": 12304384,
+          "rss": 12304384
+        },
+        "primedMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.084875,
+        "reopenMs": 18.05825,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.031416,
+        "warmP95Ms": 0.05175,
+        "warmPassMemory": [
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          },
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          },
+          {
+            "peak": 12304384,
+            "rss": 12304384
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12156928,
+          "rss": 12156928
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.500208,
+        "history": false,
+        "loadedMemory": {
+          "peak": 12156928,
+          "rss": 12156928
+        },
+        "mode": "full",
+        "openMs": 22.353375,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 1,
+      "scale": 100,
+      "case": "history",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "522574d800d83f6535ff41a8e89d3b9fd2c3c9f8422ce5fe81a52c26fe1c8dc8",
+      "prepare": {
+        "baselineBuildMs": 4115.71775,
+        "fixtureMs": 509.453792,
+        "history": true,
+        "historyBytes": 5502151,
+        "memory": {
+          "peak": 347832320,
+          "rss": 347832320
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 9396.800417
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212926464,
+          "rss": 202129408
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244301824,
+          "rss": 235503616
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.434417,
+        "consumedResults": 2688,
+        "firstQueryMs": 1.366042,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 2948.522708,
+        "ordinaryPeakMemory": {
+          "peak": 212926464,
+          "rss": 203554816
+        },
+        "primedMemory": {
+          "peak": 212926464,
+          "rss": 203472896
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.576,
+        "reopenMs": 2060.881334,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.206541,
+        "warmP95Ms": 0.414125,
+        "warmPassMemory": [
+          {
+            "peak": 212926464,
+            "rss": 203505664
+          },
+          {
+            "peak": 212926464,
+            "rss": 203554816
+          },
+          {
+            "peak": 212926464,
+            "rss": 203554816
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212713472,
+          "rss": 201949184
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 325.602583,
+        "history": true,
+        "loadedMemory": {
+          "peak": 212713472,
+          "rss": 203194368
+        },
+        "mode": "full",
+        "openMs": 1866.599542,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 1,
+      "scale": 100,
+      "case": "baseline",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "d0b3723e3ada48831ecf3851be01c831340ef545fd8b7b5fe9c47ef9fbcc062e",
+      "prepare": {
+        "baselineBuildMs": 3065.12125,
+        "fixtureMs": 383.062875,
+        "history": false,
+        "memory": {
+          "peak": 278233088,
+          "rss": 225771520
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212500480,
+          "rss": 201736192
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 245760000,
+          "rss": 236961792
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.454541,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.647917,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 1799.647916,
+        "ordinaryPeakMemory": {
+          "peak": 212500480,
+          "rss": 203128832
+        },
+        "primedMemory": {
+          "peak": 212500480,
+          "rss": 203112448
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.698167,
+        "reopenMs": 1975.860125,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.179542,
+        "warmP95Ms": 0.347333,
+        "warmPassMemory": [
+          {
+            "peak": 212500480,
+            "rss": 203112448
+          },
+          {
+            "peak": 212500480,
+            "rss": 203112448
+          },
+          {
+            "peak": 212500480,
+            "rss": 203112448
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 213991424,
+          "rss": 203194368
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 448.586125,
+        "history": false,
+        "loadedMemory": {
+          "peak": 213991424,
+          "rss": 204439552
+        },
+        "mode": "full",
+        "openMs": 2466.073333,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 2,
+      "scale": 1,
+      "case": "baseline",
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "prepare": {
+        "baselineBuildMs": 53.850334,
+        "fixtureMs": 5.885292,
+        "history": false,
+        "memory": {
+          "peak": 14270464,
+          "rss": 14057472
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12288000,
+          "rss": 12288000
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12713984,
+          "rss": 12500992
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.211209,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.138584,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 29.897416,
+        "ordinaryPeakMemory": {
+          "peak": 12386304,
+          "rss": 12386304
+        },
+        "primedMemory": {
+          "peak": 12320768,
+          "rss": 12320768
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.121,
+        "reopenMs": 23.740334,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.036208,
+        "warmP95Ms": 0.073792,
+        "warmPassMemory": [
+          {
+            "peak": 12353536,
+            "rss": 12353536
+          },
+          {
+            "peak": 12369920,
+            "rss": 12369920
+          },
+          {
+            "peak": 12369920,
+            "rss": 12369920
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 5.364959,
+        "history": false,
+        "loadedMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "mode": "full",
+        "openMs": 31.3815,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 2,
+      "scale": 1,
+      "case": "history",
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "prepare": {
+        "baselineBuildMs": 58.932667,
+        "fixtureMs": 7.71575,
+        "history": true,
+        "historyBytes": 57151,
+        "memory": {
+          "peak": 16973824,
+          "rss": 16793600
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 100.823875
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12681216,
+          "rss": 12468224
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.155167,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.223083,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 31.254708,
+        "ordinaryPeakMemory": {
+          "peak": 12419072,
+          "rss": 12419072
+        },
+        "primedMemory": {
+          "peak": 12320768,
+          "rss": 12320768
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.124417,
+        "reopenMs": 23.275875,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.036167,
+        "warmP95Ms": 0.071292,
+        "warmPassMemory": [
+          {
+            "peak": 12369920,
+            "rss": 12369920
+          },
+          {
+            "peak": 12402688,
+            "rss": 12402688
+          },
+          {
+            "peak": 12402688,
+            "rss": 12402688
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 4.4295,
+        "history": true,
+        "loadedMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "mode": "full",
+        "openMs": 30.197917,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 2,
+      "scale": 100,
+      "case": "baseline",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "d0b3723e3ada48831ecf3851be01c831340ef545fd8b7b5fe9c47ef9fbcc062e",
+      "prepare": {
+        "baselineBuildMs": 3994.995833,
+        "fixtureMs": 510.264458,
+        "history": false,
+        "memory": {
+          "peak": 278839296,
+          "rss": 226377728
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 213417984,
+          "rss": 202653696
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244940800,
+          "rss": 236142592
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 1.197792,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.718625,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 2584.539875,
+        "ordinaryPeakMemory": {
+          "peak": 213417984,
+          "rss": 204111872
+        },
+        "primedMemory": {
+          "peak": 213417984,
+          "rss": 204046336
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.711,
+        "reopenMs": 2856.224208,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.224334,
+        "warmP95Ms": 0.535625,
+        "warmPassMemory": [
+          {
+            "peak": 213417984,
+            "rss": 204079104
+          },
+          {
+            "peak": 213417984,
+            "rss": 204111872
+          },
+          {
+            "peak": 213417984,
+            "rss": 204111872
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 209764352,
+          "rss": 199213056
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 530.71525,
+        "history": false,
+        "loadedMemory": {
+          "peak": 209764352,
+          "rss": 200474624
+        },
+        "mode": "full",
+        "openMs": 2926.269334,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 2,
+      "scale": 100,
+      "case": "history",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "522574d800d83f6535ff41a8e89d3b9fd2c3c9f8422ce5fe81a52c26fe1c8dc8",
+      "prepare": {
+        "baselineBuildMs": 3987.220875,
+        "fixtureMs": 696.184584,
+        "history": true,
+        "historyBytes": 5502151,
+        "memory": {
+          "peak": 349306880,
+          "rss": 349306880
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 7781.878917
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 213352448,
+          "rss": 202571776
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244793344,
+          "rss": 235995136
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.472458,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.808167,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 2178.050666,
+        "ordinaryPeakMemory": {
+          "peak": 213352448,
+          "rss": 203997184
+        },
+        "primedMemory": {
+          "peak": 213352448,
+          "rss": 203948032
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.661916,
+        "reopenMs": 2249.390958,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.208917,
+        "warmP95Ms": 0.420042,
+        "warmPassMemory": [
+          {
+            "peak": 213352448,
+            "rss": 203964416
+          },
+          {
+            "peak": 213352448,
+            "rss": 203964416
+          },
+          {
+            "peak": 213352448,
+            "rss": 203980800
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212598784,
+          "rss": 201850880
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 339.647125,
+        "history": true,
+        "loadedMemory": {
+          "peak": 212598784,
+          "rss": 203112448
+        },
+        "mode": "full",
+        "openMs": 1924.722292,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 3,
+      "scale": 1,
+      "case": "history",
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "prepare": {
+        "baselineBuildMs": 39.456916,
+        "fixtureMs": 5.00575,
+        "history": true,
+        "historyBytes": 57151,
+        "memory": {
+          "peak": 16760832,
+          "rss": 16580608
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 69.527667
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12107776,
+          "rss": 12107776
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12517376,
+          "rss": 12304384
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.098375,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.096583,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 21.801084,
+        "ordinaryPeakMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "primedMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.06175,
+        "reopenMs": 17.432417,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.030375,
+        "warmP95Ms": 0.048708,
+        "warmPassMemory": [
+          {
+            "peak": 12206080,
+            "rss": 12206080
+          },
+          {
+            "peak": 12255232,
+            "rss": 12255232
+          },
+          {
+            "peak": 12255232,
+            "rss": 12255232
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12140544,
+          "rss": 12140544
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.301459,
+        "history": true,
+        "loadedMemory": {
+          "peak": 12140544,
+          "rss": 12140544
+        },
+        "mode": "full",
+        "openMs": 21.945542,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 3,
+      "scale": 1,
+      "case": "baseline",
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "prepare": {
+        "baselineBuildMs": 39.480583,
+        "fixtureMs": 4.105333,
+        "history": false,
+        "memory": {
+          "peak": 14254080,
+          "rss": 14041088
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12271616,
+          "rss": 12271616
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12550144,
+          "rss": 12337152
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.097084,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.09675,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 21.614,
+        "ordinaryPeakMemory": {
+          "peak": 12353536,
+          "rss": 12353536
+        },
+        "primedMemory": {
+          "peak": 12304384,
+          "rss": 12304384
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.061125,
+        "reopenMs": 17.347917,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.030417,
+        "warmP95Ms": 0.049625,
+        "warmPassMemory": [
+          {
+            "peak": 12320768,
+            "rss": 12320768
+          },
+          {
+            "peak": 12353536,
+            "rss": 12353536
+          },
+          {
+            "peak": 12353536,
+            "rss": 12353536
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 3.294375,
+        "history": false,
+        "loadedMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "mode": "full",
+        "openMs": 21.69075,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 3,
+      "scale": 100,
+      "case": "history",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "522574d800d83f6535ff41a8e89d3b9fd2c3c9f8422ce5fe81a52c26fe1c8dc8",
+      "prepare": {
+        "baselineBuildMs": 3128.927916,
+        "fixtureMs": 461.970709,
+        "history": true,
+        "historyBytes": 5502151,
+        "memory": {
+          "peak": 348536832,
+          "rss": 348536832
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 6101.827083
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212729856,
+          "rss": 201949184
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 246693888,
+          "rss": 237895680
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.571625,
+        "consumedResults": 2688,
+        "firstQueryMs": 1.816041,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 1914.430666,
+        "ordinaryPeakMemory": {
+          "peak": 212729856,
+          "rss": 203390976
+        },
+        "primedMemory": {
+          "peak": 212729856,
+          "rss": 203309056
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 1.445125,
+        "reopenMs": 2449.212459,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.176625,
+        "warmP95Ms": 0.621125,
+        "warmPassMemory": [
+          {
+            "peak": 212729856,
+            "rss": 203341824
+          },
+          {
+            "peak": 212729856,
+            "rss": 203374592
+          },
+          {
+            "peak": 212729856,
+            "rss": 203390976
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212713472,
+          "rss": 201900032
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 444.898458,
+        "history": true,
+        "loadedMemory": {
+          "peak": 212713472,
+          "rss": 203145216
+        },
+        "mode": "full",
+        "openMs": 2447.557792,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 3,
+      "scale": 100,
+      "case": "baseline",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "d0b3723e3ada48831ecf3851be01c831340ef545fd8b7b5fe9c47ef9fbcc062e",
+      "prepare": {
+        "baselineBuildMs": 3764.338709,
+        "fixtureMs": 473.589167,
+        "history": false,
+        "memory": {
+          "peak": 278413312,
+          "rss": 225951744
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212762624,
+          "rss": 201965568
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 246136832,
+          "rss": 237338624
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.563542,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.794625,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 2245.836792,
+        "ordinaryPeakMemory": {
+          "peak": 212762624,
+          "rss": 203407360
+        },
+        "primedMemory": {
+          "peak": 212762624,
+          "rss": 203341824
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.771833,
+        "reopenMs": 2491.432542,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.220125,
+        "warmP95Ms": 0.433875,
+        "warmPassMemory": [
+          {
+            "peak": 212762624,
+            "rss": 203358208
+          },
+          {
+            "peak": 212762624,
+            "rss": 203390976
+          },
+          {
+            "peak": 212762624,
+            "rss": 203390976
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 216006656,
+          "rss": 205242368
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 544.698833,
+        "history": false,
+        "loadedMemory": {
+          "peak": 216006656,
+          "rss": 206487552
+        },
+        "mode": "full",
+        "openMs": 3335.139458,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 4,
+      "scale": 1,
+      "case": "baseline",
+      "artifactBytes": 184320,
+      "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+      "prepare": {
+        "baselineBuildMs": 57.139542,
+        "fixtureMs": 5.949792,
+        "history": false,
+        "memory": {
+          "peak": 14188544,
+          "rss": 13975552
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12140544,
+          "rss": 12140544
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12550144,
+          "rss": 12337152
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.147833,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.163,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 32.564833,
+        "ordinaryPeakMemory": {
+          "peak": 12238848,
+          "rss": 12238848
+        },
+        "primedMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.13875,
+        "reopenMs": 27.343459,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.044958,
+        "warmP95Ms": 0.114833,
+        "warmPassMemory": [
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          },
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          },
+          {
+            "peak": 12222464,
+            "rss": 12222464
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 5.915709,
+        "history": false,
+        "loadedMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "mode": "full",
+        "openMs": 32.972375,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 4,
+      "scale": 1,
+      "case": "history",
+      "artifactBytes": 184320,
+      "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+      "prepare": {
+        "baselineBuildMs": 58.361125,
+        "fixtureMs": 8.06125,
+        "history": true,
+        "historyBytes": 57151,
+        "memory": {
+          "peak": 16973824,
+          "rss": 16793600
+        },
+        "mode": "prepare",
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 96.267042
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12222464,
+          "rss": 12222464
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 12517376,
+          "rss": 12304384
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.118833,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.116459,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 31.364458,
+        "ordinaryPeakMemory": {
+          "peak": 12304384,
+          "rss": 12304384
+        },
+        "primedMemory": {
+          "peak": 12255232,
+          "rss": 12255232
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.11675,
+        "reopenMs": 26.177333,
+        "scale": 1,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.042542,
+        "warmP95Ms": 0.089375,
+        "warmPassMemory": [
+          {
+            "peak": 12271616,
+            "rss": 12271616
+          },
+          {
+            "peak": 12288000,
+            "rss": 12288000
+          },
+          {
+            "peak": 12288000,
+            "rss": 12288000
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "beforeMemory": {
+          "peak": 6160384,
+          "rss": 6160384
+        },
+        "counts": [
+          258,
+          15,
+          2
+        ],
+        "fullLoadMs": 5.267959,
+        "history": true,
+        "loadedMemory": {
+          "peak": 12173312,
+          "rss": 12173312
+        },
+        "mode": "full",
+        "openMs": 33.569375,
+        "scale": 1,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 4,
+      "scale": 100,
+      "case": "baseline",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "d0b3723e3ada48831ecf3851be01c831340ef545fd8b7b5fe9c47ef9fbcc062e",
+      "prepare": {
+        "baselineBuildMs": 5964.416333,
+        "fixtureMs": 529.100875,
+        "history": false,
+        "memory": {
+          "peak": 279937024,
+          "rss": 227475456
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0"
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212959232,
+          "rss": 202211328
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 246595584,
+          "rss": 237797376
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.53575,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.656709,
+        "history": false,
+        "metadataBytes": 467,
+        "mode": "ordinary",
+        "openMs": 2694.967625,
+        "ordinaryPeakMemory": {
+          "peak": 212959232,
+          "rss": 203603968
+        },
+        "primedMemory": {
+          "peak": 212959232,
+          "rss": 203571200
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.948083,
+        "reopenMs": 2614.463,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.226834,
+        "warmP95Ms": 0.459125,
+        "warmPassMemory": [
+          {
+            "peak": 212959232,
+            "rss": 203571200
+          },
+          {
+            "peak": 212959232,
+            "rss": 203571200
+          },
+          {
+            "peak": 212959232,
+            "rss": 203587584
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212484096,
+          "rss": 201687040
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 381.934833,
+        "history": false,
+        "loadedMemory": {
+          "peak": 212484096,
+          "rss": 202932224
+        },
+        "mode": "full",
+        "openMs": 2563.204,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    },
+    {
+      "repetition": 4,
+      "scale": 100,
+      "case": "history",
+      "artifactBytes": 15974400,
+      "artifactSHA256": "522574d800d83f6535ff41a8e89d3b9fd2c3c9f8422ce5fe81a52c26fe1c8dc8",
+      "prepare": {
+        "baselineBuildMs": 3620.114042,
+        "fixtureMs": 528.643208,
+        "history": true,
+        "historyBytes": 5502151,
+        "memory": {
+          "peak": 348274688,
+          "rss": 348274688
+        },
+        "mode": "prepare",
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "transitionBuildMs": 6013.3855
+      },
+      "ordinary": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212484096,
+          "rss": 201703424
+        },
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "afterReopenMemory": {
+          "peak": 244039680,
+          "rss": 235241472
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "closeMs": 0.474291,
+        "consumedResults": 2688,
+        "firstQueryMs": 0.575584,
+        "history": true,
+        "metadataBytes": 1092,
+        "mode": "ordinary",
+        "openMs": 1802.638584,
+        "ordinaryPeakMemory": {
+          "peak": 212484096,
+          "rss": 203112448
+        },
+        "primedMemory": {
+          "peak": 212484096,
+          "rss": 203079680
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenFirstMs": 0.605833,
+        "reopenMs": 1751.221125,
+        "scale": 100,
+        "sqlite": "3.51.0",
+        "warmMedianMs": 0.177417,
+        "warmP95Ms": 0.341083,
+        "warmPassMemory": [
+          {
+            "peak": 212484096,
+            "rss": 203096064
+          },
+          {
+            "peak": 212484096,
+            "rss": 203096064
+          },
+          {
+            "peak": 212484096,
+            "rss": 203096064
+          }
+        ]
+      },
+      "full": {
+        "afterOpenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "afterOpenMemory": {
+          "peak": 212697088,
+          "rss": 201916416
+        },
+        "beforeMemory": {
+          "peak": 6144000,
+          "rss": 6144000
+        },
+        "counts": [
+          25800,
+          1500,
+          200
+        ],
+        "fullLoadMs": 363.753,
+        "history": true,
+        "loadedMemory": {
+          "peak": 212697088,
+          "rss": 203161600
+        },
+        "mode": "full",
+        "openMs": 1807.706583,
+        "scale": 100,
+        "sqlite": "3.51.0"
+      }
+    }
+  ],
+  "binarySHA256": "f3a929a87316881bbb39c0155aec52d8a6113028f1bf30a05db94b2eff3cc6bd",
+  "sourceFingerprints": {
+    "TSUGINO/Data/Mapping/CrossOperatorReview.swift": "ccb9719ae90a351edef3a85e6c9ad323a9ec7558929ccf78bf9f5923a6d62003",
+    "TSUGINO/Data/Mapping/LineBinding.swift": "14fe23856db4d85e4665924add8c21fde6539a265f3a288a6d2ec2ef3e04bc42",
+    "TSUGINO/Data/Mapping/MappingRegistry.swift": "a9825f45bb48cbaa58f641dcdd64396cf9138e9fe4dc7aa1533fbe416974a928",
+    "TSUGINO/Data/Mapping/MintedIdentifier.swift": "7ff80cc163dd4cf588260cefb03d2f6d69fe95fc29e9dffb33c40a2331f52d8f",
+    "TSUGINO/Data/Mapping/ProviderReference.swift": "8f1fdeef8eeffa57509f162862fb82456073412fa5a9b07b66e4c78b0eb21c05",
+    "TSUGINO/Data/Mapping/PublishedRailName.swift": "530eb96062f5244d5785197216850210723b146db69015891759b328990414f1",
+    "TSUGINO/Data/Mapping/RailNameReview.swift": "00df559b2251a7b7dda776415753ee95a8966e6ddc31b1daa68ac4ee48dff162",
+    "TSUGINO/Data/Mapping/RailwayTitleReview.swift": "3c9af400002f07dac3650d7c5c61e6a295cf654ace67e18df377359cd35e9f58",
+    "TSUGINO/Data/Mapping/ReviewedRevision.swift": "29b33db1571e4a214bef896928a6e38434c687d33c8e0fa0aab082094f74a0bd",
+    "TSUGINO/Data/Mapping/StationAliasRule.swift": "7e5b89376e237d13b76f4f39e36e57d4c81da6fc615cc00dfa2a66312c454cc1",
+    "TSUGINO/Data/Mapping/StationCodeEvidence.swift": "2b916c09d860fda23185460e3e298e13b836bf454c51d9be650bea0c3d2f9469",
+    "TSUGINO/Data/Mapping/StationGrouping.swift": "27e2b9fe28a1633d89ddfba52a3461458a1e59c22e0bfe1407330ecbcf69e9ab",
+    "TSUGINO/Data/Search/ExactStationIndex.swift": "3742d581bdab54814635e599bff452a3fbe14c95e3d07810a9b38e449d4e95e2",
+    "TSUGINO/Data/Storage/RailwayArtifact.swift": "d55d90d1677b0cca70e72ac13992089f747ad8f06786959cc3087f9ad6f0f55c",
+    "TSUGINO/Data/Storage/RailwaySQLiteConnection.swift": "04226dad12c68ebd9c1c9253815e088bfb49a977541887bd781d5b4a1698a40b",
+    "TSUGINO/Data/Storage/SQLiteRailwayRepository.swift": "f91fab2b5f0bd599fc983347c7c93d992d80b40e80dfcfafc1176b89d219394e",
+    "TSUGINO/Domain/Identifiers/CanonicalIdentifiers.swift": "4ee5fe4a743919287f740e82155026e67fa06b3a4d41828492e40765a7db6702",
+    "TSUGINO/Domain/Journey/ActiveJourney.swift": "274e14376bc9f00d382c7fc6620f64a9a8b75dccea12a111318bef95b124394e",
+    "TSUGINO/Domain/Journey/ActiveJourneyInconsistency.swift": "6e5ecf1d56a4663ef0c0ffcc11a618bff1799d336afc5b814e0fd48c474a405c",
+    "TSUGINO/Domain/Journey/Journey.swift": "0a7bcbff7bf7cd94874bbe94665ca8688f693b442c983925c92b69a9280b0674",
+    "TSUGINO/Domain/Journey/JourneyEndReason.swift": "e6ebc842387e9c271b6409e1f939afe11e6864a0a25bef7c1e1bc9e8b4649b30",
+    "TSUGINO/Domain/Journey/JourneyEngine.swift": "731118bf74ad700f466f26a62ef782e728867dde5e9c4e3270842d357d50f022",
+    "TSUGINO/Domain/Journey/JourneyEngineInput.swift": "a1175bb97ed5255ef1c98001b2a1727232f1a171b8865ef3a99a7b74c10b7036",
+    "TSUGINO/Domain/Journey/JourneyEvent.swift": "345ef47ed80ce989b0a798de0280f044df012c96589f7f052819afd41332867a",
+    "TSUGINO/Domain/Journey/JourneyInputRejection.swift": "4ec83c2ce58e97d0354b4f5a67f8ed9ec812478ff6370d3d20b00ae88f522e3f",
+    "TSUGINO/Domain/Journey/JourneyInterruptionReason.swift": "7ff8445f22fc977a9b28326341a0e07203155fd6167c7eac8db6f35d1d3139d4",
+    "TSUGINO/Domain/Journey/JourneyLeg.swift": "2fd1ff563f6574c5d891f7210b2fe8635aae037c3af8eeae858588b57ec460f3",
+    "TSUGINO/Domain/Journey/JourneyPhase.swift": "cc2809562475e27407c8f026f4f22ead2f9cd2f21bb1fbc78b0c5b57475d663c",
+    "TSUGINO/Domain/Journey/JourneyPosition.swift": "4f8c38269c24de603601e4ae78585ac4ee8cf7c3d2bbb6f736f5698c536abe79",
+    "TSUGINO/Domain/Journey/JourneyRecoveryProposal.swift": "308430447783d803fd73b05a68caab817cf3f21db6124da98624a9118e63a42c",
+    "TSUGINO/Domain/Journey/JourneyState.swift": "74c813325019390ca8f4254ad89cef28db4e5d4dd20a36c90cb03183e1099e23",
+    "TSUGINO/Domain/Journey/JourneyTransitionOutcome.swift": "ea17e99493577614e580a5d828b5dc8d15a616323e6e73066f8fd1a8e9fd4550",
+    "TSUGINO/Domain/Journey/JourneyTransitionResult.swift": "c57024a370eb85a56d7ff474f72d8c0e357f507dec0d5bc3cb98cce0e36abd8d",
+    "TSUGINO/Domain/Journey/PlannedEndBasis.swift": "0f82cb43c6b73f8f9d2bdf40a49e491a4de37fe542a8affb6541fb4f4a79b215",
+    "TSUGINO/Domain/Journey/RailLeg.swift": "cd2e22174b1a77af3abf078d62ae4f1b80fdab1619aaf486434d8e658c701c83",
+    "TSUGINO/Domain/Journey/RailLegAnchors.swift": "04b2a3a2d3f16fa51030f49a97e67ce1518472341fbc19ca8494acd069281bbc",
+    "TSUGINO/Domain/Journey/RealtimeFreshness.swift": "937a7b002ce1d25a440e4d47f5e1adb103a4f01f74ca57a0973704491068bb09",
+    "TSUGINO/Domain/Journey/SelectedRailTrip.swift": "8cbac843804df843317d67e0413b0bf94202db57c8f00c0b43b8c5f17b673050",
+    "TSUGINO/Domain/Journey/TransferPoint.swift": "a2eefe461905eaf545295d63006f7d8f44e1fce58b206af81b787839e3946109",
+    "TSUGINO/Domain/Journey/UserEndReason.swift": "c6f0149bdde8587c4f54edc0b24b777114fdefe3cb30be1b1fb04b46b4e4c7c0",
+    "TSUGINO/Domain/Journey/WalkingTransfer.swift": "b8fd1dc0ae2a9a509b357529862783f0f48dd657982e21ebea18368cfd960159",
+    "TSUGINO/Domain/Railway/GeoCoordinate.swift": "853046af3faff6afd76aedbd164aff3b402c14da19eab9fa264fc03ede412617",
+    "TSUGINO/Domain/Railway/LocalizedRailName.swift": "261713fbb4e4650d23f1cae8dacf7c15666afb0d475a292d7622cfd8bac60c67",
+    "TSUGINO/Domain/Railway/Operator.swift": "e99ad90e2ddb383372b7584bc0cab61fba960eadf0041676ff43d84a73958e99",
+    "TSUGINO/Domain/Railway/RailCapability.swift": "3e59e00a8a0c45af4ede70188354780fb3f8d8697e8055b315f445cbbd9fe1b8",
+    "TSUGINO/Domain/Railway/RailwayLine.swift": "50d4409a2079017736b9facef6639f200a226b2da96c264076b51062ef878bb0",
+    "TSUGINO/Domain/Railway/RailwayLineTopology.swift": "2dc726d114f643465b3134b35bb4437b4c47d20371c8b1bf92af6f1aa6f76124",
+    "TSUGINO/Domain/Railway/ServiceType.swift": "6c805ecb97fcecd4078ae3c8fae5692e6e69e326c347b13ca5bb74c9bf720809",
+    "TSUGINO/Domain/Railway/Station.swift": "ff8ebdf8ab8862113252513052a182d12d779245fac09f8b2469f5f369c05c1f",
+    "TSUGINO/Domain/Railway/StationAdjacency.swift": "c0d7541e7bf33da8aca612eaa4230085aab788743ded625c95bb2aba63b1c68c",
+    "TSUGINO/Domain/Railway/Trip.swift": "437527619b3853362932038bc4746d588478dad85bc6a65efacc096d625ddfd8",
+    "TSUGINO/Domain/Railway/TripCoverage.swift": "0972d7624bb38f368526ca501798671efdd54c9dad93ba47669bbdd32f6bb654",
+    "TSUGINO/Domain/Railway/TripLineSegment.swift": "e5cc2cebb91ed07fb60536f567247f021c51409786d5a730b1c958508979f451",
+    "TSUGINO/Domain/Railway/TripServiceTypeSegment.swift": "e3d5b4935b531756a1f78466a4a12c0e39a305159cd3380f132b6ee27c7c6ea2",
+    "TSUGINO/Domain/Repositories/RailwayDataRepository.swift": "4c1490b79a98d41a31328891eaeca1c6e56ebf9e37decf58c13b976c1593c2a5",
+    "TSUGINO/Domain/Search/StationSearching.swift": "1bda1a40c312a79d55794b4db18c90062f82f6832c20176b75dd883c4212ba2c",
+    "Tools/RailwayStorage/Measurement/METHOD.md": "e4929e9d309bf56ed1c279de0c81442cfba3cf5e131db9523e8b6395b85818d9",
+    "Tools/RailwayStorage/Measurement/build.sh": "69b3551ea0502ea39c6f303c4cf12c4b9c969a451c4ce373073f77201c0be776",
+    "Tools/RailwayStorage/Measurement/main.swift": "38d9c515b23cee436452350516ec71d3eb87547a5932d58655b29c0905c15cc1",
+    "Tools/RailwayStorage/Measurement/run.py": "7aea8c5ab9d09c692c005e4d40ecb290520b346df20ec63faf2d97698ea607aa",
+    "Tools/RailwayStorage/Sources/IdentityTransition.swift": "7d7c699841f043bdc4722dbac5801630f8700b34ee1ee0e93b41608c6714c435",
+    "Tools/RailwayStorage/Sources/RailwayArtifactBuilder.swift": "c7b8eafe0730fb6b47bb25b0c6dbced0fe78c4bee52643e57a37b60ff612616b"
+  }
+}

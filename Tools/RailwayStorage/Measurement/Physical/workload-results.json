@@ -1,0 +1,924 @@
+{
+  "baseline": {
+    "samples": [
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+        "beforeMemory": {
+          "peak": 30654464,
+          "rss": 30654464
+        },
+        "closeMs": 0.072667,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.050042,
+        "fullDomainLoadMs": 1.840416,
+        "fullLoadMemory": {
+          "peak": 33669120,
+          "rss": 33570816
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33390592,
+          "rss": 33390592
+        },
+        "openIncludingValidationMs": 14.470625,
+        "primedMemory": {
+          "peak": 33390592,
+          "rss": 33390592
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 10.327417,
+        "retiredCount": 0,
+        "revisionCount": 1,
+        "warmMedianMs": 0.0125,
+        "warmP95Ms": 0.036416,
+        "warmPassMemory": [
+          {
+            "peak": 33390592,
+            "rss": 33390592
+          },
+          {
+            "peak": 33390592,
+            "rss": 33390592
+          },
+          {
+            "peak": 33390592,
+            "rss": 33390592
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+        "beforeMemory": {
+          "peak": 30687232,
+          "rss": 30687232
+        },
+        "closeMs": 0.100417,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.143834,
+        "fullDomainLoadMs": 1.70675,
+        "fullLoadMemory": {
+          "peak": 33734656,
+          "rss": 33669120
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33423360,
+          "rss": 33423360
+        },
+        "openIncludingValidationMs": 19.064459,
+        "primedMemory": {
+          "peak": 33439744,
+          "rss": 33439744
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.409167,
+        "retiredCount": 0,
+        "revisionCount": 1,
+        "warmMedianMs": 0.012667,
+        "warmP95Ms": 0.025125,
+        "warmPassMemory": [
+          {
+            "peak": 33439744,
+            "rss": 33439744
+          },
+          {
+            "peak": 33472512,
+            "rss": 33472512
+          },
+          {
+            "peak": 33472512,
+            "rss": 33472512
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+        "beforeMemory": {
+          "peak": 20840448,
+          "rss": 20840448
+        },
+        "closeMs": 0.095125,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.058542,
+        "fullDomainLoadMs": 1.623625,
+        "fullLoadMemory": {
+          "peak": 33652736,
+          "rss": 33619968
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33423360,
+          "rss": 33423360
+        },
+        "openIncludingValidationMs": 24.164333,
+        "primedMemory": {
+          "peak": 33423360,
+          "rss": 33423360
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.332041,
+        "retiredCount": 0,
+        "revisionCount": 1,
+        "warmMedianMs": 0.013,
+        "warmP95Ms": 0.025334,
+        "warmPassMemory": [
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+        "beforeMemory": {
+          "peak": 20840448,
+          "rss": 20840448
+        },
+        "closeMs": 0.102416,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.143917,
+        "fullDomainLoadMs": 1.682167,
+        "fullLoadMemory": {
+          "peak": 33701888,
+          "rss": 33652736
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33046528,
+          "rss": 33046528
+        },
+        "openIncludingValidationMs": 25.034042,
+        "primedMemory": {
+          "peak": 33406976,
+          "rss": 33406976
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.51325,
+        "retiredCount": 0,
+        "revisionCount": 1,
+        "warmMedianMs": 0.012875,
+        "warmP95Ms": 0.024875,
+        "warmPassMemory": [
+          {
+            "peak": 33406976,
+            "rss": 33406976
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "094d8985ae8260562cea8e7dcd839b4265837a2e466659ed1b1dc6fee61e1642",
+        "beforeMemory": {
+          "peak": 21381120,
+          "rss": 21381120
+        },
+        "closeMs": 0.088625,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.061042,
+        "fullDomainLoadMs": 1.685125,
+        "fullLoadMemory": {
+          "peak": 33701888,
+          "rss": 33669120
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33325056,
+          "rss": 33325056
+        },
+        "openIncludingValidationMs": 29.79975,
+        "primedMemory": {
+          "peak": 33423360,
+          "rss": 33423360
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.431583,
+        "retiredCount": 0,
+        "revisionCount": 1,
+        "warmMedianMs": 0.012916,
+        "warmP95Ms": 0.024792,
+        "warmPassMemory": [
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33439744,
+            "rss": 33439744
+          },
+          {
+            "peak": 33439744,
+            "rss": 33439744
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "openIncludingValidationMs": {
+        "median": 24.164333,
+        "min": 14.470625,
+        "max": 29.79975
+      },
+      "firstQueryMs": {
+        "median": 0.061042,
+        "min": 0.050042,
+        "max": 0.143917
+      },
+      "warmMedianMs": {
+        "median": 0.012875,
+        "min": 0.0125,
+        "max": 0.013
+      },
+      "warmP95Ms": {
+        "median": 0.025125,
+        "min": 0.024792,
+        "max": 0.036416
+      },
+      "reopenMs": {
+        "median": 9.431583,
+        "min": 9.332041,
+        "max": 10.327417
+      },
+      "closeMs": {
+        "median": 0.095125,
+        "min": 0.072667,
+        "max": 0.102416
+      },
+      "fullDomainLoadMs": {
+        "median": 1.685125,
+        "min": 1.623625,
+        "max": 1.840416
+      },
+      "fullLoadPeakMiB": {
+        "median": 32.140625,
+        "min": 32.09375,
+        "max": 32.171875
+      },
+      "ordinaryPeakMiB": {
+        "median": 31.875,
+        "min": 31.84375,
+        "max": 31.921875
+      },
+      "warmRSSGrowthMiB": {
+        "median": 0.015625,
+        "min": 0.0,
+        "max": 0.03125
+      }
+    }
+  },
+  "history": {
+    "samples": [
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+        "beforeMemory": {
+          "peak": 30507008,
+          "rss": 30507008
+        },
+        "closeMs": 0.094916,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.079542,
+        "fullDomainLoadMs": 1.698292,
+        "fullLoadMemory": {
+          "peak": 33669120,
+          "rss": 33636352
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33390592,
+          "rss": 33390592
+        },
+        "openIncludingValidationMs": 19.1005,
+        "primedMemory": {
+          "peak": 33406976,
+          "rss": 33406976
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.295125,
+        "retiredCount": 1,
+        "revisionCount": 2,
+        "warmMedianMs": 0.012459,
+        "warmP95Ms": 0.024167,
+        "warmPassMemory": [
+          {
+            "peak": 33406976,
+            "rss": 33406976
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+        "beforeMemory": {
+          "peak": 30654464,
+          "rss": 30654464
+        },
+        "closeMs": 0.077458,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.043958,
+        "fullDomainLoadMs": 1.696584,
+        "fullLoadMemory": {
+          "peak": 33734656,
+          "rss": 33652736
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33406976,
+          "rss": 33406976
+        },
+        "openIncludingValidationMs": 15.990417,
+        "primedMemory": {
+          "peak": 33406976,
+          "rss": 33406976
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.3745,
+        "retiredCount": 1,
+        "revisionCount": 2,
+        "warmMedianMs": 0.012334,
+        "warmP95Ms": 0.0235,
+        "warmPassMemory": [
+          {
+            "peak": 33406976,
+            "rss": 33406976
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          },
+          {
+            "peak": 33423360,
+            "rss": 33423360
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+        "beforeMemory": {
+          "peak": 20807680,
+          "rss": 20807680
+        },
+        "closeMs": 0.099958,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.115584,
+        "fullDomainLoadMs": 1.6745,
+        "fullLoadMemory": {
+          "peak": 33783808,
+          "rss": 33718272
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33161216,
+          "rss": 33161216
+        },
+        "openIncludingValidationMs": 27.72375,
+        "primedMemory": {
+          "peak": 33456128,
+          "rss": 33456128
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.361333,
+        "retiredCount": 1,
+        "revisionCount": 2,
+        "warmMedianMs": 0.012667,
+        "warmP95Ms": 0.024375,
+        "warmPassMemory": [
+          {
+            "peak": 33456128,
+            "rss": 33456128
+          },
+          {
+            "peak": 33472512,
+            "rss": 33472512
+          },
+          {
+            "peak": 33472512,
+            "rss": 33472512
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+        "beforeMemory": {
+          "peak": 20807680,
+          "rss": 20807680
+        },
+        "closeMs": 0.085958,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.069167,
+        "fullDomainLoadMs": 1.71575,
+        "fullLoadMemory": {
+          "peak": 33652736,
+          "rss": 33636352
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 32997376,
+          "rss": 32997376
+        },
+        "openIncludingValidationMs": 25.82025,
+        "primedMemory": {
+          "peak": 33341440,
+          "rss": 33341440
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.403625,
+        "retiredCount": 1,
+        "revisionCount": 2,
+        "warmMedianMs": 0.012709,
+        "warmP95Ms": 0.023791,
+        "warmPassMemory": [
+          {
+            "peak": 33341440,
+            "rss": 33341440
+          },
+          {
+            "peak": 33357824,
+            "rss": 33357824
+          },
+          {
+            "peak": 33357824,
+            "rss": 33357824
+          }
+        ]
+      },
+      {
+        "afterOrdinaryCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 3589,
+          "validationPasses": 1
+        },
+        "artifactSHA256": "598266e674d6fd7ef17dab028478e50e04b0e64b7b45bbd1f7dbada4f4e90615",
+        "beforeMemory": {
+          "peak": 30441472,
+          "rss": 30441472
+        },
+        "closeMs": 0.09875,
+        "conditionsAfter": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "conditionsBefore": {
+          "availableStorageBytes": 106905600000,
+          "battery": {
+            "batteryLevel": 1,
+            "batteryState": 2
+          },
+          "lowPowerMode": false,
+          "physicalMemoryBytes": 12263424000,
+          "thermalState": 0
+        },
+        "consumedResults": 2688,
+        "exactSearchChecks": "passed",
+        "firstQueryMs": 0.049333,
+        "fullDomainLoadMs": 1.696791,
+        "fullLoadMemory": {
+          "peak": 33947648,
+          "rss": 33947648
+        },
+        "networkAfter": "unsatisfied",
+        "networkBefore": "unsatisfied",
+        "openCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 0,
+          "validationPasses": 1
+        },
+        "openedMemory": {
+          "peak": 33652736,
+          "rss": 33652736
+        },
+        "openIncludingValidationMs": 19.710584,
+        "primedMemory": {
+          "peak": 33652736,
+          "rss": 33652736
+        },
+        "reopenCounters": {
+          "fullLoads": 0,
+          "stationDecodes": 2,
+          "validationPasses": 1
+        },
+        "reopenMs": 9.6135,
+        "retiredCount": 1,
+        "revisionCount": 2,
+        "warmMedianMs": 0.012583,
+        "warmP95Ms": 0.024125,
+        "warmPassMemory": [
+          {
+            "peak": 33652736,
+            "rss": 33652736
+          },
+          {
+            "peak": 33701888,
+            "rss": 33701888
+          },
+          {
+            "peak": 33701888,
+            "rss": 33701888
+          }
+        ]
+      }
+    ],
+    "summary": {
+      "openIncludingValidationMs": {
+        "median": 19.710584,
+        "min": 15.990417,
+        "max": 27.72375
+      },
+      "firstQueryMs": {
+        "median": 0.069167,
+        "min": 0.043958,
+        "max": 0.115584
+      },
+      "warmMedianMs": {
+        "median": 0.012583,
+        "min": 0.012334,
+        "max": 0.012709
+      },
+      "warmP95Ms": {
+        "median": 0.024125,
+        "min": 0.0235,
+        "max": 0.024375
+      },
+      "reopenMs": {
+        "median": 9.3745,
+        "min": 9.295125,
+        "max": 9.6135
+      },
+      "closeMs": {
+        "median": 0.094916,
+        "min": 0.077458,
+        "max": 0.099958
+      },
+      "fullDomainLoadMs": {
+        "median": 1.696791,
+        "min": 1.6745,
+        "max": 1.71575
+      },
+      "fullLoadPeakMiB": {
+        "median": 32.171875,
+        "min": 32.09375,
+        "max": 32.375
+      },
+      "ordinaryPeakMiB": {
+        "median": 31.875,
+        "min": 31.8125,
+        "max": 32.140625
+      },
+      "warmRSSGrowthMiB": {
+        "median": 0.015625,
+        "min": 0.015625,
+        "max": 0.046875
+      }
+    }
+  }
+}

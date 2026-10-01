@@ -15,7 +15,8 @@ import Foundation
 nonisolated struct CanonicalEntity: Hashable, Sendable, Codable {
     nonisolated enum Status: Hashable, Sendable {
         case active
-        /// `successors` is non-empty, sorted, and names held entities of the
+        /// Schema 2 requires nonempty successors; schema 3 permits reviewed pure
+        /// retirement. Nonempty lists are sorted and name held entities of the
         /// same kind, never the entity itself.
         case retired(successors: [MintedIdentifier])
     }
@@ -84,16 +85,18 @@ nonisolated enum MappingRegistryError: Error, Hashable, Sendable {
     case activeReferenceToRetiredIdentifier
 }
 
-/// Encodable only: `decoded(from:)` is the one way to read a registry, so the
+/// Encodable only: explicit registry readers always check repeated keys, so the
 /// repeated-key check can never be bypassed through a `Decodable` conformance.
 nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
-    /// The only schema this code reads. Any other version is rejected, never
+    /// Ordinary intake reads schema 2 only. DEC-073 has a separate explicit
+    /// schema-2/3 reader. Unsupported versions are rejected, never
     /// reinterpreted (Rule 39). Version 2 added a reference's attaching review
     /// (`attachedBy`). Version 1 files are rejected rather than migrated: every
     /// registry so far is provisional and may be discarded and regenerated
     /// (DEC-068 §B6); no registry of record exists.
     static let schemaVersion = 2
 
+    let formatVersion: Int
     let revision: Int
     /// Sorted by identifier.
     let entities: [CanonicalEntity]
@@ -105,7 +108,8 @@ nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
 
     static let empty = try! MappingRegistry(revision: 0, entities: [], references: [])
 
-    init(revision: Int, entities: [CanonicalEntity], references: [ProviderReference]) throws(MappingRegistryError) {
+    init(revision: Int, entities: [CanonicalEntity], references: [ProviderReference], formatVersion: Int = 2) throws(MappingRegistryError) {
+        guard [2, 3].contains(formatVersion) else { throw .unsupportedSchemaVersion }
         guard revision >= 0 else { throw .negativeRevision }
 
         let sortedEntities = entities.sorted { $0.id < $1.id }
@@ -115,7 +119,7 @@ nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
         }
         for entity in sortedEntities {
             guard case .retired(let successors) = entity.status else { continue }
-            guard !successors.isEmpty, Set(successors).count == successors.count else { throw .invalidSuccessors }
+            guard (formatVersion == 3 || !successors.isEmpty), Set(successors).count == successors.count else { throw .invalidSuccessors }
             for successor in successors {
                 guard successor != entity.id, successor.kind == entity.id.kind, entityIndex[successor] != nil else {
                     throw .invalidSuccessors
@@ -139,6 +143,7 @@ nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
             }
         }
 
+        self.formatVersion = formatVersion
         self.revision = revision
         self.entities = sortedEntities
         self.references = sortedReferences
@@ -216,20 +221,28 @@ nonisolated struct MappingRegistry: Equatable, Sendable, Encodable {
         return try JSONDecoder().decode(RegistryFile.self, from: data).registry
     }
 
+    /// Explicit DEC-073 reader. Ordinary intake remains schema-2-only.
+    static func decodedForIdentityTransition(from data: Data) throws -> MappingRegistry {
+        guard !RegistryJSON.repeatsKey([UInt8](data)) else { throw MappingRegistryError.repeatedKey }
+        let decoder = JSONDecoder()
+        decoder.userInfo[.identityTransition] = true
+        return try decoder.decode(RegistryFile.self, from: data).registry
+    }
+
     // MARK: - Codable
 
     fileprivate enum CodingKeys: String, CodingKey, CaseIterable { case schemaVersion, revision, entities, references }
 
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(Self.schemaVersion, forKey: .schemaVersion)
+        try container.encode(formatVersion, forKey: .schemaVersion)
         try container.encode(revision, forKey: .revision)
         try container.encode(entities, forKey: .entities)
         try container.encode(references, forKey: .references)
     }
 
     static func == (lhs: MappingRegistry, rhs: MappingRegistry) -> Bool {
-        lhs.revision == rhs.revision && lhs.entities == rhs.entities && lhs.references == rhs.references
+        lhs.formatVersion == rhs.formatVersion && lhs.revision == rhs.revision && lhs.entities == rhs.entities && lhs.references == rhs.references
     }
 }
 
@@ -243,14 +256,16 @@ private nonisolated struct RegistryFile: Decodable {
         let container = try decoder.container(keyedBy: Keys.self)
         // The version is checked before anything else is read, so a future
         // schema is never partly interpreted.
-        guard try container.decode(Int.self, forKey: .schemaVersion) == MappingRegistry.schemaVersion else {
+        let version = try container.decode(Int.self, forKey: .schemaVersion)
+        guard version == 2 || (version == 3 && decoder.userInfo[.identityTransition] as? Bool == true) else {
             throw MappingText.corrupted("\(MappingRegistryError.unsupportedSchemaVersion)", container)
         }
         do {
             registry = try MappingRegistry(
                 revision: container.decode(Int.self, forKey: .revision),
                 entities: container.decode([CanonicalEntity].self, forKey: .entities),
-                references: container.decode([ProviderReference].self, forKey: .references)
+                references: container.decode([ProviderReference].self, forKey: .references),
+                formatVersion: version
             )
         } catch let error as MappingRegistryError {
             throw MappingText.corrupted("\(error)", container)
@@ -303,4 +318,8 @@ nonisolated enum RegistryJSON {
         }
         return false
     }
+}
+
+private extension CodingUserInfoKey {
+    nonisolated static let identityTransition = CodingUserInfoKey(rawValue: "DEC-073")!
 }

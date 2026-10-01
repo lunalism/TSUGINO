@@ -61,4 +61,21 @@ struct ExactStationIndexTests {
         #expect(throws:ExactStationIndex.Invalid.self) { try ExactStationIndex(stations:Array(f.stations.dropLast()),lines:f.lines,operators:f.operators,aliases:[]) }
         #expect(throws:ExactStationIndex.Invalid.self) { try ExactStationIndex(stations:f.stations,lines:f.lines,operators:f.operators,aliases:[.init(stationID:StationID("synthetic-absent")!,value:ExactValue("Synthetic alias")!)]) }
     }
+    @Test func membershipValidationPreservesBothDirectionsAndSharedStations() throws {
+        let f = try fixture(), a = f.stations[0], l2 = f.lines[1]
+        let shared = Station(id:a.id,name:a.name,coordinate:a.coordinate,lineIDs:Set(f.lines.map(\.id)))
+        let stations = [shared] + Array(f.stations.dropFirst())
+        // Declared membership without the corresponding topology member is invalid.
+        #expect(throws:ExactStationIndex.Invalid.self) { try ExactStationIndex(stations:stations,lines:f.lines,operators:f.operators,aliases:[]) }
+        let topology = try #require(RailwayLineTopology(adjacencies:l2.topology.adjacencies.union([StationAdjacency(a.id,f.stations[1].id)!])))
+        let expanded = RailwayLine(id:l2.id,operatorID:l2.operatorID,name:l2.name,topology:topology)
+        let lines = [f.lines[0],expanded]
+        // A topology member without the matching declared membership is also invalid.
+        #expect(throws:ExactStationIndex.Invalid.self) { try ExactStationIndex(stations:f.stations,lines:lines,operators:f.operators,aliases:[]) }
+        let index = try ExactStationIndex(stations:stations,lines:lines,operators:f.operators,aliases:[])
+        #expect(index.stations(matching:"Synthetic Shared").first?.lines.count == 2)
+        let reversed = try ExactStationIndex(stations:stations.reversed(),lines:lines.reversed(),operators:f.operators.reversed(),aliases:[])
+        #expect(index.entries == reversed.entries)
+    }
+
 }

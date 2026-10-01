@@ -348,8 +348,8 @@ nonisolated struct ProviderReference: Hashable, Sendable, Codable {
     /// The reviewed record that attached this provider key to its identity
     /// during reconciliation (DEC-068 §E3 "New"), if one did. A reference
     /// minted or recorded otherwise has none. Printable ASCII. It stays with
-    /// the reference for good, so which review authorized the mapping can
-    /// always be read, and a rerun can verify it.
+    /// this binding version for good. DEC-073 alone may introduce a new
+    /// reviewed version, retaining this record and authority unchanged.
     let attachedBy: String?
 
     enum Invalid: Error, Hashable, Sendable {
