@@ -1027,62 +1027,67 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
-Define an abstraction:
+**Accepted contract: DEC-076 (2026-10-01).** Phase 3 owns `RouteSearching`,
+`RouteCandidate` and `TrainCandidate` (DEC-064). The provider remains unselected.
 
 ```text
-RouteSearching
-- search(origin, destination, departureContext)
+RouteSearching: Sendable
+  search(RouteSearchRequest) async throws -> RouteSearchResult
+RouteSearchRequest: origin, destination, departNotBefore (finite absolute Date)
+RouteSearchResult: noResults | alternatives(nonempty RouteSearchBatch)
+RouteSearchBatch: ordered candidates + ordered, privacy-safe omissions
+RouteCandidate: ordered rail/walking legs
+RouteRailProposal: unresolved validated anchors/line sequence/reason | matched TrainCandidate
+                   + optional ProviderScheduledContext
+TrainCandidate: existing Trip snapshot + original boarding/alighting indices
+ProviderScheduledContext: finite departure <= arrival absolute instants
 ```
 
-Provider implementations may include:
+Values are immutable, `nonisolated` and `Sendable`, with failable structural
+construction. Rail first/last, canonical station continuity, no consecutive walks,
+distinct rail endpoints and unique matched Trip IDs within a candidate preserve
+DEC-062. Matched anchors and movement-based line sequences derive from the original
+snapshot and indices without slicing/reindexing. Snapshot-containing values have
+no equality, hashing or Codable. Validated unresolved and all-rejected payloads
+prevent enum construction from bypassing nonempty/ordering constraints.
 
-- Jorudan
-- NAVITIME
-- Ekispert
-- future provider
+Data owns mappings, coherent identified dataset views, run/occurrence/continuity
+and transfer evidence, and request-relative admission. A constructor cannot prove
+those facts. Every qualified scheduled ridden endpoint must pass the request lower
+bound and itinerary ordering **before** incomplete pairs are omitted. Known
+contradictions cannot be hidden by nil context. Pure values validate retained
+complete pairs, including chronology across intervening nil contexts. Equality is
+ordering only, never transfer feasibility. Context is provider-scheduled assertion,
+not imported timetable truth or realtime; no calendar/service-date semantics enter
+Trip. DEC-076 §§A–F defines the full failure and evidence requirements.
 
-**Phase ownership (DEC-064):** `RouteSearching`, `RouteCandidate`, and `TrainCandidate` are defined in **Phase 3**, not Phase 1.
-
-All results normalize into:
-
-```text
-RouteCandidate
-- legs
-- departure
-- arrival
-- transfers
-- fare
-- providerMetadata
-```
-
-No feature screen should depend on a specific route provider.
+The authorized first slice implements pure values and local validation only.
+The async protocol, synthetic adapter/harness, provider-time interpretation,
+mapping/evidence admission, request-relative checks, failures/cancellation behavior
+and Application supersession remain later implementation. No networking, DTOs,
+provider metadata, fare, persistence, UI or Journey binding is added. Provider IDs
+and raw evidence stay in Data. P2-S9, P3-T1 and all applicable retained gates remain.
 
 ---
 
 ## 11. Train Selection Architecture
 
-Train selection is explicit.
+A search candidate is neither explicit user train selection nor an active Journey.
+A matched `TrainCandidate` retains an existing Trip snapshot and original indices;
+a route-only unresolved ride has anchors/lines but no invented Trip or stop count.
+The candidate's type does not certify its Data correspondence evidence or dated
+operation. Displaying or choosing a route does not select its suggested trains.
 
-```text
-RouteCandidate
-      ↓
-TrainCandidateResolver
-      ↓
-TrainCandidate[]
-      ↓
-User selects
-      ↓
-SelectedTripBinding
-```
+Later Application/Phase 5 work may project route anchors and stated walks into a
+Journey with a separately supplied JourneyID. Explicit train confirmation must
+revalidate evidence and bind `SelectedRailTrip` with its original indices and
+anchor-preservation checks (DEC-062/064/076). Binding and runtime readiness remain
+separate from this first Phase 3 slice. The existing Trip/Journey/selection behavior
+is unchanged; no active Journey is created by route values.
 
-The selected trip is stored separately from the provider route response.
-
-This allows:
-
-- replacing a missed train
-- changing a delayed train
-- re-binding after a transfer
-- preserving the overall journey
+This separation permits later train replacement and transfer-time confirmation
+without treating a provider response as rider assent. The proposed resolver/binding
+flow remains later Application design, not an implementation introduced here.
 
 ---
 

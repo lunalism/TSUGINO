@@ -6232,6 +6232,555 @@ own authorized scope and applicable prerequisites.
 
 ---
 
+# DEC-076 — Route Search Returns Canonical Proposals Without Selecting Trains or Creating Journey State
+
+**Status:** Accepted — owner-approved contract; implementation completion tracked separately\
+**Date:** 2026-10-01\
+**Accepted:** 2026-10-01 — owner explicitly approved the revised contract and all five recommended policies\
+**Related:** DEC-009, DEC-020, DEC-021, DEC-060–064, DEC-074/075; DEC-004, DEC-007/008, DEC-038, DEC-048, DEC-068/073; `ARCHITECTURE.md` §4, §10–14, §21–22, §38–40; `RULES.md` Rules 8–9, 14, 16–18, 25–26, 38–40, 53; `ROADMAP.md` Phase 3
+
+## Context (at proposal time)
+
+Phase 3 owns `RouteSearching`, `RouteCandidate` and `TrainCandidate` (DEC-064),
+but their shapes are not yet accepted. ARCHITECTURE §10 is a sketch; its
+`providerMetadata`, fare and time entries are not existing contracts. The proposed
+ROADMAP sequence supplies no semantic authority. DEC-004 remains Provisional and
+no commercial route provider has been selected or shown compatible with this draft.
+
+The existing Trip is a recurring run definition, with passenger-stop indices,
+line segments and coverage, not a dated execution. Journey legs distinguish
+unselected anchors from an explicitly selected Trip snapshot. A search must not
+silently cross those boundaries or use a provider's stopping pattern to mint a Trip.
+P2-S9 remains required before real canonical passenger-stop Trip consumption;
+P3-T1's placement is accepted, but its timetable semantics are not.
+
+**Historical draft scope lock (before acceptance).** One Proposed route-boundary decision and a linked planning update.
+No accepted invariant is amended, no provider selected, no timetable contract,
+source code, fixture file, executable test, build or device step is introduced.
+All examples below are invented specification cases, not results of execution.
+The fetched baseline is `main` / `origin/main` at
+`e8a463d51f14b3cb1027960c63244b694579a71b`, 0 ahead / 0 behind, in the expected
+TSUGINO repository. The pre-existing 126-line ROADMAP proposal is preserved.
+DEC-076 was unused in the repository's Markdown records before this draft.
+
+## Decision
+
+Sections A–F and the five policy choices are accepted as the route-search contract.
+Owner authorization on 2026-10-01 covers only the first pure-values implementation
+slice below. Async protocol, adapter admission and Application behavior remain
+accepted boundary requirements for later separately authorized implementation.
+Contract acceptance is neither implementation completion nor Phase 3 exit.
+
+### A. Request and asynchronous boundary
+
+Contract notation, not the implementation status:
+
+```text
+RouteSearching: Sendable
+  search(RouteSearchRequest) async throws -> RouteSearchResult
+
+RouteSearchRequest
+  origin: StationID
+  destination: StationID
+  departNotBefore: absolute instant (Foundation Date)
+
+RouteSearchResult
+  noResults
+  alternatives(RouteSearchBatch)
+
+RouteSearchBatch
+  candidates: nonempty ordered [RouteCandidate]
+  omissions: [RouteAlternativeOmission]
+
+RouteAlternativeOmission
+  alternativeIndex: nonnegative index in the decoded response
+  reasons: nonempty, unique canonical rejection reasons
+```
+
+1. Request values are immutable, `nonisolated` and `Sendable`; construction is
+   failable and never traps. Origin and destination must differ; time must be a
+   finite instant. Canonical ID validity remains DEC-051's existing rule. Names,
+   coordinates, provider codes, account identifiers and device location are not
+   request fields. Two same-name stations remain distinct exact IDs (DEC-048).
+2. Current existence, retirement, support and provider mapping are checked at the
+   Data boundary, against one identified consistent dataset/mapping view per call.
+   Syntactically valid IDs alone do not establish availability. No automatic
+   successor following, name-based substitution or registry mutation occurs.
+   A change of mapping revision must not produce a response assembled from mixed
+   revisions: retain the coherent view or fail `dataUnavailable` and retry later.
+3. The minimum intent is **depart no earlier than this instant**. Application
+   resolves a “now” action once through injected `AppClock`; the boundary does not
+   read a hidden wall clock or round a request silently. Arrive-by, last-train,
+   search windows, preferences, pagination and custom ranking are deferred.
+   An adapter unable to express this intent returns `unsupportedRequest`, rather
+   than silently changing it. Provider horizon limits also use that failure.
+4. An absolute search instant is not a service date, calendar or dated Trip ID.
+   This contract does not interpret extended-hour timetable strings or calendar
+   exceptions. Provider-specific request encoding needs separately verified time
+   semantics; device locale/time zone must not reinterpret the instant.
+5. Use the existing `RailwayDataRepository` convention: a non-main-actor,
+   `Sendable`, async-throwing boundary. It is not the synchronous pure
+   `JourneyEngine` protocol. Only `RouteSearchFailure` and Swift `CancellationError`
+   may escape an implementation; raw transport/SDK/decoding errors are contained.
+   Ordinary `throws` permits the standard cancellation error without wrapping it
+   as a provider outage. Pure structural constructors remain synchronous/failable.
+6. Data owns client I/O, decoding, mapping and normalization. Heavy work is
+   explicitly off the main actor; an `async` spelling alone is not that guarantee.
+   Mutable state is actor-isolated or equivalently synchronized, following
+   ARCHITECTURE §21. Calls have independent request-local state; overlapping calls
+   cannot overwrite one another. No polling, automatic retry or detached task is
+   introduced. Application owns task lifetime and suppresses superseded responses.
+7. Check cancellation before work, across suspension/normalization boundaries and
+   before return; cancel owned child I/O. Once cancellation is observed, return no
+   partial batch and throw `CancellationError`. A result already returned cannot
+   be retracted; Application must still compare its current request before publishing.
+
+### B. Results, omissions and failures
+
+A successful empty provider response that explicitly means no journeys for the
+request becomes `noResults`. Missing/malformed response structure is not empty.
+A provider timeout, cancellation or failure is never `noResults`.
+
+Normalize alternatives independently once the response envelope is valid. Return
+all valid candidates in source order, with ordered omissions for invalid
+alternatives. Do not re-rank, deduplicate by Trip identity/structure, or truncate a
+route into a different origin/destination. Array positions identify proposals only
+within this result; no persistent candidate or provider identifier is introduced.
+Omission indices refer to source alternative positions, not the compact candidate
+array. They carry no raw provider identifier, text or payload. Multiple reasons
+use the declaration order below for deterministic output.
+
+Each decoded alternative contributes exactly one candidate or one omission. For
+a batch, let N be candidate count plus omission count: omission indices must be
+unique, increasing and in `0..<N`; the remaining source positions correspond to
+candidates in order. Empty omissions are valid. An all-rejected failure requires
+nonempty omissions with contiguous indices starting at zero. These are failable
+value invariants, not evidence that the adapter accounted for the raw response;
+that separate one-to-one accounting needs adapter tests. Result, failure and
+omission values are also immutable, `nonisolated` and `Sendable`.
+
+If every returned alternative is rejected, throw `noUsableAlternatives` with the
+same omission records; do not claim the network has no route. A corrupt response
+envelope, uncertain alternative boundaries or unusable shared mapping view fails
+the entire request even if some bytes appear salvageable.
+
+| Failure | Meaning and recovery |
+|---|---|
+| `invalidEndpoint(role, reason)` | Origin/destination is unknown, retired, conflicting or unsupported in the current view; reselect or refresh data. Role is origin/destination, not a raw provider field. Never follow a retired successor automatically. |
+| `unsupportedRequest` | Provider cannot honor the intent/horizon; change search context or use a later supported provider configuration. |
+| `dataUnavailable` | No coherent usable mapping/dataset view; restore/refresh it, then explicitly retry. |
+| `providerUnavailable` | Transport/offline/timeout/service failure; retry when available. No raw network details or hidden retry. |
+| `rateLimited` | Retry later; backoff timing and automatic scheduling are deferred. |
+| `configurationUnavailable` | Missing/invalid integration configuration or permission; ordinary repeat is not a remedy until configuration is corrected. Never expose keys or authentication responses. |
+| `malformedResponse` | Envelope or shared response cannot be safely decoded; retry/report through developer diagnostics. |
+| `noUsableAlternatives(omissions)` | Response contained alternatives, none safe to normalize; explain unavailable route data, allow changed search or later retry. |
+
+Canonical alternative rejection reasons, in order: `malformedAlternative`,
+`endpointMismatch`, `unknownMapping`, `retiredMapping`, `conflictingMapping`,
+`unsupportedPortion`, `insufficientContinuity`, `unverifiedTransfer`,
+`invalidStructure`, `inconsistentTrainEvidence`, `invalidScheduledContext`.
+These codes support centralized localized recovery messages; they contain no
+provider strings. Raw evidence/locators remain in Data under applicable retention
+rights and privacy-safe diagnostics, not copied into Domain or public fixtures.
+
+**Mapping policy.** Required station/line/transfer endpoints must resolve uniquely
+to active, supported canonical entities. An unknown or absent provider reference
+is unresolved, not a new identity; conflicting resolution cannot choose “first”.
+Retirement is not absence and cannot silently select a successor (DEC-068/073).
+An unsupported portion *inside the requested journey* rejects the whole
+alternative with `unsupportedPortion`, even if its endpoints are supported.
+Other valid alternatives survive. An unsupported continuation *outside the ridden
+portion* may coexist with a valid partial Trip (§D).
+
+DEC-058 allows unsupported segments to be shown as untrackable presentation; this
+contract does not implement that optional presentation or remove the permission. Such
+an itinerary is not a usable `RouteCandidate` under this narrow contract. A future
+informational-result type needs its own review; do not pass DTOs as a workaround.
+
+### C. Candidate values and relationship to Journey
+
+```text
+RouteCandidate
+  legs: nonempty ordered [RouteCandidateLeg]
+
+RouteCandidateLeg
+  rail(RouteRailProposal)
+  walkingTransfer(WalkingTransfer)
+
+RouteRailProposal
+  travel: RouteRailTravel
+  scheduledContext: ProviderScheduledContext?  (see §E)
+
+RouteRailTravel
+  unresolved(anchors: RailLegAnchors,
+             lineSequence: nonempty [LineID],
+             reason: notSupplied | noVerifiedMatch)
+  matched(TrainCandidate)
+
+TrainCandidate
+  trip: existing Trip snapshot
+  boardingIndex: Int
+  alightingIndex: Int
+```
+
+1. These are immutable, `nonisolated`, `Sendable` values in `Domain/Routing`.
+   Constructors enforce structural invariants; they cannot authenticate external
+   evidence. The adapter must satisfy §D's evidence obligations separately.
+   No `Codable`, persistent IDs, `Equatable`/`Hashable` for snapshot-containing
+   values, or persistence schema is introduced. Tests compare snapshot contents
+   explicitly, since Trip equality is ID-only. This does not change existing
+   Journey/Trip Codable or equality contracts.
+2. A route is a **proposal**. It has no `JourneyID`, runtime phase, current position,
+   selected flag or freshness. `TrainCandidate` means a verified possible Trip
+   correspondence, not user assent and not a verified dated operating occurrence.
+   A timetable-looking itinerary may have no `TrainCandidate` at all.
+3. Each rail proposal is one continuous boarding experience. An unresolved ride
+   carries canonical anchors and an ordered line sequence with adjacent duplicate
+   lines collapsed; non-adjacent repeats are allowed. This list expresses only
+   lines traversed, never passenger stops or a location of a line change. Every
+   traversed line in the ridden portion needs evidence and mapping. It is not
+   generated by graph routing between endpoints.
+4. A matched ride derives anchors and the traversed line sequence from the
+   snapshot and indices; it does not also store possibly contradictory anchors or
+   line IDs. Include segments sharing a **movement** with the boarding/alighting
+   interval, not a segment touching only its boundary index. Preserve indices in
+   the original snapshot; do not slice/reindex it or fabricate a cropped Trip.
+5. Candidate structure preserves DEC-062's compatibility constraints: rail first
+   and last, continuous canonical station endpoints, no consecutive walking legs,
+   distinct ends of every rail ride, and no duplicate matched `TripID` anywhere
+   within one candidate. A full-lap same-station rail ride is rejected. Different
+   alternatives may carry the same Trip or different snapshots at the value level;
+   no cross-alternative identity uniqueness is implied. Admission still requires
+   §A's coherent identified Data view: structural preservation of different same-ID
+   snapshots never authorizes mixing incompatible dataset revisions in one result.
+   Snapshot compatibility is checked in Data, without adding a Domain revision
+   field or changing Trip equality. Invalid structure rejects an alternative; a
+   known duplicate or incompatible match must not be hidden by changing it to
+   `unresolved`.
+6. Derived route origin/destination must equal the request exactly. Transfer count
+   is number of rail rides minus one (not number of lines); every inter-ride
+   boundary requires §D evidence. Duration is derivable only from known outer
+   scheduled instants; unknown time is not zero. No duplicated origin, destination,
+   transfer count, duration or operator fields are stored. Line ownership never
+   asserts the operator physically running the train (DEC-060 D).
+7. A later Application flow may project rail proposals to **unselected**
+   `RailLegAnchors` and walks to existing `WalkingTransfer`, then construct a
+   Journey with a separately supplied `JourneyID`. It must not treat merely
+   displaying or choosing a route as selecting every suggested train. On explicit
+   train confirmation, later Phase 5 binding revalidates the candidate and uses
+   `SelectedRailTrip` with the original indices and anchor-preservation checks.
+   Binding, active-Journey creation/readiness, occurrence reconciliation and
+   progression are not implemented or authorized by this contract.
+8. JP/EN/KO station/line names resolve through existing canonical localization,
+   outside these values. Do not store provider labels, headsigns, brands, fares,
+   URLs, arbitrary metadata or translation guesses. The sketch's `providerMetadata`
+   is intentionally omitted. Fare, platform, headsign, realtime adjustments,
+   preferred car/door, display hints and cache/persistence contracts are deferred
+   to evidenced consumers; their omission here does not cancel product requirements.
+
+### D. Evidence obligations (adapter admission rules)
+
+**Trip attachment.** A matched ride requires an existing canonical Trip snapshot
+from an identified accepted dataset, a reviewed unambiguous correspondence from
+the provider's run reference to that same recurring run, and unambiguous boarding
+and alighting **occurrences** in that snapshot. Validate all referenced entities,
+passenger-stop membership, line/coverage consistency and applicable service-type
+references. For real data, P2-S9 acceptance is a prerequisite, not something this
+adapter can recreate. Source identity, revisions, review authority and exact join
+provenance remain in Data; no provider ID or invented proof token enters Domain.
+
+Indices satisfy `0 <= boardingIndex < alightingIndex < stopSequence.count` and
+name distinct stations, exactly as DEC-062 requires. Anchor matches, similar times,
+shared train labels, equal stop patterns, topology, coordinates and provider ID
+syntax alone are insufficient identity or occurrence evidence. If the provider
+supplies only a station name repeated in the Trip, do not choose its first visit.
+No Trip is minted, stitched from different runs or deduplicated by this boundary.
+
+When no train reference is supplied, use `unresolved(..., notSupplied)`. When a
+reference/occurrence cannot be matched uniquely, but independent evidence proves
+the complete continuous ride and its anchors/lines, use
+`unresolved(..., noVerifiedMatch)`; expose no snapshot, stop count or selected-train
+claim. An explicitly retired/conflicting reference or positive contradiction with
+the asserted Trip rejects the alternative instead of downgrading it. If uncertainty
+also affects ride continuity or endpoints, reject it. A recurring-run match does
+not prove operation on the requested date; scheduled context remains separate.
+
+An existing snapshot that does not cover the requested ride supplies no missing
+index and is never cropped into a different requested route. If independent
+evidence establishes the entire continuous ride and its canonical anchors/lines,
+route-only `noVerifiedMatch` is permitted, subject to the same conflict rules above.
+Otherwise use the reason for the actual defect: `insufficientContinuity` when the
+complete ride is unproven, `unknownMapping` for an actual unresolved required
+mapping, or `inconsistentTrainEvidence` for a positively contradictory Trip claim.
+Coverage alone proves neither unsupported infrastructure nor an unknown mapping.
+Invalid requested endpoints fail before I/O (§B); supported endpoints with a known
+unsupported ridden interior instead omit that entire alternative.
+
+**Continuity and genuine transfers.** The adapter needs identified, documented
+provider semantics asserting one continuous passenger ride or a required train
+change. A verified single-Trip traversal can corroborate continuity. Line/operator
+changes, equal times, adjacent records and equal names alone prove neither. Merge
+provider fragments into one ride only with affirmative continuity evidence; a
+matched result must correspond to one existing snapshot spanning the ridden
+portion. Do not split a through service because the provider splits lines. Unknown
+continuity holds the alternative with `insufficientContinuity` rather than guessing
+stay-on-board or transfer. A genuine train change produces separate rail rides,
+even on the same line, with distinct matched Trips if available.
+
+**Transfer connectivity.** A same-station train change needs explicit itinerary
+transfer evidence plus a validated interchange relation for the relevant lines.
+A between-station walk additionally needs a reviewed directional pedestrian
+connection between the exact canonical pair, with identified source/provenance in
+Phase 2 validation. Provider itinerary assertion and dataset connection evidence
+serve different purposes; one can supply both only if reviewed for both meanings.
+Shared name, proximity, canonical station equality, or a `WalkingTransfer`
+constructor alone proves no path. Missing evidence rejects `unverifiedTransfer`.
+No connection records are added here, and current Phase 2 completion is not a claim
+that such records exist. Walking duration, path, gates, accessibility and exits
+remain Phase 10; route schedule gaps are not measured walking times. Even with a
+validated pair, no broader physical accessibility claim is made.
+
+### E. Provider scheduled context is a search assertion, not timetable truth
+
+Use an optional `ProviderScheduledContext` per rail ride with two finite
+absolute instants, `departure` and `arrival`, and the invariant `departure <= arrival`.
+The type itself always means **provider-supplied scheduled**; it has no live flag,
+per-stop times, service date, operating calendar or dated-run identifier. Raw
+provider provenance and interpretation evidence remain in Data. The optional
+complete-pair output is unchanged; it does not erase the adapter's obligation to
+validate individual input endpoints before deciding what can be retained.
+
+**Adapter admission, before pair omission.** Identify every interpretable,
+qualified scheduled departure/arrival at the boarding/alighting endpoints of each
+ridden rail portion. Each must be a finite absolute instant supported by an
+explicit dated/offset-qualified assertion whose meaning is verified. Validate
+these individual endpoints, including those whose counterpart is missing:
+
+1. Every known ridden endpoint must be `>= request.departNotBefore`, including
+   later rides when the first ride has no retained context.
+2. Order events by itinerary position: departure then arrival for each ride,
+   followed by departure then arrival for the next ride. The known-event
+   subsequence must be nondecreasing. Equivalently, a known departure is `<=` its
+   ride's known arrival, and **every known event of an earlier ride is <= every
+   known event of any later ride**. Missing endpoints or entire missing contexts
+   do not reset this comparison; compare across them without inventing events.
+3. Apply these checks only to the ridden boarding/alighting endpoints. Earlier or
+   later times for unused portions of a Trip are not request-bound or chronology
+   inputs for this itinerary.
+4. Any known contradiction rejects the alternative as `invalidScheduledContext`
+   before incomplete pairs are omitted. Non-finite interpreted endpoints are also
+   invalid. Neither omission nor a generic provider intent assertion can override
+   contradictory qualified evidence.
+
+**Output after admission.** Retain a complete qualified pair only after those
+checks pass. Missing both endpoints yields nil. A single valid known endpoint
+also yields nil for that ride; no counterpart is invented. Unqualified clock text,
+inferred date rollover, device-zone assumptions and realtime-only estimates
+cannot populate the pair or become qualified scheduled endpoints. If context is
+missing or uninterpretable, nil is permitted only when the provider explicitly
+asserts that the itinerary satisfies the departure intent **and** all available
+qualified scheduled endpoints pass the checks above; otherwise reject
+`invalidScheduledContext`. No missing dates, counterparts, rollover, service dates
+or calendar semantics are inferred. Qualified instants spanning midnight compare
+by absolute order directly; a bare “25:10” supplies no such instant.
+
+**Equality is permitted as ordering.** Equality to the request bound, departure
+with arrival, or earlier-ride events with later-ride events passes these comparisons.
+It asserts neither physical travel duration nor transfer feasibility. Transfer and
+connection evidence under §D remains independently required; no minimum walking
+or connection time is invented.
+
+**Pure-value boundary.** Constructors validate finite, ordered complete pairs and
+local candidate structure. For retained pairs at ride positions i < j, require
+`arrival[i] <= departure[j]` for every such pair, including across intervening nil
+contexts; each pair separately requires `departure <= arrival`. This is equivalent
+to nondecreasing events for the retained complete pairs. Constructors have neither
+the request nor discarded input endpoints, and cannot validate their admission.
+The adapter owns individual-input interpretation, all request-relative checks,
+pre-omission event ordering, request endpoint matching, provenance, mappings and
+evidence. A valid value alone is not a certified response to a particular request.
+No context-dependent check is hidden inside existing Journey or Trip constructors.
+
+Outer departure/arrival may be derived from the first/last ride when present.
+These assertions support honest scheduled comparison only. They neither attach
+times to `Trip` nor license schedule progression, operation/cancellation inference,
+interpolation, current-stop claims, rider arrival or realtime freshness. A matched
+Trip plus these times is still not P3-T1's accepted schedule-to-occurrence binding.
+P3-T1 must separately settle calendars, exceptions, service dates, extended hours,
+zones, missing times, occurrence/version identity and Clock semantics before its
+import or runtime consumers. No general timetable parser is authorized here.
+
+### F. Synthetic acceptance-case matrix (specification only)
+
+All symbols are invented shorthand for distinct nonblank synthetic canonical IDs,
+not production minting examples: stations A/B/C/D/E/X/Y; lines L1/L2/L3; Trips T1/T2/T3.
+X and Y share invented display label “Twin” while remaining different IDs. Invented
+provider references p1/p2 exist only in adapter input descriptions. Let t0 be the
+fixed instant `2030-01-02T00:00:00Z`; offsets below are seconds from t0. No real
+operator, translation, payload or private artifact is represented.
+
+**Prerequisite legend:** V = valid invented canonical dataset, active mappings and
+provider intent assertion; C = invented documented ride/transfer semantics;
+W = invented reviewed directional connection/interchange evidence; T = invented
+reviewed Trip/run/occurrence correspondence; S = invented qualified scheduled
+assertions. Each is stipulated test input, never claimed real evidence. Any future
+real T case additionally requires P2-S9. Contract acceptance and owner authorization cover only the pure constructor
+subcases listed below; full adapter/harness cases remain specification only.
+
+| Case | Invented inputs / evidence | Expected result or failure | Invariant demonstrated | Prerequisite |
+|---|---|---|---|---|
+| R01 Direct, no Trip | Request A→C at t0; one documented ride on L1; no run reference | One unresolved candidate (`notSupplied`), no Trip/selection/active Journey | Useful route proposal does not invent a train | V, C |
+| R02 Direct matched | T1=[A,B,C], L1 0…2, complete coverage, indices 0→2 | One matched ride; snapshot contents retained; train still unselected | Existing Trip snapshot versus user assent | V, C, T |
+| R03 Genuine same-station transfer | A→B on T1; B→D on distinct T2; required change and L1/L2 interchange verified | Two rail rides, one transfer, no walking leg | Train change evidence, not line count | V, C, W, T |
+| R04 Multiple transfers | A→B, B→C, C→D on T1/T2/T3 with verified interchanges | Three rides, two transfers, ordered continuous endpoints | Multi-leg continuity | V, C, W, T |
+| R05 Walking transfer | A→X rail, directed X→Y connection, Y→D rail; explicit change | Rail/walk/rail; X and Y remain distinct | Walk is backed by exact pair evidence, not a merge | V, C, W |
+| R06 Missing walk / interchange evidence | Same itinerary as R05 but proximity/name only; separately R03 without interchange evidence | Omit with `unverifiedTransfer`; all rejected → `noUsableAlternatives` | Structural equality or stated walk is not a verified path | V, C; W deliberately absent |
+| R07 Through service | Provider emits L1 A→B and L2 B→D; explicitly continuous; T1=[A,B,D], segments L1 0…1/L2 1…2 | One ride and one matched Trip, zero transfers | Line/operator change does not create transfer | V, C, T |
+| R08 Uncertain continuity | Same fragments as R07, only line IDs/times, no continuity or change evidence | `insufficientContinuity`; do not merge or split by guess | Fail closed on passenger action | V; C absent |
+| R09 Repeated visits | T1=[A,B,C,B,D], board second B at index 3, alight D at 4 | Preserve 3→4, not 1→4 | Visit identity is position, not StationID | V, C, T |
+| R10 Ambiguous visit | Same T1; only “board B”; no occurrence evidence; continuous B→D ride independently proven | Unresolved `noVerifiedMatch`, no snapshot/stop count; without independent ride evidence reject | No first-match occurrence guess | V, C; T incomplete |
+| R11 Limited stop | Line topology A—B—C—D; verified T1=[A,D], indices 0→1 | Two represented stops; never insert B/C | Topology is not passenger traversal or service class | V, C, T |
+| R12 Partial coverage | T1=[B,C,D], both coverage flags false; request B→D, indices 0→2 | Valid matched ride; retain flags; no service-origin/terminal claim | Complete ridden interval can lie inside partial service | V, C, T |
+| R13a Invalid destination | Request B→E; E is unknown, retired, conflicting or unsupported in the request view | `invalidEndpoint(destination, reason)` before provider I/O; no successor substitution | Endpoint failure precedes alternative normalization | Invented endpoint views |
+| R13b Unsupported ridden interior | B and E are supported; the provider's B→E itinerary crosses a known unsupported interior line | Omit the entire alternative as `unsupportedPortion`; never return B→D instead | Supported endpoints do not authorize unsupported interior | V, C; unsupported interior |
+| R13c Insufficient Trip snapshot | Existing T1=[B,C,D] with partial coverage; request B→E has supported endpoints, but T1 supplies no E index | Route-only `noVerifiedMatch` only with independent complete-ride/line evidence and no positive conflict. Otherwise `insufficientContinuity` for unproven ride, `unknownMapping` for actual unresolved required mapping, or `inconsistentTrainEvidence` for contradictory Trip claim; never invent an index or crop the route | Snapshot coverage alone classifies neither infrastructure support nor mapping validity | V; vary C and required mapping/Trip evidence explicitly |
+| R14 Same-name identity | Request A→X, response maps endpoint Y (“Twin”) | `endpointMismatch`; exact X mapping succeeds separately | Names do not substitute identity | V, C |
+| R15 Endpoint validation | Origin unknown; separately retired, conflicting, unsupported | `invalidEndpoint(origin, reason)` before provider I/O | No successor following or minting | Invented endpoint views |
+| R16 Unknown interior mapping | Interior ridden line reference p1 has no/absent binding | `unknownMapping` for that alternative | Cannot skip unresolved middle portion | V except missing binding, C |
+| R17 Conflicting mapping | p1 maps to two canonical lines; separately asserted train reference conflicts | `conflictingMapping`; no first-match and no unresolved downgrade | Conflict is not ordinary missing evidence | Invented conflicting view |
+| R18 Retired mapping | Required station/line or asserted train reference is retired with a successor | `retiredMapping`; never follow successor | Preserve accepted retirement boundary | Invented retirement view |
+| R19 Unsupported interior | A→D crosses modeled but unsupported L3 between supported lines | Entire alternative omitted as `unsupportedPortion` | Mapping presence is not support; no partial usable plan | V, C, unsupported L3 |
+| R20 Mixed alternatives | Three ordered options: valid R01, invalid R16, valid R07 | Two candidates in relative source order; omission index 1; batch indicates incomplete set | Keep safe alternatives without concealing omissions | R01/R07 prerequisites |
+| R21 All unusable | Only R16/R19 | `noUsableAlternatives` with both omissions, not `noResults` | Unusable evidence differs from empty network answer | As R16/R19 |
+| R22 No results | Valid provider envelope explicitly says zero journeys | `noResults`, no omissions | Successful empty response | V |
+| R23 Malformed data | Broken shared envelope; separately well-bounded invalid individual alternative | Whole-call `malformedResponse`; individual omission `malformedAlternative` respectively | Salvage only independently delimited alternatives | Invented malformed inputs |
+| R24 Cancellation | Cancel before request, during I/O, or normalization before final check | `CancellationError`, no batch/outage; cancel child work | Cooperative cancellation remains distinct | Controlled future async harness |
+| R25 Provider failure | Offline/timeout/outage; separately rate limit or bad configuration | `providerUnavailable`, `rateLimited`, `configurationUnavailable` respectively; explicit recovery | No raw errors or false empty result | Invented client failures |
+| R26 Missing train identity | Complete ride A→D; only matching times/name/pattern; no reviewed join | Unresolved `noVerifiedMatch`, never mint T1 | Route usability is not identity proof | V, C; T absent |
+| R27 Contradictory snapshot | Claimed T1 0→2 disagrees with ridden anchors/lines; separately out-of-range index | `inconsistentTrainEvidence` / `invalidStructure`; no fallback hiding contradiction | Snapshot/indices and route must agree | V, C, contradictory T |
+| R28 Duplicate Trip / full lap | Two separate rides attach T1, even with intervening walk; separately one ride B(index 1)→B(index 3) | `invalidStructure` | DEC-062 duplicate-Trip and distinct-end rules preserved | V, C, T; W for walk |
+| R29 Boundary-only line segment | R07 Trip, board B at 1, alight D at 2 | Matched line sequence only L2; retain original Trip indices | No zero-movement line claim | V, C, T |
+| R30 Scheduled assertions | Direct A→C pair [t0+60,t0+600], qualified schedule source | Pair retained as provider scheduled; no dated Trip, progression or live claim | Search context is not imported timetable truth | V, C, S |
+| R31a Missing/ambiguous times, no contradiction | Pair missing, one valid qualified endpoint only, or unqualified “25:10”; explicit intent assertion and all available qualified endpoints consistent | Adapter validates individual known endpoints first, then nil context for incomplete/uninterpretable pair; no rollover or fabricated mate; without intent assertion reject `invalidScheduledContext` | Pair omission follows input validation | V, C; S incomplete |
+| R31b Lone departure before bound | Request at t0; first ride's qualified departure t0−60; arrival missing; generic intent assertion present | `invalidScheduledContext` before omission | Missing arrival cannot hide a known request-bound violation | V, C; contradictory single S endpoint |
+| R31c Lone arrival after next departure | Earlier ride has only qualified arrival t0+1200; next ride has qualified departure t0+600 (arrival missing or t0+1800) | `invalidScheduledContext` before omission even though earlier pair would be nil | Individual inputs retain chronological force | V, C, W; contradictory S endpoints |
+| R32a Complete-pair contradictions | Arrival before departure within a pair; separately earlier retained arrival t0+1200 and later retained departure t0+600 | Pure constructors reject pair/candidate; adapter classifies the alternative as `invalidScheduledContext` | Local complete-pair chronology | Invented finite pairs; V, C, W only for adapter admission |
+| R32b Later ride before request | Request at t0; first ride has no context; later pair is [t0−1800,t0−900] | Adapter rejects `invalidScheduledContext`; pair-only constructors cannot know the request bound | Every ridden endpoint obeys the bound | V, C, W; contradictory S |
+| R32c Contradiction across missing context | Ride 1 arrival t0+1200; ride 2 has no known times; ride 3 departure t0+600; endpoints qualified | Adapter rejects even if either outer pair is incomplete. With complete outer pairs, pure candidate chronology also rejects across the nil middle context | Missing contexts never reset known-event order | V, C, W; contradictory S; complete-pair variant for constructors |
+| R32d Valid equality | Request at t0; pairs [t0,t0] and [t0,t0+600], with independent transfer evidence | Equality passes request, pair and cross-ride ordering; no travel-duration or transfer-feasibility claim is inferred from it | Inclusive comparisons only | Invented pairs for constructors; V, C, W, S for admission |
+| R32e Qualified midnight crossing | Request 2030-01-02T23:50:00Z; pair [2030-01-02T23:55:00Z,2030-01-03T00:10:00Z] | Valid absolute ordering and request bound; no inferred rollover or service date | Midnight is not a clock-wrapping rule | Already qualified instants for constructors; V, C, S for interpretation/admission |
+| R32f Unused Trip endpoints | Request at t0; ridden pair [t0+60,t0+600]; provider also supplies t0−3600 for an unused earlier Trip portion | Exclude unused endpoint from ridden-itinerary checks; admit only if all ridden endpoints and other evidence pass | Request bound applies to the ridden itinerary, not the whole service | V, C, T, S; explicit ridden indices |
+| R33 Snapshot equality trap | Value-only alternatives hold the same TripID with different structurally valid snapshot contents; separately attempt admission using incompatible dataset revisions | Values preserve both contents without ID-based dedup. Admission may not mix incompatible revisions: retain one coherent identified Data view or fail `dataUnavailable` under §A; never treat value preservation as evidence approval | Entity identity is not snapshot equality or revision compatibility | Invented snapshots for pure checks; coherent-view evidence for admission; no Domain revision field |
+| R34 Concurrent searches | A→C request followed by A→D; responses arrive reversed; mapping revision changes | Independent results; Application suppresses old request; coherent retained view or `dataUnavailable` | No cross-request state or mixed revisions | Future controlled async harness |
+| R35 Invalid request / intent | Same origin/destination or non-finite time; separately unsupported provider intent | Construction fails for invalid values; `unsupportedRequest` for valid unsupported intent | No hidden request reinterpretation | Invented requests/adapter capability |
+| R36 Localization / leakage | X/Y have equal invented labels in language fixtures; inputs contain p1 and arbitrary metadata | Canonical IDs remain distinct; no p1/metadata in output; labels resolved externally | Provider isolation and centralized language ownership | V; invented labels only |
+
+R01–R36 remain the 36 case groups; R13a–c, R31a–c and R32a–f are explicit
+variants within their original groups. References to a group include its variants;
+implementation coverage below identifies only the applicable subcases.
+
+R20–R22 additionally specify constructor rejection for an empty alternatives batch,
+duplicate/out-of-range/unsorted omission indices or empty reason lists, and reject
+an all-unusable failure with no omissions or noncontiguous indices. These are
+variants of the same result-accounting cases, not additional executed checks.
+
+## Reused constraints, new decisions and compatibility
+
+| Disposition | Accounting |
+|---|---|
+| Reused accepted constraints | DEC-009 continuity; DEC-020/021 provider isolation and canonical identity; DEC-060/061 recurring Trip, indexed passenger stops, limited-stop/partial coverage and independent service class; DEC-062 leg/selection/Journey invariants; DEC-063 neutral runtime/readiness ownership; DEC-064 route ownership and Phase 5 binding; DEC-074/075 timetable and retained gates. |
+| Newly accepted decisions | Absolute depart-not-before request; async error/cancellation boundary; nonempty batch with omission records; strict usable-candidate admission; unresolved versus matched ride representation; candidate-only values and no automatic selection; evidence obligations; optional paired provider schedule context; ephemeral positional identity and no route persistence/equality. |
+| Change to an accepted invariant | **None.** In particular no same-station rail lap, duplicate matched Trip across rides, fabricated stop/line, inferred transfer, dated-Trip reinterpretation or successor following. Stricter adapter evidence does not change what `WalkingTransfer` or `Journey` constructors prove. |
+| Accepted sketch refinement | ARCHITECTURE §10/11 now reflects this contract, omits raw `providerMetadata`, defers fare, documents §E and distinguishes candidate from selection. ROADMAP records only the authorized bounded implementation slice; the historical proposed sequence and Phase 3 exit remain unchanged. |
+| Future implementation surface | New `Domain/Routing` values/protocol and focused `TSUGINOTests` contract coverage; later synthetic adapter tests in Data ownership. No change to `Domain/Railway/Trip.swift`, `Domain/Journey/{Journey,RailLeg,SelectedRailTrip,WalkingTransfer}.swift` or their accepted regression expectations is needed. Existing ID validity and AppClock are reused. |
+| If broader results prove necessary | Same-station laps, multiple dated uses of one Trip, new Journey modes or missing transfer-path exceptions require an explicit later amendment to DEC-060/062 and affected ARCHITECTURE/FEATURES/ROADMAP sections, plus the relevant Trip/Journey/selection tests. This contract does not pre-approve them. |
+
+## Dependencies and approved owner choices
+
+| Choice / prerequisite | Approved policy / retained prerequisite |
+|---|---|
+| Accept this boundary? | Accepted by the owner on 2026-10-01, including all five recommended policies below. Only the first pure-values slice is authorized for implementation. |
+| Search time scope | Start with an inclusive depart-not-before absolute instant; all known ridden scheduled endpoints obey that lower bound and itinerary order, including across missing contexts. Defer arrive-by and calendar semantics. Accepted for this request/admission contract; independent provider evidence review remains separate. |
+| Partial success / unsupported routes | Keep valid alternatives with explicit omissions; exclude unsupported portions from usable candidates. Optional informational display remains deferred. Policy accepted; expansion evidence remains needed for later support claims. |
+| Missing train correspondence | Permit route-only candidates when ride continuity is independently established; never treat them as selectable canonical trains. Reject positive contradictions. Separation accepted; provider joins remain a later integration gate. |
+| Transfer evidence standard | Require explicit transfer semantics and reviewed connection/interchange evidence. Do not relax DEC-062's structural-versus-verified distinction. Missing real evidence blocks affected alternatives/integration, not synthetic design. |
+| Scheduled context | Keep optional complete pairs, but validate every interpretable qualified ridden endpoint before omission; known contradictions override generic intent assertions. Equality permits ordering only. No invented counterpart/date/rollover, incomplete-pair display or P3-T1 substitute. This limited shape is accepted; actual provider interpretation still needs evidence. |
+| Provider selection | Remains DEC-004 Provisional. Resolve suitability, trip joins, mapping stability, languages and commercial/cache rights before provider-specific integration; does not block authorized synthetic work. |
+| P2-S9 | Mandatory before real canonical passenger-stop Trip consumption and P3-T1 real import. Unresolved route-only output must not reconstruct or consume those Trips through a side door. No import ownership moves into the route adapter. |
+| P3-T1 | Semantic acceptance before timetable implementation; accepted contract/data/binding before imported-schedule consumers or Phase 5 scheduled progression. Calendar/service-date/rollover/version choices remain open and do not block this search-only contract. |
+| Production registry / delivery | DEC-068 §F1 holds production ID allocation/adoption and committed real records; delivery/composition requires separate scope and compatibility/recovery work. Neither blocks invented data; no shipping dependency is silently wired. |
+| Q3 / Q4 / bundling | Q3 holds affected Metro-derived public mappings; Q4 holds new Metro-derived translations; ODPT item 5 and applicable compliance hold shipped-app bundling. Each applies to its deliverable, not all contract work. Private real artifacts remain untouched. |
+| Expansion | P2-S10/Track A evidence and DEC-058/059 eligibility remain prerequisites to candidate capability/support promotion; no expansion or live capability is inferred here. |
+
+The five recommended policy answers above were explicitly approved on 2026-10-01.
+Their owner-agreement conditions are resolved for this contract only; the evidence
+and later-deliverable prerequisites remain. Real provider,
+Trip-import and transfer evidence gaps may limit eventual usability; accepting a
+synthetic contract is not evidence those gaps are closed or Phase 3 can exit.
+
+## Rationale
+
+The split permits useful canonical route proposals before verified Trip joins exist,
+while refusing to transform a provider suggestion into rider intent. Separate
+candidate and selected-snapshot values repeat a small amount of structure but avoid
+misusing the semantic name `SelectedRailTrip` for an unchosen train. Paired optional
+times trade some display completeness for a small, auditable search-time contract.
+That output choice must not discard known contradictions: Data checks individual
+qualified ridden endpoints before omission; pure values check retained pairs only.
+Neither equality nor crossing midnight introduces timetable or transfer-duration
+semantics. Separating these checks also keeps the first implementation slice pure.
+Explicit omissions preserve good alternatives without hiding data-quality limits.
+Strict transfer/continuity evidence may reject plausible routes; that is preferable
+to invented passenger actions, and it makes provider suitability measurable later.
+
+Alternatives not recommended: embedding Journey/SelectedRailTrip directly in search
+results; raw metadata bags; matching trains by labels or shape; treating all-rejected
+as no-results; failing every batch for one bad alternative; inferring walks from
+coordinates; silently allowing unsupported segments as usable plans; and solving
+service-date/timetable semantics in the route client. No full routing engine,
+provider abstraction hierarchy or dependency package is needed for this boundary.
+
+## Consequences and smallest subsequent implementation slice
+
+The owner authorized the first slice on 2026-10-01: **pure routing values
+and structural validation only** in `Domain/Routing`, with wholly invented focused
+unit cases. No complete adapter case is claimed by this slice. Its exact coverage is:
+
+| Pure-value work | Specification subcases only |
+|---|---|
+| Request construction | R35's same-endpoint/non-finite-time constructor rejection; not `unsupportedRequest` behavior. |
+| Local candidate/train structure and snapshot preservation | R02/R09/R11/R12's already supplied valid snapshots and original indices; R27's out-of-range index; R28's duplicate matched Trip/same-station rejection; R29's movement-based line clipping; R33's content-preservation-only subcase. These do not prove mappings, passenger-stop evidence, dataset compatibility or provider normalization. |
+| Optional complete-pair values and chronology | R30's supplied finite pair; R31a's nil representation only (not how provider input became nil); R32a's constructor subcases; R32c's **complete outer pairs** across nil context; R32d/e's supplied absolute-instant ordering. No request-relative or incomplete-input validation is claimed. |
+| Result/omission invariants | R20–R22's nonempty batch, unique/in-range/ordered omission indices, nonempty/unique ordered reasons and all-omitted payload constraints, using supplied candidates/omissions. Not raw-response accounting or deciding which alternative to omit. |
+
+A following bounded adapter/harness slice owns provider-time interpretation,
+individual incomplete-input checks (R31), request-relative admission (R32b and the
+bound checks in R31b/R32d/e), pre-omission chronology (including R31c and R32c), and
+exclusion of unused Trip times (R32f). It also owns mapping/evidence admission
+(including R13a–c and R33's coherent-view check), `unsupportedRequest` behavior,
+provider failures, response accounting and cancellation. Application supersession
+in R34 remains Application responsibility, tested in its own controlled harness;
+it never moves into pure Domain values. The async protocol and synthetic normalizer
+can be addressed in that later authorized slice without selecting a real provider.
+
+Do not implement networking, adapters, mappings, real data, Trip import, Journey
+binding or UI in the first slice. Existing Journey/Trip behavior remains unchanged.
+Dataset evidence admission needs later Data tests; constructors cannot certify it.
+Acceptance synchronizes ARCHITECTURE §10/11 and ROADMAP; the historical planning
+sequence remains a proposal beyond this authorized slice. Provider-specific integration
+and Phase 3 exit remain later, separately evidenced work.
+
+## Revisit Triggers
+
+- Selected-provider evidence cannot express the request or distinguish ride continuity.
+- Useful supported routes require unsupported informational portions or incomplete-time display.
+- A verified use case requires service-date identity, same-Trip recurrence, rail laps or new modes.
+- Transfer evidence ownership or a provider join conflicts with the accepted mapping contracts.
+- A consumer needs stable candidate identity, deep equality, persistence, cache policy or fares.
+- P3-T1 acceptance supplies a schedule/occurrence binding that needs an explicit consumer contract.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

@@ -1425,6 +1425,234 @@ expansion support and scheduled guidance remain incomplete.**
 
 # Phase 3 — Route Search Provider Integration
 
+## Planning Assessment — 2026-10-01 (Proposed Sequence Only)
+
+**Authorization and baseline.** This session starts Phase 3 planning, not
+implementation or decision acceptance. Verified repository root
+`/Volumes/Data/dev/TSUGINO`, origin `https://github.com/lunalism/TSUGINO.git`, branch
+`main`, and HEAD `e8a463d51f14b3cb1027960c63244b694579a71b`. After a successful
+`git fetch origin`, `origin/main` matches HEAD, upstream is `origin/main`, and
+ahead/behind is 0/0. The starting working tree is clean. AGENTS §28 and existing
+branches use `phase/<number>-<name>`; `phase/03-route-search` is a proposed name
+consistent with that convention, not an existing or approved branch. No branch
+is created in this session.
+
+**Scope lock.** Assess accepted Phase 3 scope and propose its smallest ordered
+slices. Only this ROADMAP planning record changes. No source, tests, schema,
+accepted decision, provider selection, real artifact, translation, credential,
+device, delivery or capability change. No test/build reruns, commit, push or merge.
+Verification is a documentation/reference, diff and working-tree review. The
+accepted Phase 3 goal, acceptance/exit criteria and decision gate below remain
+unchanged; the proposals here do not become contracts by being recorded.
+
+### Accepted scope and existing foundation
+
+Phase 3 remains **replaceable route-search provider integration**: `RouteSearching`,
+canonical `RouteCandidate`, alternatives, client/DTO/adapter/mapping, transfers,
+through-service continuity, scheduled train context, JP/EN/KO route content,
+recoverable provider errors, basic diagnostics and caching only where permitted.
+DEC-064 also places `TrainCandidate` definition here; it does not move Phase 5
+selection/binding/progression behavior into Phase 3. ARCHITECTURE §10 is a shape
+sketch, not a fully specified route contract. No implementation of these three
+route types was found in the app source inventory.
+
+Existing DEC-060/061/062 contracts provide Trip traversal/coverage/service-type
+segments, position-addressed selection, rail legs, stated walking transfers and
+Journey continuity. They are constraints to reuse, not proof of real passenger
+stops or verified walking connections. Line topology cannot supply Trip stops;
+equal names cannot establish identity. A line/operator change alone is not a
+transfer (DEC-009). A candidate is not automatically an active Journey or an
+explicit user train selection.
+
+DEC-075's completed Phase 2 foundation supplies private provisional acceptance of
+258 stations, 15 lines and two operators, reviewed names/aliases, mappings,
+coordinates/topology and SQLite/version/history behavior. Reuse the final Phase 2
+audit above; no fresh tests, builds, private evidence access or device work is
+needed for this assessment. This is not production adoption or shipping composition.
+
+**Provider status.** DEC-004 remains **Provisional**. The feasibility audit §10
+and DS-11–13 leave Ekispert, NAVITIME and Jorudan as candidates, with commercial
+terms and payload suitability pending. Its older “before Phase 3” provider-direction
+gate is not satisfied by starting this planning session: DEC-074/075 explicitly
+permit independent evaluation and synthetic work, not unselected live integration.
+The recorded Toei static/realtime joins are not evidence of a commercial route
+provider's train-identity join. This assessment adds no current price/license claims.
+
+### Proposed smallest ordered slices
+
+The ordinal labels below describe a proposed sequence, not newly accepted slice IDs.
+“Supported” means existing contracts support the work; implementation still needs
+its own authorized scope.
+
+| Order / bounded work | Supported by existing contracts | Genuine decision or evidence prerequisite / stopping point |
+|---|---|---|
+| 1. Route-boundary contract draft and synthetic case matrix | DEC-009/020/021/060–064; ARCHITECTURE §10 and §40; existing Journey/Trip values | Specify proposed `RouteSearching` request/result/failure semantics, `RouteCandidate` and minimum `TrainCandidate` shape. Resolve candidate-to-Journey relation, explicit continuity/transfer evidence, unknown mappings, scheduled-context provenance, and safe canonical metadata. Identify rather than silently settle changes to accepted Domain invariants. Stop at a reviewable unaccepted design. |
+| 2. Synthetic route boundary, normalization and failure handling | Canonical IDs, DTO isolation, existing traversal/leg invariants, deterministic time and privacy-safe diagnostics | After bounded contract acceptance and implementation authorization, use wholly invented data for direct/transfer/through-service and failure cases. No real-provider compatibility or phase-exit claim; no folders for unselected providers. |
+| 3. Provider evidence comparison and selection, then one bounded integration | Existing audit §10 comparison and Phase 3 decision gate | Reuse recorded evidence first. Resolve actual payload/identity joins, mapping stability, through continuity, data quality, languages, pricing and license/commercial terms. Audit A2 calls for evaluation access to at least two candidates; acquisition/contact is separately authorized. Select through explicit decision before provider-specific client/DTO/adapter work. Cache only when its rights and lifecycle are established. |
+| 4. P3-T1 semantic design, then synthetic contract/import work | DEC-074 accepts planning placement and invented-fixture design | Separately accept calendars/exceptions, service dates, extended-hour rollover, zones/ambiguous times, recurring Trip versus dated occurrence, revisions/cancellations, missing times/coverage, exact identity correspondence, Clock and version/compatibility semantics before implementation. This is a separate data contract, not route-client policy. Design can proceed independently of S9 and provider selection. |
+| 5. Retained P2-S9 design/import and passenger-stop acceptance | DEC-060/061 invariants, S4 provenance, accepted local foundation | Keep the P2-S9 owner. Bound importer/identity-review semantics and authorized identified inputs; verify passenger stops per feed, line segments, coverage and provenance. Row presence, pickup/drop-off flags, identical patterns and existing topology observations are insufficient. Deliver no times. Complete before **any** consumption of these real canonical passenger-stop Trips, even if needed earlier by slice 3. |
+| 6. P3-T1 real import and truthful consumer binding | Accepted placement and foundation; future accepted semantic contract | Requires completed S9, S4 identity/provenance, identified calendar/stop-time inputs and applicable local-use authorization. Validate versioned schedule output and deterministic boundaries before consumers rely on it. Missing correspondence holds data; no inferred Trip matching or identity minting. |
+| 7. Phase 3 canonical-plan integration and exit audit | The unchanged tests, acceptance criteria, exit and provider suitability gate below | Demonstrate usable supported Tokyo plans through the selected provider with truthful scheduled context, canonical-only results, preserved continuity and recoverable failures. Reconcile evidence, architecture, rights and applicable delivery dependencies. Synthetic success alone does not satisfy real integration or production suitability. |
+
+This is a dependency order, not a requirement to serialize independent design work.
+P3-T1 design may run before provider selection; S9 must move earlier whenever a
+consumer needs its real Trips. Provider-supplied scheduled context does not prove
+P3-T1 import completion or authorize downstream reconstruction of timetable
+semantics. Phase 5 owns scheduled progression; Phases 8/9 consume that same truth.
+Active tracking, realtime progression, final route-results polish and Live Activity
+remain excluded here. No in-house route engine or expansion programme is added.
+
+### Deliverables held by retained gates
+
+- **P2-S9:** holds real canonical passenger-stop Trip consumption and P3-T1 real
+  import; does not hold independent provider evaluation or invented semantic cases.
+- **P3-T1 semantic acceptance:** holds timetable implementation; accepted contract,
+  data and consumer binding must precede imported-schedule consumption and Phase 5
+  scheduled behavior. Placement alone resolves none of these semantics.
+- **Provider decision/evidence:** holds selected-provider integration and production
+  suitability claims. Pending access/contract/payload evidence is not a reason to
+  acquire credentials or data during this session.
+- **P2-S10 / Track A:** holds candidate capability/support claims until repeated
+  authorized payload evidence and all DEC-058/059 eligibility requirements pass.
+  Retain this owner and schedule before promotion; it is not a prerequisite to
+  independent work on the accepted 15-line baseline and is not cancelled.
+- **DEC-068 §F1:** holds production identity allocation/adoption and committed real
+  identity records until registry location/backup/delivery and adoption/migration
+  are decided. No provisional IDs are promoted.
+- **P2-S8 delivery/composition:** holds reliance on a delivered real repository
+  until separately scoped installation/selection, compatibility and recovery work
+  and applicable identity/rights gates pass. No shipping phase is assigned here.
+- **Q3 / DEC-065 §A:** holds affected Metro-derived public mappings pending the
+  ODPT reply or a separately accepted publication decision.
+- **Q4:** holds new Metro-derived translation authoring. Existing reviewed names
+  do not authorize new translations or resolve route/headsign content coverage.
+- **ODPT item 5 / applicable compliance:** holds shipped-app bundling pending
+  written confirmation and applicable attribution/update/non-restorability duties.
+
+### First bounded task and verification proposal
+
+**Recommend order 1 next: a documentation-only route-boundary contract draft plus
+synthetic acceptance matrix.** Use the existing Domain contracts and repository
+audit evidence; list genuine unresolved policies and provider evidence needs. Do
+not choose a provider, invent timetable semantics, amend accepted invariants or
+write Swift. Keep the design explicitly proposed and separately reviewable.
+
+Its completion check is that every proposed input/output/failure has an owner and
+every case has an expected canonical result or held/recoverable outcome: direct,
+one/multiple transfers, local/express, continuous through service, malformed data,
+unknown mapping and outage (the accepted Phase 3 test list). Include repeated-stop
+indices/partial coverage and scheduled-versus-observed distinctions where those
+contracts apply, plus JP/EN/KO content boundaries without real authoring. Subsequent
+implementation should run only affected Domain/Data tests and necessary explicit
+iPhone Simulator checks; this planning session runs none. Phase 3 lists no new
+physical-device test requirement, and historical evidence authorizes no device access.
+
+The first task should end with a concrete design for review and a bounded synthetic
+implementation proposal. It should not end with acceptance inferred from this
+plan, an integrated provider claim or a weakened exit criterion.
+
+**Historical route-boundary draft (2026-10-01, before acceptance).** Order 1 now has a reviewable
+[DEC-076 proposal](DECISIONS.md#dec-076--route-search-returns-canonical-proposals-without-selecting-trains-or-creating-journey-state)
+and 36 wholly invented specification case groups, with explicit R13a–c, R31a–c
+and R32a–f variants. The focused review corrections validate qualified individual
+ridden endpoints before pair omission, separate endpoint/interior/snapshot failures,
+and distinguish pure constructor coverage from adapter/harness work. R33 preserves
+snapshot contents without allowing incompatible Data revisions to be mixed.
+At that point its request/result, candidate, evidence and scheduled-context semantics are
+**Proposed, not accepted at that time**. It changes
+no accepted Journey/Trip invariant or Phase 3 exit criterion. Owner review and
+explicit acceptance precede the recommended pure routing-value implementation
+slice; async synthetic normalization and real-provider integration remain separate.
+No code, executable tests, builds, acquisition, private evidence access or device
+work accompanied the draft. The earlier planning assessment remains a proposal.
+
+### Accepted first implementation slice (2026-10-01)
+
+The owner explicitly accepted revised DEC-076 and all five recommended policies.
+ARCHITECTURE §10/11 now reflects that contract. This accepts neither the entire
+historical sequence above nor Phase 3 exit readiness. All retained gates and the
+Phase 3 criteria below are unchanged.
+
+**Scope lock:** pure `Domain/Routing` values and local structural validation plus
+focused invented constructor tests; no async protocol, adapter, networking,
+provider selection, mapping/evidence admission, request-relative admission,
+incomplete-time interpretation, cancellation/supersession, Journey binding, UI,
+persistence, real data or timetable implementation. Reuse existing Domain types
+without changing their behavior. No device access, commit, push or merge.
+
+**Implementation record:** implemented, verified and independently approved;
+this bounded pure-values slice is complete. The exact
+coverage is DEC-076's first-slice table: R35 request constructors; R02/09/11/12,
+R27 index validation, R28/29 and R33 snapshot-preservation constructor subcases;
+R30 supplied pair, R31a nil representation, R32a/c complete-pair chronology and
+R32d/e supplied-instant ordering; R20–22 result/omission construction only.
+Additional direct structure checks do not claim provider/adapter compatibility.
+The independent approval is recorded below. The next recommended bounded task is
+the `RouteSearching` async boundary and controlled synthetic adapter/admission
+tests; agree its exact scope before implementation.
+
+**Implementation detail.** Six files in `TSUGINO/Domain/Routing` contain immutable,
+nonisolated Sendable values. `UnresolvedRouteRailTravel` validates the unresolved
+enum payload (including an already-collapsed nonempty line sequence);
+`RouteSearchRejections` validates the all-omitted failure payload. Explicit
+initializers suppress unchecked memberwise construction. Existing Trip, Journey,
+WalkingTransfer and identifier implementations are unchanged. No async protocol
+or application composition was added.
+
+**Verification actually run (2026-10-01).** `RoutingValueTests` passed **16 test
+functions / 26 executed cases**, zero failures, skips or runtime warnings, on the
+explicit iPhone 17 / iOS 26.5 Simulator (arm64). The successful Debug test action
+built the app, test target and embedded Live Activity extension. No full suite,
+standalone build, Release build or physical-device run was required or repeated
+for this isolated Phase 3 constructor slice; Phase 2's historical slice/full-phase
+records are not presented as new verification. Unrelated existing actor-isolation
+and AppIntents metadata warnings remain; none was attributed to the new routing
+source/tests.
+
+The first attempt exited 65 during test compilation: nested Swift Testing
+`#require` macros in the new fixture helpers failed recursive expansion; no tests
+executed. Splitting those fixture checks fixed compilation; no routing contract or
+production-code correction was needed. The final run exited 0. Initial sandbox
+restrictions on Git fetch and Simulator/result services were resolved using the
+approved execution permission; no physical-device tool was used.
+
+Exact final command (first attempt used the same options with `focused` instead
+of `focused-r2` for the result/log paths):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/RoutingValueTests -resultBundlePath /private/tmp/tsugino-p3-routing-focused-r2.xcresult > /private/tmp/tsugino-p3-routing-focused-r2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-p3-routing-focused-r2.xcresult
+git diff --check
+```
+
+**Preflight and final audit.** Started on `main` at
+`e8a463d51f14b3cb1027960c63244b694579a71b`, tracking `origin/main`; fetched origin
+`https://github.com/lunalism/TSUGINO.git` and verified 0 ahead / 0 behind. Only the
+expected DECISIONS/ROADMAP changes existed. Verified AGENTS §28 and existing
+`phase/<number>-<name>` branches; `phase/03-route-search` was absent and was created
+without reset, carrying the documentation edits. HEAD is unchanged; the new local
+branch has no upstream. All earlier accepted decisions, the original planning
+assessment, existing Domain code, Phase 3 exit and retained gates remain unchanged.
+Documentation/reference and `git diff --check` checks passed. At implementation
+handoff, self-review found no known semantic gap or local invariant bypass;
+independent review was still pending. Constructor success cannot certify Data admission.
+
+**Independent approval (2026-10-01).** A reviewer with fresh context reviewed the
+accepted contract, complete tracked diff, all six new routing files and the new
+test file without relying on the implementer's self-review conclusions. Verdict:
+**approve; no material code defects, test gaps or documentation findings**.
+Saved verification confirmed **16 test functions / 26 executed cases passed**,
+zero failures, skips or runtime warnings, on iPhone 17 / iOS 26.5 Simulator;
+the Debug app and Live Activity extension build was confirmed. No mandatory
+verification remains for this bounded slice. No tests or builds were rerun during
+review; repository files remained byte-identical throughout that read-only review.
+Approval covers **pure constructor semantics only**, not adapter evidence,
+request-relative/discarded-input admission, real integration or Phase 3 exit.
+DEC-076 acceptance, historical proposals, existing Domain invariants and every
+retained gate remain intact. The owner subsequently authorized recording this
+approval and committing/pushing only the approved ten-file inventory on
+`phase/03-route-search`; no main merge or next-slice implementation is authorized.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
