@@ -6085,6 +6085,151 @@ promotion, new translations/acquisition, production wiring, publication or bundl
 Actual integration results and the local-baseline verdict belong in ROADMAP;
 acceptance alone does not make the milestone pass or close P2-S8/Phase 2 overall.
 
+**Subsequent exit-disposition amendment (DEC-075, accepted 2026-10-01).** The
+S9/S10 overall-exit question described above is now resolved as exit-only deferral;
+production delivery also remains a separate follow-up. DEC-074's local-baseline
+acceptance and planning-only P3-T1 ownership are unchanged. The final phase audit,
+not planning acceptance alone, determines baseline-foundation completion.
+
+---
+
+# DEC-075 — Phase 2 Baseline-Foundation Exit Defers Trip Import, Expansion Evidence and Production Delivery Without Removing Their Gates
+
+**Status:** Accepted — baseline-foundation exit disposition; final phase audit required; no Phase 3 implementation authorized
+**Date:** 2026-10-01
+**Related:** DEC-058/059, DEC-060/061, DEC-065, DEC-068 §F, DEC-072/073/074; ROADMAP Phase 2 acceptance/exit and slices S8–S11, Phase 3/P3-T1, Track A
+
+## Basis and accepted amendment
+
+ROADMAP Phase 2 acceptance requires locally searchable Tokyo baseline stations,
+no repeated full static parsing during ordinary use, deterministic canonical
+mappings and a documented storage decision. The exit sentence is: "Static railway
+topology is stable enough for route and realtime integration." The accepted slice
+plan explicitly leaves S9/S10's overall exit relevance open. DEC-074 establishes a
+separate local-baseline milestone and P3-T1 planning placement; it deliberately
+does not settle overall Phase 2 closure.
+
+The DEC-074 private real SQLite acceptance now supplies the formerly missing
+integration proof alongside S1–S7 local acceptance, S8 synthetic storage/migration
+verification and S11 device evidence. This is identified, provisional baseline
+evidence, not proof of a production registry or deployed application.
+
+**Accepted amendment (owner approval, 2026-10-01):** resolve the DEC-065/074 roadmap exit-disposition question
+by excluding S9, S10 and production delivery from prerequisites to **overall Phase 2
+baseline-foundation exit**. Preserve the existing four acceptance criteria, topology
+readiness exit sentence and all recorded verification requirements. Retain S9/S10
+and S8 production-delivery work as named open follow-ups; never mark them implemented
+or erase them because the phase milestone later closes. The phase label denotes
+completion of the defined baseline foundation, not completion of every follow-up.
+
+Only a separate final phase audit may declare Phase 2 complete after acceptance
+of this amendment. It must reconcile actual scope, architecture, tests/builds,
+source/evidence integrity, documentation, physical validation, findings and exit
+criteria under AGENTS §24. Existing exact-code evidence may be reused. Acceptance
+of this disposition alone neither closes the phase nor authorizes Phase 3 execution.
+
+## S9: concrete consequence and retained owner
+
+**Owner remains P2-S9**, not an inferred new Phase 3 importer. It depends on S4
+mappings, identified authorized inputs, DEC-060 Trip invariants and DEC-061 §F's
+provider/feed-specific passenger-stop verification. It produces canonical Trip
+identity/provenance and ordered passenger-stop traversals with valid line segments
+and coverage, **without times**. Row presence or pickup/drop-off flags alone do
+not establish passenger-stop status; identical structure does not establish Trip
+identity. Existing GTFS/topology observations are not completed S9 acceptance.
+
+- **Include in overall Phase 2 exit:** Phase 2 waits for scoped Trip-import design,
+  implementation and real passenger-stop/mapping acceptance. S9 still supplies no
+  timetable and does not complete scheduled guidance.
+- **Accepted explicit deferral from exit:** leave S9 outstanding, executable as
+  the same named follow-up before any feature consumes those canonical passenger-
+  stop Trip sequences. In particular, **P3-T1 real schedule import is blocked until
+  S9's verified mapping is available**, as accepted DEC-074 requires. Independent
+  Phase 3 provider evaluation and synthetic work need not wait. Deferral removes
+  an exit prerequisite, not the consumer prerequisite, and does not authorize work.
+
+Record S9 as a follow-up preceding P3-T1 real import in the work plan; its label is
+retained even if execution occurs after the Phase 2 milestone. No timetable fields,
+new production identity or automatic import are authorized by this disposition.
+
+## S10: concrete consequence and retained owner
+
+**Owner remains P2-S10**, linked to accepted **Track A** expansion. Prerequisites
+are S0's data boundary, explicit Basic-License access authorization and identified
+sources under DEC-058 §4/DEC-059. Deliver dated, repeated payload evidence and
+limitations for Rinkai, Tsukuba Express, Tama Monorail and Yurikamome. Current
+catalog evidence does not verify payloads or establish capabilities; all four
+remain required expansion candidates, not supported baseline services.
+
+- **Include in overall Phase 2 exit:** Phase 2 waits for authorized candidate-data
+  acquisition and evidence assessment. This cannot promise a positive eligibility
+  result, and evidence alone does not complete licensing/compliance/mapping or
+  authorize a capability/support claim. No deadline is invented for external rights.
+- **Accepted explicit deferral from exit:** retain S10 as mandatory evidence
+  before any candidate service/feed capability or support claim. The full remaining
+  eligibility gates still apply afterward. Schedule through Track A before the
+  relevant promotion, not automatically after release and not optional forever.
+  Phase 3's accepted 15-line baseline does not gain new supported operators.
+
+No acquisition, capability declaration or expansion implementation is authorized.
+
+## P2-S8 delivery: which requirement blocks what
+
+The technical storage checklist and private real-data integration are satisfied
+for DEC-074's local scope. No unmet technical S8 criterion is identified in the saved evidence. What remains is production adoption/delivery:
+
+| Follow-up / gate | Blocking effect retained |
+|---|---|
+| DEC-068 §F1 registry location, backup and delivery decision | Blocks production identity allocation/adoption and committing real registry/mapping/reference/grouping/binding records for either operator. No provisional-ID promotion. |
+| Prepared real-artifact installation, selection and production composition | Requires a separately authorized delivery scope with compatibility/recovery handling before an app consumer relies on that delivered repository. Measurement composition is not shipping wiring. |
+| Q3 / DEC-065 §A | Blocks affected Metro-derived public mappings absent the ODPT reply or separately accepted publication decision. |
+| ODPT item 5 and compliance | Blocks applicable shipped-app data bundling until written confirmation and attribution/update/non-restorability duties are addressed. |
+| Q4 | Blocks new Metro-derived translation authoring; no new translation is needed for this exit audit. |
+
+Under this accepted amendment these block their respective production/publication
+activities, **not baseline-foundation phase closure**. This is an explicit accepted
+exit interpretation, not a claim that existing DEC-074 already closed overall S8
+or Phase 2. Keep S8 delivery open as a follow-up owned by its existing work item;
+acceptance must not relabel the whole slice production-complete. No specific
+shipping phase is assigned here without a separate delivery plan.
+
+## Acceptance and separate phase audit
+
+The owner accepted the paired S9/S10 exit deferral and S8 delivery distinction on
+2026-10-01 and authorized the separate final audit using saved verification. If it passes,
+record baseline-foundation closure with the open follow-up ledger. Only then seek
+separate authorization for the next Phase 3 scope; this decision starts none.
+
+Phase 3 provider suitability/rights, trip identity and mapping gates remain in
+force. P3-T1 is accepted planning placement only: timetable semantics need their
+own design acceptance. Invented semantic design work may precede S9 completion;
+real timetable import may not. Phase 5 scheduled behavior requires the accepted
+contract/data binding, and Phases 8/9 consume that same truth. Neither S9 deferral
+nor a phase label manufactures calendars, service dates, rollover, time zones,
+schedule mappings or Clock semantics.
+
+**Acceptance provenance:** the owner explicitly accepted the baseline-foundation
+exit disposition, retained P2-S9 before canonical passenger-stop Trip consumption
+and P3-T1 real timetable import, retained P2-S10/Track A before any candidate
+capability/support claim, and retained all specific production delivery gates.
+The alternative inclusion consequences above remain historical rationale; the
+accepted outcome is exit-only deferral, not cancellation or completion of those
+slices. This resolves the overall-exit planning question left open in DEC-074,
+without accepting timetable semantics or granting data rights.
+
+**Exact amended exit interpretation:** "Static railway topology is stable enough
+for route and realtime integration" is assessed for the **identified local
+provisional baseline foundation**, with the four existing acceptance criteria,
+DEC-074 real SQLite acceptance and required saved verification/device evidence.
+P2-S9, P2-S10 and production delivery are not prerequisites to that phase exit;
+they remain open, owned follow-ups with the triggers above. Only the separate
+final audit may record the phase complete. No production readiness, Phase 3 start,
+publication, bundling or identity promotion follows from that verdict.
+
+The final audit and actual verdict are recorded in ROADMAP. No further exit-scope
+choice is left open by this disposition; execution of follow-ups still needs its
+own authorized scope and applicable prerequisites.
+
 ---
 
 ## 3. Decision Maintenance Rules

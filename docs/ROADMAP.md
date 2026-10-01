@@ -357,6 +357,12 @@ Core railway truth can be represented without knowing which provider supplies th
 
 # Phase 2 — Static Railway Data + Canonical Mapping
 
+**Status: COMPLETE — local provisional baseline foundation (2026-10-01), under
+Accepted DEC-075 and the final acceptance audit below.** This is not production
+delivery readiness. S9, S10, S8 delivery and all applicable identity/publication/
+bundling gates remain open follow-ups. Phase 3 has not started. Earlier dated
+records retain the status at their original verification stage.
+
 ## Goal
 
 Create a reliable local railway topology foundation.
@@ -412,9 +418,9 @@ Create a reliable local railway topology foundation.
 | P2-S5 | implementation | Cross-operator station identity from name and alias candidates, compared with DEC-048 (DEC-065 §E as amended by DEC-069) | S4 | **DEC-069** (accepted), with DEC-068. Production identifiers, committed real records, and Tokyo Metro publication stay gated as for S4 (DEC-068 §F) |
 | P2-S6 | implementation | Validated representative coordinates, undirected line topology, and membership artifacts (DEC-070). Complete `Station` and `RailwayLine` construction waits for P2-S7's required names (DEC-053) | S5 | **DEC-070** (accepted), with DEC-056, DEC-057, DEC-068, DEC-069. Production identifiers, committed real records, and Tokyo Metro publication stay gated (DEC-068 §F) |
 | P2-S7 | implementation | Reviewed Japanese/English/Korean names, explicit aliases, scalar-exact index/lookup, complete named Domain construction | S6 | **DEC-071 is accepted (2026-09-30).** Implementation and separate local real acceptance are complete; the criteria audit and verification are recorded below. This does not authorize publication or bundling. Real name selection/authorship and Korean review are separate; Q4 still gates new Tokyo Metro-derived translations. Q3, production-registry and P2-S8 gates remain unchanged |
-| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | **DEC-072 Accepted** for system SQLite after measurement. Bounded synthetic repository implementation is recorded below; **DEC-073 is Accepted** for reviewed canonical transitions; synthetic implementation/verification is recorded below. Synthetic technical acceptance and DEC-074 private provisional real SQLite acceptance/local-baseline milestone are complete (records below). Overall P2-S8 delivery and Phase 2 closure remain open; production/publication/bundling gates are unchanged |
-| P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | whether Phase 2 imports `Trip` records at all |
-| P2-S10 | evidence | Tier 1 payload evidence (DEC-058 §4, DEC-059); no capability declaration | S0 | explicit authorization for Basic-License data access; whether it counts toward Phase 2 exit |
+| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | **DEC-072 Accepted** for system SQLite after measurement. Bounded synthetic repository implementation is recorded below; **DEC-073 is Accepted** for reviewed canonical transitions; synthetic implementation/verification is recorded below. Synthetic technical acceptance and DEC-074 private provisional real SQLite acceptance/local-baseline milestone are complete (records below). Phase 2 baseline-foundation exit passed under DEC-075; P2-S8 production delivery remains open and all applicable gates are unchanged |
+| P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | Accepted exit-only deferral (DEC-075): P2-S9 remains required before canonical passenger-stop Trip consumption and P3-T1 real timetable import; authorize its bounded work separately |
+| P2-S10 | evidence | Tier 1 payload evidence (DEC-058 §4, DEC-059); no capability declaration | S0 | Explicit authorization for Basic-License data access; accepted exit-only deferral (DEC-075), required before candidate capability/support claims through Track A |
 | P2-S11 | evidence | Physical-device measurements (cold launch, search speed, memory, offline search) | S7, S8 | explicit device authorization (`AGENTS.md` §22); `LunaTestphone` is never used |
 
 **P2-S0 completion record** (2026-09-25). DEC-065 was accepted after product and technical review, including the four P2-S1 reader policies (DEC-065 §D): a missing final line terminator is tolerated, unused columns are ignored, only UTF-8 is supported, and a blank time with no `timepoint` value is reported as unsupported. This slice plan and the timetable planning issue are recorded. Sources were checked: the GTFS Schedule Reference (gtfs.org, published 2026-04-27) for DEC-065 §D; the cited audit sections, figures, and hashes; and the repository's public visibility. Documentation only: no code, fixture, or provider data was added. The decisions listed for later slices remain open.
@@ -1255,16 +1261,24 @@ Create a reliable local railway topology foundation.
 - **P2-S8:** the storage decision is recorded with measurements; a test proves ordinary use does not re-parse the full static dataset (Rule 15); reopen, data-version, and identifier-retirement migration tests pass.
 - **P2-S10 / P2-S11:** evidence is recorded as dated aggregates with its sources, under the authorization given; nothing is declared or promoted by the evidence alone.
 
-**Phase 2 exit relevance.** Slices S1–S8 serve the Phase 2 acceptance criteria. Whether S9 and S10 are needed for Phase 2 exit is an open decision. S11 is the Phase 2 physical-device test and needs authorization.
+**Phase 2 exit relevance (DEC-075, accepted 2026-10-01).** S1–S8 technical/local acceptance, including DEC-074 real SQLite acceptance, and S11 evidence serve baseline-foundation exit. S9/S10 and production delivery are explicitly deferred from exit only, with their owners/triggers retained. S11 was performed under specific-device authorization; no further device access is implied.
 
 **Accepted milestone and timetable placement — DEC-074 (2026-10-01).**
 The owner accepted the local-baseline milestone boundary requiring private
 provisional real SQLite acceptance in P2-S8, and P3-T1's planning ownership and
 dependency placement. Timetable semantics/implementation are not accepted.
-S9/S10 remain outstanding with their existing prerequisites/triggers; their overall
-Phase 2 exit disposition remains undecided. Private integration was separately
+S9/S10 remain outstanding with their existing prerequisites/triggers; DEC-075
+subsequently resolved their overall exit disposition as exit-only deferral. Private integration was separately
 authorized; its actual result is recorded below. Neither acceptance nor that local
 milestone closes overall P2-S8/Phase 2 or grants production/distribution permission.
+
+**Accepted overall exit disposition — DEC-075 (2026-10-01).** S9/S10 and S8
+production delivery are not prerequisites to baseline-foundation Phase 2 exit.
+S9 remains mandatory before canonical passenger-stop Trip consumption and P3-T1
+real import; S10/Track A remains mandatory before candidate capability/support
+claims. Production registry, shipping composition and applicable publication/
+bundling gates continue to block their specific deliverables. The separate final
+audit below records completion of the foundation, not completion of these follow-ups.
 
 ### Timetable Ownership — Planning Assigned, Semantic Contract Still Open
 
@@ -1316,6 +1330,96 @@ Measure:
 ## Exit Criteria
 
 Static railway topology is stable enough for route and realtime integration.
+
+**Accepted interpretation (DEC-075):** assess this for the identified **local
+provisional baseline foundation**, retaining the four acceptance criteria above,
+DEC-074 real SQLite acceptance and required verification/device evidence. P2-S9,
+P2-S10 and production delivery are not prerequisites to this phase exit; they
+remain open, owned follow-ups with mandatory triggers. A separate final audit is
+required. Completion grants no production readiness, identity promotion, shipping,
+publication or bundling permission and does not start Phase 3.
+
+
+## Final Phase 2 Acceptance Audit — 2026-10-01
+
+**Verdict: PASS — Phase 2 is complete under Accepted DEC-075's local provisional
+baseline-foundation scope.** This is the separate final audit required by that
+decision, not a completion claim based on planning acceptance alone. Overall
+P2-S8 production delivery remains incomplete; S9/S10 remain required follow-ups.
+Phase 3 has not started. Earlier dated records that left phase exit open describe
+the evidence and authorization available at that time.
+
+### Accepted exit criteria mapped to evidence
+
+| Accepted criterion | Identified evidence and result |
+|---|---|
+| Tokyo baseline stations searchable locally | Accepted S7: 825 canonical slots, six explicit aliases, 186 editorial bindings. DEC-074 private SQLite acceptance round-trips all 258 stations, 15 lines and two operators; 774 exact index keys / 780 key-target pairs, all six aliases and both distinct Shinjuku identities pass. Scalar-exact queries retain composed/decomposed distinctions. **PASS.** |
+| No repeated full static-data parsing during ordinary app use | S8 regression/counter evidence and ordinary-access workloads show persisted-index queries and matched-record decoding; validation occurs once per open, with explicit full loads counted separately. DEC-074 real access preserves those counts. Shipping composition is still unwired; this validates the repository access path, not an unimplemented search UI. **PASS.** |
+| Canonical mappings are deterministic | Accepted S4/S5 mappings and S6/S7 repeat/history checks; DEC-074 preserves the provisional registry and all approvals, compares complete Domain values, and produces three byte-identical SQLite artifacts with one build-history entry and no duplicates. DEC-073 synthetic migration proves reviewed transitions, immutable earlier bindings and deterministic reruns. **PASS.** |
+| Storage decision is documented | Accepted DEC-072 selects system SQLite from the compact-file comparison, with measured limitations; DEC-073 supplies reviewed identity transitions and explicit version rejection. Prototype and final validated-repository measurements remain separately identified. **PASS.** |
+| Static railway topology is stable enough for route and realtime integration, under DEC-075's local provisional baseline interpretation | S6 validates 258 exact published coordinate selections, zero held-back stations, 15 connected topologies and bidirectional membership; Oedo loop-plus-tail and Marunouchi branch checks pass, with no unexpected shortcut/triangle/self-pair or unused review. Four network repeat artifacts match. S7 constructs complete named Domain values; DEC-074 reproduces coordinates, topology and membership through SQLite, with metadata, reopen and repeat acceptance. This is foundation readiness, not Trip passenger-stop or schedule acceptance. **PASS.** |
+
+### Supporting slice and verification audit
+
+| Scope / required audit area | Saved evidence and conclusion |
+|---|---|
+| S0–S3 source boundary and intake | The earlier accepted completion records retain source registration, strict offline parsing, identified GTFS/Railway inputs and real validation. Credentialed/provider artifacts stay outside Git. The later 211-test tool suite retains the accumulated intake regression evidence. |
+| S4–S5 identity and mapping | Earlier completion matrices record reviewed line/station mappings, deterministic repeats and 285 operator station identities resolved to 258 canonical stations through 27 reviewed groups. The two Shinjuku identities remain distinct. IDs are provisional; no production promotion is inferred. |
+| S6 coordinates/network | Accepted real audit reports 258 selections, 15 connected lines and agreed memberships, 320 included adjacency candidates, zero held-back/unresolved cases and passing shape checks. Exact source points and alternatives/provenance remain retained. Reviewed representative coordinates make no accuracy, entrance, platform, station-centre or physical-survey claim. |
+| S7 names/search | Local acceptance records all 825 names, six aliases and 186 bindings, complete Domain construction and five byte-identical repeats without duplicate/lost history. Published evidence stays distinct from authored names, and extracts from raw source bytes. Approval history and translation limits are unchanged. |
+| S8 storage/version/transition behavior | [DEC-073 verification](../Tools/RailwayStorage/DEC073_VERIFICATION.md) proves newly applied pure retirement, replacement, merge and split; version handling, stale/conflicting records, complete delta accounting, failure atomicity, historical authority, reopen and deterministic repeat behavior. Runtime exposes retirement/history without automatic successor following. DEC-074 supplies separate private real integration acceptance. |
+| Tests and builds | Reuse 211 tool tests, 591 app tests, final 40 affected registry/repository checks, Debug/Release app-and-extension evidence and incremental Release. Later index changes have 25 affected name-tool checks, eight app checks and the storage/transition runner. The private integration adapter has three focused synthetic checks. These are stage-specific saved results, not a newly rerun broad suite. |
+| Performance requirements | [Prototype comparison](../Tools/StorageMeasurement/RESULTS.md), [validated repository measurements](../Tools/RailwayStorage/Measurement/RESULTS.md), [Simulator startup](../Tools/RailwayStorage/Measurement/Startup/RESULTS.md) and [physical results](../Tools/RailwayStorage/Measurement/Physical/RESULTS.md) cover artifact size, startup attribution, search latency, memory and decode/load. Setup costs are separate from runtime; no physical results are inferred from macOS/Simulator timing. |
+| S11 / required physical checks | Authorized iPhone evidence includes ten prior workload processes (five per ordinary/history artifact), exact search and memory/reopen checks, 20 offline network checkpoints, and 40 formal startup observations: five paired baseline/repository runs per metric/artifact. The 2/2 recovery checks are excluded from that cohort. Cold launch, repository search speed, memory and offline search evidence are recorded. No further device access is needed for this audit. |
+| Scope and architecture | Reuse the [focused final review](../Tools/RailwayStorage/FINAL_REVIEW.md): protected Domain, system SQLite, read-only actor repository and offline builder; measurement code requires its compile flag, absent from normal configurations/composition. No new implementation review or later-phase feature is introduced by this audit. |
+| Documentation and findings | DEC-075 acceptance and this roadmap synchronize the exact exit interpretation. No known material defect or unmet amended exit criterion remains in the saved evidence. Retained limitations and delivery work below are not silently marked complete. |
+| Working tree / change boundary | Audit at `69464c1` on `phase/02-static-data`, tracking `origin/phase/02-static-data`, three ahead / zero behind the locally tracked ref; no fresh remote synchronization claim. Only DECISIONS and ROADMAP are modified, with nothing staged or untracked. This audit adds documentation only; no commit, push, merge or Phase 3 execution. |
+
+### Evidence integrity and limits
+
+The saved eight DEC-073 log hashes and six affected-measurement log hashes match.
+Final measured source fingerprints match, accounting for the already documented
+extra-blank-line removal in the measurement build script: its current bytes plus
+that newline reproduce the historical fingerprint, and its corrected hash matches
+the final review inventory. No executable statement changed. Reviewed code remains
+unchanged; documentation is the intended exception. No new test/build/measurement
+run or implementation review was required.
+
+The private DEC-074 package's 50 manifest entries and all 279 preserved originals
+match their saved hashes. The acceptance record identifies 59 S7 input-manifest
+entries, 21 source/registry/document inputs and accepted S6 artifacts. Its three
+217,088-byte SQLite outputs match exactly; metadata identifies runtime schema 1,
+registry revision 6 and the local provisional data version. Accepted names, aliases,
+bindings, first sightings, prior choices and source/network records remain retained.
+Hashes identify retained bytes; they do not independently authenticate a publisher.
+No owner-only artifact, adapter, machine-specific log or path is added to Git.
+
+Physical startup is process-cold under recorded cache limitations, not guaranteed
+cold filesystem cache. Title-only responsiveness measures first-frame/main-thread
+input readiness, not search-UI readiness or touch latency. Offline settings were
+owner-confirmed; workload checkpoints supply network evidence, not per-launch
+thermal/network telemetry. Peak RSS is not a leak proof or physical-footprint
+measurement. The overlapping samples demonstrate neither improvement nor
+regression; no unaccepted performance threshold is invented. SQLite repeat identity
+is demonstrated for the recorded engine/environment, not promised across engines.
+
+### Retained follow-ups and deliverable-specific gates
+
+| Open owner / gate | Prerequisite, trigger and remaining deliverable |
+|---|---|
+| **P2-S9** | S4 mappings, authorized identified inputs and DEC-060/061 passenger-stop verification. Must complete canonical Trip structure import **without times** before passenger-stop Trip consumption and P3-T1 real timetable import. Exit deferral is not cancellation, acceptance of existing GTFS rows as stops, or authorization to implement now. |
+| **P2-S10 / Track A** | S0/source boundary and explicit access authorization. Repeated candidate payload evidence remains mandatory before any expansion candidate capability/support claim; DEC-058/059's other eligibility gates also remain. No candidate is promoted by this audit. |
+| **P2-S8 production registry / DEC-068 §F1** | Owner decision on registry-of-record location, backup and delivery, plus explicit identity adoption/migration, precedes production ID allocation/adoption and committing real identity records. Private provisional acceptance does not supply that decision. |
+| **P2-S8 delivery/composition** | Separately scoped real-artifact installation/selection and shipping repository composition with compatibility/recovery handling remain unimplemented. Their applicable identity and rights gates must pass before production consumers rely on delivered data. Measurement instrumentation is not delivery wiring. No shipping phase is silently assigned. |
+| **Q3 / DEC-065 §A** | Affected Metro-derived public mappings remain blocked pending the ODPT reply or separately accepted publication decision. Private acceptance and safe aggregate reporting do not grant publication rights. |
+| **ODPT item 5 / applicable compliance** | Shipped-app data bundling remains blocked pending written confirmation and applicable attribution/update/non-restorability obligations. Neither phase closure nor production-registry planning grants bundling permission. |
+| **Q4** | New Metro-derived translation authoring remains blocked. Reuse of accepted exact published names in this private acceptance does not resolve that question. |
+| **P3-T1 planning owner** | Timetable contract/import placement is accepted, but semantics and implementation are not. Calendars, service dates, extended-hour rollover, time zones, schedule-to-identity mapping and Clock semantics need design acceptance. Real import additionally requires verified S9 passenger-stop mapping, S4 provenance, this local baseline and authorized inputs; scheduled runtime/presentation consumers depend on that contract. S9 imports no times. |
+
+These obligations block their named activities, not all independent synthetic or
+provider-evaluation work. Starting any next slice still requires its own authorized
+scope. **The completed milestone is the local foundation; production delivery,
+expansion support and scheduled guidance remain incomplete.**
 
 ---
 
