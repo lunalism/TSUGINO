@@ -5867,6 +5867,226 @@ design and all registry/delivery gates remain unchanged.
 
 ---
 
+# DEC-074 — Local-Baseline Milestone Requires Real SQLite Acceptance and Retains Explicit Follow-Ups
+
+**Status:** Accepted — local-baseline boundary and P3-T1 planning placement only; timetable semantics/implementation and overall Phase 2 exit disposition remain unaccepted
+**Date:** 2026-10-01
+**Related:** DEC-046, DEC-047, DEC-050, DEC-058, DEC-059, DEC-060 §F, DEC-061 §F, DEC-065, DEC-068 §F, DEC-071–073; ROADMAP Phase 2 slice plan, acceptance/exit criteria, Phases 3/5/8/9 and Track A
+
+## Existing contract and the narrow gap
+
+Phase 2 requires locally searchable baseline stations, no repeated full static
+parsing, deterministic mappings and a documented storage choice. Its exit is
+"Static railway topology is stable enough for route and realtime integration."
+The accepted slice plan explicitly leaves whether S9 and S10 are needed for exit
+open. S9 is conditional Trip structure import; S10 is gated expansion evidence.
+DEC-065 did not silently settle either by listing them. Neither is an S8 dependency.
+
+S1–S7 have documented local provisional acceptance. S8's synthetic implementation,
+version/transition checks and measurements are complete; S11's authorized bounded
+physical evidence is recorded. Those facts do not, by themselves, settle the open
+exit scope or establish real SQLite delivery, production identity or permission.
+Phase 2 must not be declared closed today simply by counting passing tests.
+
+## Accepted amendment and closure limits
+
+The owner accepts the amendment to DEC-065's roadmap exit interpretation introducing a distinct
+**local provisional baseline milestone**. Its boundary is S1–S7 local acceptance,
+S8 synthetic technical acceptance **plus one private provisional real-data SQLite
+integration/acceptance**, and the existing S11 evidence. S9/S10 are not prerequisites
+to this milestone, but remain outstanding with their mandatory triggers below.
+This strengthens the evidence for local search/storage integration; synthetic
+success alone is insufficient for the new milestone.
+
+The four existing Phase 2 acceptance criteria remain unchanged: locally searchable
+Tokyo baseline stations, no ordinary repeated full parsing, deterministic mappings,
+and a recorded storage decision. Existing counts, identity exceptions, review,
+version/history, migration and physical-evidence requirements are not relaxed.
+The existing overall exit sentence, "Static railway topology is stable enough for
+route and realtime integration," remains unchanged. **The milestone does not close
+Phase 2, close all P2-S8 delivery work, or settle S9/S10's overall phase-exit relevance.**
+Those dispositions and the final phase audit remain open. Production readiness
+and distribution are separately gated; the presence of an unrelated open licence
+question is not itself a failure of every local technical criterion.
+
+This decision also accepts the planning placement of the explicit Phase 3 scope addition in the timetable
+section below. It amends the currently unassigned planning status, not DEC-060's
+Trip shape or timetable semantics. Both planning amendments were accepted on 2026-10-01; timetable semantics and implementation remain separately gated.
+
+## Required private provisional SQLite integration
+
+Retain ownership in **P2-S8**, as the remaining local real integration/acceptance
+step, separate from its completed synthetic implementation. Before any writes,
+verify exact hashes and approval scope of the accepted P2-S7 names/aliases and
+Domain outputs, P2-S6 coordinate/topology/membership artifacts, and their accepted
+provisional registry. A mismatch holds affected work; never silently select a new
+snapshot, name, coordinate, mapping or ID. Reuse all existing IDs unchanged.
+
+Use the existing builder/repository behind their accepted boundary. Any necessary
+bounded adapter is implementation work to authorize separately, not a new storage
+policy. New outputs and reports are owner-only outside Git, under fresh paths.
+No existing source, review, registry, accepted artifact or previous output is
+rewritten. The work neither mints/promotes IDs nor applies an identity transition.
+Required acceptance, against the identified inputs:
+
+- Full repository Domain equality: 258 stations, 15 lines, two operators and all
+  825 exact canonical name slots, coordinates and memberships; no held/omitted
+  active entity. Validate line topology and bidirectional station/line membership,
+  retaining the accepted shape/identity distinctions, without re-deciding them.
+- Scalar-exact canonical-name and six explicit alias lookup through the repository,
+  stable ordering, both distinct Shinjuku identities and their line/operator
+  context. Do not invent aliases, translations or provider preferences. Reuse
+  synthetic Unicode edge-case evidence; query any such applicable real values
+  exactly, without fabricating real names to extend coverage.
+- Separate supported schema version, data version and exact registry revision;
+  verify build-input hashes and canonical-content digest. Runtime traceability
+  identifies retained original evidence; it does not copy editorial/provider
+  evidence into runtime tables or turn hashes into approval/authenticity claims.
+- Close/reopen the prepared read-only artifact and repeat Domain/search/metadata
+  checks. Repeat the build using its prior history; require byte-identical runtime
+  output and any deterministic companion outputs, preserved prior revision/history
+  and no duplicate entries. Compare retained source/registry/network/name hashes
+  before/after. No in-place replacement or production composition wiring.
+- Reuse saved correctness, ordinary-access counters and performance/device evidence
+  where exact code is covered. No performance rerun or broad suite is required
+  merely for real integration. A concrete adapter change, uncovered behavior or
+  failed check receives only relevant checks, reported without weakening acceptance.
+
+Record actual outcomes, not assumed counts. Failed or unverifiable acceptance
+keeps the milestone open. No shipping artifact, production ID, public record,
+new acquisition or translation is authorized. Planning acceptance alone does not execute the integration; the owner separately
+authorized the bounded real integration on 2026-10-01, as recorded below.
+
+## Durable follow-up ownership, prerequisites and triggers
+
+| Work | Concrete owner in current roadmap | Prerequisites | Required trigger / result |
+|---|---|---|---|
+| Canonical passenger-stop Trip import | **P2-S9**, retained as an open follow-up slice; not reassigned to another numbered phase | S4 mappings; identified provider/feed evidence; DEC-060 Trip invariants and DEC-061 §F passenger-stop validation; authorized local input scope | Complete before features consume canonical passenger-stop Trip sequences. Produce validated ordered passenger stops, line-segment/coverage consistency, identity/provenance and tests, without times. No name, row-presence or pickup/drop-off shortcut. |
+| Tier 1 payload evidence | **P2-S10**, retained as the concrete evidence slice, linked to the already accepted **Track A** expansion programme | S0 data boundary; explicit Basic-License access authorization; identified sources and DEC-058 §4/DEC-059 evidence requirements | Complete applicable repeated payload verification before any candidate service/feed capability or support claim. Produce dated source-backed evidence and held/unsupported findings, not a capability declaration or automatic promotion. |
+| Private provisional real SQLite integration | **P2-S8 follow-up**, not the already completed synthetic technical work | Accepted S6/S7 artifacts and reviews, scoped owner authorization, preserved input hashes and provenance | Required before the accepted local-baseline milestone; perform the explicit real acceptance above. Remains outside Git and does not promote IDs. |
+| Timetable contract and import | **P3-T1**, accepted planning owner only; semantics and implementation remain gated | Separate contract for service days, calendar exceptions, times past 24:00, time zones, schedule-to-Trip mapping and Clock semantics; authoritative inputs and applicable rights | Accept a separate semantic contract before import implementation; complete acceptance before any consumer relies on imported timetable times/progress. Not inherited by S9. |
+
+Retaining P2-S9/P2-S10 labels identifies the owning work items; it does not mean
+that they were completed, cancelled or reassigned to Phase 3/4/5. Their execution
+phase/date remains a planning choice. Phase 3 may become an early consumer of
+canonical Trip sequences, but "expose scheduled train context" does not assign it
+the GTFS Trip importer or the timetable contract. Synthetic lower-level work may
+continue without falsely claiming that real imported sequences exist.
+
+Track A is an accepted expansion owner, not an assignment that Tier 1 must wait
+until release. Its timing is separately schedulable. The four candidates remain
+required candidates; deferral does not make them optional forever. S10 evidence
+alone cannot satisfy licence/compliance, canonical mapping, capability declaration
+and all other conditions for promotion. No capability or support is declared here.
+
+## Scheduled guidance: existing owners versus the missing input owner
+
+- **Phase 3:** route-provider integration and scheduled train context. It does not
+  own the deferred timetable import contract merely because it can consume times.
+- **Phase 5 / DEC-050 and ARCHITECTURE JourneyEngine ownership:** authoritative
+  runtime transitions and scheduled/realtime observation handling. Scheduled end
+  progression needs a valid scheduled time; the engine must not fabricate one.
+- **Phase 8:** main-app Scheduled Journey Guidance presentation (scheduled timeline,
+  clock-based progress labeled scheduled, next stop and independent status notices).
+- **Phase 9:** derived schedule/status-only Live Activity presentation where designed;
+  it consumes the same truth and never creates timetable or journey state.
+- **Timetable data production:** P3-T1 now owns planning under this decision; the
+  previously recorded ownership gap is resolved, but its semantic contract and
+  implementation remain open. Phase 4's realtime/status adapters do not supply
+  timetable semantics. DEC-046/047 product requirements remain; S9 imports no times.
+
+### Accepted planning owner: P3-T1 — Timetable Contract and Static Schedule Import
+
+**New planning slice accepted on 2026-10-01.** Place P3-T1 in Phase 3 as a
+separate provider-neutral data prerequisite to its scheduled-train-context work,
+not inside the route-search client. Phase 3 already consumes scheduled context;
+Phase 5 owns progression, and Phase 4 is realtime/status normalization. Keeping
+timetable production before those consumers avoids assigning static import to
+JourneyEngine or presentation. No existing P3-T1 label was found before drafting.
+
+**Accepted planning amendment:** add this static timetable contract/import slice
+to Phase 3's Included/Tasks and add explicit dependencies from timetable-consuming
+Phase 3 work and Phase 5 scheduled behavior. Amend ROADMAP's "no phase owns it"
+planning entry to reflect this acceptance. DEC-060 §F's exclusion from the Phase 1 Trip
+contract remains; P2-S9 still imports no times. This is an explicit planning scope
+addition; it does not accept the timetable semantics or authorize implementation.
+
+**Prerequisites and sequencing:**
+
+1. Contract design may use invented fixtures after placement is accepted. Before
+   implementation, accept the bounded timetable semantics and version/identity
+   treatment; this planning acceptance does not substitute for that design review.
+2. Real schedule import depends on accepted P2-S9 passenger-stop Trip mapping,
+   S4 identity/provenance, the local-baseline repository acceptance above, identified
+   calendar/stop-time inputs and applicable local-use authorization. Missing Trip
+   correspondence holds the schedule; it does not mint or match by name/structure.
+3. Phase 3 provider evaluation, error handling and synthetic adapters can proceed
+   independently. Gate only work that consumes this imported timetable. Before
+   Phase 5 executes schedule-derived progress/end-time behavior, P3-T1's contract,
+   data acceptance and a truthful consumer binding must be available. Phase 8/9
+   consume that same truth; they never reconstruct missing timetable semantics.
+   Provider-supplied scheduled context is not proof that this importer is complete.
+
+**Concrete P3-T1 deliverables:** a provider-neutral timetable contract, bounded
+source-to-schedule adapter/validation, versioned identified schedule output, and
+synthetic plus separately authorized local acceptance evidence covering:
+
+- Service calendars, effective ranges, added/removed date exceptions and their
+  precedence/conflicts; a service date distinct from an absolute timestamp.
+- Extended-hour values and rollover across midnight (including values beyond
+  24:00) anchored to the applicable service date, without naive clock wrapping.
+- Explicit source time zone and conversion to absolute instants, including a
+  defined rejection/resolution policy for ambiguous/nonexistent local times.
+  Device locale/time zone must not silently reinterpret a timetable.
+- Exact provider service/trip/stop correspondence to existing canonical identities
+  and stop positions; distinguish recurring Trip identity from a dated occurrence,
+  calendar activation, revisions and cancellations. Preserve source provenance;
+  no invented times, identity reuse or conflation of identical stopping patterns.
+- Missing/interpolated time handling and schedule coverage are explicit; unresolved
+  data cannot produce confident scheduled guidance. Contract changes to per-stop
+  types or persistence require their own accepted compatibility treatment.
+- Injected Clock/explicit `now` semantics for selecting applicable service dates
+  and evaluating scheduled events; deterministic boundary/replay tests, no hidden
+  wall-clock reads in Domain. Scheduled predictions remain typed as scheduled,
+  never observed train position, rider arrival or realtime freshness.
+
+P3-T1 supplies schedule data, not JourneyEngine progression, route ranking, UI or
+capability promotion. Its semantic policy details remain design decisions for the
+slice. This decision accepts the owning work item and dependency
+placement, while leaving implementation and real acquisition unauthorized.
+
+## Separate gates and what they block
+
+| Gate | Blocked deliverable; unchanged activities |
+|---|---|
+| DEC-068 §F1 registry of record | Production identity allocation/adoption and committing real registry/mapping/reference/grouping/binding records. Decide location, backup and delivery; no automatic promotion. Does not block synthetic code or separately authorized private provisional integration. |
+| Real artifact delivery/composition | Installing/selecting an identified real runtime artifact and wiring shipping dependencies remains unimplemented and needs its own bounded authorization and compatibility/recovery plan. The measurement hook is not production wiring. |
+| Q3 / DEC-065 §A | Affected Tokyo Metro-derived public mappings require the ODPT reply or separately accepted publication decision. Private local acceptance and safe synthetic/aggregate reporting are not public distribution. |
+| ODPT item 5 and applicable compliance duties | Shipped-app bundling of normalized Basic-License static data needs written confirmation and applicable attribution/update/non-restorability handling. Registry location does not grant rights. |
+| Q4 | New Metro-derived translations remain blocked; existing approved published selections do not authorize new translation. No new translation is needed for this local milestone. |
+
+A local technical phase milestone is not a production-ready app or a permission
+waiver. Any future public/delivered artifact is evaluated against its own gates.
+This decision does not require all permissions before unrelated synthetic work.
+
+## Acceptance and remaining owner choices
+
+The owner accepted the refined local-baseline boundary and P3-T1 ownership/dependency
+placement on 2026-10-01. The preceding proposal rationale and semantic design
+requirements are retained; prospective language is not a claim that timetable
+semantics or implementation have been accepted. P3-T1 remains planning-only.
+S9/S10's **overall Phase 2 exit disposition remains undecided**; neither is completed
+or silently deferred from overall phase exit.
+
+In the same instruction the owner separately authorized the bounded private
+provisional real SQLite integration described above. That authorization permits
+necessary bounded adaptation and targeted checks, not timetable coding, identity
+promotion, new translations/acquisition, production wiring, publication or bundling.
+Actual integration results and the local-baseline verdict belong in ROADMAP;
+acceptance alone does not make the milestone pass or close P2-S8/Phase 2 overall.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

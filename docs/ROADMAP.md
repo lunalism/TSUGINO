@@ -412,7 +412,7 @@ Create a reliable local railway topology foundation.
 | P2-S5 | implementation | Cross-operator station identity from name and alias candidates, compared with DEC-048 (DEC-065 §E as amended by DEC-069) | S4 | **DEC-069** (accepted), with DEC-068. Production identifiers, committed real records, and Tokyo Metro publication stay gated as for S4 (DEC-068 §F) |
 | P2-S6 | implementation | Validated representative coordinates, undirected line topology, and membership artifacts (DEC-070). Complete `Station` and `RailwayLine` construction waits for P2-S7's required names (DEC-053) | S5 | **DEC-070** (accepted), with DEC-056, DEC-057, DEC-068, DEC-069. Production identifiers, committed real records, and Tokyo Metro publication stay gated (DEC-068 §F) |
 | P2-S7 | implementation | Reviewed Japanese/English/Korean names, explicit aliases, scalar-exact index/lookup, complete named Domain construction | S6 | **DEC-071 is accepted (2026-09-30).** Implementation and separate local real acceptance are complete; the criteria audit and verification are recorded below. This does not authorize publication or bundling. Real name selection/authorship and Korean review are separate; Q4 still gates new Tokyo Metro-derived translations. Q3, production-registry and P2-S8 gates remain unchanged |
-| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | **DEC-072 Accepted** for system SQLite after measurement. Bounded synthetic repository implementation is recorded below; **DEC-073 is Accepted** for reviewed canonical transitions; synthetic implementation/verification is recorded below. Bounded synthetic technical acceptance is complete (final review below); real repository delivery and applicable production/publication/bundling gates remain open. No Phase 2 completion is declared |
+| P2-S8 | implementation | Storage measurement, `RailwayDataRepository`, data-version metadata, migration strategy | S6 | **DEC-072 Accepted** for system SQLite after measurement. Bounded synthetic repository implementation is recorded below; **DEC-073 is Accepted** for reviewed canonical transitions; synthetic implementation/verification is recorded below. Synthetic technical acceptance and DEC-074 private provisional real SQLite acceptance/local-baseline milestone are complete (records below). Overall P2-S8 delivery and Phase 2 closure remain open; production/publication/bundling gates are unchanged |
 | P2-S9 | implementation | `Trip` structure import: stop sequences **without times**, with passenger-stop verification (DEC-061 F) | S4 | whether Phase 2 imports `Trip` records at all |
 | P2-S10 | evidence | Tier 1 payload evidence (DEC-058 §4, DEC-059); no capability declaration | S0 | explicit authorization for Basic-License data access; whether it counts toward Phase 2 exit |
 | P2-S11 | evidence | Physical-device measurements (cold launch, search speed, memory, offline search) | S7, S8 | explicit device authorization (`AGENTS.md` §22); `LunaTestphone` is never used |
@@ -1257,9 +1257,26 @@ Create a reliable local railway topology foundation.
 
 **Phase 2 exit relevance.** Slices S1–S8 serve the Phase 2 acceptance criteria. Whether S9 and S10 are needed for Phase 2 exit is an open decision. S11 is the Phase 2 physical-device test and needs authorization.
 
-### Open Planning Issue — Timetable Ownership (not Phase 2 scope)
+**Accepted milestone and timetable placement — DEC-074 (2026-10-01).**
+The owner accepted the local-baseline milestone boundary requiring private
+provisional real SQLite acceptance in P2-S8, and P3-T1's planning ownership and
+dependency placement. Timetable semantics/implementation are not accepted.
+S9/S10 remain outstanding with their existing prerequisites/triggers; their overall
+Phase 2 exit disposition remains undecided. Private integration was separately
+authorized; its actual result is recorded below. Neither acceptance nor that local
+milestone closes overall P2-S8/Phase 2 or grants production/distribution permission.
 
-DEC-060 §F defers scheduled times to their own timetable contract: service days, calendar exceptions, times past 24:00, time zones, provider schedule mapping, and the Clock. **No phase currently owns that contract**, yet Scheduled Journey Guidance (DEC-046, DEC-047) — the delivered tier for the nine Tokyo Metro lines and the Nippori-Toneri Liner — depends on it. Phase 2 is **not** expanded to cover it: P2-S1 checks only the syntax of time values and gives them no timetable meaning, and P2-S9, if kept, imports stop sequences without times. Assigning ownership needs a separate planning decision that updates this roadmap (Scope Change).
+### Timetable Ownership — Planning Assigned, Semantic Contract Still Open
+
+DEC-060 §F defers service days, calendar exceptions, extended-hour rollover, time
+zones, schedule-to-identity mapping and Clock semantics to a separate contract.
+DEC-074 now assigns planning ownership to **P3-T1 — Timetable Contract and Static
+Schedule Import**, before consumption of imported schedules in Phase 3 and
+scheduled runtime behavior in Phase 5. The semantic contract and implementation
+remain unaccepted. P2-S9 imports no times; Phase 2 is not expanded into timetable
+implementation. Scheduled Journey Guidance remains a required product capability
+whose timetable data prerequisite is not yet fulfilled.
+
 
 ## Performance Tasks
 
@@ -1307,6 +1324,14 @@ Static railway topology is stable enough for route and realtime integration.
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
+
+**Accepted planning placement (DEC-074): P3-T1 — Timetable Contract and Static
+Schedule Import** owns the separate timetable contract/import work, prerequisite
+to consumption of imported schedules here and scheduled runtime behavior in Phase 5.
+This adds planning scope only; semantic design acceptance precedes implementation.
+Real import requires S9 passenger-stop mapping, S4 identity/provenance, local-baseline
+acceptance and identified authorized inputs. Independent provider evaluation and
+synthetic adapter work are not blocked. See DEC-074 for the authoritative boundary.
 
 ## Included
 
@@ -1460,6 +1485,11 @@ Realtime data is reliable enough to drive Journey progression.
 # Phase 5 — Journey Engine
 
 > Phase 1 defines the journey domain types and the `JourneyEngine` protocol boundary; **this phase owns the engine's runtime behaviour** (DEC-050).
+
+**Accepted planning dependency (DEC-074):** schedule-derived runtime behavior
+requires P3-T1's separately accepted timetable contract and validated data/consumer
+binding. This does not block independent synthetic engine work, transfer ownership
+of progression, or authorize timetable implementation.
 
 ## Goal
 
@@ -2462,3 +2492,63 @@ Git remains `phase/02-static-data` at `31732d7`, zero ahead/behind tracked upstr
 nothing staged. All implementation and owner-only evidence are preserved. Only
 documentation and a safe review inventory changed; no commit, push, merge or real
 data change.
+
+
+**DEC-074 acceptance and private provisional SQLite integration** (2026-10-01).
+Starting Git: `phase/02-static-data`, HEAD `3082776`, two commits ahead/zero behind
+tracked upstream; the two proposed documentation edits were preserved. Owner
+accepted the local-baseline boundary and P3-T1 planning placement only, and
+separately authorized this private integration. Timetable semantics/implementation
+remain unaccepted; S9/S10's overall Phase 2 exit disposition is still undecided.
+
+- **Input verification:** all 59 final P2-S7 package entries, 21 identified source/
+  registry/document inputs, four accepted P2-S6 artifacts plus their repeats, and
+  approved network records matched recorded hashes. No new snapshot, selection,
+  binding, ID, source acquisition or translation was introduced.
+- **Bounded adapter:** a new owner-only driver reads the accepted named Domain
+  export and six reviewed aliases, then calls the existing builder/repository.
+  No repository, Domain, registry, search, app-composition or storage implementation
+  changed. The driver compiled successfully against the unchanged source; three
+  invented adapter checks passed (complete Unicode/alias/reopen/repeat round-trip,
+  duplicate-edge rejection and unsupported export-version rejection). Negative
+  cases published no SQLite artifact. This was a targeted adapter check, not a
+  broad suite or app build. Existing correctness/performance evidence was reused.
+- **Actual real acceptance:** 258 stations, 15 lines, two operators; 825 exact
+  approved canonical values and six explicit aliases; 774 exact index keys / 780
+  key-target pairs matched the accepted index. Both Shinjuku identities and their
+  distinct operator/line contexts remained separate. All repository Domain payloads
+  matched, including coordinates, topology and bidirectional membership. Both
+  accepted shape checks passed. No held or omitted required entity/name/alias.
+- **Coordinate comparison:** P2-S6 retains exact decimal source text; P2-S7 Domain
+  stores Double coordinates. The initial adapter preflight compared unlike types;
+  the existing text-to-Double conversion produced 258 exact accepted Domain-point
+  matches. This was a check correction, not a provider/coordinate/source change,
+  geographic accuracy claim or a runtime implementation defect.
+- **Metadata and reopen:** runtime schema 1, data version
+  `p2s8-local-provisional-20261001`, provisional registry revision 6. Names/network
+  input descriptors pin the accepted artifact, review and history hashes; runtime
+  metadata stores fingerprints, not provider/editorial evidence. Four validated
+  opens (including close/reopen and repeats) passed complete Domain/search/metadata
+  checks. Ordinary query checks added no validation/full-load pass.
+- **Repeat/history:** initial output and two carried-forward-history repeats are
+  byte-identical, each 217,088 bytes; one initial runtime build revision, zero
+  duplicate history entries. This is a new derived storage history, not conversion
+  or replacement of the external name/coordinate/binding review histories. All
+  279 pre-existing evidence/input files inventoried remain byte-identical, retaining
+  approvals, 186 title bindings, originals, sightings and previous choices. Registry
+  SHA-256 remains `9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b`.
+  Runtime artifact SHA-256:
+  `c0e38b0a4220a116cbaa9add736e66ce8fdfa58b48e550e2975de0e23fcbc151`.
+- **Retention:** driver, exact input manifests, compiled executable/source hashes,
+  targeted-check logs, real acceptance report, metadata, before/after preservation
+  audit and all three SQLite files are in a durable owner-only package outside Git.
+  File/directory modes are restricted to the owner. Only aggregates and hashes are
+  recorded here; no real artifact or machine-specific path enters the repository.
+- **Verdict:** **DEC-074 local provisional baseline milestone PASS**, based on the
+  existing S1–S7 local acceptance, S8 synthetic/real integration and S11 evidence.
+  **Overall P2-S8 and Phase 2 remain open.** No production ID promotion, registry-of-
+  record decision, shipping composition, public delivery, publication/bundling or
+  timetable implementation is implied. Q3/Q4 and item 5 gates remain specific to
+  their deliverables. S9/S10 overall exit disposition and the final phase audit
+  are outstanding. No repeated performance run, broad suite/build, commit, push,
+  merge or alteration of prior real evidence occurred.
