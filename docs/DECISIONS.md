@@ -7041,13 +7041,15 @@ support or occurrence-aware candidate identity. No such evidence is presumed her
 **Date:** 2026-10-01\
 **Related:** DEC-060–064/074–078; ARCHITECTURE §§4/10/21/40; ROADMAP Phase 3
 
-## Current implementation status — context-only slice
+## Current implementation status — bounded local values
 
 Timetable context construction, separate provider/timetable context branches, exact
 matched-rail attachment and retained-context chronology are implemented and
-independently approved. Approval covers local values/validation only. Scoped internal
-results, failure/rejection additions, internal preflight/admission, connection policy,
-search profiles/completeness and engine obligations remain deferred. See ROADMAP for
+independently approved. Approval covers local values/validation only. DEC-080 now
+supplies parameterized profile/scope values (slice A approved) and locally validated
+scoped-success payloads (slice B implemented and independently approved). Failure/rejection
+additions, internal preflight/admission, connection policy, runtime profile resolution,
+completeness and engine obligations remain deferred. See ROADMAP for
 the reviewed scope and saved verification; no real-source compatibility is established.
 The owner-acceptance record below describes its original authorization; subsequent
 bounded implementation authorization does not change its accepted semantics.
@@ -7140,7 +7142,7 @@ change or Phase 3 exit approval is implied.
 
 # DEC-080 — Explicit Internal Search Profiles and Request-Specific Scope
 
-**Status:** Accepted in bounded part — §9.9 V1–V7 (P1–P4/P6); P5 and non-selected policies remain Proposed. Slice A implemented and independently approved\
+**Status:** Accepted in bounded part — §9.9 V1–V7 (P1–P4/P6); P5 and non-selected policies remain Proposed. Slice A implemented and independently approved; slice B locally implemented and independently approved\
 **Date:** 2026-10-01\
 **Related:** DEC-060–064, DEC-076–079; ARCHITECTURE §10; ROADMAP Phase 3
 
@@ -7227,6 +7229,15 @@ DEC-076 history are unchanged. Independent implementation review approved slice 
 Real consumption/import still requires P2-S9 and feed-specific validated T1 inputs;
 rights/registry/publication/translation/delivery/bundling/expansion gates remain.
 No engine, ODPT compatibility or launch/Phase 3 exit change is established.
+
+## Slice B implementation status — 2026-10-02 Asia/Seoul
+
+After the historical slice A authorization above, the owner separately authorized
+slice B only. `InternalSearchSuccess` and its `RouteSearchResult.internalSuccess`
+branch implement V5's local association/structure checks, preserving full scope and
+batch order/accounting. No runtime producer, failure expansion, policy resolution or
+coverage/completion proof is implemented. P5 remains Proposed. Independent slice B
+implementation review approved local values only; slice A approval and accepted semantics are unchanged.
 
 ---
 

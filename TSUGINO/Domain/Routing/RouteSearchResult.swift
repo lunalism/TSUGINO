@@ -57,6 +57,7 @@ nonisolated struct RouteSearchRejections: Sendable {
 nonisolated enum RouteSearchResult: Sendable {
     case noResults
     case alternatives(RouteSearchBatch)
+    case internalSuccess(InternalSearchSuccess)
 }
 
 nonisolated enum RouteSearchEndpointRole: Sendable {

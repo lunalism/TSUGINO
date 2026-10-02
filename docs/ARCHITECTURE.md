@@ -1036,15 +1036,23 @@ Local constructors validate nonempty declared sets, request membership, positive
 parameters and exact finite advancing [L,U] bounds. Full definition comparison can
 expose conflicts in supplied inputs; it is not a registry or policy resolver.
 No constructor proves canonical membership, coherent input coverage or completed
-search. Slice B scoped-success values and runtime obligations remain unimplemented;
-existing RouteSearchResult/failure APIs are unchanged. Independent review approved slice A only; see ROADMAP.
+search. Slice A is independently approved. Slice B now adds `InternalSearchSuccess`
+and `RouteSearchResult.internalSuccess`, independently approved for local validation only. The payload
+retains full scope for noResults and whole batches. It validates request endpoints,
+all represented ridden stops and movement-bearing lines/TripIDs, matched timetable
+snapshot/index association, scope view, ride cap and inclusive endpoint bounds.
+Unused Trip portions are not required to belong to the scope. Existing immutable
+candidate/omission values retain chronology, duplicate-Trip and accounting rules.
+No filtering, sorting, truncation, completion token or runtime producer is added.
+External cases and unscoped failure meanings remain unchanged. Coverage, policy
+resolution, execution completion and all other runtime obligations remain unimplemented.
 
 DEC-078 separates dated timetable facts from recurring Trip identity; DEC-079 partially
 supersedes DEC-076 for an internal consumer's timetable context, association,
 generated accounting, scoped success, unscoped failures/preflight and evidenced
-connections. DEC-079 is **partially implemented**: only timetable context and local
-route-value association/chronology are supplied. Scoped success, added failures,
-internal admission/preflight and search remain deferred. External semantics and
+connections. DEC-079 is **partially implemented**: timetable context, local
+route-value association/chronology and DEC-080 scoped-success structure are supplied.
+Added failures, internal admission/preflight and search remain deferred. External semantics and
 Trip/Journey invariants remain.
 
 The bounded DEC-078 implementation lives in `Domain/Timetable`: immutable `nonisolated`

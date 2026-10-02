@@ -2334,6 +2334,98 @@ files are included. Coverage/policy resolution, runtime scoped results, engine a
 real-data/ODPT compatibility remain excluded; all P2-S9/import, rights/delivery and
 Phase 3 exit gates remain unchanged.
 
+### DEC-080 slice B local scoped success — 2026-10-02 Asia/Seoul
+
+Owner authorized slice B under already accepted V5 / §9.9, without accepting P5 or
+any runtime policy. Scope lock: one new Domain/Routing payload, one result enum case,
+focused invented-fixture tests and current-truth documentation only. Verified clean
+`phase/03-route-search`, HEAD/upstream `bf268e6ad8cd39bb945a6b48ff7002e91fe5cfb2`,
+0 ahead/behind; refs locally recorded (rules require no fetch). Main unchanged at
+`e8a463d51f14b3cb1027960c63244b694579a71b`. No unrelated work present.
+
+`InternalSearchSuccess.swift` supplies an immutable, nonisolated Sendable payload
+with full validated scope and noResults/alternatives outcome. Its sole failable
+constructor validates all candidates before retaining the entire batch: requested
+endpoints, rail cap, matched timetable snapshot/original-index association and view,
+all ridden passenger stops, movement-bearing lines/TripIDs, and inclusive L/U endpoints.
+Unused Trip portions stay intact without being forced into the scope. Existing
+RouteCandidate/RouteSearchBatch enforce structure, chronology, duplicate TripIDs and
+omission accounting; no filtering/reordering/truncation occurs. `RouteSearchResult`
+adds only `internalSuccess(InternalSearchSuccess)`. No existing exhaustive switch
+required migration; provider/admission/async code and failure vocabulary are unchanged.
+No normal enum/memberwise/mutation path bypasses payload validation. Neither scoped
+noResults nor a batch proves coverage, policy resolution or completed execution.
+
+Focused Debug verification on iPhone 17 / iOS 26.5 Simulator:
+
+| Suite | Functions | Executed cases | Result |
+|---|---:|---:|---|
+| InternalSearchSuccessTests | 13 | 15 | Passed |
+| RoutingValueTests | 16 | 26 | Passed |
+| TimetableRideContextTests | 10 | 14 | Passed |
+| RouteAdmissionTests | 23 | 28 | Passed |
+| RouteSearchingTests | 10 | 10 | Passed |
+| Total | 72 | 93 | Zero failures/skips/runtime warnings |
+
+Saved successful evidence: `/private/tmp/tsugino-p3-scope-b-r2.xcresult`,
+`/private/tmp/tsugino-p3-scope-b-r2.log`; xcresult summary and per-suite results inspected.
+The Debug test action built app and Live Activity extension dependencies. Existing
+actor-isolation warnings in unrelated models/tests and AppIntents metadata-skipped
+warning remain; no new payload/test warning was reported. r1 stopped at compilation
+because the new fixture helper nested Swift Testing require macros; corrected before
+r2. r1 is not passing test evidence. No full-suite or separate Release build; unaffected
+profile/scope/timetable evidence is retained, not claimed rerun.
+
+New tests cover scoped-empty structure, exact scope/accounting preservation, omission
+positions and full candidate retention despite a smaller display subset, wrong
+endpoints/interior station/line/Trip domain, wrong view, nil/provider/unresolved context,
+snapshot/index attachment rejection, repeated-stop subinterval preservation, unused
+snapshot/boundary-only line exclusions, through-service/nonadjacent repeated lines,
+ride caps/walking transfer, mixed opaque date labels, inclusive/outside bounds,
+chronology across nil gaps, duplicate TripIDs across dates and invalid batch accounting.
+These are constructor subcases, not complete DEC-080 runtime specification coverage,
+authenticated continuity or connection feasibility. No source calendar/date is inferred.
+
+Self-review found no remaining material issue: custom initializer suppresses synthesized
+payload construction; all stored values are immutable; slice A and existing canonical
+validators are reused; indexing is restricted to validated original intervals. New
+branch has no runtime producer or production composition. Documentation references
+and `git diff --check` pass. **Independent slice B implementation review pending**:
+review payload bypasses, scope association/ridden-domain boundaries, whole-batch
+preservation, external regressions and implementation-status bookkeeping.
+
+P5 stays Proposed. Runtime scoped-result emission, failure additions, coverage proof,
+policy resolution, service-date enumeration, connection admission/allowances,
+pruning/order/completeness, algorithms/ownership, calendars/conversion, adapters/import,
+persistence and Journey/UI remain excluded. P2-S9 precedes real Trip consumption and
+real P3-T1 import; feed-specific interpretation/validated import and all applicable
+rights/registry/publication/translation/delivery/bundling/expansion gates remain.
+No engine/ODPT/launch/Phase 3 exit readiness, commit, push or merge is claimed.
+
+### DEC-080 slice B independent approval — 2026-10-02 Asia/Seoul
+
+A fresh reviewer with no prior exposure assessed the actual code/contracts and
+reported **approve local slice B; no material findings or mandatory outstanding
+verification**. The preceding pending-review entry is historical. Approval covers
+scope retention, validated candidate association, ridden-domain boundaries, preserved
+whole-batch accounting and unchanged external behavior, not runtime authority.
+
+Optional mixed valid/invalid batch and excluded interior-line regression cases are
+nonblocking observations; no optional tests or implementation changes were added.
+Independent inspection confirmed the saved r2 evidence: 72 functions / 93 executed
+cases passed, zero failures/skips/runtime warnings, with Debug app/extension
+dependencies. The initial r1 compilation failure and existing isolation/AppIntents
+warnings remain separately recorded above. No tests/builds rerun for review or
+publication. SHA-256 verification against the independent-review manifest confirmed
+unchanged source/test bytes; only approval-status documentation changed afterward.
+
+Publication checks: fresh origin fetch, expected seven-file inventory, documentation
+references/status, exact staged inventory, credential/artifact exclusion and
+`git diff --check`. P5 remains Proposed; constructors establish neither authoritative
+coverage nor completed search. Runtime search, policy resolution, engine readiness,
+ODPT compatibility, P2-S9/import and all retained rights/delivery/Phase 3 exit gates
+remain separate. No further implementation or main merge is authorized.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

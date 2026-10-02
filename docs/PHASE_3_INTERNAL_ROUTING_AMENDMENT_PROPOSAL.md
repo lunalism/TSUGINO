@@ -3,16 +3,16 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
-**DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented; slice B and runtime obligations remain unimplemented.**
+**DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented and approved; slice B local scoped-success values are implemented and independently approved. Runtime obligations remain unimplemented.**
 
 ## Current acceptance and implementation boundary — 2026-10-01 Asia/Seoul
 
 Accepted DEC-079: Consumer §§2–5 and C1–C6 are accepted conditional on DEC-078.
 Timetable context construction, separate provider/timetable branches, exact matched
 rail attachment and retained-context chronology are implemented and independently
-approved as local values/validation only. Scoped internal results, failure/rejection
-additions, internal preflight/admission, connection policy and engine obligations
-remain deferred. Owner acceptance does not establish engine adoption, source
+approved as local values/validation only. DEC-080 supplies local scope and scoped-success
+structure; slice B independent review approved local values only. Failure/rejection additions, internal
+preflight/admission, connection policy and engine obligations remain deferred. Owner acceptance does not establish engine adoption, source
 compatibility or production delivery. See DECISIONS for the authoritative acceptance
 and ROADMAP for saved verification. Calendar interpretation/conversion and real
 import remain unimplemented; P2-S9 and all applicable retained gates remain in force.
@@ -758,3 +758,24 @@ source correspondence, calendars, input coverage, service-date enumeration or co
 execution. Domain relationships absent from the inputs are not guessed. No opaque
 service-date interpretation, result/failure changes or runtime search is implemented.
 Independent implementation review approved slice A only; ROADMAP records focused evidence and review scope.
+
+### 9.11 Slice B local implementation — 2026-10-02 Asia/Seoul
+
+The owner separately authorized slice B under accepted V5. `InternalSearchSuccess`
+is an immutable validated payload with full scope and noResults/alternatives outcome;
+the result enum wraps that payload only. Alternatives reuse RouteSearchBatch intact.
+Each candidate must have requested endpoints, a permitted ride count, matched timetable
+contexts attached to the exact ride and scope view, allowed ridden stations/lines/TripIDs,
+and inclusive scheduled endpoints in [L,U]. All represented passenger stops in the
+original ridden interval count; unused snapshot stops and boundary-only line contact
+do not. Existing snapshot/address/index, chronology and duplicate-Trip restrictions
+remain. No occurrence-date labels are interpreted. Constructor failure rejects the
+payload, not silently filters candidates or invents omission records.
+
+NoResults construction establishes scope structure only. Runtime required input
+coverage, zero-handoff/completion facts, generated accounting authenticity, activation,
+eligibility, directional connectivity and allowance/policy resolution are unimplemented.
+The full candidate/omission order is retained; a display subset cannot mutate the batch.
+External result behavior and unscoped failures remain unchanged. There is no producer
+or production composition for this branch. P5 remains Proposed; independent slice B
+implementation review approved local values only. All retained gates and launch/Phase 3 exit remain.
