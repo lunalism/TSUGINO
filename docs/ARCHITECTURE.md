@@ -1943,6 +1943,25 @@ Because a canonical station may span operators, the Domain `Station` value store
 
 **Passenger-stop status must be verified (DEC-061 F).** In the two inspected static GTFS archives (Toei and Tokyo Metro), mid-trip `stop_times.txt` rows with `pickup_type = 1` and `drop_off_type = 1`, `timepoint = 0`, and no arrival or departure time are consistent with stations a trip passes without stopping (`PROVIDER_FEASIBILITY_AUDIT.md` §6.8). That is an observed pattern in those archives, not a general GTFS rule: pickup and drop-off flags alone can express other restrictions. Mapping therefore verifies passenger-stop status per provider and feed before building `Trip.stopSequence` (§5.3) — row presence never makes a passenger stop — and never places a service-type segment boundary at a station verified as passed. A visible skip pattern names which stations are passed, not the service type. Provider service-type codes are mapping aliases of canonical `ServiceTypeID`s.
 
+**DEC-082 bounded S9 review validator (2026-10-02 Asia/Seoul).** The six review
+policies are accepted. `Data/Review/SyntheticTripReviewInput.swift` and
+`SyntheticTripReviewValidator.swift` implement only a DEBUG, synchronous offline
+validator of invented normalized assertions, without app composition. Caller-supplied
+synthetic TripIDs are never allocated or registered. Immutable Sendable inputs identify
+source/mapping/profile/review revisions and a resolvable invented evidence catalog;
+reference presence authenticates nothing. Each declared run receives a review candidate,
+hold or rejection, or the shared packet fails. Candidates have restricted construction,
+retain the exact Trip and source-order/original-index crosswalk, separate origin/destination
+evidence, and revision obligations. Unknown interior facts never produce cropped output;
+conclusive mapping or representation contradictions reject despite unrelated missing facts.
+Trip construction remains unchanged; unknown service types are []. Diagnostics contain
+bounded reason codes and invented locators only. Real source/provenance/rights review,
+Trip registration, parsing, timetable interpretation and downstream integration remain
+unimplemented. S9 real acceptance and P3-T1 real-import prerequisites remain unsatisfied;
+the bounded implementation received independent approval on 2026-10-02 Asia/Seoul.
+This approval does not authorize real consumption or production delivery.
+See DEC-082 and ROADMAP for scope/evidence.
+
 Canonical **lines** are also product identity, not provider records (DEC-057 D6): the Tokyo Metro Marunouchi main line and branch are **one** `LineID`, so the mapping layer maps **several provider railway identifiers** — including the provider's separate Marunouchi branch record — to that one canonical line, each as an explicit entry that retains its provider provenance. The same aliasing serves future operators whose records split or merge a canonical line differently (multi-owner airport-access infrastructure, service-corridor brands), and canonical lines are always modelled complete — never clipped at a prefectural boundary (DEC-058 §3). That provenance is what later allows provider-specific status or realtime resources to be scoped to the branch (Phase 4); it never enters the Domain `RailwayLine` value. Canonical adjacency topology (§5.2.1) is populated by the Phase 2 importer from provider stop sequences, and its derived membership is checked against every `Station.lineIDs` at that level (DEC-055 D2, DEC-057 D9).
 
 **Provider references, reviewed records, and revisions (DEC-068).** The mapping layer is made of records in `Data/Mapping/`; it is never held only in code.

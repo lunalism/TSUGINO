@@ -2758,6 +2758,543 @@ ODPT compatibility, P2-S9 before real Trip consumption/P3-T1 import, feed interp
 and validated import, registry/rights/publication/translation/delivery/bundling/expansion
 gates, launch requirements and Phase 3 exit remain unchanged.
 
+
+### Next ODPT-first dependency assessment — 2026-10-02 Asia/Seoul
+
+**Recommendation, not acceptance/implementation:** prepare one bounded documentation-only
+**P2-S9 input, identity-review and evidence/acceptance plan**, using recorded evidence
+and invented examples. S9's owner, no-times output and Domain invariants are accepted;
+its feed-specific mapping/import/review design and real passenger-stop acceptance are
+not completed or accepted merely by its “implementation” roadmap classification.
+No later accepted record or implemented importer was found that closes this gap.
+DEC-081's published, independently approved DEBUG searcher demonstrates synthetic
+execution only. Its stipulated artificial universe is not a real-feed coverage policy.
+
+| Order / boundary | Accepted support and reusable work | Remaining design/evidence and exact real-use gate |
+|---|---|---|
+| 1. P2-S9 passenger-stop Trips, **without times** | DEC-060/061 define recurring-run identity, original indexed passenger stops, repeated visits, movement-bearing line segments, independent origin/destination coverage and optional service-class evidence. DEC-074/075 retain S9 before real consumers. Phase 2 S4 identity/provenance and S6/S7/S8 provisional canonical foundation, Domain Trip validators and synthetic indexed-ride tests are reusable | Specify reviewed feed-specific passenger-stop/pass-through/unknown classification, source-occurrence→canonical-index crosswalk, recurring-run correspondence and revision/retirement handling, line/coverage proof and hold/reject diagnostics. Identical structure is not Trip identity; flags/row presence/topology are not passenger-stop proof. S4's station/line bindings do not automatically bind recurring Trips. Accepted S9 design, separately authorized identified inputs and scoped real mapping acceptance must precede real Trip consumption and real T1 import |
+| 2. Feed-specific P3-T1 production of occurrence facts | DEC-078 O1–O6 semantics are already accepted; implemented view/date/snapshot/index-bound facts, quality/eligibility states and chronology are reusable. DEC-079 timetable ride context and DEC-080 local scope/result checks are implemented | Do not redo the accepted generic producer design. Review each source's activation/exception rules, timezone/service-day/extended-hour conversion, qualified exact versus missing/estimated fields, revision binding and exact occurrence correspondence. One execution per template/date must be evidenced; unsupported multiplicity/ambiguous conversion is held, not guessed. S9 plus accepted feed interpretation and authorized validated import block real output/consumption. An invented conversion-profile design can proceed before S9 real completion |
+| 3. Operational evidence and authoritative coverage | DEC-009/076/078/079 require affirmative continuous rides/train changes, eligibility, directional connections and justified total allowances; DEC-080 distinguishes scope validity from coverage/completion. Existing values/admission checks can validate local structure | Plan evidence alongside S9/T1, but independently establish real interval continuity, endpoint eligibility, same-station and inter-station directional connectivity, allowance applicability, exhaustive required input inventory, complete negatives versus unknowns, freshness and coherent revisions. Station identity/proximity, matching labels/times, adjacency or absent transfer files supply none of this. DEC-081's enumerated fixture assertions cannot certify a real feed. Missing required evidence blocks the applicable real search/admission even if one route is usable |
+| 4. Production search semantics/composition | Replaceable RouteSearching, canonical candidate/context/scope/success values and tested synthetic accounting/cancellation are reusable. DEC-077 accepts ODPT-first evaluation priority only; commercial evaluation/contact remains paused | Separately accept production objective/distinctness (P5 still Proposed), finite profile/domain/horizon, required inventory/coverage policy, connection-policy resolution, enumeration/pruning/order/completion/resource behavior, component ownership and deployment/update composition. Explicit engine adoption must address provisional DEC-004 and unchanged Phase 3 requirements. Synthetic all-distinct execution is neither that acceptance nor a ready production engine |
+
+**Recorded evidence, not current compatibility:** consult the existing
+[feasibility matrix](PHASE_3_INTERNAL_ROUTING_FEASIBILITY.md#existing-evidence-matrix)
+and [audit §6.8 / source registry §9](PROVIDER_FEASIBILITY_AUDIT.md).
+DS-01 Toei and DS-03 Metro GTFS snapshots were observed in September 2026 across
+the launch line set; Phase 2 accepted 258 stations/15 lines/two operators only as a
+private provisional baseline foundation. The audit's B11 observation of 540 Toei /
+4,151 Metro nonterminal restricted, blank-time rows is consistent with passed positions
+in those archives, not an accepted classifier. Catalogued timetable JSON is still
+payload-unverified in the repository. The twelve-station Toei Pathways snapshot does
+not prove inter-station or cross-operator connectivity; Metro's inspected missing
+transfer/pathway members prove neither absence of real transfers nor complete negatives.
+Headsigns, sparse block IDs and one evening's Toei static/RT joins do not establish
+recurring-run stability, full through correspondence or current schedules. Publisher,
+distributor, source resource/revision and applicable licence remain separate facts.
+No owner-only evidence was opened or external observation refreshed for this assessment.
+
+**First bounded deliverable:** a proposed S9 contract/evidence plan that (a) names the
+already-recorded DS-01/03 candidate input families and required revision/provenance
+manifest without selecting/acquiring new sources; (b) defines the review packet and
+source-row/occurrence-to-original-index association; (c) proposes recurring Trip
+identity/revision review and passenger-stop/line/coverage admission rules with unknowns
+held explicitly; and (d) supplies synthetic specification cases and a real-acceptance
+checklist. Cover two identical patterns belonging to different runs, same-run revision
+with an inserted stop, repeated station visits, verified skipped rows versus unknown
+classification, one-sided/two-sided partial coverage, line transition evidence and
+conflicting/unmapped/retired references. Preserve separate through-service evidence;
+never invent a passenger stop merely to represent a line boundary. Any representation
+conflict must be stated for review, not silently weaken DEC-060/061. S9 emits no times,
+calendars or dated runs; source-field observations used as evidence do not authorize
+conversion or timetable output. Its index crosswalk must support later T1 binding
+without treating raw stop_sequence numbers as canonical array indices.
+
+This is new detailed importer/evidence design under existing invariants, not a duplicate
+Trip value contract. Genuine new rules (classification authority, recurring-run mapping,
+revision/review artifact semantics and unresolved representation cases) remain Proposed
+until reviewed/accepted. Routine tool layout/naming does not need another decision.
+After that review and explicit authorization, the smallest implementation can be a
+synthetic-only S9 mapping/review validator; actual private-evidence inspection and real
+acceptance require separate scoped owner authorization. Current work authorizes neither.
+A Toei-only proving fixture would be incremental evidence, not a reduction of launch.
+
+**Applicable access/delivery gates:** source-specific rights/provenance and owner
+permission govern any later use of retained private inputs or acquisition. Production
+registry/ID promotion, shipping composition, applicable Metro Q3 derivative publication,
+Q4 translations, offline bundling/deletion and Toei attribution duties remain separate
+from local design/validation. S10/Track A and Challenge restrictions still gate expansion;
+ODPT-first does not unlock unsupported through continuations. These delivery gates do
+not prohibit this documentation/invented-data design, and design does not satisfy them.
+Launch scope and Phase 3 usable-canonical-plan exit remain unchanged.
+
+Verified expected repository/origin and clean starting branch phase/03-route-search,
+HEAD/upstream `9dfda2a589d15988a3e7964bd77ad4c95c976dbb`, 0 ahead/behind against recorded
+refs. No fetch is required by repository rules; no fresh remote/source verification
+is claimed. Main remains recorded at `e8a463d51f14b3cb1027960c63244b694579a71b`.
+Only this ROADMAP recommendation changed. Documentation/reference checks and
+`git diff --check` passed. No implementation, acceptance, tests/builds, research,
+acquisition/contact, private/device access, branch creation or Git publication.
+
+
+### Proposed P2-S9 review/evidence contract — 2026-10-02 Asia/Seoul
+
+[Proposed DEC-082](DECISIONS.md#dec-082--p2-s9-passenger-stop-input-review-recurring-identity-evidence-and-acceptance-plan)
+turns the preceding assessment into one bounded input/classification, original-index
+crosswalk, recurring identity/revision and real-acceptance plan, with 14 invented cases.
+No semantics are accepted. It reuses DEC-060/061 and keeps S9 without times; source
+classification is not timetable interpretation or eligibility. Unknown interior evidence
+holds the entire proposed snapshot; partial intervals cannot hide failed full proposals.
+
+The plan makes a newly identified prerequisite explicit: DEC-068 §A1 excludes TripID
+minting and §C1 has no Trip provider-reference namespace. Real authoritative S9 output
+needs an explicit accepted identity-registration extension; no synthetic assignment or
+review packet silently creates a resolver, registry schema or production identity.
+First proposed implementation after review/acceptance/authorization is an invented-data
+review-candidate validator only, independent of that real registration/access gate.
+
+Only DECISIONS and ROADMAP changed; the existing ODPT-first assessment is preserved.
+Verified branch/HEAD/upstream phase/03-route-search / `9dfda2a589d15988a3e7964bd77ad4c95c976dbb`,
+0 ahead/behind using recorded refs; no fetch required by rules or fresh remote verification
+claimed. Documentation/reference and diff checks passed. No implementation, acceptance,
+research/acquisition/contact, private/device access, tests/builds or Git publication.
+All S9/T1 real-consumer, registry/rights/delivery and launch/Phase 3 exit gates remain.
+
+
+### DEC-082 focused outcome correction — 2026-10-02 Asia/Seoul
+
+Independent documentation review identified one inconsistency: §4.1/S9-09 called a
+conclusively unrepresentable line boundary held while the outcome table required rejection.
+The proposal now consistently specifies **Rejected proposal / representationConflict**
+for that case. Missing/ambiguous classification or boundary evidence remains held;
+no passenger stop, boundary relocation, cropping or Domain amendment is introduced.
+All fourteen cases and representationConflict references were checked. A fresh independent
+reviewer inspected the actual corrected text and approved this focused correction with
+no blockers. Optional pre-existing wording clarification before validator implementation:
+§2.2's conflicting-mapping hold versus S9-06's rejection for conclusive contradiction
+should distinguish unresolved conflict from a conclusively impossible mapping. That text
+is unchanged by this narrow correction. DEC-082 remains Proposed; review approval does
+not accept the decision or authorize implementation. Reference/case and diff checks passed.
+
+### DEC-082 bounded acceptance and invented validator — 2026-10-02 Asia/Seoul
+
+Owner accepted exactly the six §7 policies: evidence-backed classification; exact
+ordered occurrence crosswalk; recurring identity review without real allocation;
+independent coverage/representation evidence; distinct outcomes with complete accounting;
+and synthetic-versus-real separation. The reviewed wording is clarified consistently:
+unresolved/ambiguous mapping evidence holds; conclusively impossible mappings reject.
+A proven passed-position line boundary rejects `representationConflict`. Earlier Proposed
+and documentation-review records above are history, not the current acceptance status.
+
+**Implemented, independent review pending:** two DEBUG-only files in `Data/Review`
+(`SyntheticTripReviewInput.swift`, `SyntheticTripReviewValidator.swift`) plus
+`SyntheticTripReviewTests.swift`. No existing Domain/routing/provider code changed.
+The pure synchronous validator consumes invented revision/evidence UUIDs, ordered source
+positions, an explicitly reviewed interval, classification/mapping assertions, supplied
+synthetic TripID correspondence, movement spans and independent boundary assertions.
+No source field/time/name heuristic or registry allocation exists. Service types remain
+unknown ([]). Evidence catalog resolution and reviewed assertions are stipulated input,
+not authentication. The candidate initializer is fileprivate; values are immutable,
+nonisolated/Sendable and have no persistence or snapshot equality/hash conformance.
+
+Shared view/reference failures invalidate the packet before run diagnostics. Every unique
+declared run otherwise receives one outcome in deterministic locator order. Duplicate/
+missing order rejects; required unknown facts hold the whole interval. Known contradiction
+wins over unrelated missing facts. Passed positions have explicit nil-index crosswalk
+entries; passenger indices are consecutive original indices, including repeated stations.
+Proven movement membership and adjacent line changes are checked even when another fact
+is unknown. No stop invention, guessed boundary or fallback interval is permitted.
+All Trip fields/crosswalk/evidence and both boundary assertions are compared against a
+supplied predecessor; changed content under an unchanged view rejects, changed views
+require revalidation. No runtime consumer is wired and no revision is authenticated.
+
+**Specification coverage:** S9-01–06 exercise ordering, repeat/pass crosswalks, no-cropping
+holds, duplicate/missing keys and both mapping outcomes; S9-07 exercises stipulated identity
+ambiguity versus distinct supplied assignments; S9-08 exercises all four coverage flag
+shapes and unknown outside versus inside the explicit interval; S9-09 proves valid line
+transition, passed-boundary rejection and unknown-boundary hold; S9-10/11 compare inserted/
+removed visits and independent line/coverage revisions, old snapshot bindings and unchanged
+reruns; S9-12 holds unverified fragments without stitching; S9-13 rejects invalid compressed
+structure; S9-14 rejects mixed views, unresolved evidence references, duplicate packet keys
+and competing same-ID snapshots, and holds the registration-required sentinel. Extra
+checks cover Int.min/Int.max ordering, invalid movement references, complete mixed accounting
+and stable diagnostic order. Classification authenticity, real correspondence/registration,
+source-format interpretation, automatic downstream invalidation and real acceptance remain
+documentary prerequisites; these are constructor/validator subcases, not full real S9 proof.
+
+**Self-review corrections before final verification:** source-order values are retained
+alongside original indices. Positive membership and passed-boundary contradictions are
+checked before unknown-fact fallback, including an unrelated unknown movement span;
+unknown adjacent line evidence alone cannot fabricate a contradiction. Separate line and
+coverage revision controls avoid testing only a combined change. No unresolved material
+self-review finding is known; independent implementation review remains pending.
+
+**Verification (iPhone 17 / iOS 26.5 Simulator):** initial r1 passed 16 functions / 22
+executed cases. After self-review changes, final r2 passed **17 functions / 24 executed
+cases**, zero failures/skips/runtime warnings. These overlapping runs are not summed.
+Debug test action built app and Live Activity extension dependencies. A separate Release
+app/extension build succeeded; both new implementation files are wholly DEBUG-guarded,
+no production references were added, and `nm` of the Release app contained zero
+`SyntheticTripReview` symbols. Existing isolation-conformance and AppIntents metadata
+warnings remain (r1: 35+2, r2: 27+2, Release: 33+1 diagnostic lines); none originates in
+the new files. No failed test/build attempt. Initial sandboxed xcresult summary extraction
+failed on report-cache permission; the authorized tool retry succeeded. This tooling failure
+is not test evidence. Unchanged provider/async/Domain evidence is reused, not claimed rerun;
+no full suite or physical device was used.
+
+Exact commands (r1 used the identical test command with r1 result/log names):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-review-r2.xcresult > /private/tmp/tsugino-s9-review-r2.log 2>&1
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd > /private/tmp/tsugino-s9-review-release-r1.log 2>&1
+```
+
+Saved results: `/private/tmp/tsugino-s9-review-r1.xcresult` and
+`/private/tmp/tsugino-s9-review-r2.xcresult`; logs share those prefixes.
+Acceptance/documentation references and `git diff --check` pass. Final inventory is three
+modified documents (DECISIONS, ARCHITECTURE, ROADMAP), two new Data/Review sources and
+one new test file. Branch/HEAD/upstream remain `phase/03-route-search` /
+`9dfda2a589d15988a3e7964bd77ad4c95c976dbb`, 0 ahead/behind using locally recorded refs;
+no fetch is required by repository rules and no fresh remote verification is claimed.
+No commit/push/merge or unrelated change. Next: independent review of this bounded
+validator, especially no-cropping, crosswalk/revision association, contradiction-versus-
+uncertainty precedence, packet accounting and diagnostic privacy.
+
+**Still incomplete:** real P2-S9 acceptance. DEC-068 Trip registration extension,
+source authentication/parsing, P3-T1 feed interpretation/validated import, production
+search/P5, registry/rights/publication/translation/delivery/bundling/expansion gates,
+launch requirements and Phase 3 exit remain separate and unchanged.
+
+
+### DEC-082 independent-review correction — 2026-10-02 Asia/Seoul
+
+Independent implementation review found one material defect: the general hold return
+preceded independently conclusive stop-structure and predecessor-identity checks.
+Verified [A, passed B, A] plus unresolved identity could hide invalidStructure;
+reviewed identity Y against prior X plus unknown classification could hide identityConflict.
+The validator now checks those facts before hold finalization, retaining applicable
+missing-evidence reasons in declaration order. Adjacency crosses only affirmative passed
+positions; unknown classification or mapping resets it. Fully known insufficient stop
+counts are rejected without constructing a placeholder TripID. The same early-return
+audit found that a proven passed first/last interval boundary could be hidden by unknown
+movement evidence; its representationConflict is now checked independently too. Unproved
+boundaries remain held. Existing full Trip construction and snapshot checks are retained.
+Other early returns already reject invalid ordering/intervals; no speculative crosswalk
+is built from them. Optional duplicate-order participant diagnostics were not changed.
+
+Combined regressions cover unresolved identity and missing interval/continuity/endpoint
+proof with the invalid [A,A] sequence, a proven invalid subsequence beside an unrelated
+unknown, and prior X versus reviewed Y beside unknown classification. Positive controls
+hold unknown classifications, unknown mappings and unproved passed positions between
+same-station visits, and do not infer identityConflict from an unreviewed Y label.
+Passed interval endpoints with unknown movement reject; an unknown endpoint remains held.
+No accepted semantics, Domain/input shape, real registration or integration changed.
+
+Final focused correction r2: **21 functions / 31 executed cases passed**, zero failures,
+skips or runtime warnings, iPhone 17 / iOS 26.5 Simulator. Debug app/Live Activity extension
+dependencies built. Initial correction r1 passed 20 functions / 30 cases before the extra
+interval-boundary regression; overlapping runs are not summed. Both runs emitted the
+existing 27 isolation-conformance and two AppIntents metadata warning lines, none in the
+changed source/test files. No failed test/build attempt. Sandboxed r1 xcresult extraction
+hit report-cache permission; the authorized retry succeeded, separate from test evidence.
+Exact final command (r1 used corresponding r1 bundle/log names):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-review-correction-r2.xcresult > /private/tmp/tsugino-s9-review-correction-r2.log 2>&1
+```
+
+Prior Release app/extension and symbol-exclusion evidence is reused: correction source
+and tests remain entirely DEBUG-guarded, with no Release-visible/dependency change.
+Unrelated suites were not rerun. Only SyntheticTripReviewValidator.swift,
+SyntheticTripReviewTests.swift and ROADMAP changed this turn; total working inventory
+remains the six DEC-082 files. Acceptance/input/architecture bytes are preserved.
+Self-review, reference checks and git diff --check pass. Independent focused re-review
+is pending; no approval or real S9 completion is claimed. HEAD/upstream remain
+`9dfda2a589d15988a3e7964bd77ad4c95c976dbb` on `phase/03-route-search`, 0 ahead/behind
+using locally recorded refs (no rule-required fetch). No commit/push/merge. All retained
+real-data, Trip-registration, T1/import, production-search, rights/delivery and Phase 3
+exit gates remain unchanged.
+
+
+### DEC-082 same-view revision correction — 2026-10-02 Asia/Seoul
+
+Focused independent re-review found another instance of hold masking: the same-view
+predecessor affirmatively reaches a boundary, the proposal affirmatively continues
+outside it, but unrelated unknown classification prevented revisionMismatch. The validator
+now compares affirmative reached/continued facts before the general hold return, separately
+for origin and terminus, requiring the same reviewed TripID, view and corresponding source
+boundary locator. It preserves unknownClassification alongside revisionMismatch. Changed
+views, unknown extent, missing proof or unreviewed identity do not establish that conflict.
+
+The requested audit also identified independently known structural revisions hidden by
+unrelated missing facts. Exact existing source locators now permit comparison of established
+source order, passenger/passed classification and mapped station against the predecessor.
+Explicit evidenced line claims with passenger anchors in the predecessor compare only the
+prior snapshot's actual movement interval (positive overlap, not endpoint contact). These
+are prior indices, never inferred current indices. Complete current stop/crosswalk facts
+and, when complete, line segments also compare before holds. No compressed partial array
+comparison, guessed Trip, placeholder TripID or identity allocation occurs. Unknown facts
+are not promoted; final complete snapshot/evidence comparison remains unchanged. Ordering,
+identity, membership, adjacency, interval and movement-representation contradictions already
+reject before the hold; invalid-order/interval early returns already reject without guessing
+subsequent associations. No accepted semantics, input schema or Domain invariant changed.
+
+Regressions cover both boundaries and both affirmative conflict directions, exact ordered
+reasons/locations, changed views, unknown/missing evidence, compatible boundary assertions,
+unmatched boundary locators and unreviewed identity. Audit regressions cover exact-locator
+station/order/classification conflicts, known line contradictions beside unknown classification,
+compatible line transitions with endpoint-only contact, and complete stop/line revisions with
+missing continuity proof. Changed-view, unproved-classification and compatible-structure
+controls remain held. The existing adjacency/mapping/boundary regressions remain passing.
+
+**Final verification:** revision r3 passed **25 functions / 36 executed cases**, zero
+failures/skips/runtime warnings, iPhone 17 / iOS 26.5 Simulator. Debug app and Live Activity
+extension dependencies built. Intermediate revision r1 passed 24/35; r2 passed 25/36 before
+the final explicit-line comparison assertions. These overlapping runs and the previous
+21/31 correction are separate evidence, never summed. Each revision run emitted 27 existing
+isolation-conformance and two AppIntents metadata warning lines, none in the new files.
+No failed test/build or result-extraction attempt this turn. Exact final command (r1/r2 used
+the respective bundle/log suffix; saved bundles and logs remain in /private/tmp):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-revision-r3.xcresult > /private/tmp/tsugino-s9-revision-r3.log 2>&1
+```
+
+Release app/extension and symbol-exclusion evidence is reused: all correction code/tests
+remain inside unchanged DEBUG guards, with no Release-visible dependency/composition change.
+No unrelated suite, Release build or physical-device step was rerun. Only validator, tests
+and ROADMAP changed this turn; total inventory remains the six DEC-082 files. DECISIONS,
+ARCHITECTURE and input-source bytes are preserved. Reference checks, self-review and git
+diff --check pass. HEAD/upstream remain `9dfda2a589d15988a3e7964bd77ad4c95c976dbb` on
+`phase/03-route-search`, 0 ahead/behind using recorded refs; no fetch required by rules.
+No commit/push/merge. Independent re-review is pending, not replaced by self-review;
+the most recent reviewer-start attempts hit the agent thread limit. All real S9,
+registration, interpretation/import, production-search, rights/delivery and Phase 3 exit
+gates remain unchanged.
+
+
+### DEC-082 split-movement correction — 2026-10-02 Asia/Seoul
+
+Read-only review found that predecessor movement comparison used raw spans whose
+endpoints required passenger indices. Splitting a known L2 interval at a passed source
+position skipped both comparisons against an all-L1 predecessor, while the equivalent
+unsplit claim rejected. Unrelated unknown classification then hid revisionMismatch.
+Comparison now consumes the already-normalized, evidenced continuous spans. Exact source
+anchors resolve in the reviewed same-view predecessor crosswalk; prior segment bounds
+project to that crosswalk's source ordering. Strict positive overlap excludes mere boundary
+contact. Passed anchors retain their known source order and nil passenger index; no index
+is invented. This also avoids losing an established comparison when normalization produces
+passed outer anchors around known passenger visits. Same reviewed identity/view guards and
+all final snapshot checks are unchanged. Normalization still joins only contiguous,
+affirmatively evidenced spans of the same line; unknown gaps and differing lines never join.
+
+Focused controls compare split/unsplit rejected outcomes including ordered reasons and
+locations, compatible-line holds and changed-view holds. Additional checks cover boundary-
+only contact, unknown gaps over a different predecessor line, L1/L2/L1 preservation,
+passed-position line-change rejection, and split/unsplit known spans with passed outer
+anchors and uncertain surrounding movement. No inferred current classification, Trip,
+identity or passenger index; no expanded real correspondence or accepted semantics.
+
+**Verification:** one focused run, `/private/tmp/tsugino-s9-split-r1.xcresult`, passed
+**29 functions / 41 executed cases**, zero failures/skips/runtime warnings, iPhone 17 /
+iOS 26.5 Simulator. Debug app/Live Activity extension dependencies built. Existing 27
+isolation-conformance and two AppIntents metadata warning lines remain; none originates
+in the changed files. No failed or intermediate test/build attempt this turn. Prior runs
+remain separate and are not summed. Exact command:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-split-r1.xcresult > /private/tmp/tsugino-s9-split-r1.log 2>&1
+```
+
+Prior Release app/extension and symbol-exclusion evidence is reused: implementation/tests
+remain entirely DEBUG-guarded with no Release-visible dependency change. No unrelated
+suite/build or device step was repeated. Self-review, reference checks and git diff --check
+pass; independent re-review remains pending, not supplied by this author session.
+Only validator, tests and ROADMAP changed this turn; the existing six-file inventory is
+preserved. HEAD/upstream remain `9dfda2a589d15988a3e7964bd77ad4c95c976dbb` on
+`phase/03-route-search`, 0 ahead/behind using recorded refs; no rule-required fetch.
+No commit/push/merge or additional acceptance. Real S9, registration/import, production
+integration, rights/delivery and Phase 3 exit gates remain unchanged.
+
+
+### DEC-082 movement-evidence equivalence correction — 2026-10-02 Asia/Seoul
+
+The final same-view revision check previously compared raw proof-reference arrays, so
+subdividing one continuous L1/E span into two L1/E spans falsely created revisionMismatch
+once all classifications were known. Candidate storage and proposal comparison now use
+the same canonical movement-evidence representation: exact source interval anchors,
+canonical line and proof reference. Only contiguous spans with identical line **and** proof
+join. Raw references remain retained and checked against the packet catalog; non-movement
+proof comparison stays separate and unchanged. No global set/deduplication, inferred
+passenger indices, gap bridging or merging of differing lines/proofs is introduced.
+Changed proof applicability, including swapped proofs or shifted interval boundaries with
+the same global proof set, remains a same-view conflict; changed views retain the existing
+revalidation obligation. Accepted semantics and all prior snapshot checks are unchanged.
+
+Fully known regressions exercise unsplit→split and split→unsplit unchanged candidates,
+changed proof under same/changed views, and swapped/shifted proof applicability. Existing
+contradiction, unknown-gap, differing-line, passed-anchor and changed-view controls also
+ran. Final focused evidence: **32 functions / 47 executed cases**, zero failures/skips/
+runtime warnings, iPhone 17 / iOS 26.5 Simulator. Debug app/Live Activity extension
+dependencies built. Existing 35 isolation-conformance and two AppIntents warning diagnostic
+lines remain, none from the changed files. Runs are not summed.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-evidence-eq-r2.xcresult > /private/tmp/tsugino-s9-evidence-eq-r2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-s9-evidence-eq-r2.xcresult
+```
+
+The initial identical test command used `tsugino-s9-evidence-eq-r1` for both output paths;
+it failed before test execution with CoreSimulator access/destination failure (exit 70).
+The authorized Simulator-access retry above passed. The first summary read failed on
+TestReport cache permission (exit 64); its authorized retry succeeded. Those tool/access
+failures are separate from successful test/build evidence; there was no compilation failure.
+Prior Release app/extension and symbol-exclusion evidence is reused: all changes remain
+within existing DEBUG guards, with no Release-visible dependency/composition change.
+No unrelated suite, Release build or physical-device step was repeated.
+
+Self-review checked both canonicalization callers, interval/proof preservation, no set-based
+comparison, safe array replacement, unchanged hold/rejection precedence and DEBUG isolation.
+Reference checks and git diff --check pass. Only validator, tests and ROADMAP changed this
+turn; input, DECISIONS and ARCHITECTURE bytes are preserved. Existing six-file inventory and
+HEAD/upstream `9dfda2a589d15988a3e7964bd77ad4c95c976dbb` remain, 0 ahead/behind using recorded
+refs; no rule-required fetch. **Independent re-review pending**, not supplied by this author
+session. No acceptance/commit/push/merge. Real S9, registration/import, production integration,
+rights/delivery and Phase 3 exit gates remain unchanged.
+
+
+### DEC-082 evidence-revision precedence and hold-boundary audit — 2026-10-02 Asia/Seoul
+
+Established movement-proof changes now compare before the general hold, within the existing
+same-reviewed-TripID/view guard. Canonical spans retain exact source anchors, line and proof;
+comparison uses corresponding predecessor source order and strictly positive movement overlap.
+Missing intervals/proofs are not compared as negative facts. Split/unsplit equivalence stays
+unchanged; no passenger index, identity or missing coverage is inferred. Raw catalog validation
+and final complete snapshot comparison remain intact.
+
+The whole hold-boundary audit also found that affirmative non-movement proof changes could
+hide behind unrelated holds. Candidate storage now retains proofs by role and source locator,
+and comparison uses those same roles (not a compressed array across missing entries). Only
+proofs present on both sides at corresponding reviewed occurrences/boundaries compare; changed
+views and missing proofs do not prove conflict. This extends the existing evidence-revision
+rule to its independently established inputs, without new accepted semantics.
+
+| Contradiction category | Required evidence / evaluation stage |
+|---|---|
+| Shared view, duplicate run, unresolved catalog references | Packet checks before per-run work; incompatible complete emitted snapshots also fail the packet. Malformed shared inputs stop speculative diagnostics. |
+| Duplicate/missing/conflicting order; invalid selected interval | Validate declared source locators/order and interval before indexing. These rejection-only early returns prevent unsafe downstream interpretation. |
+| Impossible mapping / reviewed identity conflict | Affirmative impossible assertion or reviewed target differing from predecessor; checked before holds. Unresolved identity/mapping only holds. |
+| Passenger sequence and interval endpoints | Proven consecutive equal passenger stations across affirmative passes, proved passed outer endpoints, or a fully classified sequence with fewer than two passengers reject before holds. Unknown classification/mapping breaks adjacency inference. |
+| Movement structure, membership and representation | Exact ordered positive spans, known passenger membership, and proved line transitions at passed positions are checked before holds. Unknown lines cannot prove a transition. Full segment projection requires complete classification/movement; service types remain explicitly unknown ([]). |
+| Snapshot occurrence, coverage and line revisions | Same reviewed identity/view and exact source correspondence. Compare established order/classification/station facts, opposite affirmative coverage claims, and positive movement overlap before holds. Complete traversal/crosswalk/segment comparisons require their own complete facts, not unrelated review proofs. |
+| Movement and other proof applicability revisions | Before holds: established overlapping canonical movement proofs; identity role; corresponding interval/continuity and endpoint roles; exact occurrence classification/mapping roles. Missing counterparts, unknown extent, absent correspondence and changed views cannot supply a contradiction. |
+| Final candidate / revision obligation | After all prerequisites pass: unchanged Trip constructor, every-field snapshot/crosswalk/proof association comparison and unchanged/revalidation obligation. This stage does not salvage partial known subsets or authenticate supplied evidence. |
+
+Diagnostics still retain all applicable uncertainty and rejection reasons in the accepted
+order, with deterministic source locations. No general hold precedes the independently
+established checks listed above. RegistrationRequired remains a hold and real allocation
+remains excluded. Input enums cannot encode two simultaneous classifications for one locator;
+duplicate locator/order declarations are rejected rather than merged.
+
+New regressions combine changed/swapped movement proofs with unknown classification; controls
+cover unchanged proofs, equivalent subdivision, changed views and missing movement evidence.
+Seven role-specific proof-change cases also combine unrelated unknown classification and assert
+exact ordered diagnostics. Prior structural, identity, boundary, gap and revision controls remain.
+
+**Focused verification:** `/private/tmp/tsugino-s9-proof-precedence-r1.xcresult` passed
+**34 functions / 60 executed cases**, zero failures/skips/runtime warnings on iPhone 17 /
+iOS 26.5 Simulator. Debug app/Live Activity extension dependencies built. Existing 35
+isolation-conformance and two AppIntents warning diagnostic lines remain, none from the
+changed files. No failed/intermediate test/build or report attempt in this turn; earlier
+runs/access failures remain separate and are not summed. Exact successful commands:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-proof-precedence-r1.xcresult > /private/tmp/tsugino-s9-proof-precedence-r1.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-s9-proof-precedence-r1.xcresult
+```
+
+Prior Release app/extension and symbol-exclusion evidence is reused: all implementation and
+tests remain under unchanged DEBUG guards, with no Release-visible dependency/composition
+change. No unrelated suite/build or physical-device step was run. Self-review, reference
+checks and git diff --check pass. Branch `phase/03-route-search` and HEAD/upstream
+`9dfda2a589d15988a3e7964bd77ad4c95c976dbb` remain, 0 ahead/behind using recorded refs;
+no rule-required fetch. No commit/push/merge or additional acceptance.
+
+Independent re-review remains pending. Only validator, tests and ROADMAP change in this turn;
+accepted decisions, input and architecture are preserved. Real S9, registration/import,
+production integration, rights/delivery and Phase 3 exit gates remain unchanged.
+
+### DEC-082 classification/mapping independence correction — 2026-10-02 Asia/Seoul
+
+Fresh independent review found that an evidenced passed→passenger contradiction at an
+exact predecessor occurrence could be hidden by unavailable station mapping. The comparison
+now checks affirmative disposition independently; only station-identity comparison requires
+resolved, evidenced mapping. Same reviewed TripID/view and occurrence guards remain intact.
+No station identity is inferred and no accepted semantics or proof-role rules change.
+
+Two regression cases reject unavailable mapping and resolved mapping without its evidence,
+retaining exactly `[mappingUnavailable, revisionMismatch]`. Ten control cases cover both
+mapping forms with missing classification proof, changed view, absent occurrence correspondence,
+unresolved identity and an unproved identity label. They assert held outcomes, exact reason
+order and diagnostic locations. Existing classification/mapping/proof-role cases remain passing.
+
+**Final focused verification:** r2 passed **36 functions / 72 executed cases**, zero
+failures/skips/runtime warnings on iPhone 17 / iOS 26.5 Simulator; Debug app/Live Activity
+extension dependencies built. Existing 27 isolation and two AppIntents warning diagnostic
+lines remain, none from the changed source/test files. Commands:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-s9-disposition-r2.xcresult > /private/tmp/tsugino-s9-disposition-r2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-s9-disposition-r2.xcresult
+```
+
+**Separate failed tooling attempts:** the identical test command with r1 log/result names
+failed before tests (exit 70): sandbox CoreSimulator connection refusal left the explicit
+Simulator destination unavailable. The approved-access r2 retry passed. Sandboxed r2 summary
+extraction failed on TestReport cache permission (exit 64); its approved-access retry succeeded.
+These failures are not passing test evidence; logs/results retain their separate names.
+
+Prior Release app/extension and symbol-exclusion evidence is reused as independently reviewed:
+this correction remains entirely within existing DEBUG guards, with no Release-visible,
+dependency or composition change. Unrelated suites and physical-device steps were not rerun.
+Reference checks, git diff --check and focused scope/diff review pass. Only validator, tests
+and ROADMAP changed this turn; input, accepted decisions and architecture remain byte-identical.
+The six-file uncommitted inventory, branch `phase/03-route-search` and HEAD/upstream
+`9dfda2a589d15988a3e7964bd77ad4c95c976dbb` remain (0 ahead/behind using recorded refs).
+No fetch, private access, acquisition, additional acceptance, commit, push or merge.
+Focused independent re-review is pending; this correction's self-review is not independent
+approval. Real S9, registration/import, production integration and all retained gates remain unchanged.
+
+### DEC-082 final independent approval and publication record — 2026-10-02 Asia/Seoul
+
+**Bounded implementation independently approved; real P2-S9 remains incomplete.**
+A fresh reviewer context with no correction-authoring history read the contract, validator,
+tests and saved verification and reported no material findings. The authoring context
+coordinated repository/evidence checks but did not provide independent approval. Earlier
+pending-review entries above preserve their historical state; this entry is current status.
+
+The review confirmed disposition comparison independent of mapping, resolved/evidenced
+mapping for station identity, unchanged reviewed identity/view/occurrence guards, exact
+uncertainty/rejection diagnostics and all 12 added regression cases. Existing classification
+and mapping proof-role comparisons retain their accepted semantics. Saved r2 verification
+is reused: **36 functions / 72 cases passed**, zero failures/skips/runtime warnings, Debug
+app/extension dependencies built, 27 isolation and two AppIntents warnings. Simulator-access
+and report-cache failures remain separate in the preceding record. Prior Release evidence
+remains applicable: unchanged DEBUG isolation, no production references and zero
+`SyntheticTripReview` symbols in the retained Release binary. No tests/builds were rerun
+for approval recording/publication; source/test bytes match the independently reviewed version.
+
+The owner authorized publication of exactly the two Data/Review sources, their test file
+and DECISIONS/ARCHITECTURE/ROADMAP. Origin was verified as `lunalism/TSUGINO`; a publication
+fetch confirmed `phase/03-route-search` and its upstream at
+`9dfda2a589d15988a3e7964bd77ad4c95c976dbb` with no divergence, and main at
+`e8a463d51f14b3cb1027960c63244b694579a71b`. Publication uses the existing phase upstream
+without force-push or merge. Documentation status synchronization changes no accepted policy.
+
+Approval and publication cover only the DEBUG offline synthetic review validator. They do
+not complete real S9 or authorize registration, source authentication/parsing, timetable
+import, routing integration or production delivery. All registry, rights/delivery and
+Phase 3 exit gates remain unchanged; no next slice begins here.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

@@ -7574,6 +7574,376 @@ pause, launch requirements and Phase 3 exit are unchanged.
 
 ---
 
+# DEC-082 — P2-S9 Passenger-Stop Input Review, Recurring Identity Evidence and Acceptance Plan
+
+**Status:** Accepted — six §7 policies and bounded invented-data validator; bounded implementation independently approved 2026-10-02\
+**Date:** 2026-10-02 Asia/Seoul\
+**Related:** DEC-009/020/021/060/061/065/068/073–081; ARCHITECTURE §§5.3/39/40; ROADMAP P2-S9
+
+## Owner acceptance — 2026-10-02 Asia/Seoul
+
+The owner accepts exactly the six §7 review policies and authorizes only the bounded
+invented-data offline review-candidate validator. Unresolved/ambiguous mapping evidence
+is held; conclusively impossible mappings are rejected. A conclusively unrepresentable
+snapshot is Rejected proposal / representationConflict, with no invented stop, relocated
+boundary, cropping or Domain amendment. The historical Proposed wording below is retained;
+the six selected policies are now accepted, not evidence of real S9 completion.
+
+Real Trip registration/minting, source parsing, evidence authentication, timetable
+interpretation and routing integration remain excluded. Source/rights evidence and
+applicable registry/delivery gates are not satisfied by local validation. Independent
+implementation review was pending at acceptance; the final bounded approval below updates
+implementation status only. See ROADMAP for actual implementation/verification.
+
+## Independent implementation approval — 2026-10-02 Asia/Seoul
+
+After the recorded corrections, a fresh reviewer context that did not author or edit
+the classification/mapping correction found no remaining material findings and approved
+the bounded DEBUG-only offline synthetic validator. The authoring context did not supply
+independent approval. The review checked the contract, correction, regression assertions
+and saved verification; ROADMAP records the evidence and review scope. This is not a new
+decision acceptance or real P2-S9 completion. Trip registration, source authentication/
+parsing, timetable import, routing integration, production delivery and all retained
+rights/delivery and Phase 3 exit gates remain separate.
+
+## Context, authority and limits
+
+P2-S9 is the retained owner of canonical passenger-stop Trip structure **without times**,
+before real canonical Trip consumption and real P3-T1 import (DEC-074/075). Its ownership
+and Trip invariants are accepted; a source-specific importer/review contract and real
+acceptance are not. DEC-078's generic timetable semantics and DEC-079/080's local routing
+values are already accepted; they do not establish source correspondence. DEC-081's
+approved DEBUG universe does not authenticate real coverage or adopt production P5.
+
+This proposal defines a Data/offline review boundary, synthetic validator scope and
+real-evidence checklist. It does not change Domain Trip, identity equality, original-index
+meaning, Journey, accepted launch requirements or Phase 3 exit. No source, algorithm,
+production registry, ID minting, deployment or data access is selected. The identifier
+DEC-082 was checked unused in repository Markdown before drafting.
+
+Existing evidence is the dated [feasibility matrix](PHASE_3_INTERNAL_ROUTING_FEASIBILITY.md#existing-evidence-matrix)
+and [provider audit](PROVIDER_FEASIBILITY_AUDIT.md) §§6.1–6.2/6.6/6.8/9 (DS-01 Toei,
+DS-03 Metro, DS-15 derivatives). September 2026 GTFS structure observations, the B11
+restricted/blank-time patterns and Phase 2's provisional station/line foundation do
+not constitute S9 acceptance or current source compatibility. Train-timetable JSON
+remains payload-unverified in those records. No private artifact was accessed here.
+
+## 1. Proposed input and classification boundary
+
+### 1.1 Coherent review packet
+
+A packet explicitly names the authorized scope of recurring-run candidates, source
+publisher/distributor/resource, exact retained content hash/revision, source member,
+interpretation-profile revision, canonical station/line mapping revision and applicable
+rights/provenance record. Each candidate is accounted for; scope is fixed before
+classification, not reduced to whichever candidates happen to validate. An intentional
+bounded evaluation is not launch-wide completion. Unavailable sources stay unavailable.
+
+Keep three identities distinct:
+
+- A **source occurrence reference** identifies an exact row/position within one run
+  record in one identified revision. Retain source run key, member/record locator,
+  original ordering value and stable within-artifact row locator. This is evidence,
+  not a canonical visit ID or a claim of cross-revision stability.
+- A **reviewed correspondence** explains which source run/occurrences refer to a
+  particular recurring canonical run/snapshot. Evidence, alternatives, unresolved
+  competitors and authority remain explicit in Data.
+- A **canonical original index** is the zero-based position in the admitted Trip's
+  passenger-stop array, bound to that exact snapshot. It is not the source ordering
+  number, a station name or an index stable across snapshot changes.
+
+The real packet and raw references remain owner-only, outside Git and Domain. Public
+records contain authorized aggregate findings only; synthetic fixtures use entirely
+invented IDs, labels and references. Do not publish raw/restorable provider fixtures,
+private paths or raw diagnostic values. No registry resolver is introduced by calling
+an evidence record a packet; the DEC-068 boundary in §3 remains explicit.
+
+### 1.2 Classification is evidence, not a heuristic
+
+For every source position in the proposed represented interval, supply exactly one
+reviewed classification with profile/evidence references:
+
+| Classification | Required basis / effect |
+|---|---|
+| Passenger stop | Identified source semantics or an authoritative, provenance-backed occurrence-specific review establishes that this recurring service stops for passengers at this occurrence. Resolve the canonical StationID separately. Restrictions on boarding or alighting do not by themselves turn a stop into a pass. Admit one visit, preserving repetitions |
+| Passed position | Positive source/profile or occurrence-specific evidence establishes that this is a traversal position without a passenger stop. Retain its source reference and exclusion reason in Data; give it no canonical visit index. It may support line-traversal review but cannot become a segment-boundary stop |
+| Unknown | Missing, ambiguous, conflicting or inapplicable classification evidence. Hold the run's proposed snapshot; do not omit the position, call it a stop/pass, infer a restriction or salvage the remaining sequence |
+
+A reviewed profile states its source/resource and revision applicability, the authoritative
+meaning relied on, supported variants, known exceptions and evidence invalidation rule.
+Reproducible rules may classify many occurrences only where that authority actually
+supports the rule. Otherwise individual review must identify affirmative evidence;
+an owner's unexplained preference cannot replace source evidence. Changed source/profile
+semantics reopen dependent classifications. No actual feed rule is selected by this draft.
+
+Blank times, pickup/drop-off flags, timepoint flags, headsigns, apparent skip patterns,
+station proximity or topology adjacency alone are insufficient. B11 is a reason to
+investigate, not a ready classifier. Reading a field's presence/quality as supporting
+classification evidence imports no time value. S9 does not parse schedules, activate
+calendars, interpret dates/zones, infer rollover, interpolate or emit arrival/departure
+facts. P3-T1 separately interprets those fields and boarding/alighting eligibility.
+
+## 2. Proposed order, crosswalk and snapshot construction
+
+An accepted source-order profile must give an unambiguous order for the selected run.
+For a source with documented numeric sequence keys, validate/compare those keys under
+that profile rather than CSV row order or lexical text sorting; nonconsecutive values
+are allowed. Never reinterpret an ordering key as an array index. No implementation
+needs to decide undocumented source-order semantics on its own.
+
+1. Validate packet/revision consistency and review-reference uniqueness before use.
+   Within one run, duplicate ordering keys, duplicate occurrence references, missing
+   required ordering keys or contradictory orders reject that proposal. Even identical
+   duplicate rows are not silently collapsed: a repeated visit needs its own unambiguous
+   occurrence/order. Input transport order may vary without changing the reviewed order.
+2. Bind every admitted passenger occurrence to one active, exact canonical station
+   mapping in the identified mapping revision. Unresolved/ambiguous or unavailable/retired mapping evidence
+   holds the run; a conclusively impossible mapping rejects the proposal. Conflicting
+   alternatives with no conclusive resolution remain held; never follow a successor automatically or use names to choose a visit.
+   A passed position need not create a StationID, but its classification and any use
+   as movement evidence must still be unambiguous and source-backed.
+3. Traverse that order, emit only verified passenger occurrences, assign consecutive
+   original indices 0...n-1, and retain a Data crosswalk from each source reference to
+   exactly its emitted index or explicit passed-position disposition. No two passenger
+   occurrences share an index. A repeated station produces separate indices. The
+   crosswalk binds exact source, mapping, classification and full Trip snapshot versions.
+4. Require at least two stops and all existing Trip invariants. If omitting passed
+   positions yields adjacent identical stations, do not collapse them to force validity.
+   Unknown interior positions/mappings, invalid segments or unresolved identity cannot
+   be repaired by trimming ends, deleting visits, choosing a different interval or
+   copying topology. Rejection/hold applies to the entire proposed snapshot.
+5. A partial snapshot is legitimate only as an explicitly reviewed represented interval
+   of one run, with provenance for why it ends there and evidence that no required
+   passenger occurrence *inside that interval* is omitted. Select the interval before
+   validation. Unsupported external continuation is not an interior gap; it creates
+   no invented station, stop count or transfer. A failed full proposal cannot silently
+   become a successful cropped one. A changed interval is a new review proposal.
+
+The source crosswalk is an importer/review artifact, not a field added to Trip or a
+persisted Domain occurrence identity. A later T1 association must use the selected
+S9 snapshot and crosswalk; it must never reuse an old index by StationID or TripID alone.
+
+## 3. Proposed recurring-run identity and revision review
+
+### 3.1 Correspondence before assignment
+
+DEC-060 identifies a recurring scheduled run, not a stopping pattern and not a dated
+execution. Require a reviewed correspondence record naming the exact source run evidence,
+proposed canonical target, relevant prior binding/snapshot where any, positive same-run
+or distinct-run basis, competing matches, reviewer/authority and review revision.
+The review must explain why separately published departures are distinct even when all
+structural fields match. Source identifiers are evidence scoped to a source/revision;
+neither unchanged `trip_id` nor changed `trip_id` decides identity on its own.
+
+Authoritative source-key semantics and documented version continuity may establish a
+correspondence; otherwise obtain separately authorized evidence or hold it. Structure,
+headsign, train-like identifier substrings, chronology or names alone cannot settle it.
+S9 may reference an authoritative identity-evidence record without importing its time
+content. If identity cannot be established without new evidence/interpretation, report
+that dependency; do not evade the no-times boundary. One-time owner review of the
+identity assignment and applicability permits deterministic reruns over unchanged inputs;
+it is not a new permission prompt for routine reversible validation.
+
+Recommended dispositions: existing reviewed run; distinct new run awaiting identity
+registration; ambiguous/conflicting correspondence held; or proposed withdrawal/reuse/
+merge/split requiring an explicit applicable identity transition. No automatic new-ID
+fallback, per-date minting, structural deduplication, fragment merge or stay-aboard claim.
+
+### 3.2 Explicit registry gap — not silently amended here
+
+**DEC-068 §A1 excludes TripID minting**, and §C1's accepted namespaces do not include
+`gtfs.trip_id`. DEC-073 transitions do not implicitly extend that registry schema to
+Trips. This proposal deliberately does **not** authorize a new Trip minter, prefix,
+namespace, authoritative side registry, schema migration or production ID promotion.
+
+The first synthetic validator uses explicitly supplied **invented** TripID assignments.
+For eventual real S9 output, a separately explicit accepted Trip identity-registration
+extension is an essential prerequisite: it must settle minting, namespace/source-key
+scope, correspondence authority, revisions/transitions, history and provisional versus
+production status. The recommended S9 packet can describe proposed assignments and
+unresolved targets; it cannot make an unregistered real Trip canonical merely by
+holding a typed string. Until that extension exists, real packets remain evidence/review
+proposals, not authoritative resolver records or consumable canonical Trip outputs.
+No exception to DEC-068 §C1 is claimed. Real register-backed emission is outside the
+first synthetic slice. This is a substantive outstanding decision, not file-layout work.
+
+### 3.3 Revisions and downstream obligations
+
+When evidence establishes the same logical run, keep its TripID while reviewing any
+changed stop list, line/service-type segments or coverage. Inserted/removed visits shift
+indices; old and new snapshots remain distinct even though Trip equality is ID-only.
+Compare **every** Trip field and retain immutable predecessor contents, source/profile/
+review/mapping versions and the change reason. Never rewrite an in-flight snapshot.
+
+A changed snapshot or crosswalk invalidates reuse of its prior index associations for
+new output. Rebuild/review affected T1 correspondence and occurrence facts, train/ride
+contexts, continuity/eligibility references and data-view association before new consumers
+use them. Mere structural validity or an unchanged TripID cannot rebind old facts.
+An unchanged structural snapshot still requires review of changed evidence applicability;
+a new source revision does not authenticate itself. Existing consumers may retain their
+old immutable view; expiry/replacement and Journey revalidation are their own contracts,
+not permission for S9 to mutate active Journey state.
+
+Missing source records are not evidence of canonical deletion/retirement. Conflicting
+reuse or ambiguous old/new correspondence holds output; no automatic successor follows.
+Withdrawals/replacements/merges/splits await the applicable accepted reviewed transition
+workflow, with retained history. This proposal does not reuse the station transition
+implementation as a Trip migration or redefine its accepted rules.
+
+## 4. Proposed lines, coverage and bounded outcomes
+
+### 4.1 Movement and boundaries
+
+Require active canonical LineIDs and dataset membership evidence in the same mapping
+view. Independently establish each movement interval's line traversal; names, `route_id`
+alone, adjacent station topology or a line's operator do not prove it. Retain repeated
+non-adjacent lines. Adjacent same-line descriptions normalize only when evidence proves
+they describe one continuous interval, not to conceal a conflict.
+
+Line segments must satisfy DEC-060: span movement, cover the complete represented
+passenger-stop sequence, join at exactly one shared passenger-stop index and have no
+gaps/extra overlaps. A line change at a verified passed position between two passenger
+stops cannot be represented by inventing that stop, dropping a line or assigning it to
+an arbitrary next visit. Reject the proposal with representationConflict when the
+snapshot is conclusively unrepresentable; do not crop it to fit. Missing or ambiguous
+classification/boundary evidence remains held/unavailable, not a proved representation
+conflict. Name the limitation for separate contract review if real evidence requires it.
+No Domain amendment is proposed
+implicitly. Service-type segments require their own accepted IDs/evidence; otherwise
+supply [] for unknown, never infer “local” from stopping pattern.
+
+Review service-origin and service-destination claims independently in Data:
+
+- **Verified reached:** affirmative evidence identifies this boundary as the service's
+  actual passenger endpoint; encode its corresponding coverage flag true.
+- **Verified continuation outside the represented interval:** encode false, retaining
+  the supporting evidence without inventing the missing portion.
+- **Extent not established:** encode false only as DEC-060 C2's minimum completeness
+  claim; retain unknown extent in Data, not a claim that continuation exists. This
+  does not excuse unknown classification or omitted occurrences *inside* the interval.
+
+All four Boolean combinations remain permitted. Two true flags require affirmative
+endpoint evidence plus complete verified represented service traversal. Coverage flags
+never certify current operation, feed-wide availability, time coverage or identity.
+A snapshot with uncertain external extent cannot certify closed real search coverage.
+
+### 4.2 Outcomes and diagnostics
+
+Recommended offline outcomes (not new RouteSearching failures):
+
+| Outcome | Meaning |
+|---|---|
+| Structurally valid review candidate | Local order/crosswalk/mapping/segment checks pass using supplied reviewed premises. Not source-authenticated, registered or accepted for real consumption |
+| Held/unavailable | Required classification, mapping, identity, scope/boundary or applicable evidence is absent/ambiguous, or a valid assignment awaits registration. No consumable snapshot for this run |
+| Rejected proposal | Contradictory order/duplicate claims, incompatible revisions, impossible mappings, invalid Trip structure or a conclusively unrepresentable line boundary (representationConflict). No salvaged snapshot; correction requires new applicable input/review |
+| Invalid shared packet | Conflicting view/profile/review identities or malformed shared envelopes prevent coherent interpretation. Reject the packet as a whole; per-run success cannot conceal it |
+
+Shared validation precedes run validation. Per-run holds/rejections may coexist with
+other locally valid review candidates, with every declared run accounted for; there
+is no silent disappearance, cropped fallback or route-level omission accounting here.
+A batch of review candidates is not completion of S9 for the declared required scope.
+
+Use bounded reason codes: invalidPacket, orderConflict, unknownClassification,
+classificationConflict, mappingUnavailable, identityUnresolved, identityConflict,
+revisionMismatch, coverageEvidenceMissing, representationConflict, invalidStructure,
+registrationRequired. Aggregate public output is counts by reason only. Owner-only
+Data diagnostics may locate a declared candidate/source-occurrence reference, or a
+validated original index/segment when one exists; never invent an index for an unadmitted
+row. Keep raw source values and detailed justification solely in the referenced private
+review packet. Report all applicable reasons in the above declaration order, uniquely,
+and locations in reviewed source order (stable row locator when order itself conflicts).
+Malformed shared packets do not trigger speculative downstream diagnostics. Exact
+unchanged inputs/reviews produce deterministic results; synthetic tests do not authenticate
+the supplied review authority. Concrete API/file names remain routine implementation choices.
+
+## 5. Entirely invented specification cases — no feed compatibility claim
+
+Every identifier, source key, ordering value and run below is invented. Assume applicable
+reviewed premises unless a row removes one. `r10` is a source occurrence locator;
+`10` is a source ordering value; `0` is a resulting canonical array index. No times or
+actual ODPT records are used. Cases describe review-candidate behavior, not real approval.
+
+| Case | Invented input / evidence | Expected result and obligation |
+|---|---|---|
+| S9-01 Normal | Run X: r10/10=A, r30/30=B, r90/90=C; all verified stops; L1 spans A→C; identity/endpoint premises | [A,B,C], crosswalk r10→0, r30→1, r90→2; segment L1 0...2; true/true. Permuting transport rows preserves reviewed order; source 30 is not index 30 |
+| S9-02 Repeated visit | X: r10=A, r20=B, r30=A, r40=C in verified order | [A,B,A,C], two independent A visits at 0 and 2; name/station-key dedup forbidden |
+| S9-03 Passed position | X: A, B, C; B affirmatively verified passed; movement wholly L1 | [A,C], source B has explicit passed disposition/no canonical index; L1 0...1. Restrictions/blank fields alone instead trigger S9-04 |
+| S9-04 Unknown interior | Same as S9-03, but B status unknown | Hold whole snapshot; no [A,C] or [A,B,C] fallback, even if either would pass Trip construction |
+| S9-05 Conflicting order | Two distinct references use order 20, or one reference appears twice (even identical content) | Reject orderConflict; no “first row wins” or automatic duplicate collapse |
+| S9-06 Mapping failure | Verified passenger B has missing/conflicting/retired canonical mapping | Hold unresolved/ambiguous/unavailable evidence; reject a conclusively impossible mapping; no successor/name matching, no A→C crop |
+| S9-07 Identity ambiguity | Two published run keys X/Y share [A,B,C]; no authoritative correspondence proof | Do not merge; hold unresolved assignments. With evidence of separate recurring departures, two distinct targets are required; source strings never become IDs automatically |
+| S9-08 Partial coverage | Represented [B,C]; reviewed coherent interior; origin reached / destination reached independently vary | Permit true/true, true/false, false/true, false/false only with their evidence meanings in §4.1. Unknown external extent can yield false without claiming continuation. Unknown interior B/C still holds; no shortened fallback |
+| S9-09 Line transition | [A,B,C], B verified passenger stop; evidenced L1 A→B and L2 B→C, one continuous run | Segments L1 0...1, L2 1...2. If B is verified passed and the L1→L2 boundary at B is affirmatively established, reject the proposal with representationConflict; do not add B, relocate the boundary or crop the sequence |
+| S9-10 Same-ID revision | Reviewed same run T: V1 [A,C], V2 [A,B,C] after inserted passenger stop | Preserve T, distinct snapshots/crosswalks. V1 C@1 cannot bind to V2 C@2 or V2 B@1; all affected downstream associations require revalidation |
+| S9-11 Segment/coverage revision | Same run/stops but L1/L2 boundary or service-origin claim changes | Full snapshot change detected despite TripID/stop equality; preserve prior content, reopen affected evidence and downstream bindings |
+| S9-12 Unverified fragments | X covers A→B, Y covers B→C; matching headsign/labels, no affirmative same-run or continuity evidence | No stitching into T[A,B,C] or stay-aboard claim. Each fragment needs its own identity/partial-coverage proof; unknown identity remains held |
+| S9-13 No cropping to fix structure | Verified stop occurrences become [A,A] after a passed-position omission, or one verified stop remains | Reject invalidStructure; do not collapse repetitions or invent another stop |
+| S9-14 Shared revisions / registration | Packet mixes mapping revisions under one view, or real run has only an invented/unregistered target | Mixed view rejects packet; otherwise registrationRequired holds real output. Invented assignments are permitted only in synthetic validator fixtures |
+
+## 6. Evidence and acceptance checklist
+
+| Check | Synthetic/local proof available | Separately authorized real acceptance required |
+|---|---|---|
+| Scope and source integrity | Explicit inventory, hash/reference consistency and changed-input rejection | Owner-authorized resources/artifacts, actual publisher/resource/revision/rights records; verify retained integrity and applicability without leaking them |
+| Classification | All three outcomes, rule applicability, unknown/conflict propagation | Authoritative per-feed semantics/occurrence evidence and reviewed exceptions for every in-scope position; B11 observations alone cannot pass |
+| Identity and mappings | Distinct-run versus same-run-review paths; unchanged ID with revised content; unknown/retired holds | Accepted Trip registration/namespace/minting/transition extension; actual recurring-run correspondence and active station/line bindings; owner-reviewed assignments |
+| Order and crosswalk | Nonconsecutive keys, repetitions, duplicates, index safety, passed exclusions, deterministic transport-order independence | Source ordering semantics and complete occurrence inventory for every represented interval; source-to-snapshot crosswalk independently checked |
+| Lines, coverage, continuity | All partial shapes, membership/segment invariants, unrepresentable boundary rejection | Movement/boundary evidence, independent endpoint claims and no hidden interior omissions; same-run continuity not inferred from fragment adjacency |
+| Revisions and consumers | Explicit every-field snapshot comparisons; inserted/removed visit and boundary changes invalidate old bindings | Identified compatible source/mapping/review versions; authorized transition history; any T1 consumer separately accepts its exact S9 snapshot/crosswalk |
+| Completion and public boundary | Every declared candidate accounted for; bounded diagnostics; no real fixture/payload in tests | Required scoped runs have no unresolved acceptance blockers; owner records exact scope, held/excluded work and reproducibility evidence. No launch-wide claim from a partial evaluation; public output separately passes applicable rights gates |
+
+Real acceptance must name source versions, scope, correspondence/classification reviews,
+full snapshot/crosswalk outputs and evidence hashes; rerun identical accepted inputs and
+compare complete contents, not TripID equality. No current acquisition is implied and
+no stale retained archive proves today's operations. S9 completion establishes structure
+only. P3-T1 activation/conversion/validated import, source freshness, operational eligibility,
+through/change/transfer evidence, allowances and authoritative real-search coverage are
+separate consumer prerequisites. An S9 endpoint classification is not boarding permission.
+
+## 7. Owner choices, alternatives and smallest next slice
+
+Recommended package for later review/acceptance:
+
+1. Evidence-backed three-way classification; conservative whole-snapshot hold for
+   unknown interior positions. Lower availability is preferable to fabricated stops.
+2. Exact ordered occurrence crosswalk and rejection of duplicate/conflicting ordering;
+   preserve every legitimate repeated visit. Do not apply importer deduplication to rows.
+3. Explicit recurring identity review; no new real ID minting/registry authority in this
+   package. Resolve the named Trip registration extension before real output; this lets
+   synthetic validation proceed without silently adopting an identity scheme.
+4. Explicit partial interval and independently evidenced endpoint flags, preserving
+   DEC-060 minimum completeness and unknown external extent in Data. Reject unrepresentable
+   boundaries rather than amend Trip implicitly; narrower evidence does not narrow launch.
+5. Separate review candidates, holds, rejected proposals and shared-packet failures,
+   with complete scope accounting and privacy-safe deterministic diagnostics.
+6. Stage synthetic validation separately from real acceptance/access and production
+   delivery. Reuse contracts/validators, not synthetic authentication assumptions.
+
+**After review, acceptance and explicit implementation authorization:** implement one
+pure offline/Data S9 review-candidate validator over invented normalized positions,
+supplied classifications/evidence references and synthetic identity assignments. Validate
+ordering, mapping references, crosswalk, exact snapshot/segments/coverage, dependency
+versions and bounded outcomes using S9-01–14. Reuse Trip/TripLineSegment/TripCoverage and
+existing exact snapshot comparison semantics; no new Domain model or RouteSearching
+integration. No source archive parser, evidence authentication, real ID allocation,
+registry mutation, persistence/publication, timetable import or UI belongs in that slice.
+It demonstrates local review consistency, not feed classification truth or S9 completion.
+
+**Eventual evidence access is separately authorized:** identify exact retained owner-only
+DS-01/03 artifacts and S4/S6/S7 mapping/review versions, permitted read/derivative/retention
+scope, review authority and output location. If those records cannot establish source
+semantics/identity, propose the smallest public-document research, acquisition or written
+clarification separately; none is authorized here. Trip registration semantics are a
+decision prerequisite, not something private-artifact access alone resolves.
+
+P2-S9 remains without times and mandatory before real canonical Trip consumption and
+real P3-T1 import. DEC-077's commercial pause, production registry/ID-promotion gate,
+applicable Q3/Q4, rights/publication/translation/delivery/bundling/deletion obligations,
+S10/Track A expansion and Challenge restrictions remain. No production P5, engine,
+source compatibility, launch reduction or Phase 3 exit is accepted by this proposal.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions
