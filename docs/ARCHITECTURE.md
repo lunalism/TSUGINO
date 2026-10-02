@@ -1027,6 +1027,25 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**DEC-081 synthetic-only extension (2026-10-02 Asia/Seoul):** S1–S6 are accepted.
+DEBUG-only `SyntheticInternalRouteInput`, `SyntheticInternalRouteEngine` and
+`SyntheticInternalRouteSearcher` in Data/Routing declare an immutable finite fixture
+universe, validate required coverage independently of discovered paths, derive exact
+ride tokens and directional connections, enumerate finite paths, normalize/order
+handoffs and admit into existing scoped Domain values. The existing supplied-alternative
+synthetic provider is unchanged. Request-local work accounting and checkpoints cover
+validation, normalization, coverage, generation, deduplication, sorting and admission; no partial
+success follows cutoff or observed cancellation. A separate failure-only harness
+mutates genuinely generated index claims and invokes shared outcome finalization.
+It has a Never return type: expected all-rejected executions throw the unscoped
+noUsableAlternatives failure; unexpected admission is a harness failure, never success.
+There is no production composition or real-source authentication. DEC-079's accepted
+searchIncomplete and three appended rejection reasons are now implemented; internal
+runtime behavior is synthetic only. The corrected bounded implementation is
+independently approved; see ROADMAP for the review and retained evidence.
+Production P5, policy/source interpretation, production engine adoption and all real
+integration/delivery gates remain deferred.
+
 **Current contract extension (2026-10-01 Asia/Seoul): Accepted DEC-078/079.**
 DEC-080 is accepted only for consumer §9.9 V1–V7 (P1–P4/P6). P5 and the
 non-selected engine/profile policies remain Proposed. Its slice A adds immutable
@@ -1045,14 +1064,16 @@ Unused Trip portions are not required to belong to the scope. Existing immutable
 candidate/omission values retain chronology, duplicate-Trip and accounting rules.
 No filtering, sorting, truncation, completion token or runtime producer is added.
 External cases and unscoped failure meanings remain unchanged. Coverage, policy
-resolution, execution completion and all other runtime obligations remain unimplemented.
+resolution and production execution remain unimplemented; DEC-081 supplies only
+the separate stipulated synthetic execution path described above.
 
 DEC-078 separates dated timetable facts from recurring Trip identity; DEC-079 partially
 supersedes DEC-076 for an internal consumer's timetable context, association,
 generated accounting, scoped success, unscoped failures/preflight and evidenced
 connections. DEC-079 is **partially implemented**: timetable context, local
 route-value association/chronology and DEC-080 scoped-success structure are supplied.
-Added failures, internal admission/preflight and search remain deferred. External semantics and
+Accepted failure additions and synthetic internal admission/preflight/search are
+implemented under DEC-081; real admission and production search remain deferred. External semantics and
 Trip/Journey invariants remain.
 
 The bounded DEC-078 implementation lives in `Domain/Timetable`: immutable `nonisolated`

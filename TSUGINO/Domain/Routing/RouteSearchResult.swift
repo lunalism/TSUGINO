@@ -11,6 +11,9 @@ nonisolated enum RouteAlternativeRejectionReason: Int, CaseIterable, Sendable {
     case invalidStructure
     case inconsistentTrainEvidence
     case invalidScheduledContext
+    case unverifiedEligibility
+    case infeasibleConnection
+    case insufficientScheduledEvidence
 }
 
 nonisolated struct RouteAlternativeOmission: Sendable {
@@ -83,4 +86,5 @@ nonisolated enum RouteSearchFailure: Error, Sendable {
     case configurationUnavailable
     case malformedResponse
     case noUsableAlternatives(RouteSearchRejections)
+    case searchIncomplete
 }

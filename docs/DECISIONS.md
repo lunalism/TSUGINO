@@ -7047,9 +7047,10 @@ Timetable context construction, separate provider/timetable context branches, ex
 matched-rail attachment and retained-context chronology are implemented and
 independently approved. Approval covers local values/validation only. DEC-080 now
 supplies parameterized profile/scope values (slice A approved) and locally validated
-scoped-success payloads (slice B implemented and independently approved). Failure/rejection
-additions, internal preflight/admission, connection policy, runtime profile resolution,
-completeness and engine obligations remain deferred. See ROADMAP for
+scoped-success payloads (slice B implemented and independently approved). DEC-081 now
+implements accepted failure/rejection additions and DEBUG-only synthetic preflight,
+generation and admission; the corrected bounded implementation is independently approved. Production
+connection/profile policies, real completeness and engine adoption remain deferred. See ROADMAP for
 the reviewed scope and saved verification; no real-source compatibility is established.
 The owner-acceptance record below describes its original authorization; subsequent
 bounded implementation authorization does not change its accepted semantics.
@@ -7238,6 +7239,338 @@ branch implement V5's local association/structure checks, preserving full scope 
 batch order/accounting. No runtime producer, failure expansion, policy resolution or
 coverage/completion proof is implemented. P5 remains Proposed. Independent slice B
 implementation review approved local values only; slice A approval and accepted semantics are unchanged.
+
+---
+
+# DEC-081 — Finite Synthetic Internal Routing Inputs and Execution
+
+**Status:** Accepted — S1–S6 for synthetic-only use; corrected bounded implementation independently approved\
+**Date:** 2026-10-02 Asia/Seoul\
+**Related:** DEC-060–064, DEC-076–080; consumer amendment §§2–5, §9.9; ARCHITECTURE §10; ROADMAP Phase 3
+
+## Owner acceptance — 2026-10-02 Asia/Seoul
+
+The owner accepts exactly reviewed S1–S6 for the finite synthetic universe and
+execution contract below. The two reviewed clarifications are incorporated in §4
+and G14: controlled normalization/coverage cutoffs yield searchIncomplete absent an
+earlier established failure, without lower-priority probing; cancellation checkpoints
+include shared-input validation and final deduplication/sorting.
+
+This accepts the synthetic all-distinct objective and DEBUG Data placement only.
+Production P5, engine adoption, production defaults/domain, real integration and
+shipping composition remain unaccepted. Original Proposed headings/recommendations
+below retain the proposal history; S1–S6 now select those semantics. One bounded
+synthetic vertical implementation is separately authorized. The corrected bounded
+implementation subsequently passed independent re-review; see ROADMAP for its
+review history, actual scope and verification.
+
+## Scope and authority
+
+Propose one DEBUG-only internal RouteSearching implementation that generates complete
+itineraries from invented timetable/connectivity facts. It does not consume prewritten
+RouteCandidates or external alternatives. All examples and operational evidence below
+are invented specification premises, not executable tests, real data or compatibility
+claims. This decision identifier was checked unused in repository Markdown.
+
+Reuse accepted immutable Domain values: exact Trip snapshots/original indices,
+TimetableOccurrenceFacts/addresses, TrainCandidate/TimetableRideContext, candidate,
+profile/scope, batch/omissions and InternalSearchSuccess. DEC-080 V1–V7 is accepted;
+production P5 and engine policies remain unaccepted. This proposal selects a synthetic
+execution objective only if separately accepted. No production parameters, launch-domain
+reduction, source conversion, new persistent IDs or production composition follows.
+
+## 1. Finite input universe and coverage — Proposed
+
+An immutable fixture view supplies an explicit artificial universe, not an assertion
+about the real network. Its declared validity window W is finite and covers effective
+scope [L,U]. A request outside configured profile/window support is unsupportedRequest;
+an unavailable view or missing required facts within declared support is dataUnavailable.
+W and profile parameters are supplied by the fixture, not production defaults.
+
+The view contains:
+
+- Canonical identity/status records sufficient for accepted endpoint preflight; exact
+  immutable snapshots for every profile TripID, including ordered stops, line and
+  service-type segments and coverage. No identity is resolved through a mutable latest
+  lookup. Retired IDs never follow successors. Unused snapshot portions may lie outside
+  the profile; required represented ride intervals must not.
+- For each profile TripID, a finite manifest of all dated execution slots capable of
+  contributing a permitted ridden event in W. Each slot is one view/TripID/opaque-date
+  address under DEC-078's one-execution-per-template/date limitation. An explicitly
+  complete empty manifest is negative service evidence; a missing manifest is unknown.
+  The fixture defines this list as the whole artificial execution universe for W,
+  including earlier-service-day contributions. No scan of candidates, calendar-label
+  parsing, civil-date-only filtering or guessed lookback constructs this inventory.
+- Each slot has a stipulated conclusive active, conclusive inactive or unavailable
+  activation outcome. Active slots supply exact snapshot-bound occurrence facts and
+  required continuity evidence; inactive slots emit no facts. As in DEC-078, activation
+  ambiguity/conflict is unavailable; conclusively inactive slots skip event interpretation,
+  including malformed unused event bodies. Invalid manifest identity/duplicate conflicts
+  are shared-view faults, not inactive event-body validation. Active malformed or
+  contradictory facts make the slot unavailable; no usable endpoint pair salvages it.
+- Versioned resolved connection/time-interpretation policy definitions matching profile
+  references, retained with the same view for the call. Here the interpretation policy
+  means fixtures already supply qualified instants and exhaustive slot manifests; it
+  does not implement real calendar/service-day conversion. Definitions cannot mutate
+  under an unchanged reference. Missing configuration fails at configuration preflight;
+  incompatible or unresolvable definitions in the required view fail as dataUnavailable.
+- Explicit coverage of all passenger-stop occurrences and permitted intervals inside
+  the profile. Partial Trip coverage flags do not prove no unseen in-profile extension.
+  The invented universe must separately close that gap or be unavailable. This permits
+  a represented subinterval with outside-profile continuation, not silent cropping of
+  required infrastructure or passenger stops.
+
+**Requiredness rule (conservative synthetic minimum):** independent of paths discovered,
+consider every active slot and original pair b<a with distinct endpoint stations whose
+inclusive passenger stops and movement-based lines fit the profile. Prohibited boarding
+at b or alighting at a conclusively excludes the pair. Otherwise unknown required
+permission makes coverage unavailable. For allowed pairs require exact qualified
+boarding departure and alighting arrival; missing/estimated required values make
+coverage unavailable. Exact pairs outside [L,U] may then be excluded. Missing unused
+counterparts do not fail a pair; full producer chronology still applies. This intentionally
+may reject a fixture with an irrelevant disconnected unknown pair rather than infer
+irrelevance by route discovery. No interpolation or prohibition inferred from missing data.
+Unavailable slots in the manifest fail coverage; conclusive inactive slots contribute none.
+
+The resulting finite locally eligible ride-token set R is a preflight derivation from
+this entire declared inventory, not a list of complete routes. Positive evidence of
+continuous travel must cover each token's exact dated interval, including line changes.
+Unknown continuity in a required token makes coverage unavailable; a positive
+contradiction in the shared run/continuity evidence also fails the view, rather than
+being hidden by pruning. No stitching of fragments or conversion of a line change
+into a transfer is permitted.
+
+**Input duplicates:** normalize identical duplicate records before generation using
+explicit full-content comparison, never TripID-only equality. Equal identity with
+conflicting snapshot, activation, time quality/value, eligibility, policy or evidence
+content makes shared inputs unavailable. Same-view labels alone do not prove compatibility.
+Conflicting address spellings/content under the existing value identity are conflicts,
+not two dated runs. Distinct views cannot be mixed. Normalization is not itinerary
+or handoff deduplication and produces no omission records.
+
+## 2. Directional connections and eligibility — Proposed
+
+Define the connection universe independently of discovered paths: every ordered pair
+of tokens in R with distinct recurring TripIDs when the configured ride cap permits
+two rides. A connection key is the exact first alighting occurrence and second boarding
+occurrence (dated addresses plus original indices), independent of the rest of either
+ride. Repeated visits are different keys. Identical keys reused by several token pairs
+share one resolved record. No reverse direction is implied.
+
+For every required key, the inventory declares exactly one of:
+
+- **Present:** affirmative change-of-train correspondence; either same-station
+  interchange (no walking leg), or one directional WalkingTransfer between distinct
+  canonical stations; known allowed endpoint permissions; a resolved finite nonnegative
+  total allowance and its stipulated justification/applicability under the profile policy.
+- **Complete negative:** conclusively no supported directional train-change connection
+  for that key under the fixture's declared forms. This is coverage, not a sparse-map miss.
+- **Unknown:** missing/ambiguous relation, permission, allowance or applicability.
+  Unknown required keys mean dataUnavailable, even with a valid direct alternative.
+
+Recommendation: one resolved relation/total allowance per key. Multiple physical
+walking paths or incompatible connection options are not representable by the current
+WalkingTransfer and are unsupported inputs to this synthetic minimum; do not pick the
+fastest silently. Exact duplicate records collapse; competing nonidentical records fail
+shared-view validation. Equal station identity does not supply a zero allowance.
+Provenance record IDs or duplicated evidence do not create extra itineraries.
+
+Connection feasibility is the inclusive mathematical comparison
+`next.departure >= previous.arrival + totalAllowance` over the supplied qualified
+instants and seconds. All alight/interchange/walk/board components are included once.
+No rounding may turn a short gap into sufficient time; arithmetic must avoid overflow
+and preserve equality. A known insufficient gap is infeasible, not unknown. No numeric
+allowance default, platform/proximity inference or inferred walking direction is added.
+
+Existing restrictions remain: rail first/last, distinct rail endpoints, at most one
+walking transfer between rides, matched rides only, no duplicate matched TripID anywhere
+in one itinerary even across dates. Through travel on a spanning evidenced Trip is one
+ride regardless of line/operator changes. Boarding/alighting eligibility concerns the
+selected endpoints; passing a prohibited intermediate stop is not boarding there.
+
+## 3. Synthetic objective, identity, ordering and termination — Proposed
+
+**Recommend all distinct admissible itineraries in this finite synthetic scope**, not
+production P5 adoption. An itinerary is a sequence of 1...M tokens from R joined by
+present feasible directional relations, starting at the request origin and ending at
+its destination, obeying all existing candidate constraints. No separate ride/transfer
+limit or presentation cap is invented. This is an explicit enumeration objective,
+not selection of a shortest-path algorithm or production feasibility claim.
+
+A ride key is (view, recurring TripID, opaque service-date value, original b, original a).
+The itinerary key is the ordered sequence of ride keys and intervening connection keys
+plus form (same-station versus walking, with canonical directional station endpoints).
+The entire request/profile/view is fixed for one invocation. Times/evidence IDs are
+not extra identity: under one immutable view each key has one definition. Distinct
+repeated boarding indices or dated executions yield distinct alternatives, but existing
+candidate duplicate-TripID rejection still applies within an itinerary. Different
+physical paths sharing one canonical walking relation do not become distinguishable
+alternatives in this proposal.
+
+Input normalization precedes generation. Eliminate exact duplicate itinerary keys
+before handoff only; no dominance, time-equivalence or station-sequence deduplication.
+Frozen handoffs are never deduplicated, reranked or removed by admission.
+
+**Deterministic total order:** compare number of rail rides ascending, then the ordered
+ride/connection tuple sequence lexicographically. Compare UUID components as their fixed
+16 bytes, canonical ID and opaque-date text by unsigned UTF-8 bytes (no localization,
+locale collation, Unicode normalization or date interpretation), indices numerically,
+and form with same-station before walking. Connection tuples include their complete
+ordered endpoint ride-address/index references and station IDs. No tie remains after
+exact-key deduplication; equal identities with conflicting definitions were rejected
+upstream. This is reproducible generation order, not user ranking. Input array/dictionary
+order cannot alter results. Any future ranking remains outside canonical accounting.
+
+Let K be the finite size of R and M the validated positive ride cap. Candidate token
+sequences have at most M elements; a loose mathematical upper bound is sum(K^j, j=1...M),
+not a machine integer to compute unchecked or an allocation requirement. Connections
+have finite choices (one per key). Zero-duration events and repeated stations cannot
+create infinite sequences; no duplicate TripID gives an additional bound. Do not prune
+station revisits: valid cycles with distinct Trips remain enumerable. Reaching the
+destination emits a complete sequence but does not forbid a longer valid sequence
+ending there again within the cap. Distinct endpoints still forbid a same-station
+full-lap single ride. Large finite work may exceed resources; finite does not mean cheap.
+
+Only exclusions derivable from known constraints are allowed: invalid/out-of-profile
+interval, known prohibited endpoint, exact time outside bounds, absent/infeasible
+connection, duplicate TripID or exceeded cap. Unknown required inputs cannot be
+pruned as impossible. Do not add early first-K stopping, station-visited pruning,
+dominance or best-only replacement. Other pruning requires a separately reviewed
+proof of equivalence to this objective. Exhaustive order may be achieved in any
+implementation that proves the same normalized ordered handoffs; no algorithm is selected.
+
+## 4. Handoff, admission and truthful outcomes — Proposed
+
+Partial paths are execution states, never alternatives. Once a unique complete sequence
+has its position in the above order, freeze its zero-based handoff index before validating
+its generated claims against the retained immutable view. A proposal carries exact
+references/claims from generation; it is not yet a canonical admitted candidate.
+Admission checks reference/snapshot/index integrity before indexing; request/domain/time
+association; eligibility; continuity; and connections/allowances in that order. Report
+the first failed check as one accepted bounded reason; no raw fixture/source details.
+Within a category, visit rides/connections in itinerary order. Use DEC-079 reason
+meanings; singleton reasons satisfy the accepted unique declaration-order requirement.
+No constructor success authenticates the stipulated fixture evidence.
+
+A completed execution has validated all required coverage, considered every sequence
+under §3 or excluded it by a justified rule, completed normalization/ordering, and
+accounted for every frozen handoff exactly once. A mere completed loop over known routes,
+a scope value, a boolean or an exhausted display limit does not establish this.
+
+Retain accepted preflight: cancellation; configuration/profile selection; coherent view;
+origin then destination validation with existing tie-breaks; intent/bounds; required
+coverage; only then enumeration. Do not perform I/O to discover lower-priority faults.
+Shared contradictions found later still fail the call. Cancellation is checked before
+work, at bounded shared-input validation/normalization/coverage/enumeration/
+deduplication/sorting/admission checkpoints, and immediately
+before return or a pending non-cancellation failure; observed cancellation wins.
+
+| Condition | Outcome |
+|---|---|
+| Missing/invalid local configuration | configurationUnavailable |
+| Missing, conflicting, malformed or insufficient required shared inputs | dataUnavailable; not malformedResponse or an omission |
+| Invalid endpoint / unsupported intent | Accepted invalidEndpoint / unsupportedRequest at its preflight stage |
+| Resource/memory/work cutoff, including preflight normalization/coverage before input usability is established, or unproved completion despite usable inputs | searchIncomplete when no earlier failure is established; discard partial output and do not probe lower-priority faults |
+| Observed cancellation, including after enumeration | CancellationError; cancel owned work; no partial result |
+| Completed covered search with zero handoffs | internalSuccess(scope, noResults), scoped only |
+| Positive handoffs all rejected | Unscoped noUsableAlternatives with contiguous omissions; never scoped noResults |
+| Completed covered execution with admitted proposals | internalSuccess(scope, batch), every candidate and omission retained in handoff order |
+
+Correct normal generation should produce admissible proposals; defensive rejection is
+still required. For negative tests only, a controlled DEBUG test seam alters a claim
+on an actually generated complete proposal **after** its index is frozen, leaving the
+inventory and other positions unchanged. Example: the sole generated direct ride has
+its alighting index changed to a nonmatching occurrence. Admission rejects it as
+inconsistentTrainEvidence; all-rejected failure is observable without a prewritten
+alternative or broken shared view. No filtering, added handoffs, changed inventory or
+fabricated result enters this seam. The seam belongs to a failure-focused test harness, not ordinary search configuration.
+These faulted executions test failure/accounting, not successful objective completion;
+the harness expects every altered handoff to reject and treats unexpected admission as
+a failed test, not a new runtime failure case or internal success. They cannot be cited
+as full-enumeration success evidence. Ordinary generation fixtures prove completeness
+without the seam. No new production fault mode or failure vocabulary is authorized.
+
+## 5. Proposed ownership and reuse
+
+Place this synthetic composition in DEBUG-only Data/Routing, alongside but separate
+from the existing external-shaped SyntheticRouteSearcher. Immutable injected fixture
+view/configuration and resolved policies belong to Data. A request-local isolated
+execution component owns coverage derivation, generation, completion and admission
+behind the existing RouteSearching signature; execute off the main actor under existing
+concurrency conventions. No mutable cross-call batch, detached unowned work or live
+network client. Controlled checkpoints must propagate cancellation and not hang tests.
+Application's lifecycle/supersession ownership is unchanged; no Application/UI binding.
+
+Domain remains provider-free with existing values. Implement accepted DEC-079's missing
+searchIncomplete and appended rejection vocabulary, preserving old case order/meanings.
+Reuse original snapshot comparison, movement-based line clipping, exact timetable context,
+scoped-success constructors and batch invariants. No trusted-complete token in Domain.
+Test composition only, excluded from Release; no production factory, default profile,
+registry, persistence, calendar conversion or source parser. DEBUG isolation is not
+proof of source authenticity, rights or real engine adoption.
+
+## 6. Invented fixture matrix — specification, not executed tests
+
+Common invented universe F: profile stations A/B/C/D/E, lines L1/L2, finite Trip set
+listed per case, explicit [L,U]=[10:00,11:00] on invented civil date 2035-04-02 and
+M=3 unless stated. These printed times stand for fully qualified invented instants in
++09:00; no conversion implementation is implied. Every case supplies a complete slot
+manifest, coherent exact snapshots, active exact facts, allowed selected endpoints,
+required continuity and explicit present/negative connection entries unless its variant
+says otherwise. No unlisted slot or connection is silently presumed absent.
+
+| Case | Inventory/coverage prerequisites | Expected generated route or outcome / demonstrated obligation |
+|---|---|---|
+| G1 Direct and inclusive bounds | T1 [A,B,D], original 0→2, departure L, arrival U; one active slot, covered manifest, no required cross-Trip keys | One matched A→D ride with scope; U+1 excludes it and gives scoped noResults only after complete execution; unused pre-L snapshot events do not change ridden bounds |
+| G2 Through line boundary | T1 [A,B,D], L1 movement 0→1, L2 1→2; affirmative continuous interval 0→2; 10:00→10:20 | One ride, no transfer. Unknown required continuity → dataUnavailable; line equality/change supplies no substitute |
+| G3 Walking transfer | T1 A→B 10:00→10:10; T2 C→D 10:13→10:30; explicit B→C train change/walk with total allowance 120 seconds, other required keys complete negative | Two rides plus B→C walk. Departure 10:12 equals allowance and is feasible; 10:11 is known infeasible. C→B is not inferred |
+| G4 Same-station interchange | T1 A→B 10:00→10:10; T2 B→D departure 10:12; explicit change relation and 120-second total allowance | Two rides, no walk; exactly sufficient gap. Missing allowance → dataUnavailable; station identity does not default to zero |
+| G5 Negative versus unknown | G3, but complete B→C negative, every other key closed, no alternative route | Completed zero-handoff execution → scoped noResults. Unknown B→C → dataUnavailable, including variant with an additional otherwise valid direct T3 |
+| G6 Repeated occurrence | T1 [A,B,A,D], allowed exact departures at A@0=10:00 and A@2=10:10, D@3=10:20, complete manifest | Two distinct direct alternatives 0→3 and 2→3; order by ride tuple indices. Never choose the first A by name |
+| G7 Prior-service label | T1 opaque label prior-duty maps by fixture premise to prior operating day, qualified boarding 2035-04-02T00:10+09:00 and arrival 00:30; this case's [L,U]=[00:00,01:00]; manifest includes it | Generate by absolute instants without label parsing. Missing slot closure → dataUnavailable. Different labels across distinct Trip rides are permitted |
+| G8 Activation and quality | One inactive slot with malformed unexamined event body; separate fully valid active T1. Variant: required slot unavailable or active endpoint estimated/missing with allowed permission | Inactive contributes no facts; valid active route can be generated. Unknown activation or required non-exact endpoint → dataUnavailable. Missing unused counterparts remain permissible; prohibited selected endpoint excludes pair conclusively |
+| G9 Conflicting inputs | Duplicate address or same TripID/view with inserted-stop snapshot, conflicting exact time, eligibility or connection allowance; profile otherwise configured | dataUnavailable, no salvage via good route. Identical duplicate records collapse without adding itineraries/omissions; cross-view bindings also fail |
+| G10 Defensive all-rejected | G1 genuinely generates one handoff; test-only seam changes its original alighting-index claim after position 0 freezes; complete view unchanged | One inconsistentTrainEvidence omission and unscoped noUsableAlternatives. No successful-completeness claim from fault injection; no prewritten alternatives |
+| G11 Deterministic alternatives | M=1; T1 [A,D] at 10:00→10:20 with label d-a and 10:05→10:25 with d-b; T2 [A,D] at 10:10→10:30 with d-c; all covered, no required cross-ride keys; permute input records and repeat an identical record | Exactly three ordered handoffs: T1/d-a/0→1, T1/d-b/0→1, T2/d-c/0→1. Duplicate inputs add none. Separate T1 dates are alternatives, not permission to repeat TripID within an itinerary |
+| G12 Cycles / zero duration | T1 A→B, T2 B→A, T3 A→D, all exact 10:00→10:00; affirmative zero allowances; M=3; all required keys explicit | Direct T3 and cycle T1,T2,T3 are finite distinct alternatives; no station-visited pruning. M=2 excludes the three-ride route. Reusing any TripID remains prohibited |
+| G13 Resource cutoff | Fully covered multi-route fixture, at least one route discovered, controlled work budget expires before completed enumeration/order/admission | searchIncomplete, no partial batch or noResults; not providerUnavailable |
+| G14 Cancellation / concurrent calls | Same covered fixture; controlled barriers before work, during shared-input validation/normalization/coverage/generation/deduplication/sorting/admission and before return; two concurrent invocations | Observed cancellation wins pending result/failure, cancels owned work; other invocation retains independent state. No sleeps or timing races as the specification oracle |
+| G15 Display subset | G11 complete three-route fixture; hypothetical display limit 1 | Canonical completed batch retains all three; display subset adds no omission or search cap |
+
+## 7. Owner choices, contract impact and future slice
+
+| Choice | Recommendation / consequence if accepted |
+|---|---|
+| S1 Input authority and requiredness | Explicit finite artificial universe plus conservative all-potential-pair coverage; simpler auditable completeness, lower availability with irrelevant unknown inputs. Not a real-source coverage proof |
+| S2 Connections and permissions | Exact occurrence-pair directional records, one supported canonical relation per key and resolved total allowance; avoids guessed times and hidden walking alternatives, requires explicit same-station evidence |
+| S3 Synthetic objective | All distinct admissible sequences under §3, including permitted cycles; reproducible exhaustive small fixtures, potentially expensive. Production P5 stays undecided |
+| S4 Identity/order/pruning | Exact tuple identity, ride-count/UTF-8/index total order and constraint-only pruning; predictable tests, no claim of user-optimal ranking or efficient production search |
+| S5 Failure and defensive seam | Accepted whole-call precedence and no partial results; generated-claim mutation only in failure-focused tests, never synthetic successful-completion evidence |
+| S6 Ownership | DEBUG-only Data composition and request-local isolated execution behind RouteSearching; reuse Domain and exclude Release composition, without choosing production engine placement |
+
+No accepted invariant is weakened. This would fill DEC-079's deferred internal generation,
+input/completion and ownership contract and add a **synthetic-only** specialization to
+DEC-080's deferred objective. It does not amend accepted V1–V7 or accept production P5.
+If later production use, first-K/ranking semantics, multiple walking alternatives, fragment
+stitching or duplicate-Trip relaxation is desired, a separate explicit decision/amendment
+must identify affected Domain values, consumer contract and regression tests first.
+Current proposal requires no new result shape or failure beyond accepted DEC-079 additions.
+
+After independent documentation review, explicit owner acceptance and separate authorization,
+implement one bounded synthetic vertical slice: fixture inventory/normalization and coverage,
+accepted failure vocabulary, ordered preflight, actual finite generation with deterministic
+handoff/admission, and scoped output. Verify independent expected itinerary keys for G1–G15,
+input-permutation invariance, finite cycle cases, exact index/content preservation, negative
+coverage and fault accounting, deterministic cancellation barriers/concurrent isolation,
+external regressions and Release exclusion. A reduced direct-only increment must not be
+reported as this full slice or launch completion. Choose an implementation algorithm only
+with a plan demonstrating this contract; no benchmarking, default budget or full engine
+adoption is selected here. No implementation or test run is authorized by this draft.
+
+P2-S9 remains before real canonical Trip consumption and real P3-T1 import; feed-specific
+interpretation/validated import, source freshness/correspondence and applicable registry,
+rights/publication/translation/delivery/bundling/expansion gates remain. DEC-077 commercial
+pause, launch requirements and Phase 3 exit are unchanged.
 
 ---
 

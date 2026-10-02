@@ -3,7 +3,14 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
-**DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented and approved; slice B local scoped-success values are implemented and independently approved. Runtime obligations remain unimplemented.**
+**DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented and approved; slice B local scoped-success values are implemented and independently approved. Production runtime obligations remain unimplemented; the DEC-081 update below records the separate synthetic path.**
+
+**DEC-081 update (2026-10-02 Asia/Seoul):** S1–S6 now accept a finite synthetic-only
+execution contract, not production P5. Accepted failure additions and DEBUG internal
+preflight/generation/admission are implemented and independently approved for the
+corrected bounded synthetic slice.
+Historical deferrals below remain applicable to real/production execution. The fixture
+universe does not authenticate real coverage, calendars, correspondence or rights.
 
 ## Current acceptance and implementation boundary — 2026-10-01 Asia/Seoul
 
@@ -11,8 +18,10 @@ Accepted DEC-079: Consumer §§2–5 and C1–C6 are accepted conditional on DEC
 Timetable context construction, separate provider/timetable branches, exact matched
 rail attachment and retained-context chronology are implemented and independently
 approved as local values/validation only. DEC-080 supplies local scope and scoped-success
-structure; slice B independent review approved local values only. Failure/rejection additions, internal
-preflight/admission, connection policy and engine obligations remain deferred. Owner acceptance does not establish engine adoption, source
+structure; slice B independent review approved local values only. DEC-081 supplies
+accepted failure additions and synthetic internal preflight/generation/admission, with
+independent approval of the corrected bounded synthetic slice. Production connection policy and engine
+obligations remain deferred. Owner acceptance does not establish engine adoption, source
 compatibility or production delivery. See DECISIONS for the authoritative acceptance
 and ROADMAP for saved verification. Calendar interpretation/conversion and real
 import remain unimplemented; P2-S9 and all applicable retained gates remain in force.

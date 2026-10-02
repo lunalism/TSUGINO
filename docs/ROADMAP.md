@@ -2426,6 +2426,338 @@ coverage nor completed search. Runtime search, policy resolution, engine readine
 ODPT compatibility, P2-S9/import and all retained rights/delivery/Phase 3 exit gates
 remain separate. No further implementation or main merge is authorized.
 
+
+### Next internal-routing dependency assessment — Proposed plan, 2026-10-02 Asia/Seoul
+
+Scope lock: assessment and this ROADMAP entry only. Published DEC-080 A/B values
+can validate a scoped answer but cannot generate routes or establish that a search
+completed. The existing DEBUG SyntheticRouteSearcher admits supplied external-shaped
+alternatives; it is not internal route generation. Reuse RouteSearching, canonical
+Trip/TrainCandidate and dated facts, timetable context, profile/scope, candidate/batch/
+omission and InternalSearchSuccess values. No accepted contract or implemented
+behavior changes here. P5 is still Proposed.
+
+Authority: [consumer §§2–5, §9.5 and exact §9.9 selection](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md),
+DEC-076/078/079/080 in [DECISIONS](DECISIONS.md), [ARCHITECTURE §10](ARCHITECTURE.md#10-route-search-architecture)
+and the retained [feasibility evidence matrix](PHASE_3_INTERNAL_ROUTING_FEASIBILITY.md#existing-evidence-matrix).
+Historical dataset observations are not newly verified evidence.
+
+| Dependency class | Existing support / remaining boundary |
+|---|---|
+| Accepted, implementable without a new semantic choice | DEC-079 appends unverifiedEligibility, infeasibleConnection, insufficientScheduledEvidence in that order; adds searchIncomplete. Typed bounded reasons, unscoped failures, cancellation precedence, ordered configuration → view → endpoints → intent → coverage preflight, one-handoff/one-outcome accounting and no partial success are accepted. Vocabulary/local accounting checks can be implemented independently; actual preflight needs the input/configuration representation below |
+| Genuine design decisions before generated synthetic success | Required input inventory/coverage representation; exhaustive dated-occurrence availability; resolved connection/eligibility/continuity inputs; objective/distinctness/order/pruning/completion; and concrete synthetic component ownership/composition. Existing UUIDs, exact instants and constructors settle none of these |
+| Evidence needed for real use, not invented-data design | P2-S9 passenger-stop order, coverage, original repeated occurrences and joins; feed-specific calendar/service-date/extended-hour interpretation and validated P3-T1 import; current activation, eligibility, through/change correspondence, directional connection inventory/allowances, revision compatibility and freshness |
+| Retained integration/delivery gates | Production registry/ID adoption, source/publication/translation/derived-use rights, delivery/cache/bundling and expansion evidence remain applicable to their deliverables. Synthetic tests cannot discharge them or authorize launch composition; commercial evaluation/contact stays paused under DEC-077 |
+
+**Smallest next deliverable:** draft one Proposed synthetic input-and-execution
+contract in the existing consumer document, with a decision record only after
+verifying its identifier then. Do not accept P5 by reference. Seek a bounded synthetic
+execution contract; defer production defaults/domain, source interpretation, real
+engine adoption and deployment. Resolve the following together, rather than producing
+another isolated result wrapper:
+
+1. **Finite authoritative fixture view (proposed).** Declare the required canonical
+   domain and covered event window independently of routes found. Supply exact snapshot
+   bindings, finite dated-occurrence inventory, explicit active/inactive/unavailable
+   statuses and qualified occurrence facts. Define which source-independent facts are
+   required for each represented boarding/alighting possibility. Missing required facts
+   or incompatible revisions mean dataUnavailable, even alongside a good route; only
+   evidenced out-of-domain or conclusively irrelevant facts may be excluded. Define
+   finite directional connection inventory keys (alight/board occurrences or their
+   explicitly resolved applicability) and complete-present/complete-absent/unknown
+   meanings. An absent entry in a sparse map is unknown, not proof of no connection.
+   A fixture's explicit closed world is a synthetic premise, not a production boolean
+   or certificate that authenticates coverage.
+2. **Dates and operational facts (proposed representation).** Fixtures list every
+   dated execution that can contribute ridden events in [L,U], including explicitly
+   identified previous-service-day occurrences. Use supplied absolute instants and
+   opaque labels; no calendar parser, inferred lookback or conversion. Define how the
+   inventory establishes that no omitted date can contribute. Preserve one execution
+   per template/date and duplicate-TripID candidate restrictions. Require explicit
+   boarding/alighting permissions, affirmative stay-aboard/train-change correspondence,
+   directional connectivity and finite justified total allowances including all
+   alight/interchange/board components once. Same-station changes need evidence too;
+   line boundaries or equal times prove nothing. Recommend no fragment stitching:
+   through rides use existing spanning snapshots with stipulated correspondence.
+   Unknown required evidence fails coverage; known prohibited/infeasible choices may
+   be excluded only by a justified pre-handoff rule. Faulty complete handoffs still
+   receive the accepted rejection reason rather than disappearing.
+3. **Finite execution contract (Proposed choice, not acceptance of P5).** Recommend
+   comparing all distinct admissible itineraries only within the explicitly invented,
+   finite fixture profile first. Draft distinctness from the ordered sequence of exact
+   view-scoped dated occurrences plus original ride indices and directional connections;
+   decide how duplicate connection records with identical semantics normalize, without
+   treating repeated station visits as equivalent. Specify a stable total handoff order
+   independent of input container iteration, and deduplication before frozen indexing.
+   Finite occurrence/stop/connection sets plus finite ride cap constrain path length,
+   including zero-duration cases, but require a demonstrated terminating enumeration.
+   Permit only pruning proven not to remove an itinerary within the chosen objective;
+   no dominance/top-K rule is implied. Production all-distinct adoption remains open.
+   A bounded best-K alternative would require ranking, ties and proof no omitted route
+   outranks the retained set; stopping after K discoveries is not such proof. It could
+   reduce output/memory pressure but would change the declared completion contract.
+   For a small fixture proof, recommend deferring that extra policy surface; all-distinct
+   can become unavailable under resource limits and is no production scalability claim.
+4. **Completion, handoff and ownership.** Retain accepted DEC-079 boundaries: incomplete
+   nodes/pruned infeasible paths are not alternatives; each complete handoff freezes one
+   index before admission. Shared defects → dataUnavailable; uncompleted work despite
+   usable inputs → searchIncomplete; observed cancellation → CancellationError, never
+   partial output. With coverage and accepted completed execution: zero handoffs →
+   scoped noResults, positive all-rejected handoffs → unscoped noUsableAlternatives,
+   otherwise preserve every admitted candidate/omission. Recommend a DEBUG-only,
+   off-main isolated synthetic implementation behind RouteSearching, with immutable
+   injected fixture view and per-call state; test-only composition, no production
+   default or wiring. Data owns fixture/evidence interpretation; exact generator
+   placement and completion responsibility need explicit agreement before code.
+   Preserve owned-work cancellation/concurrent-call independence and Application's
+   separate supersession duty. Algorithm choice is not selected by this assessment;
+   the implementation plan must explain how it satisfies the accepted execution contract.
+
+**Invented acceptance examples for that draft (not executed compatibility claims):**
+
+| Invented evidence/scenario | Expected boundary to specify |
+|---|---|
+| T1 A→B→D on L1/L2, exact 10:00→10:20, affirmative through evidence | Generate one matched ride across the line boundary; preserve original indices and no fabricated transfer |
+| T1 A→B arrives 10:10; T2 C→D departs 10:13; explicit B→C train-change/walk relation and total allowance 120 seconds; eligible endpoints | Generate two rides plus directional walk. Reverse C→B is not implied. A 10:11 departure is known infeasible despite chronological order; same-station change also needs its own relation/allowance |
+| Complete required inventory proves no feasible B→C connection; no other itinerary exists | After separately accepted complete execution and zero handoffs, scoped noResults; unknown B→C coverage instead gives dataUnavailable even if another direct route is usable |
+| Opaque prior-service label with supplied civil-midnight instants inside [L,U]; repeated A visits at indices 0 and 2 | Include by qualified event availability, not parsed label; distinguish boarding occurrences in enumeration without guessing one |
+| One valid itinerary found, budget expires; or cancellation is observed at final checkpoint | searchIncomplete for uncompleted computation; CancellationError wins once observed; neither returns a partial batch |
+| Controlled admission seam receives a complete proposal with wrong occurrence/index or inadequate known allowance against otherwise complete inputs | One omission at its frozen index with accepted reasons; positive handoffs all rejected yield noUsableAlternatives, not noResults. Seam exercises defensive admission, not fabricated production inputs |
+| More admissible itineraries than a display subset | Retain the whole completed batch; presentation never controls generation or omission accounting |
+
+**Ordered path after this assessment:** (a) draft the above contract and precise
+invented matrix, (b) independent review and owner decisions on inventory semantics,
+connection representation, synthetic objective/distinctness/order/completion and
+component ownership, (c) separately authorize one synthetic vertical implementation:
+accepted failure additions + fixture view/preflight + actual generation + admission
+into existing scoped values, with direct/through/transfer/negative/cutoff/cancellation
+fixtures and release-isolation verification. Input must be timetable/connectivity
+facts, not prebuilt RouteCandidates or external alternatives. A direct-first coding
+increment may lead to transfer/multi-transfer within that agreed slice; it is not a
+reduced launch commitment. No extra standalone vocabulary slice is needed to reach
+that demonstration, though its semantics are already accepted. Keep real evidence
+work separate until authorized; P2-S9 must finish before the first real canonical
+Trip consumer or real P3-T1 import, not before this invented-data contract.
+
+Verified clean baseline `phase/03-route-search`, HEAD/upstream
+`e57ce5bf83972e3d54ad78eb96666973a88b46e2`, 0 ahead/behind; origin is the expected
+TSUGINO repository. Refs locally recorded; no fetch required by rules. Main unchanged
+at `e8a463d51f14b3cb1027960c63244b694579a71b`. Only this ROADMAP plan changed;
+reference/documentation checks and `git diff --check` passed. No code, decision
+acceptance, tests/builds, research/acquisition, private access, devices or Git
+publication. Launch requirements and Phase 3 exit criteria remain unchanged.
+
+### Proposed synthetic input/execution contract — 2026-10-02 Asia/Seoul
+
+[Proposed DEC-081](DECISIONS.md#dec-081--finite-synthetic-internal-routing-inputs-and-execution)
+now makes the preceding assessment concrete: a finite invented occurrence/coverage
+universe, directional occurrence-pair connections/allowances, exact itinerary identity,
+deterministic ordering, bounded cycle enumeration and handoff/completion boundaries.
+Fifteen invented cases cover direct/through/transfer, negative versus unknown coverage,
+repeated/prior-date occurrences, conflicts, all-rejected generated-claim faults,
+ordering, cycles, cutoff and cancellation. No prewritten route alternatives or real
+compatibility claims. Six owner choices remain Proposed; production P5 is not selected.
+Next: independent documentation review, owner acceptance, then separate authorization
+for one DEBUG-only generated-route vertical slice. The existing A/B values and accepted
+contracts remain unchanged. No tests/builds, acquisition or implementation performed.
+Verified branch/HEAD/upstream `phase/03-route-search` / `e57ce5bf83972e3d54ad78eb96666973a88b46e2`,
+0 ahead/behind using recorded refs (no fetch required). Existing ROADMAP assessment
+preserved; only DECISIONS and ROADMAP changed. Reference checks and `git diff --check`
+passed. All prior real-data, rights/delivery and launch/Phase 3 exit gates remain.
+
+
+### DEC-081 accepted synthetic execution and implementation — 2026-10-02 Asia/Seoul
+
+The owner accepted [DEC-081 S1–S6](DECISIONS.md#dec-081--finite-synthetic-internal-routing-inputs-and-execution)
+for the finite invented universe only, with the reviewed clarifications: resource
+cutoffs during normalization/coverage produce searchIncomplete absent an earlier
+established failure, and cancellation checkpoints cover shared validation and final
+deduplication/sorting. The preceding proposal/assessment entries remain history.
+Production P5, production engine adoption/defaults and real integration remain unaccepted.
+
+**Implemented, independent implementation review pending:** three DEBUG-only files in
+Data/Routing (`SyntheticInternalRouteInput.swift`, `SyntheticInternalRouteEngine.swift`,
+`SyntheticInternalRouteSearcher.swift`) provide immutable stipulated input/configuration,
+exact duplicate normalization, ordered preflight, conservative complete input coverage,
+qualified ride-token derivation, explicit directional connections, finite exhaustive
+synthetic path generation and deterministic frozen handoffs. Snapshot/index binding,
+movement lines, eligibility, continuity, exact connection allowances and scoped-result
+constructors are reused/checked. Original service-date labels are never interpreted.
+Normal generation takes occurrence/connectivity facts, not prewritten candidates.
+
+All distinct permitted sequences under the supplied ride cap are considered, including
+cycles with distinct TripIDs and zero-duration events. Destination arrival emits without
+terminating possible later returns. Ordering is ride-count then exact tuple order;
+connection keys/forms are unique functions of adjoining rides in a validated view.
+Only known constraint exclusions prune. One rejection/candidate accounts for each
+handoff; no display truncation. Shared faults fail the whole call. A separate failure-only
+harness mutates an index on genuinely generated frozen claims, returns validated
+rejection accounting only and fails the test on unexpected admission. It cannot produce
+successful completeness evidence or enter ordinary search configuration.
+
+`RouteSearchResult.swift` adds the already accepted searchIncomplete failure and appends
+unverifiedEligibility, infeasibleConnection and insufficientScheduledEvidence reasons.
+Provider behavior, supplied-alternative searcher, Domain snapshot/Journey contracts and
+all existing accounting remain unchanged. Execution uses @concurrent async search,
+request-local state, no detached work, and cancellation/resource checkpoints through
+validation, normalization, coverage, generation, initial ordering, final deduplication,
+final sorting, admission and return. Resource accounting bounds controlled work; this
+is not a guarantee of recovery from process-level memory exhaustion.
+
+**Synthetic specification coverage:**
+
+| Groups | Executed assertions / limits |
+|---|---|
+| G1–G4 | Inclusive request bounds; spanning through Trip counts once; directional walking and same-station allowance equality/insufficiency; no inferred reverse link |
+| G5–G6 | Complete negative versus unknown coverage even alongside a valid direct route; repeated indices and explicitly closed partial snapshot intervals; unused outside-profile continuation |
+| G7–G8 | Opaque prior/mixed date labels with qualified instants; missing manifests; active/inactive/unavailable slots; prohibited/unknown eligibility; missing/estimated required endpoints and permissible missing counterparts. Inactive event bodies are unrepresentable in the input type; source parsing/conversion and malformed raw event interpretation are excluded |
+| G9–G10 | Identical duplicates collapse; snapshot/time/permission/view/connection conflicts fail shared inputs; generated-claim failure harness validates all-rejected accounting and refuses unexpected admission |
+| G11–G12 | Exact ordered alternatives under reordered/duplicated fixture inputs; distinct dated runs; finite zero-time cycles and ride-cap pruning |
+| G13–G14 | Controlled cutoffs and deterministic cancellation barriers at all 12 stages, including final deduplication/sorting; pre-cancelled precedence and independent concurrent calls; numeric work-budget cutoff |
+| G15 | Full canonical batch retained when a hypothetical display prefix is smaller |
+
+Additional arithmetic checks cover overflow and rounded arrival-plus-allowance sums
+without turning insufficient gaps into feasible transfers. No actual calendar/feed,
+real provider, production performance, physical-device or full-phase claim follows.
+
+**Verification (iPhone 17 / iOS 26.5 Simulator, explicit destination):**
+
+- Initial focused Debug run: **63 functions / 90 executed cases passed**, zero failures,
+  skips or runtime warnings. Synthetic internal 17/37; scoped success 13/15; existing
+  provider admission 23/28; existing async search 10/10.
+  `/private/tmp/tsugino-p3-internal-r1.xcresult` and corresponding `.log`.
+- Self-review found initial ordering barriers did not separately exercise final handoff
+  deduplication/sorting. Separate DEBUG stages were added; final affected-suite run:
+  **17 functions / 41 executed cases passed**, zero failures, skips or runtime warnings.
+  `/private/tmp/tsugino-p3-internal-r2.xcresult` and corresponding `.log`.
+  Unaffected provider/async/scoped-value evidence is reused from r1; no combined
+  post-correction suite count is claimed. Debug test actions built app/extension dependencies.
+- Separate **Release Simulator app and Live Activity extension build passed**:
+  `/private/tmp/tsugino-p3-internal-release-r1.log`. All new implementation/fixture/test
+  files are enclosed in DEBUG; Release-visible code has no dependency on those types.
+  Release app symbol inspection found no SyntheticInternal symbols. The subsequent
+  checkpoint-only change was wholly inside DEBUG; the Release evidence remains applicable.
+- Existing canonical/Journey/railway Codable/isBlank actor-isolation warnings, existing
+  RailCapabilityTests isolation warnings in Debug, and skipped AppIntents metadata
+  extraction were recorded, not suppressed. No new-file compiler warning was observed.
+  No failed test/build attempt occurred in this task. No unrelated full-suite rerun.
+
+Self-review checked immutable inputs, preflight/unknown-versus-negative distinctions,
+index safety before admission indexing, exact snapshots, finite termination, deterministic
+ordering, cancellation, failure-only mutation and Release exclusion. The checkpoint
+coverage issue above was corrected. No remaining material issue identified by self-review;
+this is not independent approval. Next: independent review of DEC-081 acceptance,
+finite input authority/coverage, generation identity/completeness, connection arithmetic,
+frozen handoffs/defensive seam and concurrency/Release isolation against these cases.
+
+P2-S9 remains required before real canonical Trip consumption and real P3-T1 import.
+Feed-specific interpretation/validated import, source authentication, registry, rights,
+publication/translation, delivery/bundling and expansion gates remain. No production
+composition, Journey/UI binding or launch/Phase 3 exit change.
+
+Git: verified expected repository/origin, branch phase/03-route-search, HEAD/upstream
+`e57ce5bf83972e3d54ad78eb96666973a88b46e2`, 0 ahead/behind using recorded refs;
+no fetch required by rules. Local/recorded main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`. Ten-file inventory: five modified
+(RouteSearchResult and four documentation files) plus three new Data files and two new
+test/support files. Existing documentation work preserved; no unrelated changes found.
+Documentation/reference checks and git diff --check passed. No commit, push or merge.
+
+
+### DEC-081 independent-review corrections — 2026-10-02 Asia/Seoul
+
+Independent implementation review required two bounded corrections; approval has not
+been recorded. **Focused independent re-review is pending.** Accepted S1–S6, synthetic
+scope, production P5 deferral and all retained gates are unchanged.
+
+1. The connection loop filtered same-Trip pairs before cancellation/work accounting.
+   It now calls the coverage checkpoint before the distinct-Trip exclusion, charging
+   every considered pair. Adjacent exclusion paths were audited: the passenger-stop
+   loop now directly enumerates forward indices instead of scanning filtered reverse
+   pairs; other interval/eligibility/time/connection/path exclusions already follow
+   checkpoints. No pruning or coverage semantics changed.
+2. G10 manufactured noUsableAlternatives in the test rather than exercising actual
+   finalization. Normal search and the isolated failure-only harness now share the
+   finalizer, including frozen-handoff count validation, genuine scoped noResults,
+   all-rejected failure and scoped alternatives. The harness has a Never return type;
+   it throws the shared unscoped failure, or a harness failure on unexpected admission.
+   It cannot return a successful result and remains absent from normal configuration.
+
+Two deterministic regressions use 32 eligible dated direct tokens of the same Trip
+and cap 3. Successful traversal observes all 1,024 pair checkpoints. A fixed 1,024-work
+budget (above this fixture's worst-case pre-pair work) cuts off within those comparisons
+before generation. A controlled barrier at pair 17 proves cancellation before generation;
+a generation fallback makes a missing checkpoint fail assertions rather than hang.
+No sleeps or performance-duration assertions. G10 now tests both one and three genuine
+frozen handoffs, exact contiguous omission positions and inconsistentTrainEvidence by
+catching the actual thrown failure. It retains unexpected-admission and malformed-shared-
+view controls. Existing suite cases protect genuine noResults and ordinary alternatives.
+
+**Focused verification:** initial correction r1 and final-source r2 each passed
+**19 functions / 44 executed cases**, zero failures, skips or runtime warnings, on
+explicit iPhone 17 / iOS 26.5 Simulator. Saved bundles:
+`/private/tmp/tsugino-p3-internal-correction-r1.xcresult` and
+`/private/tmp/tsugino-p3-internal-correction-r2.xcresult` (matching `.log` files).
+The second run verifies the deterministic budget-test refinement; do not sum these
+overlapping runs. Debug app/extension dependencies succeeded (r1 built dependencies;
+r2 reused incremental dependencies). Existing isolation warnings in r1 and skipped
+AppIntents metadata extraction were recorded; no new-source warning observed.
+No failed test/build attempt occurred. Documentation/reference checks and
+`git diff --check` passed. Earlier runs remain separately identified history.
+Provider/async/scoped-value evidence from tsugino-p3-internal-r1 and the separate Release
+app/extension build/exclusion evidence are reused, not rerun: all implementation changes
+this turn are inside the existing DEBUG guards; no shared Domain/provider or Release-
+visible code changed. These results do not establish real-source compatibility or
+production runtime readiness.
+
+Self-review also removed a test dependence on dictionary-sensitive initial sort work:
+the final budget assertion uses the fixed fixture bound above. The initial correction
+run and final-source run are separate evidence, not cumulative unique coverage.
+Only Engine, Searcher, SyntheticInternalRouteTests, ARCHITECTURE and this ROADMAP changed
+this turn; the original ten-file inventory is preserved. DECISIONS, consumer amendment,
+input types, fixture support and Domain result additions remain byte-identical to review.
+No new acceptance, provider acquisition, device access, commit, push or merge.
+
+
+### DEC-081 final independent approval and publication — 2026-10-02 Asia/Seoul
+
+**Current status: the corrected bounded DEBUG synthetic slice is independently approved.**
+The preceding implementation and correction entries retain the historical pending-review
+state. A fresh reviewer context with no prior exposure to the corrections inspected
+actual accepted contracts, code and tests. Final verdict: approve; no material findings,
+no new optional observations and no mandatory outstanding verification.
+
+The review confirmed pre-exclusion pair checkpoints and safe forward-index enumeration,
+all 1,024 same-Trip comparisons and deterministic cutoff/cancellation regressions,
+shared normal/harness outcome finalization, actual unscoped all-rejected failures for
+one/three generated handoffs, and the Never-returning isolated failure harness.
+Normal success, genuine scoped noResults, shared-input failure and cancellation
+precedence remain intact. Approval is confined to the synthetic implementation;
+constructors do not authenticate real coverage or correspondence.
+
+Reused evidence: final affected suite
+`/private/tmp/tsugino-p3-internal-correction-r2.xcresult` — **19 functions / 44 cases**
+passed, zero failures/skips/runtime warnings, with Debug app/extension dependencies.
+Earlier provider admission 23/28, async 10/10 and scoped-result 13/15 evidence remains
+separately recorded in `tsugino-p3-internal-r1.xcresult`. Separate successful Release
+app/extension build and exclusion evidence remain applicable: correction code stays
+inside DEBUG and does not change Release-visible/provider behavior. Overlapping runs
+are not summed. Existing isolation/AppIntents warnings remain recorded. No tests or
+builds were rerun for independent re-review or publication.
+
+Publication is authorized for exactly the existing ten-file inventory. Source/test
+SHA-256 hashes match the final independently reviewed version; only approval/status
+documentation changes follow review. Fetch verified the expected origin and aligned
+phase HEAD/upstream at `e57ce5bf83972e3d54ad78eb96666973a88b46e2` before publication.
+Local and fetched main remained `e8a463d51f14b3cb1027960c63244b694579a71b`.
+Documentation/reference/status checks, complete staged inventory/content review and
+`git diff --check` are publication checks, not additional execution evidence.
+
+No new work is authorized by this record. Production P5, engine adoption/defaults,
+ODPT compatibility, P2-S9 before real Trip consumption/P3-T1 import, feed interpretation
+and validated import, registry/rights/publication/translation/delivery/bundling/expansion
+gates, launch requirements and Phase 3 exit remain unchanged.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
