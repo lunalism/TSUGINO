@@ -8170,7 +8170,7 @@ private access, acquisition or additional decision acceptance is authorized by t
 
 # DEC-084 — Synthetic Trip Registry Schema and Explicit Legacy Conversion Design
 
-**Status:** Accepted — bounded synthetic format contract; only slice A implementation authorized\
+**Status:** Accepted — bounded synthetic format contract; slices A/B independently approved, slice C unauthorized\
 **Date:** 2026-10-02 Asia/Seoul\
 **Related:** Accepted DEC-068/073/082/083; RULES Rule 39; ARCHITECTURE §§39–41; ROADMAP P2-S9 follow-up
 
@@ -8190,6 +8190,62 @@ No real conversion, registration, registry mutation, allocation or production ad
 authorized. Inherited DEC-083 semantics and all real S9/import, rights/delivery and Phase 3
 exit gates remain unchanged. The reviewed proposal below is preserved as historical design;
 its Proposed/pending wording records that stage and is governed by this acceptance overlay.
+
+## Slice B authorization and local implementation — 2026-10-02 Asia/Seoul
+
+After slice A publication at `7dd282a2162cef79e5918bbd20ff3edae88eaf40`, the owner
+separately authorized **slice B only**, under this already accepted contract. The earlier
+slice-A-only authorization below/above remains a historical record, not a current prohibition
+on this bounded task. No additional decision is accepted.
+
+`SyntheticTripRegistrationHistory.swift` adds DEBUG-only, supplied-memory validation of
+identified baselines, owner-fixture approval consistency, retained inventories, exact registry
+and history hashes, lineage/predecessor links, revisions, retained IDs and current-target
+replay. It reuses slice-A strict codecs and dependency closure. Conversion-only 2/3→4 checks
+compare every entity/reference field under the original reader rules; exact predecessor and
+legacy sidecar bytes stay bound in the immutable baseline/history. The read-only
+`SyntheticTripLegacyHistory.swift` mirrors DEC-073's original models and pure validation
+helpers, without its applier, authorization capability, publisher or filesystem operations.
+Those mirrored sections are checked byte-for-byte against their original tool source.
+
+`checked` means **mechanical integrity only**, not a registry candidate or business-history
+approval. Its report distinguishes conversion-only checks, unchanged replay and stipulated
+seed premises, and lists every retained/incoming non-conversion request requiring slice C.
+No target/history bytes are emitted. `held` means unavailable for this synthetic Trip
+consumer, without invalidating the original consumer's artifact. Rejections retain applicable
+uncertainty diagnostics in accepted order and expose no partial output. Schema-4 seeds remain
+limited to invented absent/retired-reference controls, never verified external lineage.
+
+Slice C still owns full registration/attachment/returning-reference admission, explanation of
+Trip deltas, evidence applicability and DEC-082-backed initial selection/revision, including
+downstream revalidation. Mechanical links do not discharge those obligations. No shared
+production reader/enum changes, real conversion/mutation/allocation, authentication, import,
+production adoption, rights/delivery or Phase 3 exit authorization is supplied here.
+Independent slice-B implementation approval is recorded below; verification is recorded in ROADMAP.
+
+## Independent slice B implementation approval — 2026-10-02 Asia/Seoul
+
+Returning read-only reviewers with no implementation or correction authorship inspected the
+actual contracts, corrected code, regression assertions and saved evidence. They had prior
+review/audit exposure and found no remaining material findings or mandatory verification
+gaps. The implementation author coordinated preservation checks; author self-review is not
+the independent approval. All six working files remained byte-identical throughout review.
+
+Approval covers DEBUG-only mechanical baseline/history/checkpoint integrity and
+conversion-only validation. Explicit predecessor/dependency bindings are compared before
+byte lookup; missing bytes remain uncertainty, established conflicts retain applicable
+ordered diagnostics, and mismatching bytes are not treated as valid historical payloads.
+Shared historical authority, immutable-ID, conflicting-variant and Trip-kind protections
+remain intact. Mechanical success neither emits registry candidates nor establishes
+registration, attachment, S9 selection/revision or full business-history admission.
+
+The reviewers independently verified 93 functions / 275 passing cases, including five new
+functions / 30 cases, zero failures/skips/runtime warnings, Debug dependencies and applicable
+retained Release builds with matching hashes and zero synthetic-symbol matches. Existing
+warnings and intermediate/failed attempts remain separately recorded in ROADMAP. Publication
+reuses that evidence with unchanged reviewed source/test bytes; no tests/builds are rerun or
+overlapping results summed. No further decision is accepted. Slice C, real S9/import,
+registry operations, production adoption, rights/delivery and Phase 3 exit gates remain.
 
 ## Slice A implementation status — 2026-10-02 Asia/Seoul
 

@@ -3336,8 +3336,9 @@ DEC-084's corrected proposal passed independent read-only re-review and was owne
 Its ordered implementation sequence is: **A**, strict codecs, deterministic digest
 fixtures and dependency closure; **B**, baseline/history/checkpoint replay and conversion
 validation; **C**, registration/attachment and DEC-082-backed initial snapshot selection/
-revision. Only A is authorized and implemented; independent implementation review approved A
-on 2026-10-02 Asia/Seoul.
+revision. A is implemented and independently approved (2026-10-02 Asia/Seoul). B is now
+separately authorized and locally implemented, with independent implementation review pending.
+C remains unimplemented and unauthorized.
 Each later slice requires separate authorization and review before progressing. TR84-01–16
 exact-outcome, approval/dependency-mutation, proof-preservation and unchanged-input controls
 supplement TR83-01–08; only their representation/closure controls belong to A. First-selection,
@@ -3420,6 +3421,492 @@ authorized committing/pushing exactly the eight approved files; no merge or next
 Representation completeness remains distinct from authentication, history/conversion validity
 and registration admission. Real S9/import, registry operations, production adoption,
 rights/delivery and Phase 3 exit remain separately gated.
+
+### DEC-084 slice B local implementation — 2026-10-02 Asia/Seoul
+
+Owner authorized B only after published slice A. Starting branch
+`phase/03-route-search`, HEAD/upstream `7dd282a2162cef79e5918bbd20ff3edae88eaf40`,
+clean tree; local/recorded main remains `e8a463d51f14b3cb1027960c63244b694579a71b`.
+Origin is `lunalism/TSUGINO`; 0 ahead/behind using recorded refs. No rule-required fetch
+or claim of fresh remote verification; no staging, commit, push or merge.
+
+**Scope delivered:** DEBUG-only `SyntheticTripRegistrationHistory.swift` validates supplied
+baseline approvals/inventories, exact bytes/digests, lineage and predecessor links, checked
+revisions, retained identifiers, current-target unchanged replay versus stale/altered replay,
+and conversion-only schema-2/3→4 comparison views. Original schema-2 retirement rules and
+schema-3 retained sidecar rules remain distinct. Every legacy entity/reference field, optional
+authority, scalar-exact name/key and exact original byte blob is preserved. It reuses slice-A
+codecs/closure and the actual mapping readers. `SyntheticTripLegacyHistory.swift` is an
+isolated read-only mirror of the original DEC-073 models/pure helpers/boundary validation;
+source parity was checked byte-for-byte. No applier, authorization capability, IO or CLI.
+
+`checked` reports mechanical integrity, with separate replay/conversion/seed indicators and
+all retained/incoming non-conversion request IDs still needing C. It emits no candidate bytes
+and does not establish complete business-history validity. Missing completeness/dependencies
+hold; independently established conflicts reject with retained ordered uncertainty diagnostics.
+Invented schema-4 absent/retired-reference seeds are stipulated premises, never external
+history verification or real-lineage reset. Held/rejected inputs remain unchanged.
+
+**Slice C obligations retained:** registration/attachment admission, affirmative returning-key
+continuity, complete explanation of Trip deltas, proof/profile applicability, DEC-082-backed
+initial snapshot selection/revision and downstream revalidation. No source authentication,
+real S9/import, registry mutation/conversion/allocation or production adoption. Rights,
+publication/delivery and Phase 3 exit gates are unchanged. Independent B implementation
+review is pending; author self-review is not independent approval.
+
+**Final verification:** 98 functions / 187 executed cases passed, comprising B 33/40,
+A 28/56 and MappingRegistry 37/91. Zero failures, skips or runtime warnings. Debug app and
+extension dependencies built. Final Debug log records 27 existing primary isolation warnings
+(54 including repeated rendered diagnostic lines) and two AppIntents warnings; no new warning.
+Saved `/private/tmp/tsugino-dec084-b-r5.{log,xcresult}` and `-r5-summary.json` are the final
+evidence; overlapping runs below are not summed. No physical-device step.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -only-testing:TSUGINOTests/MappingRegistryTests -resultBundlePath /private/tmp/tsugino-dec084-b-r5.xcresult > /private/tmp/tsugino-dec084-b-r5.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-b-r5.xcresult --format json > /private/tmp/tsugino-dec084-b-r5-summary.json
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd > /private/tmp/tsugino-dec084-b-release-r1.log 2>&1
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/TSUGINO > /private/tmp/tsugino-dec084-b-release-app-symbols.log
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity > /private/tmp/tsugino-dec084-b-release-extension-symbols.log
+```
+
+Release app/extension build passed with 33 existing primary isolation warnings and one
+AppIntents warning. Both symbol logs have zero matches for `SyntheticTripRegistration`,
+`SyntheticRegistration`, `SyntheticTripLegacyHistory` or `SyntheticTripReview`. Release hashes
+are unchanged from A: app `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`,
+extension `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`.
+Counts/hashes are saved in `/private/tmp/tsugino-dec084-b-verification.json`. Prior DEC-082
+36/72 and unrelated evidence are reused, not rerun: their source/tests and shared production
+readers/enums are unchanged. Release exclusion was checked anew for the added files.
+
+**Earlier attempts, separately recorded.** r1–r4 used the exact final test command above
+with `-only-testing:TSUGINOTests/MappingRegistryTests` omitted and the result/log suffix
+changed from r5 to the respective run. Summary extraction used the corresponding bundle
+and `-summary.json` paths.
+
+| Attempt | Saved result and disposition |
+|---|---|
+| r1 | Compile failure: used `C.maxBytes` instead of the existing `C.maximumBytes`; fixed. No tests executed. Log/result bundle retained. |
+| r2 | 41/43 functions and 72/74 cases passed; two assertion failures. Altered replay correctly returned two distinct conflict locators; expected list corrected. Malformed history was rejected by the strict encoder before invocation; test changed to feed raw malformed bytes directly. 35 existing primary isolation + two AppIntents warnings. |
+| r3 | 46/52 functions and 77/84 cases passed. Six failing functions/seven cases used an invalid invented provenance fixture mixing GTFS member/table and ODPT recordIndex. Fixed fixture to original rules. One AppIntents warning, no primary isolation warning in incremental log. |
+| r3 report attempt | Summary command ran before bundle finalization: missing Info.plist; the following JSON read also failed on empty output. No additional test run. Extraction succeeded after xcodebuild exited; saved final r3 summary replaces the empty report. |
+| r4 | Intermediate expanded suite: 56 functions / 88 cases passed; zero failures/skips/runtime warnings. 27 existing primary isolation + two AppIntents warnings. Later compatibility/seed-chain controls are included in final r5. |
+
+Self-review covered construction safety, retained-ID conflicts, scalar-exact conversion,
+no retrospective legacy rule expansion, seed completeness versus contradictions, exact/stale
+replay, overflow, immutable inputs and the B/C output boundary. Reference/case/historical-record
+checks, source parity and `git diff --check` passed. Six intended files remain uncommitted:
+the two new DEBUG sources, `SyntheticTripRegistrationHistoryTests.swift`, and DECISIONS,
+ARCHITECTURE, ROADMAP. Independent implementation review is the next step; C is not started.
+
+### DEC-084 slice B review corrections — 2026-10-02 Asia/Seoul
+
+Independent review withheld approval for two mechanical-integrity defects: a legacy
+`attachedBy` or retirement `status.review` ID could be reused by the new baseline approval,
+and seed selections tested membership among all entities instead of requiring a held Trip.
+The original r5 verification above remains historical evidence, not approval of those paths.
+
+**Corrections:** `SyntheticTripRegistrationHistory.swift` now distinguishes full fresh ID
+introductions from retained authority/allocation associations. Repeated quotations of an
+existing authority remain legal; a new approval/record/allocation colliding with it rejects
+regardless of discovery order. The immediately related audit includes inventory quotations,
+seed authorities, legacy sidecar authorities and all known baseline reference authorities,
+including incomplete inventory. A baseline inventory may quote an existing profile approval
+only when its complete profile is digest-bound in that baseline; this does not allow a
+profile approval to reuse a known legacy/seed authority. No evidence authentication is added.
+
+Every seed selection now checks for an existing `trp` entity before artifact lookup. A known
+wrong-kind or unheld target yields `historyConflict` even if its artifact is missing;
+applicable `historyUnavailable`/`snapshotUnavailable` diagnostics are retained in accepted
+order. Valid held-Trip targets with missing artifacts still hold. Artifact identity comparison
+remains in place. This is baseline inventory consistency, not S9 candidate admission.
+
+**Focused regressions:** six new functions / 20 cases (b34–b39) assert exact outcomes and
+diagnostic codes/locators. They cover both legacy authority fields with/without completeness,
+legal repeated reference/inventory quotations, later incoming approval collisions, retained
+sidecar quotations versus fresh reuse, known seed authority with missing inventory, Station/
+Line/unheld-Trip selections with present/missing artifacts, valid Trip/missing-artifact controls,
+and retained profile approval quotation versus legacy authority reuse. The optional legacy
+multi-transfer coverage observation was not implemented.
+
+**Final correction verification:** history 39 functions / 60 executed cases and slice A
+28/56, **67 functions / 116 cases total**, all passed. Zero failures/skips/runtime warnings.
+Debug app/extension dependencies built; 27 existing primary isolation warnings (54 rendered
+lines including repeats) and two AppIntents warnings, no new warning. This correction had
+one test attempt and no failed attempts. Do not sum it with overlapping earlier runs.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -resultBundlePath /private/tmp/tsugino-dec084-b-correction-r1.xcresult > /private/tmp/tsugino-dec084-b-correction-r1.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-b-correction-r1.xcresult --format json > /private/tmp/tsugino-dec084-b-correction-r1-summary.json
+```
+
+Saved evidence uses that `.log`, `.xcresult` and `-summary.json`. Prior MappingRegistry
+37/91, DEC-082 36/72 and unrelated verification are reused: their code/tests are unchanged.
+Prior slice-B Release app/extension evidence and zero synthetic-symbol exclusion remain
+applicable: every source correction is inside the existing `#if DEBUG`; shared readers,
+legacy mirror, production composition/project settings and Release guards are unchanged.
+The retained Release binaries still match their recorded hashes and have zero matching
+synthetic symbols. No Release rebuild or physical-device step was needed.
+
+Only the history validator, its tests and ROADMAP changed further in this correction; the
+existing six-file working inventory remains intact. DECISIONS, ARCHITECTURE and the legacy
+mirror are byte-identical to the reviewed versions. Accepted records, case/reference checks,
+legacy-source parity and `git diff --check` pass. HEAD/upstream remains
+`7dd282a2162cef79e5918bbd20ff3edae88eaf40`, 0 ahead/behind recorded refs; main is unchanged.
+No rule-required fetch, staging, commit, push or merge. **Focused independent re-review is
+pending.** No slice-C admission, real S9/import, conversion execution/registry mutation,
+allocation, production adoption, rights/delivery or Phase 3 exit gate changes.
+
+### DEC-084 slice B immutable-ID correction and path audit — 2026-10-02 Asia/Seoul
+
+The focused independent re-review confirmed the preceding targeted fixes but withheld
+approval for two remaining omissions: baseline payload `subjectID` was never reserved
+against historical authorities, and inline evidence bypassed the reservation used by
+catalog evidence. That review was performed by fresh non-author reviewers; its coordinator
+authored the implementation. The earlier verification entries remain historical evidence.
+
+**Corrections:** the baseline payload ID now enters the common fresh-introduction ledger
+alongside its approval. Inline evidence joins the same collected-document path as catalog
+and retained dependency bytes. The full path audit corrected the same omission for declared
+attachment/status IDs with missing bytes, supplied seed documents outside the inventory,
+explicit seed predecessor and selected-artifact IDs, and digest-bound dependencies already
+retained by the baseline or a history boundary. Missing bytes do not free these historical
+IDs. Matching supplied documents may be quoted only with the same record kind, and retained
+dependency digests cannot change while bytes are missing. Catalog authority labels alone
+do not establish historical membership. Repeated retained associations and identical
+dependency references remain legal; established conflicts reject with ordered uncertainty.
+Historical dependency traversal follows only exact digest-matched documents, with a visited
+set: missing outer closure entries cannot hide their nested retained assertions. A nested
+baseline-bound profile retains its approval association even when its outer entry is missing;
+the missing entry still holds, without inventing a fresh-ID conflict.
+
+**Collection-to-reservation audit (accepted DEC-084 §B/§D):**
+
+| ID-bearing record / supported representation | Ledger path and distinction | Focused coverage |
+|---|---|---|
+| Baseline payload `subjectID`, `envelope.baseline.payload` | `run` → `reserve`, separate from the baseline approval | b40; b42 baseline |
+| Approval `reviewID`, baseline / inline, catalog or retained profile / incoming request / retained boundary | `approve` → `reserve`; the existing digest-bound profile-inventory quotation exception includes exact nested baseline dependencies | b34–b37, b39; b42 approval/profileApproval, b50 |
+| Profile `subjectID` / `profileID`, inline / catalog / retained bytes | Closure enforces matching wrapper/body ID; `collect` or catalog admission → one document reservation; its approval is checked separately | b39; b42 profile/profileApproval, including retained bytes |
+| Evidence `evidenceID`, inline / catalog / both / retained bytes | One collected immutable document → `reserve`; equal duplicate transport is a reference, changed bytes still reject in A closure | b41's four transports, collision/completeness and valid controls; b42 evidence |
+| S9 `artifactID`, inline / catalog / retained bytes | One collected immutable document → `reserve`; seed-selected artifact IDs retain historical identity even when bytes are missing. Packet UUIDs remain associations | b38; b42 artifact, including retained bytes; b45 and retained A closure tests |
+| Request wrapper `subjectID` / `requestID`, incoming and every retained boundary | Closure enforces equality; `delta` → `reserve`. Exact current-target replay reuses the retained introduction; altered replay rejects before it can escape as success | b06–b07, b12–b13, b33; b42 request |
+| Operation `recordID`, registration / attachment / initial-selection or revision records; `allocationRequestID` on registration | `delta` reserves every record and allocation before registry comparison, for incoming and retained requests; no business admission is inferred | b42 record/allocation, both incoming and retained |
+| Seed attachment/status `recordID`, catalog / retained bytes; explicit inventory/predecessor token with or without bytes | All supplied seed documents → `reserve` once; inventory and explicit predecessor assertions → retained `.seedRecord` before lookup. Only quotation of its matching supplied seed document is exempt from a second introduction | b16–b18, b31; b42 all nine fresh introduction channels with missing bytes; b43 unlisted supplied document/control; b44 missing predecessor |
+| Digest-bound historical dependencies, baseline and retained boundary inventories, including exact nested documents | `dependencies(historical:true)` retains kind/ID/digest, including unavailable records. Matching supplied records may be quoted; later digest/kind changes reject. Incoming declarations are compared to known retained digests but do not themselves establish history | b46 all four kinds, b47 retained-boundary missing dependencies, b48–b49 changed/unchanged digest and missing outer-entry controls, b50 retained profile |
+| Historical review/allocation inventory tokens, listed seed `authorityID`, baseline `attachedBy` / retirement `status.review`, validated legacy transition/disposition IDs | `retain` records associations; repeats remain legal. Legacy sidecar returns retained authorities under its unchanged original rules | b20, b34–b37, b39–b43 |
+
+History/boundary/checkpoint containers have no separate fresh record ID: lineage, digests,
+predecessor links, dependency IDs and approval subject references associate the records
+above. Canonical entity IDs retain their separate registry/body-history checks; source keys,
+profile versions, evidence applicability labels and S9 UUIDs are not promoted into a new
+global uniqueness policy. No additional demonstrable omission remained in this audit.
+The read-only audit assistance is implementation verification, not independent approval.
+
+**Regressions and final verification:** b40–b50 add **11 functions / 67 cases** with exact
+outcomes and diagnostic codes/locators. They cover both legacy authority fields, repeated
+associations, incomplete history, equivalent evidence transports and nonconflicting controls,
+input preservation, missing inventory IDs across nine introduction channels and incoming/
+retained requests, unlisted supplied seed IDs, missing explicit predecessors/selections and
+retained dependency identities/digests and nested closure/profile controls.
+Final focused run: history **50/127** plus slice A **28/56**, **78 functions / 183 executed
+cases passed**, zero failures/skips/runtime warnings. Debug app/extension dependencies built.
+The log contains 27 existing primary
+isolation warnings (54 rendered lines including repeats) and two AppIntents warnings, with
+no other warning. Overlapping earlier runs are not summed. No physical-device step.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -resultBundlePath /private/tmp/tsugino-dec084-b-ids-r4.xcresult > /private/tmp/tsugino-dec084-b-ids-r4.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-b-ids-r4.xcresult --format json > /private/tmp/tsugino-dec084-b-ids-r4-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-b-ids-r4.xcresult --format json > /private/tmp/tsugino-dec084-b-ids-r4-tests.json
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/TSUGINO > /private/tmp/tsugino-dec084-b-ids-release-app-symbols.log
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity > /private/tmp/tsugino-dec084-b-ids-release-extension-symbols.log
+```
+
+**Tooling failures, separate from test results:** the initial sandboxed test command was
+identical except for `-ids-r1` result/log paths; it exited 70 because CoreSimulator was
+inaccessible and the specified Simulator destination could not be resolved. No tests ran.
+The authorized access retry r2 passed. Initial sandboxed summary and test-tree extraction
+used the shown commands with r2 paths; each exited 64 because `xcresulttool` could not write
+its TestReport cache. The same commands
+with cache access then succeeded. No test rerun was needed for report extraction. The
+intermediate successful r2 and r3 commands used the final command above with the respective
+suffix: r2 passed 71 functions / 156 cases; r3 passed 76 / 178, each with zero failures/skips/
+runtime warnings and the same 27 primary isolation / two AppIntents warnings. These preceded
+additional audit corrections and are not the final result or summed with it. Their logs,
+result bundles and summary JSON remain separate. Saved final
+results are the final `.log`, `.xcresult`, `-summary.json`, `-tests.json` and
+`/private/tmp/tsugino-dec084-b-ids-counts.json`.
+
+**Reused evidence and preservation:** the prior Release build remains applicable because
+all source corrections stay inside unchanged `#if DEBUG` guards; shared readers/enums,
+production composition, project settings and the legacy mirror are unchanged. Recomputed
+retained binary hashes remain app `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`
+and extension `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`; both
+symbol lists have zero matches for the previously recorded synthetic-symbol patterns.
+Hashes/counts are retained in `/private/tmp/tsugino-dec084-b-ids-release-reuse.json`.
+No Release rebuild; unchanged MappingRegistry, DEC-082 and unrelated evidence are reused.
+Legacy models/helpers/boundary validation remain byte-identical to their authoritative
+source. Accepted records, references and `git diff --check` pass.
+
+Only `SyntheticTripRegistrationHistory.swift`, `SyntheticTripRegistrationHistoryTests.swift`
+and ROADMAP changed further; the six-file working inventory is preserved. DECISIONS,
+ARCHITECTURE and `SyntheticTripLegacyHistory.swift` remain byte-identical to the pre-task
+versions. HEAD/upstream remains `7dd282a2162cef79e5918bbd20ff3edae88eaf40`, 0 ahead/behind
+recorded refs; main remains `e8a463d51f14b3cb1027960c63244b694579a71b`. No rule-required fetch,
+staging, commit, push or merge. **Independent re-review remains pending.** Mechanical success
+still grants no slice-C registration/attachment/S9 admission, actual conversion/mutation/
+allocation, real S9/import, production adoption, rights/delivery or Phase 3 exit clearance.
+
+
+### DEC-084 slice B shared-authority and variant corrections — 2026-10-02 Asia/Seoul
+
+The next independent re-review withheld approval for two remaining findings: a local seed
+set rejected distinct attachments quoting one existing authority, and conflicting retained,
+inline or catalog copies could overwrite one another and change the diagnostic set.
+The owner authorized these corrections and the directly related collection/seed audit only.
+Earlier verification remains historical evidence; no acceptance or publication is added.
+
+**Corrections and bounded audit:** distinct seed records/keys may share historical
+`authorityID`/`attachedBy`. Record IDs and fresh approvals still enter the common introduction
+ledger; retained authority quotations remain repeatable associations. Collection retains
+all distinct canonical byte variants, deduplicates equivalent copies across transports,
+validates catalog identity/kind and preserves the original unique-catalog-key requirement.
+Keys and variants are inspected in deterministic order. Every profile wrapper/approval pair
+is checked, with identical approval bytes introduced once; all variants' fresh IDs remain
+protected against historical authority reuse.
+
+The related audit found the same single-copy omission in dependency traversal and seed
+inspection. Historical traversal now records and visits exact `(kind, ID, digest)` bindings,
+including distinct explicitly retained variants and nested unavailable IDs. Only those exact
+bindings confer historical membership; an unrelated alternative catalog copy does not.
+Exact predecessor SHA bindings also traverse supplied matching bytes when their inventory entry
+is absent, retaining the missing-inventory diagnostic and known nested reservations.
+Each parent's closure resolves its declared digests. For conflicting variants, B retains A's
+strict syntax/approval checks and recomputes the affected integrity/availability diagnostics
+in that context, avoiding both hidden missing evidence and false extra-dependency findings.
+All declared/direct variant edges participate in deterministic ID-cycle checks; evidence
+applicability labels are still associations, never reverse dependency edges.
+
+Every digest-bound seed variant retains its authority/predecessor assertions and local
+checks. A predecessor link selects the exact asserted digest among supplied retained copies;
+missing records and present inconsistent bytes remain distinct. No conflicting copy becomes
+an arbitrary lineage witness. Seed selections retain the existing Trip-kind-before-artifact
+check and inspect every exact bound artifact. These are mechanical history/representation
+checks, not slice-C correspondence, registration or S9 admission.
+
+| Focused regression | Exact outcome/diagnostic coverage |
+|---|---|
+| b51 | Two distinct attachment records and keys share one authority; fresh reuse rejects; incomplete-only holds; conflict plus incomplete rejects with ordered uncertainty; record/catalog order permutations |
+| b52 | Retained/inline/catalog/equivalent profile copies, either copy's approval colliding with historical authority, complete/incomplete history, catalog and object insertion orders, unchanged inputs |
+| b53–b55 | Exact digest-bound seed authority versus an unbound conflicting copy; duplicate original catalog keys stay invalid; mismatched profile identity is malformed without invented secondary findings |
+| b56 | A cycle in an alternative seed/artifact copy cannot disappear behind another copy, including exact history/snapshot conflict locators |
+| b57 | Every explicitly retained variant reserves its nested missing IDs; legal retained profile approval quotations; fresh-ID conflict plus missing completeness; both catalog orders |
+| b58 | Correct parent closure under its declared variant versus missing outer inventory; no false extra-dependency conflict; both orders |
+| b59 | Local missing-predecessor uncertainty on conflicting bound seed copies; exact predecessor continuity conflict and legal continuity control; both orders |
+| b60 | Exact predecessor bytes with a missing inventory entry still protect nested evidence and authority IDs; missing-only versus fresh-ID conflict, both orders |
+
+
+**Final focused verification:** history **60 functions / 189 cases**, slice A **28/56**;
+**88 functions / 245 executed cases passed**, including b51–b60's **10 new functions /
+62 cases**. The additional order loops inside parameter cases are not counted as separate
+executed cases. Zero failures, skips or runtime warnings. Debug app/extension dependencies
+built on the explicit iPhone 17 Simulator (iOS 26.5); no physical-device step. Final log:
+27 existing primary isolation warnings (54 rendered lines including repeats), two AppIntents
+warnings, no other warning. Saved final evidence:
+`/private/tmp/tsugino-dec084-b-variants-r5.{log,xcresult}`, `-r5-summary.json`,
+`-r5-tests.json` and `/private/tmp/tsugino-dec084-b-variants-counts.json`.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -resultBundlePath /private/tmp/tsugino-dec084-b-variants-r5.xcresult > /private/tmp/tsugino-dec084-b-variants-r5.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-b-variants-r5.xcresult --format json > /private/tmp/tsugino-dec084-b-variants-r5-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-b-variants-r5.xcresult --format json > /private/tmp/tsugino-dec084-b-variants-r5-tests.json
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/TSUGINO > /private/tmp/tsugino-dec084-b-variants-release-app-symbols.log
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity > /private/tmp/tsugino-dec084-b-variants-release-extension-symbols.log
+```
+
+**Intermediate attempts, not summed:** the same test/summary commands used `-variants-r1`
+through `-variants-r4` paths. r1 passed 83/217; r2 passed 84/221. r3 passed 85 of 86 functions
+and 225 of 233 cases: all eight b57 cases failed because the invented baseline declared A/Z
+without referencing them, correctly producing an extra `historyConflict(invented-lineage)`.
+The fixture was corrected to reference those parents through the held seed; assertions were
+not weakened. Failure details are retained in the r3 bundle/summary and
+`-r3-b57.json`, extracted with:
+
+```sh
+xcrun xcresulttool get test-results test-details --path /private/tmp/tsugino-dec084-b-variants-r3.xcresult --test-id 'SyntheticTripRegistrationHistoryTests/b57EveryExplicitHistoricalVariantRetainsItsNestedIDs(_:_:)' > /private/tmp/tsugino-dec084-b-variants-r3-b57.json
+```
+
+r4 passed 87/239 before the final exact-predecessor missing-inventory regression. Every
+intermediate run had zero skips/runtime warnings and the same 27 primary isolation / two
+AppIntents warnings. These results remain separate from final r5. No Simulator-access or
+report-cache failure occurred in this correction; authorized tool access reused the known
+working environment. Prior access/cache failures remain recorded above; unavailable raw
+stderr from earlier report-cache attempts was not inspected or reconstructed. One read-only
+reference lookup initially used nonexistent `docs/RULES.md`; it was corrected to root
+`RULES.md`. No file changes resulted from that lookup.
+
+**Reused evidence and preservation:** retained Release app/extension hashes still match
+`5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e` and
+`659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`. Fresh symbol inspection
+found zero matches for `SyntheticTripRegistration`, `SyntheticRegistration`,
+`SyntheticTripLegacyHistory` or `SyntheticTripReview` in either binary. Saved hashes/counts:
+`/private/tmp/tsugino-dec084-b-variants-release-reuse.json`. All corrections remain inside
+unchanged DEBUG guards; A source, shared readers/enums, production composition and project
+settings are unchanged. Prior Release build, MappingRegistry 37/91, DEC-082 36/72 and
+unrelated evidence remain applicable; no Release rebuild or unrelated suite rerun.
+
+Only `SyntheticTripRegistrationHistory.swift`, `SyntheticTripRegistrationHistoryTests.swift`
+and ROADMAP changed further. The existing six-file working inventory is preserved;
+DECISIONS, ARCHITECTURE and `SyntheticTripLegacyHistory.swift` are byte-identical to task start.
+Accepted records, TR84 cases, references, regression identifiers, legacy-source parity and
+`git diff --check` pass. HEAD/upstream remains `7dd282a2162cef79e5918bbd20ff3edae88eaf40`,
+0 ahead/behind using recorded refs; local/recorded main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`. No rule-required fetch, staged changes, commit,
+push or merge; no fresh remote agreement is claimed.
+
+**Implementation review remains pending.** Author self-review and read-only audit assistance
+are not independent approval. No slice C, registry candidate, real conversion/mutation or
+allocation is introduced. Real S9/import, production adoption, rights/publication/delivery
+and Phase 3 exit gates remain unchanged.
+
+
+### DEC-084 slice B predecessor-binding correction — 2026-10-02 Asia/Seoul
+
+Independent re-review withheld approval for one remaining explicit-binding defect: a
+baseline could bind unavailable predecessor P to H1 while a retained status named H2,
+but the availability guard skipped the second digest assertion and returned only a hold.
+The owner authorized this correction and a directly related binding-path audit, not C.
+The preceding final 88/245 result remains historical evidence, not approval of that path.
+
+**Correction:** manifests and paired seed predecessor ID/SHA assertions enter the common
+binding comparison before byte resolution. Missing bytes still hold; equal assertions do
+not fabricate a conflict. Available copies that cannot match an explicit digest reject
+without being inspected as historical payloads. This preserves the missing-inventory hold
+when a supplied predecessor's bytes disagree, and prevents its unbound authority/reference
+contents from becoming historical assertions.
+
+The adjacent audit found the same omission for an incoming request and supplied profile
+that name different hashes for the same missing evidence. A separate `observedBindings`
+ledger now compares all codec-valid supplied explicit declarations, including catalog,
+inline and retained forms, before lookup. Only the existing historical traversal populates
+`retainedBindings` and historical identity reservations. Observing a declaration neither
+introduces an unavailable payload nor grants historical membership. ID-only references,
+proof/view applicability labels and source-content hashes do not become dependency bindings.
+Malformed catalog identities are excluded before this pass.
+
+**Directly related audit:** baseline and retained-boundary manifests, incoming requests,
+collected profile/evidence/artifact/seed manifests and paired seed predecessor assertions
+all reach comparison before the availability guard. Nested payload traversal still requires
+exact matching bytes and a `(kind, ID, digest)` visit guard. Checkpoint/boundary links retain
+their separate exact-byte checks. Approval payload digests are checked against supplied
+wrappers. No slice-C previous-reference/selection semantics or new identity policy is added.
+
+**Focused regressions:** b61–b65 add five functions / 30 executed cases; internal order loops
+are not counted as extra executed cases. b61 combines equal/different explicit predecessor
+digests with absent/present bytes, declaration order, catalog order, decoded versus constructed
+record forms and object insertion order. b62 compares two retained predecessor assertions
+when bytes are missing, including incomplete history. b63 covers incoming/nested evidence
+digests through inline/catalog/both representations with absent/present controls. b64 checks
+unreferenced supplied profile assertions without promoting them to history. b65 covers
+missing inventory with absent, matching or mismatching predecessor bytes and incomplete
+history; exact assertions exclude invented authority/continuity findings from mismatching
+bytes. Existing b31's resolved wrong-digest case now asserts both established conflict
+locators, rather than losing the predecessor's conflicting binding. Earlier ID, authority,
+selection, replay, conversion and variant regressions remain part of the focused suite.
+
+
+**Final verification:** history **65 functions / 219 cases** and slice A **28/56**,
+**93 functions / 275 executed cases passed**, including b61–b65's **5/30**. Zero failures,
+skips or runtime warnings. Debug app/extension dependencies built on the explicit iPhone 17
+Simulator (iOS 26.5); no physical-device step. Compiler/tool warnings remain separate:
+27 existing primary isolation warnings (54 rendered lines including repeats), two AppIntents
+warnings and no other warning. Saved final evidence:
+`/private/tmp/tsugino-dec084-b-predecessor-r2.{log,xcresult}`, `-r2-summary.json`,
+`-r2-tests.json` and `/private/tmp/tsugino-dec084-b-predecessor-counts.json`.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -resultBundlePath /private/tmp/tsugino-dec084-b-predecessor-r2.xcresult > /private/tmp/tsugino-dec084-b-predecessor-r2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-b-predecessor-r2.xcresult --format json > /private/tmp/tsugino-dec084-b-predecessor-r2-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-b-predecessor-r2.xcresult --format json > /private/tmp/tsugino-dec084-b-predecessor-r2-tests.json
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/TSUGINO > /private/tmp/tsugino-dec084-b-predecessor-release-app-symbols.log
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity > /private/tmp/tsugino-dec084-b-predecessor-release-extension-symbols.log
+```
+
+The intermediate r1 used the same test/report commands with `-predecessor-r1` paths and
+passed **92/269**, with zero failures/skips/runtime warnings and the same 27 primary
+isolation/two AppIntents warnings. The audit then identified the missing-inventory/present-
+mismatching-bytes edge, corrected before final r2 and covered by b65. These overlapping runs
+are not summed. **No failed verification or tooling attempts occurred in this correction.**
+Older failed attempts remain separately recorded above; no unavailable raw stderr was
+inspected or reconstructed.
+
+**Reused Release evidence:** all source changes remain inside unchanged whole-file DEBUG
+guards. A sources, shared readers/enums, production composition/project settings and legacy
+validation code are unchanged. Retained Release app/extension SHA-256 values remain
+`5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e` and
+`659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`; fresh symbol inspection
+found zero `SyntheticTripRegistration`, `SyntheticRegistration`, `SyntheticTripLegacyHistory`
+or `SyntheticTripReview` matches in either binary. Hashes/counts are saved in
+`/private/tmp/tsugino-dec084-b-predecessor-release-reuse.json`. No Release rebuild; unchanged
+MappingRegistry 37/91, DEC-082 36/72 and unrelated evidence are reused.
+
+Only `SyntheticTripRegistrationHistory.swift`, `SyntheticTripRegistrationHistoryTests.swift`
+and ROADMAP changed further. The six-file working inventory is preserved; DECISIONS,
+ARCHITECTURE and `SyntheticTripLegacyHistory.swift` remain byte-identical to task start.
+Self-review checked explicit assertions versus historical membership, unavailable versus
+mismatching bytes, exact diagnostic order and the absence of slice-C admission. Read-only
+audit assistance is not independent approval. References/case identifiers, accepted-record
+preservation, affected legacy-source parity and `git diff --check` pass.
+
+HEAD/upstream remains `7dd282a2162cef79e5918bbd20ff3edae88eaf40`, 0 ahead/behind recorded refs;
+local/recorded main remains `e8a463d51f14b3cb1027960c63244b694579a71b`. No rule-required fetch,
+staging, commit, push or merge; no fresh remote agreement is claimed. **Focused independent
+re-review pending.** No real/private-data access, conversion execution, registry mutation or
+allocation. Slice C, real S9/import, production adoption, rights/publication/delivery and
+Phase 3 exit gates remain unchanged.
+
+### DEC-084 slice B independent approval and publication follow-up — 2026-10-02 Asia/Seoul
+
+Final read-only re-review approved the corrected bounded slice B with no remaining material
+findings or mandatory verification gaps. Returning code and evidence reviewers authored none
+of the implementation/corrections; their prior exposure was review/audit only. The author
+coordinated preservation checks, which are not independent approval. All six working files
+remained byte-identical during review. Earlier pending/withheld records above describe their
+historical stages; this entry records the final outcome.
+
+Review confirmed explicit predecessor/dependency conflicts before byte lookup, missing-only
+uncertainty, ordered conflict-plus-unavailability diagnostics and exclusion of mismatching
+payloads from historical inspection. b61–b65 cover equal/resolved controls and representation/
+order permutations. Earlier shared-authority, immutable-ID, conflicting-variant and held-Trip
+selection protections remain intact. Approval is limited to mechanical history/checkpoint
+integrity and conversion-only validation; `checked` emits no candidate and retains all
+non-conversion business-admission obligations for C.
+
+The reviewers independently verified the final r2 evidence above: **93 functions / 275
+passing cases** (B 65/219 plus A 28/56, including b61–b65's five/30), zero failures, skips or
+runtime warnings, and successful Debug app/extension dependency builds. The **27 primary
+isolation warnings** (54 rendered lines) and **two AppIntents warnings** remain separate.
+Intermediate runs are not summed; earlier failures retain their own records. Retained Release
+build evidence, matching app/extension hashes and zero synthetic-symbol matches remain
+applicable because whole-file DEBUG isolation and production composition are unchanged.
+No tests/builds are rerun for publication.
+
+The owner authorized committing/pushing exactly the two slice-B sources, their history tests
+and DECISIONS/ARCHITECTURE/ROADMAP. Pre-publication fetch confirmed the existing phase upstream
+at `7dd282a2162cef79e5918bbd20ff3edae88eaf40`, 0 ahead/behind, and main at
+`e8a463d51f14b3cb1027960c63244b694579a71b`. Source/test SHA-256 values match the independently
+reviewed bytes:
+
+| File | SHA-256 |
+|---|---|
+| `SyntheticTripRegistrationHistory.swift` | `4c367492a465c83fb6d18b0a54217d9a6f3a27a3999a98c06dbb3e6d201660a5` |
+| `SyntheticTripLegacyHistory.swift` | `1227b015af3fdbf98317cccfd43711f9617bc62f26149a1bcd816ddca09e0616` |
+| `SyntheticTripRegistrationHistoryTests.swift` | `52e395c0a85fa1dc39df4869b3ceae786a98c28425175e8aa05431e2f54843de` |
+
+Publication changes approval/status documentation only beyond those reviewed bytes. No
+optional follow-up or slice C is implemented. Accepted semantics and historical records are
+preserved. No merge, main push, branch deletion or next slice is authorized. Registration/S9
+admission, real conversion/registry operations, real-data/import, production adoption,
+rights/publication/delivery and Phase 3 exit remain separately gated.
 
 ## Goal
 

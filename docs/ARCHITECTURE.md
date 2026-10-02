@@ -1877,14 +1877,23 @@ No Domain validity change, implementation, registry mutation or real allocation 
 authorized by DEC-083 alone. DEC-068's provisional/production distinction continues to apply.
 
 The concrete schema/conversion design is [Accepted DEC-084](DECISIONS.md#dec-084--synthetic-trip-registry-schema-and-explicit-legacy-conversion-design)
-(2026-10-02 Asia/Seoul). Only slice A is implemented: separate DEBUG-only wire schemas,
+(2026-10-02 Asia/Seoul). Slice A provides separate DEBUG-only wire schemas,
 canonical encoding/SHA-256, dependency closure and a lossless deferred S9-input adapter in
 `Data/Review/SyntheticTripRegistration*.swift`. It returns representation completeness or
 bounded diagnostics, never registry candidates or approval authority. It does not run the
 DEC-082 validator, authenticate evidence, replay history or validate conversion/registration.
 Independent read-only review approved this bounded slice on 2026-10-02 Asia/Seoul; approval
 does not extend representation completeness into any of those later guarantees.
-Slices B/C remain unimplemented and separately unauthorized. Current ordinary registry
+Slice B is separately authorized, implemented and independently approved in DEBUG-only
+`SyntheticTripRegistrationHistory.swift` and `SyntheticTripLegacyHistory.swift`. It checks
+supplied baseline/history/checkpoint integrity, immutable inventories and exact replay, and
+validates conversion-only schema-2/3 comparison views using the original rules and retained
+sidecars. No conversion is applied. Mechanical success reports all non-conversion requests
+still requiring slice-C admission; it emits no registry candidate. Stipulated synthetic seeds
+are premises, not authenticated external history. Independent review approved this bounded
+mechanical slice on 2026-10-02 Asia/Seoul; it does not establish registration/S9 admission
+or full business-history validity.
+Slice C remains unimplemented and unauthorized. Current ordinary registry
 intake still reads schema 2; the DEC-073 reader supports 2/3. Neither supports Trip
 registration. The isolated schema-4 wire codec does not change that production boundary.
 
