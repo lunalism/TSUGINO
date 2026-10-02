@@ -3295,6 +3295,132 @@ not complete real S9 or authorize registration, source authentication/parsing, t
 import, routing integration or production delivery. All registry, rights/delivery and
 Phase 3 exit gates remain unchanged; no next slice begins here.
 
+**Trip registration follow-up (2026-10-02 Asia/Seoul, documentation only):**
+[Accepted DEC-083](DECISIONS.md#dec-083--bounded-recurring-trip-registration-before-authoritative-p2-s9-output)
+settles five registration choices: `trip`/`trp` with DEC-068 minting/history rules;
+owner-approved requests applied offline at an identified checkpoint; conditionally scoped
+Trip-only `gtfs.trip_id`; affirmative returning-reference continuity, permanent authority,
+immutable history and atomic conflict rejection; initial registration, reviewed attachment
+and snapshot revision only. This is semantic acceptance, not implementation or execution
+authorization. Canonical transitions/reuse, actual S9 acceptance, P3-T1 import, production
+registry adoption, rights/publication/delivery and Phase 3 exit remain separately gated.
+
+**Schema contract accepted — 2026-10-02 Asia/Seoul.** [DEC-084](DECISIONS.md#dec-084--synthetic-trip-registry-schema-and-explicit-legacy-conversion-design)
+accepts schema-4 candidate representations, a version-1 synthetic review/history envelope,
+explicit conversion-only 2/3→4 checkpoints and 4→4 reviewed operations. It preserves exact
+legacy bytes/history, rejects unsupported versions and makes incomplete-history inputs
+unavailable for Trip registration without discarding them. Current readers and production
+formats remain unchanged. The owner authorized only slice A implementation. Acceptance
+includes approval/dependency/proof associations, first-selection representation, stipulated
+seed rules, replay/conversion/unavailability and deterministic diagnostics. No real conversion,
+mutation, registration, allocation or production adoption is authorized.
+
+The eventual synthetic validator is offline and in-memory over invented data. Its scope
+below is divided into the three separately authorized slices after the table:
+
+| Part | Bounded slice |
+|---|---|
+| Inputs | Identified previous registry checkpoint/history, proposed new/attached Trip assignments using invented IDs, stipulated owner-review and source-profile evidence references, and complete S9 inputs/proof associations for first selection or exact old/new snapshots/crosswalks when revised. Proposed targets are supplied; no real allocation, evidence authentication or source parsing. |
+| Validation | Check supported schema/checkpoint, explicit approval/applicability, Trip kind/format and all-history uniqueness for new targets, exact scoped keys, affirmative new-run/same-run/returning-reference correspondence, active existing target for attachment, permanent authority/history and every-field snapshot/index changes. Reject conflicting/stale/wrong-kind updates without partial success; hold unresolved evidence. Refuse canonical transitions and provider-key reuse. |
+| Outputs | Deterministic proposed delta or held/rejected result, complete request accounting, bounded synthetic diagnostics and downstream revalidation obligations. Preserve the input checkpoint and old snapshots. No registry write, production resolver output or automatic consumer rebinding. Concrete encoding/outcome shape follows the reviewed plan. |
+| Focused invented cases | TR83-01–08: one identity across dates, reviewed key churn, refused reuse, repeated visit indices, same-ID snapshot revision, blocked split/merge, atomic conflicting registration, absence versus retired return. Add missing approval/profile/continuity, wrong-kind/retired target, stale checkpoint, all-history collision, unchanged rerun and attempted history rewrite controls. |
+
+This reduced validation slice cannot claim a completed allocator/registry applier. A later
+explicitly authorized synthetic allocation/application slice would exercise the reused
+minter's redraw/eight-collision failure behavior and persistence atomicity after schema
+review; neither runs now. Real profiles, correspondence authenticity and private provisional
+registration require separate evidence and authorization. DEC-082's approved synthetic
+review validator is unchanged; real S9 and all consumer/delivery gates remain outstanding.
+
+DEC-084's corrected proposal passed independent read-only re-review and was owner-accepted.
+Its ordered implementation sequence is: **A**, strict codecs, deterministic digest
+fixtures and dependency closure; **B**, baseline/history/checkpoint replay and conversion
+validation; **C**, registration/attachment and DEC-082-backed initial snapshot selection/
+revision. Only A is authorized and implemented; independent implementation review approved A
+on 2026-10-02 Asia/Seoul.
+Each later slice requires separate authorization and review before progressing. TR84-01–16
+exact-outcome, approval/dependency-mutation, proof-preservation and unchanged-input controls
+supplement TR83-01–08; only their representation/closure controls belong to A. First-selection,
+seed, approval and proof semantics are accepted but not admitted/replayed by A. No shared
+production enum expansion, real registry migration, filesystem loader/writer, allocator or
+source authentication is included. All real S9/import and delivery gates remain separate.
+
+**DEC-084 slice A — implemented and independently approved, 2026-10-02 Asia/Seoul.** New DEBUG-only
+code under `Data/Review/SyntheticTripRegistration*.swift` uses closed schemas and immutable
+canonical byte documents, explicit typed approval payloads, SHA-256 and complete supplied
+dependency inventories. It preserves S9 inputs and proof/view records, including per-run
+predecessor references, without constructing candidates. Success means only
+`completeRepresentation`. Evidence authenticity/applicability, history/checkpoint replay,
+conversion validity and registration/selection admission remain excluded B/C work.
+
+Golden payload/history bytes and SHA values were independently derived with Python `json.dumps(sort_keys=True,
+separators=(',', ':'))` and `hashlib.sha256`, then fixed as literals in tests. Tests also
+cover scalar spelling, all S9 input cases/roles, repeated visits, nested dependency closure,
+missing/cyclic/conflicting records, approval mutations and existing-reader rejection of 4.
+
+**Final focused verification (r6): 101 functions / 219 executed cases passed**, zero
+failures, skips or runtime warnings. The new suite contributes 28 functions / 56 cases;
+existing `SyntheticTripReviewTests` and `MappingRegistryTests` are the affected regressions.
+Debug app and extension dependencies built. The log contains 27 existing primary isolation
+warnings and two AppIntents metadata warnings (54 isolation lines if repeated diagnostic
+renderings are counted); no new slice-A source warning was emitted.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -only-testing:TSUGINOTests/SyntheticTripReviewTests -only-testing:TSUGINOTests/MappingRegistryTests -resultBundlePath /private/tmp/tsugino-dec084-a-r6.xcresult > /private/tmp/tsugino-dec084-a-r6.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-a-r6.xcresult > /private/tmp/tsugino-dec084-a-r6-summary.json
+```
+
+Earlier attempts are separate, overlapping evidence, **not additive totals**. Each used
+the identical test command above with only both `r6` output-path suffixes replaced by
+the recorded run number. Summary commands likewise used that run's exact path/suffix.
+
+| Run | Saved stem under `/private/tmp/` | Outcome / warning counts |
+|---|---|---|
+| r1 — failed environment attempt | `tsugino-dec084-a-r1.log` | Sandboxed CoreSimulator service access failed; specified Simulator destination unavailable. No test execution. Retried with required Simulator/cache access; no physical-device step. |
+| r2 — intermediate | `tsugino-dec084-a-r2` (`.log`, `.xcresult`, `-summary.json`) | 89 functions / 195 cases passed; zero failures/skips/runtime warnings. 35 existing primary isolation + two AppIntents warnings. |
+| r3 — expanded closure/input checks | `tsugino-dec084-a-r3` (same extensions) | 96 functions / 212 cases passed; zero failures/skips/runtime warnings. 27 primary isolation + two AppIntents warnings. |
+| r4 — scalar/registry shape checks | `tsugino-dec084-a-r4` (same extensions) | 99 functions / 215 cases passed; zero failures/skips/runtime warnings. 27 primary isolation + two AppIntents warnings. |
+| r5 — strict version/S9 duplicate guards | `tsugino-dec084-a-r5` (same extensions) | 101 functions / 219 cases passed; zero failures/skips/runtime warnings. 27 primary isolation + two AppIntents warnings. |
+| r6 — final authority-label/conversion-record guards | `tsugino-dec084-a-r6` (same extensions) | Final result above; earlier overlapping runs are not summed. |
+
+**Release verification:** Simulator Release app/extension build passed. Recorded 33 existing
+primary isolation warnings and one AppIntents warning; zero build errors. Symbol inspection
+of both Release executables found **zero** `SyntheticTripRegistration`, `SyntheticRegistration`
+or `SyntheticTripReview` symbols. This is a new Release check for slice A, not reused evidence.
+
+```sh
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd > /private/tmp/tsugino-dec084-a-release-r1.log 2>&1
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/TSUGINO > /private/tmp/tsugino-dec084-a-release-app-symbols.log
+xcrun nm -a /private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity > /private/tmp/tsugino-dec084-a-release-extension-symbols.log
+```
+
+The inspected Release app SHA-256 is
+`5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`;
+extension SHA-256 is `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`.
+Self-review checked syntax-versus-admission separation, unknown/null/numeric handling,
+scalar-exact bytes, independent golden fixtures, full dependency hashing, malformed-input
+uncertainty precedence and DEBUG guards. Reference/historical-record checks and
+`git diff --check` passed. Independent implementation approval is recorded below. No B/C
+implementation, staging, commit, push, merge or real-data action occurred in this slice.
+
+**Independent approval and publication follow-up — 2026-10-02 Asia/Seoul.** A fresh read-only
+reviewer with no implementation authorship inspected actual contracts/code/tests and saved
+evidence independently of author self-review. It approved bounded slice A with no material
+findings or mandatory outstanding checks. All eight working files remained byte-identical
+during review. The reviewer confirmed the final 101 functions / 219 cases (28 new / 56),
+zero failures/skips/runtime warnings, independently recomputed golden digests, successful
+Debug/Release builds, matching retained Release hashes and symbol exclusion. Publication
+reuses these results; no tests/builds rerun and source/test hashes match the reviewed version.
+
+Optional, nonblocking follow-ups: multi-run packets with distinct predecessor IDs and an
+unselected run's missing predecessor; explicit coverage of raw wire duplicate-run preservation
+versus adapter rejection to protect its predecessor dictionary. These remain unimplemented
+follow-ups, not additional publication scope or permission for B/C. The owner separately
+authorized committing/pushing exactly the eight approved files; no merge or next slice.
+Representation completeness remains distinct from authentication, history/conversion validity
+and registration admission. Real S9/import, registry operations, production adoption,
+rights/delivery and Phase 3 exit remain separately gated.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

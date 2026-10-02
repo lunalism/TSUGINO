@@ -4775,6 +4775,18 @@ Reusing the provider-neutral GTFS reader keeps one tested contract instead of tw
 **Does not amend:** DEC-021, DEC-048, DEC-051, DEC-057, DEC-065 §A for Tokyo Metro, DEC-067\
 **Related:** DEC-021, DEC-026, DEC-047, DEC-048, DEC-049, DEC-051, DEC-055 D3, DEC-057 D6, DEC-058, DEC-065, DEC-066, DEC-067; `RULES.md` Rule 8, Rule 9, Rule 14, Rule 39, Rule 40, Rule 42, Rule 53; `ARCHITECTURE.md` §4, §4.3, §9, §39, §40, §41; `ROADMAP.md` Phase 2 P2-S3, P2-S4, P2-S5; `PROVIDER_FEASIBILITY_AUDIT.md` §3.5, §3.6.3, §3.12, §6.1.3, §6.2.3, §6.2.4, §6.5
 
+**Narrow Trip extension — Accepted DEC-083, 2026-10-02 Asia/Seoul.** The historical
+§A1 Trip exclusion and §C1 namespace list below are superseded only for the accepted
+registry kind `trip`, prefix `trp` and conditional Trip-only `gtfs.trip_id` namespace.
+Trip allocation/attachment requires owner-approved correspondence at an identified
+registry checkpoint; returning Trip references require affirmative continuity rather
+than §E2's non-conflicting structure alone. Permanent authority/history and atomic
+conflict rejection apply. Initial registration, reviewed attachment and snapshot revision
+are the only accepted Trip operations. DEC-083 accepts semantics only: schema/version
+planning and implementation authorization remain outstanding. Other kinds, DEC-073's
+transition scope, provider-key reuse and §F production/publication gates are unchanged.
+The original text and prior amendments remain historical records.
+
 ## Context
 
 P2-S4 maps the two launch feeds to operator-level station identities and to the 15 baseline lines. It waits for two things (`ROADMAP.md` slice plan):
@@ -7767,6 +7779,12 @@ proposals, not authoritative resolver records or consumable canonical Trip outpu
 No exception to DEC-068 §C1 is claimed. Real register-backed emission is outside the
 first synthetic slice. This is a substantive outstanding decision, not file-layout work.
 
+**Subsequent disposition — DEC-083, accepted 2026-10-02 Asia/Seoul.** The five
+bounded Trip registration choices are now accepted as a narrow DEC-068 extension.
+The gap description above is retained as history. Concrete schema/version planning,
+implementation authorization and verification, actual registration and real S9 evidence
+acceptance remain outstanding; DEC-082 candidates still confer no registration authority.
+
 ### 3.3 Revisions and downstream obligations
 
 When evidence establishes the same logical run, keep its TripID while reviewing any
@@ -7941,6 +7959,673 @@ real P3-T1 import. DEC-077's commercial pause, production registry/ID-promotion 
 applicable Q3/Q4, rights/publication/translation/delivery/bundling/deletion obligations,
 S10/Track A expansion and Challenge restrictions remain. No production P5, engine,
 source compatibility, launch reduction or Phase 3 exit is accepted by this proposal.
+
+---
+
+# DEC-083 — Bounded Recurring Trip Registration Before Authoritative P2-S9 Output
+
+**Status:** Accepted — five bounded registration choices; unimplemented, no execution authority\
+**Date:** 2026-10-02 Asia/Seoul\
+**Related:** DEC-060/061, DEC-068/073/075/078/082; ARCHITECTURE §§5.3/39/40/41; ROADMAP P2-S9/P3-T1
+
+## Owner acceptance — 2026-10-02 Asia/Seoul
+
+Following the independent proposal review, the owner accepts precisely:
+
+1. Registry kind `trip` and prefix `trp`, reusing DEC-068 minting and historical
+   uniqueness rules; Domain TripID validity and recurring identity stay unchanged.
+2. Owner-approved correspondence/allocation requests applied offline against an
+   identified registry checkpoint.
+3. Trip-only `gtfs.trip_id` references, conditional on evidenced source scope,
+   uniqueness, meaning and continuity; no provider-specific applicability is presumed.
+4. Affirmative continuity for returning references, permanent attachment authority,
+   immutable history and atomic conflict rejection.
+5. Initial registration, reviewed attachment and snapshot revision only. Canonical
+   transitions, provider-key reuse and production adoption remain blocked pending
+   separate acceptance.
+
+This narrowly extends DEC-068 §A1/§C1 and the Trip-specific returning-reference rule
+in §E2, with its existing ownership/history safeguards; it does not extend DEC-073's
+transition applier to Trips. Review readiness was not acceptance; this owner instruction
+supplies the acceptance now. No code or schema implementation exists for this extension.
+Acceptance does not authorize implementation, actual registry mutation, real ID allocation,
+private-evidence access, acquisition, import or production adoption. Real P2-S9 evidence
+acceptance, P3-T1 import, registry-of-record, rights/publication/delivery and Phase 3 exit
+remain separate gates.
+
+The proposal, cases and ordered follow-up below are preserved as reviewed history.
+Their Proposed/pending-choice wording describes that stage; the five choices above now
+govern. Recommendations for later transitions and future work are not further acceptance.
+The concrete schema/version/conversion plan is still required before implementation;
+concrete source profiles remain separately evidenced prerequisites before real use.
+
+## Context and confirmed gap
+
+DEC-060 defines a Trip as one recurring canonical scheduled run; equal stopping patterns
+do not make two departures the same run. DEC-068 §A1 explicitly excludes TripID minting,
+and §C1 has no Trip provider-reference namespace. DEC-073 §A covers station, line and
+operator transitions only; it also excludes provider-value reuse. DEC-082 §3.2 retains
+this registration gap: its approved synthetic candidates establish local consistency,
+not authoritative registration. DEC-075 keeps real S9 before canonical Trip consumption
+and real P3-T1 import. DEC-078's dated occurrence facts cannot supply missing S9 identity.
+
+DEC-083 was verified unused across repository Markdown before drafting. This proposal
+would narrowly extend DEC-068 for Trip registration if accepted; it changes no accepted
+record now and does not implicitly extend DEC-073's transition implementation.
+
+## Proposed decision
+
+### A. Identity, allocation and authority
+
+Keep DEC-060 identity and DEC-051 Domain validity unchanged. Recommend adding registry
+kind `trip` with mint prefix `trp`, using DEC-068's existing 80-bit random body, exact
+format, all-history collision checks and eight-collision failure rule. The label encodes
+no provider value, station sequence, date, time or hash of source data. This prefix/kind
+extension is a new owner decision, not an already accepted minting permission.
+
+Only the existing offline registry workflow may allocate/register, against one explicitly
+identified registry lineage and previous revision/hash. Require an explicit owner-approved
+allocation request for a proved distinct recurring run, or a reviewed attachment request
+to an existing active TripID. The project owner approves the exact correspondence record;
+technical authors may prepare it and tooling may validate/apply it, but neither a parser,
+app, synthetic validator nor an unmatched source row confers approval. No automatic minting,
+parallel authoritative registry, per-date minting or production promotion is permitted.
+Reruns verify the retained allocation/attachment and reuse it; they do not draw another ID.
+
+### B. Source-reference scope and evidence
+
+Recommend adding **`gtfs.trip_id` as a Trip-only reference namespace**. This names the
+source field, not a claim that it identifies a stable recurring run in every feed.
+Other formats require their own explicit namespace/profile extension; no ODPT train-like
+field, timetable record identifier or URI is assumed to be a recurring-run key here.
+
+Reuse the full `(sourceID, namespace, exact Unicode-scalar value)` key and DEC-068 source
+provenance. Before any real attachment, an approved source profile must define the sourceID's
+publisher/resource/feed scope, key uniqueness within that scope, identity meaning and
+cross-revision continuity limits, with evidence. Do not assume uniqueness across feeds,
+operators, members or dates. Unproved or insufficient scope holds registration. A file hash
+identifies evidence, not identity: no new sourceID or namespace may be invented on refresh
+to evade a held key or disguise reuse. A necessary key-scope change needs explicit schema/
+source-scope review, not ad-hoc importer concatenation.
+
+The owner-only correspondence record must retain:
+
+- unique review ID, reviewer/authority, approval time and digest of the approved content;
+- exact previous registry revision/hash, source/profile/mapping versions and identified
+  evidence hashes/locators; hashes establish integrity, not publisher authenticity;
+- proposed TripID or explicit new-run request, all source keys, prior bindings, competing
+  assignments and affirmative same-run/distinct-run reasoning;
+- the related S9 review/snapshot/crosswalk references where available, and unresolved
+  prerequisites. Identity registration alone never certifies passenger classification.
+
+Identical stops, repeated visits, headsigns, names, train-like strings, chronology, source
+order or unchanged source IDs alone cannot promote identity. Source semantics may establish
+correspondence only to their evidenced extent. If time interpretation is needed to prove
+it, hold for separately authorized evidence work; S9 does not start parsing timetables.
+Ambiguous correspondence stays held. Contradictory approved bindings, stale review bases,
+wrong-kind targets or competing registrations for one scoped key reject the proposed
+registry update atomically; no first-writer/last-writer choice or duplicate-ID fallback.
+One key has at most one current target in a registry revision; several keys may name one
+Trip only with affirmative reviewed correspondence for each attachment.
+
+### C. Revisions, transitions and retained history
+
+| Situation | Proposed disposition |
+|---|---|
+| Same logical run, revised passenger stops, segments, service type or coverage | Keep TripID; preserve old and new full snapshots and occurrence crosswalks. Revalidate changed evidence under DEC-082; ID-only equality is insufficient. |
+| Source identifier changes, affirmative reviewed continuity | Attach the previously unheld new key to the same active TripID. Retain original attachment authority and all old-key sightings/status/history; a rename alone is not evidence. |
+| Same source key reappears after absence | Require applicable continuity evidence before current resolution; unchanged spelling or non-conflicting structure alone does not establish recurring-run continuity. Hold uncertainty and reject conclusive reuse in this bounded workflow. |
+| Source key reused for a different recurring run | Refuse rebinding/reactivation, even when the new run's distinctness is proved. Hold real output pending an explicit provider-value-reuse design; DEC-073 transfer does not authorize this. Do not create a synthetic namespace or fresh ID to bypass the held key. |
+| Missing source record | Preserve history; mark the reference absent only within the profile's declared complete reconciliation scope. Missing input/scope is uncertainty. Neither absence nor expiry retires the canonical Trip. |
+| Canonical retirement, replacement, split or merge | Record a transition proposal, but do not apply it in the minimum slice. Require an explicit Trip-kind extension of DEC-073, reviewed source/successor identities and complete reference dispositions. Ambiguity never selects a survivor or fans one key out to several targets. |
+
+For that later transition extension, recommend DEC-073's existing semantics: pure retirement
+has no successor; replacement/merge/split use fresh successors, preserve immutable predecessor
+bindings and direct successor lists, and never delete/reuse/reactivate IDs or follow successors
+automatically. The current station/line/operator applier is not a Trip migration. Provider-value
+reuse and many-to-many identity changes remain distinct further decisions. Until supported,
+affected outputs are unavailable; blocking them does not assert that the old run still operates.
+
+Reuse versioned deterministic registry snapshots, permanent attaching-review authority,
+active/absent/retired reference history and all-history ID uniqueness. New Trip schema support
+requires an explicit supported-version conversion/invalidation plan before implementation;
+do not silently reinterpret old registries or allocate a new identity during schema conversion.
+Apply only the reviewed exact delta to the expected previous checkpoint, producing a new
+artifact atomically without overwriting its predecessor. Preserve independent operations in
+separate checkpoints and verify unchanged reruns. Reuse DEC-073 history/delta principles where
+applicable, not its unsupported entity-kind or transition permissions.
+
+Snapshot/crosswalk changes invalidate reuse of old original-index associations for new output;
+evidence/profile/binding changes reopen their dependent associations even if structure is equal.
+Revalidate affected T1 dated facts, train/ride contexts, continuity/eligibility evidence and
+data-view bindings. Repeated StationIDs never identify visits. Existing immutable Journey
+snapshots remain untouched; runtime replacement/recovery belongs to its owning contracts.
+
+### D. Provisional registration is not production adoption
+
+Extend the existing **provisional** registry lineage first, outside Git. Such registration
+can support a separately authorized private S9 evaluation but is not production identity
+or authoritative real output by itself. Authoritative output requires the accepted registration
+contract, its verified implementation, applicable approved registry authority and actual scoped
+S9 evidence acceptance. Production authority additionally requires DEC-068 §F's registry-of-record
+decision, explicit adoption/history reconciliation and applicable delivery gates. A successful
+synthetic validator, a typed TripID or a provisional record satisfies none of these alone.
+
+Raw source values, real references, reviews and detailed provenance remain owner-only, outside
+Git/runtime Domain. Public records contain only authorized aggregates; no private paths,
+restorable extracts or real registrations accompany this proposal. Source access, authentication,
+passenger classification, rights review and real acceptance each require their own scope.
+Q3/Q4, publication/translation, bundling/delivery and Challenge restrictions remain applicable.
+
+## Invented specification cases — not executed tests or feed claims
+
+All keys, runs, stations, views and dates below are invented symbols, not minted IDs.
+
+| Case | Input | Required result / boundary |
+|---|---|---|
+| TR83-01 Two dates | Reviewed recurring T has executions on D1 and D2 | One TripID. T1 supplies separate view/date/snapshot-bound facts under DEC-078's proved one-execution-per-date limit; no per-date registration. Multiple executions on one date remain unsupported pending identity design. |
+| TR83-02 Key churn | Source key k1 becomes previously unheld k2; reviewed continuity proves T | Attach k2 to T with its own permanent authority; retain k1 history/status. Without continuity, hold. |
+| TR83-03 Key reuse | Held k1 formerly denotes T, now affirmatively denotes distinct U | Reject rebinding in this slice; neither a fresh TripID nor a retired-key reactivation resolves reuse. Await the separate reuse contract. |
+| TR83-04 Repeated visits | T snapshot [A,B,A,C] | Preserve A at original indices 0 and 2. Neither station-key deduplication nor the pattern alone proves recurring identity. |
+| TR83-05 Snapshot revision | Same proved T: V1 [A,C], V2 [A,B,C] | Preserve T and both snapshots; C@1 from V1 cannot bind to V2. Revalidate downstream facts; registration alone does not accept the inserted stop. |
+| TR83-06 Split/merge ambiguity | T may correspond to U/V, or T/U may correspond to V | Hold, allocate/transfer nothing, retain competing evidence. Even resolved canonical transitions need the later Trip-kind transition extension. |
+| TR83-07 Conflicting registrations | Two reviewed proposals bind the same scoped k to T and U in one target revision | Reject the update atomically; preserve previous registry. Distinct source scopes are not conflated, but cannot be invented to evade this conflict. |
+| TR83-08 Missing or retired reference | k disappears; separately, retired k returns | Preserve absence history without canonical retirement; retired return is a conflict. No deletion, inferred successor or current-operation claim. |
+
+## Owner choices, rationale and smallest acceptance boundary
+
+Recommend accepting only the registration contract in A–D: offline owner-approved allocation,
+`trp` format reuse, Trip-only `gtfs.trip_id` with separately evidenced source profiles, exact
+reviewed correspondence, immutable history and the conservative blocked-transition boundary.
+New owner decisions are the Trip kind/prefix, namespace admission/scope requirements, approval
+authority, explicit continuity requirement for returning references, and which operations the
+first extension may apply. These are not inherited automatically from station registration.
+Actual schema version/conversion and concrete source profiles require review before use;
+Trip transitions, provider-key reuse and registry-of-record adoption are not accepted by this package.
+
+This is smaller than designing a general Trip migration or provider-history system now.
+Provider-derived/per-date IDs and structural deduplication contradict recurring identity;
+silently reusing the existing transition applier would conceal its kind and reuse limits.
+Consequence: ambiguous or transition-dependent runs remain unavailable until their own gates
+pass. That reduces accepted data availability, not the product's launch requirements.
+
+Ordered follow-up, each separately authorized:
+
+1. Review this proposal and resolve its owner choices; record any bounded acceptance and
+   synchronize current-truth architecture/roadmap without erasing DEC-068/073 history.
+2. Review the concrete registry schema/version plan, then authorize one synthetic offline
+   allocation/attachment/revision slice and tests for TR83-01–08, atomicity, collision/history
+   preservation and deterministic reruns. No real IDs or source parser in that slice.
+3. Authorize exact owner-only source/profile/correspondence evidence review and provisional
+   registration separately; unresolved namespaces, reuse or transitions stay blocked.
+4. Complete actual P2-S9 passenger classification, mapping, snapshot/crosswalk and scope
+   acceptance before real canonical consumption or P3-T1 import. T1 feed interpretation,
+   production registry adoption, rights/publication/delivery and Phase 3 exit remain separate.
+
+Revisit on evidenced key-scope insufficiency, multiple executions per run/date, required Trip
+retirement/split/merge, provider-key reuse or production adoption. No implementation, allocation,
+private access, acquisition or additional decision acceptance is authorized by this draft.
+
+---
+
+# DEC-084 — Synthetic Trip Registry Schema and Explicit Legacy Conversion Design
+
+**Status:** Accepted — bounded synthetic format contract; only slice A implementation authorized\
+**Date:** 2026-10-02 Asia/Seoul\
+**Related:** Accepted DEC-068/073/082/083; RULES Rule 39; ARCHITECTURE §§39–41; ROADMAP P2-S9 follow-up
+
+## Owner acceptance — 2026-10-02 Asia/Seoul
+
+Following independent read-only re-review of the corrected proposal, the owner accepts
+precisely its schema/codec versions and isolated synthetic readers; acyclic approval/digest
+domains and dependency representation; S9 proof/view/predecessor associations; narrow
+stipulated synthetic seed rules; request/replay and initial-snapshot-selection representation;
+conversion/unavailability behavior; and deterministic outcomes/diagnostics.
+
+Only slice A is authorized for implementation now: DEBUG-only strict codecs, deterministic
+digests and dependency closure over invented inputs. Representation integrity is neither
+evidence authentication nor business approval. Slice B history/checkpoint replay/conversion
+validation and slice C registration/attachment/S9 selection remain separately unauthorized.
+No real conversion, registration, registry mutation, allocation or production adoption is
+authorized. Inherited DEC-083 semantics and all real S9/import, rights/delivery and Phase 3
+exit gates remain unchanged. The reviewed proposal below is preserved as historical design;
+its Proposed/pending wording records that stage and is governed by this acceptance overlay.
+
+## Slice A implementation status — 2026-10-02 Asia/Seoul
+
+Implemented only DEBUG-only representation codecs, deterministic digests and supplied-record
+dependency closure in `SyntheticTripRegistrationCodec.swift`, `SyntheticTripRegistrationSchema.swift`,
+`SyntheticTripRegistrationClosure.swift` and `SyntheticTripRegistrationS9Codec.swift` under
+`TSUGINO/Data/Review/`. `SyntheticTripRegistrationCodecTests` covers invented inputs. Independent
+review approved bounded slice A on 2026-10-02 Asia/Seoul; this is not real S9 acceptance.
+Saved verification and exact commands are recorded in ROADMAP's DEC-084 slice-A entry.
+
+The codec uses a closed wire-value tree and explicit field/tag schemas; immutable documents
+retain canonical bytes. The schema table owns concrete associated-value labels (`stationID`,
+`lineID`, `tripID`, `mapping`, `evidence`) and seed-inventory field names. A completed approved
+record contains payload/approval; the incomplete form may omit approval to produce
+`approvalMissing`, never null or an invented review. Equal prescribed ordering prefixes in
+multi-view applicability arrays use remaining canonical record bytes as a deterministic tie
+breaker; only exact duplicate entries are discarded by rejection, never merged.
+
+Closure checks supplied/nested records, local byte digests and approval payload integrity,
+including the complete approved-baseline hash and envelope authority-label consistency.
+`completeRepresentation` expressly does not establish evidence support, owner authenticity,
+checkpoint freshness, history completeness, conversion validity, active-target eligibility
+or business admission. Those checks remain in B/C. Opaque legacy registry/history blobs are
+retained, not interpreted or converted. No allocator, reader expansion or production wiring
+was added. The S9 adapter preserves every input field and per-run predecessor ID without
+constructing predecessors or candidates; it refuses any bridge that would silently coalesce
+scalar-distinct membership values into a Domain Set. Proof applicability/reconstruction and
+downstream registration outcomes remain slice C. Resource bounds are local synthetic codec
+limits, not new railway identity semantics.
+
+## Independent slice A implementation approval — 2026-10-02 Asia/Seoul
+
+A fresh read-only reviewer context with no implementation authorship inspected the actual
+accepted contracts, code, tests and saved verification without inheriting author self-review
+conclusions. It found no material slice-A findings or mandatory outstanding checks. The
+implementation author coordinated Git/file-preservation checks; author self-review is not
+the independent approval. All eight files remained byte-identical during that review.
+
+Approval covers only DEBUG-only representation codecs, digest/dependency integrity and
+lossless S9 input serialization. The reviewer independently verified 101 functions / 219
+cases, including 28 new functions / 56 cases, zero failures/skips/runtime warnings, golden
+digests, Debug/Release build evidence and retained Release exclusion. Saved warnings and the
+initial Simulator-access failure remain separately recorded in ROADMAP; overlapping runs
+are not summed. Publication reuses that evidence because source/test bytes remain unchanged.
+
+Nonblocking follow-ups are a multi-run packet with distinct predecessors/unselected-run
+missing-predecessor coverage, and explicit coverage/documentation of raw wire preservation
+versus adapter rejection of duplicate run references. Neither is implemented by publication.
+This approval accepts no further decision and authorizes no slice B/C work, authentication,
+history replay, conversion validity, registration/S9 admission or real registry operations.
+All real S9/import, production-adoption, rights/delivery and Phase 3 exit gates remain.
+
+## Scope and observed compatibility
+
+DEC-083 accepts Trip registration semantics, not a wire format or an implementation.
+This proposal supplies the missing format and compatibility boundary. DEC-084 was unused
+in repository Markdown before this draft. All examples and future first-slice inputs are
+invented; no existing private registry was inspected.
+
+At `46297ff3c9ea01006a85253bbccec2858805c99c`, the actual implementation has these limits:
+
+| Code | Observed constraint / consequence |
+|---|---|
+| `TSUGINO/Data/Mapping/MintedIdentifier.swift` | `CanonicalKind` has only `stn`, `lin`, `opr`; `trp` fails parsing. Its raw values are prefixes, not words such as `trip`. |
+| `TSUGINO/Data/Mapping/ProviderReference.swift` | Closed namespace enum has no `gtfs.trip_id`. Exact scalar keys and source provenance are reusable, but namespace/kind admission is not already implemented. `attachedBy` is optional for legacy records. |
+| `TSUGINO/Data/Mapping/MappingRegistry.swift` | Ordinary reader accepts only schema 2; explicit DEC-073 reader accepts 2/3. Schema 3 permits empty successors for retirement. Unknown fields, duplicate JSON keys and unsupported versions are rejected. Neither schema represents Trip registration authority/history. |
+| `TSUGINO/Data/Mapping/ReviewedRevision.swift` | Attach/retire records identify a key and input hash; they do not bind a complete Trip request, source profile, approval or previous checkpoint. |
+| `Tools/StaticDataIntake/Sources/RevisionReconciliation.swift` | An absent reference can become active automatically. That path cannot implement the stricter DEC-083 returning-Trip rule merely by extending enums. |
+| `Tools/StaticDataIntake/Sources/IdentifierMinting.swift` | Collision checks compare the 16-character body across all held kinds; preserve this stricter existing check. The synthetic validator must not call the minter. |
+| `Tools/RailwayStorage/Sources/IdentityTransition.swift` | Schema-1 sidecar binds exact previous/target snapshots, approvals and immutable boundaries, but its operations/kinds are DEC-073 transitions, not Trip registration. Reuse its principles, not its authorization type or applier. |
+| `TSUGINO/Data/Review/SyntheticTripReviewValidator.swift` | Candidates deliberately have no Codable/public memberwise construction and retain private proof-role/movement applicability. Serializing only their public Trip/crosswalk fields would lose proof. |
+
+Thus adding enum cases alone would silently broaden schemas 2/3 and ordinary reconciliation.
+No accepted runtime artifact format or production reader is changed by this proposal.
+
+## A. Proposed versions and representation
+
+Recommend **registry schema 4** for candidate Trip-bearing snapshots, with top-level
+`schemaVersion`, `revision`, `entities`, `references` as today. Preserve existing entity
+and reference field shapes and all non-Trip semantics. Kind `trip` is represented by the
+`trp` identifier prefix, not a redundant persisted kind field. Admit `gtfs.trip_id` only
+for `trp`; retain exact sourceID/namespace/value keys. Every newly introduced Trip reference,
+including initial registration, requires non-null `attachedBy` naming its introducing
+review. Legacy optional authority remains unchanged. Trip entities introduced here are
+active; no Trip successor, retirement, deletion or rebinding operation is admitted.
+
+Recommend a separate **synthetic review envelope version 1**, identified by
+`format: "tsugino.synthetic-trip-registration"`, `schemaVersion: 1`, and
+`mode: "synthetic"`. Required sections are `lineageID`, `ownerAuthority`, `baseline`, `history`,
+`request`, `approvals`, `profiles`, `evidence`, `s9Artifacts`. This is a fixture/dry-run
+format, not a second authoritative registry or a format accepted by the app. A schema-4
+snapshot alone is insufficient: its identified review/history closure is mandatory.
+The proposed first implementation uses separate DEBUG-only DTOs and a dedicated reader;
+it does not broaden the shared enums, ordinary intake, minter or transition reader.
+
+Support original-valid schema 2/3 baselines, explicit 2→4 or 3→4 conversion-only
+requests, and 4→4 reviewed requests. The sole additional baseline admission is §D's
+explicitly stipulated, invented schema-4 seed for returning/retired-reference controls;
+it is not a conversion result or a real-lineage reset. Missing seed completeness holds;
+established contradictions in its supplied inventory reject.
+For every required `schemaVersion`, absence, null, wrong type, fractional value or an
+unrepresentable integer yields only `malformedInput` for that tag. A present valid integer
+outside the supported versions yields `unsupportedVersion`. Neither defaults a version
+nor permits interpretation of that malformed/unsupported record's contents. Schema 1,
+unknown/future versions, downgrade and mixed-mode envelopes remain rejected.
+Version 4 is a proposed reservation, not a claim that current readers support it.
+Keep current readers rejecting 4; future adoption needs a separately reviewed reader/
+consumer rollout. Do not pass schema 4 through the schema-2 reconciliation path.
+
+Use existing deterministic encoding mechanisms with explicitly separate domains:
+registry bytes use `MappingRegistry.encoded()`'s pretty-printed, sorted-key,
+unescaped-slash JSON convention; envelope payloads/records use `RailwayArtifact.encode`'s
+compact sorted-key, unescaped-slash JSON convention. No trailing newline; SHA-256 means
+lowercase 64-hex digest of those exact UTF-8 bytes, never Swift `hashValue` or a reconstructed
+legacy file. Byte blobs use standard padded base64. Reject duplicate/unknown keys,
+unknown enum tags, invalid integers and duplicate record IDs. Optional fields are absent,
+not null. Preserve scalar-exact text without normalization. Sort entity IDs, full reference
+keys and unordered IDs by UTF-8 bytes; keep semantic sequences (history, positions,
+crosswalks, movement intervals) in their defined order. New-format bytes must round-trip
+exactly under the designated codec; codec changes require a new version, not new hashes
+for old records. Preserve original legacy bytes even when their whitespace differs.
+
+## B. Checkpoints, requests and records
+
+These are proposed concrete record fields, using existing token/digest/ExactValue checks.
+Every ID below is an invented printable-ASCII token in the proposed synthetic slices; registry IDs
+additionally obey the DEC-068/083 prefix/body form. No wall-clock, UUID or random generation
+occurs during validation. Times/IDs are supplied and therefore replayable.
+
+| Record | Required representation and validation |
+|---|---|
+| Checkpoint | `lineageID`, `schemaVersion`, `revision`, `registrySHA256`, `historySHA256`. Registry and history bytes must be supplied and match; lineage is bound in history. A request names `expectedPrevious` and `target`. Target revision is previous + 1, with checked arithmetic. |
+| Baseline | `payload` holds `lineageID`, fixture-stipulated `ownerAuthority`, exact `registryBytes`, optional exact DEC-073 `legacyHistoryBytes`, explicit `legacyHistoryState` (`none` or `present`), their digests, `historyComplete`, `seedInventory` and `dependencyDigests`. The inventory explicitly lists retained attachment/status record IDs, allocation/review IDs and selected `{tripID, artifactID}` associations; selections are unique per Trip. Retained records/artifacts have complete digest-bound bytes, not only ID lists. `approval` binds the payload as specified below. Validate legacy history through its original contract when present; absence cannot stand in for known history. Missing completeness holds; conflicting inventory rejects. |
+| Request payload | `requestID`, `lineageID`, `operation` (`convertLegacy`, `register`, `attach`, `reviseSnapshot`), `expectedPrevious`, `targetRegistryBytes`, `records`, `profileIDs`, `evidenceIDs`, `s9ArtifactIDs`, `dependencyDigests`. Payload SHA covers all fields, including target bytes and each dependency's ID plus SHA of its complete encoded record; the digest inventory includes the transitive closure. One ID cannot resolve to different content. One operation kind per checkpoint, possibly several independent records; no conversion mixed with business changes. |
+| Approval | `reviewID`, `author`, `reviewer`, `role: "owner"`, `approvedAt` (UTC RFC3339 seconds), `subjectKind` (`profile`, `baseline` or `request`), `subjectID`, `payloadSHA256`, `approvalReference`. Match the digest of that subject's payload wrapper, excluding its approval, and the baseline-bound fixture owner authority. A profile approval never hashes a request. Local validation checks presence, applicability and consistency; it does not authenticate a person, signature or publisher. Missing approval holds; mismatched digest/competing authority assertions reject. |
+| Registration record | `recordID`, `allocationRequestID`, `tripID`, `referenceKeys`, `correspondenceEvidenceIDs`, optional `snapshotArtifactID`. Explicit approved distinct-run request, supplied fresh invented target, all-history body uniqueness across every kind, no automatic unmatched-row allocation. Every new key is accounted for; no existing key is attached to the new identity. |
+| Attachment record | `recordID`, `tripID`, `key`, `mode` (`newKey` or `returning`), optional `previousRecordSHA256`, `correspondenceEvidenceIDs`. Target is active and held in the previous checkpoint. New key must be absent from the whole history; returning key must already belong to that same target, be absent, and match the complete predecessor record digest. Return requires affirmative applicable continuity. Preserve its original `attachedBy` and first-seen hash; the new return review is an observation authority in history, not replacement attachment authority. |
+| Snapshot selection/revision record | `recordID`, `tripID`, `mode` (`initialSelection` or `revision`), `nextArtifactID`, `correspondenceEvidenceIDs`; `previousArtifactID` is required only for `revision` and forbidden for `initialSelection`. Both use operation `reviseSnapshot` and target an active previously held Trip. Initial selection requires no previous selection in complete retained history; revision requires the exact previously selected artifact. Full applicability and atomicity rules are below. Never mutate an old artifact or a Journey snapshot. Registration without an S9 artifact is not S9 completion. |
+| History version 1 | `format: "tsugino.synthetic-trip-history"`, `schemaVersion: 1`, `lineageID`, `baselineSHA256`, ordered `boundaries`. Each boundary retains exact previous/target registry bytes, request payload and approvals/dependencies, plus `previousBoundarySHA256` (absent only for first). Retain every previous boundary byte-for-byte; selected snapshot artifacts and attaching authorities are derived by replay, not mutable parallel flags. |
+
+To avoid a hash cycle, a request's target descriptor is derived from `targetRegistryBytes`
+and contains schema/revision/registry digest only. The complete target checkpoint's `historySHA256` is calculated after appending
+its boundary; it is not part of the approved payload. The history root identifies baseline
+bytes and legacy history without incorporating its own hash. Verify all predecessor links,
+all retained request/review/allocation IDs and every complete delta, not only the last record.
+
+### Digest domains, closure and concrete invented trace
+
+Use compact encoding from §A for each payload wrapper
+`{format: "tsugino.synthetic-trip-payload", schemaVersion: 1, subjectKind, subjectID, payload}`.
+An approval hashes this whole wrapper, not a bare ambiguously typed payload. A completed
+approved record is exactly `{payload: <wrapper>, approval: <Approval>}`. Its digest includes
+all approval bytes. **`baselineSHA256` is the SHA of the complete approved baseline record**,
+not just its payload or registry bytes. The initial history has that hash and no boundaries;
+the baseline never contains its own resulting history/checkpoint hash. The envelope's
+`ownerAuthority` must equal the baseline payload's assertion; changing it is not a new trust
+grant. Profile/baseline approvals are stipulated synthetic authority, not authentication.
+
+Every `dependencyDigests` inventory is an array of `{kind, id, sha256}` entries sorted by
+UTF-8 `(kind, id)`, with no duplicates. Kinds are `evidence`, `profile`, `s9Artifact` and
+`seedRecord`. Hash the entire corresponding encoded record, including a profile's approval.
+Request record order remains significant; profile evidence-ID lists and other unordered
+ID lists sort by UTF-8 bytes. The digest inventory contains all directly referenced records
+and their transitive digest dependencies exactly once. Retain their bytes in matching order.
+The baseline inventory covers its seed dependencies; a request inventory covers its own
+dependencies, including full S9 predecessors. Existing dependencies may be referenced again
+only with identical bytes. The approved previous checkpoint already binds retained history.
+
+Evidence is a leaf: its source-content `sha256` identifies an invented evidence source,
+whereas the inventory hashes the complete evidence record, including disposition and
+applicability. Profile payloads digest their evidence records, never their own approval.
+S9 artifacts digest completed profiles, evidence and predecessor artifacts. Seed records
+may digest those dependencies, but not the baseline that contains them. Only identifier
+associations point forward: evidence's profile ID/version, artifact ID, request/record ID,
+TripID, occurrence UUIDs and view UUIDs are applicability labels, not hashes of containing
+records. Validate their exact associations after closure resolution; they confer no missing
+authority and must not be expanded into reverse digest edges. Unknown dependency kinds,
+duplicate IDs or digest cycles reject. Missing referenced bytes hold; present bytes with a
+different approved digest reject. Across baseline and all boundaries, a record ID or review/
+allocation ID cannot be reused with changed content; quoting an existing authority ID is
+an association, not a fresh approval. Complete request replay remains governed below.
+
+For invented evidence E, profile P, predecessor artifacts A0→A1, baseline B and request Q,
+let `H` mean SHA-256 of the specified exact encoding (these are symbols, not fake hash values):
+
+1. Encode leaf E, including scope/disposition; compute `hE`. P's wrapped payload contains
+   its profile fields and `{evidence,E,hE}`. Approve that wrapper as subject `profile/P`;
+   encode completed P and compute `hP`. E may name P by ID/version but never hashes P.
+2. Encode A0's complete packet, proof/view associations and dependencies E/P. Compute hA0.
+   Encode A1 with its per-run predecessor ID A0 and inventory binding hA0, hE and hP;
+   compute hA1. Every further predecessor follows this same acyclic ordering. Topological
+   traversal breaks ties by artifact ID bytes; inventory serialization uses `(kind,id)` order.
+3. B's payload binds its exact legacy/seed bytes and full inventory (including hA0 if
+   selected at the seed). Approve wrapper `baseline/B`; hash the complete approved B as hB.
+   Initial history H0 binds hB; hash H0 to form checkpoint C0 with the registry digest.
+4. Q binds C0, exact proposed target registry bytes, operation/records, and its complete
+   dependency inventory including hA1/hA0/hP/hE. Hash wrapper `request/Q`; approve it.
+5. Encode boundary `{previousRegistryBytes, targetRegistryBytes, request, approvals,
+   dependencies, previousBoundarySHA256?}`; `request` is Q's wrapper, and approvals sort
+   by review ID (exactly one applicable owner approval for Q). Append it unchanged to H0.
+   Hash resulting H1 to form C1. Q contains no H1/C1 digest. The next boundary links the
+   previous complete boundary's digest; the first omits that field. Altering E, either
+   approval, or any transitive predecessor changes an approved dependency/checkpoint and
+   cannot be repaired by silently recomputing hashes under the old approvals.
+
+Same request ID + identical payload/approval/dependency bytes against its retained boundary
+is `unchangedReplay`, with the original target/checkpoint and no append or allocation, only
+when that target is the supplied current checkpoint. An altered reuse of any ID rejects.
+Replay against a later current checkpoint is stale, not permission to reapply or roll back.
+A request may not invent another lineage/sourceID to escape an existing historical conflict.
+
+## C. Evidence and S9 boundaries
+
+Each profile is a completed approved record from §B. Its wrapped payload contains
+`profileID`, `version`, `sourceID`, `publisherScope`,
+`resourceScope`, `feedScope`, `namespace: "gtfs.trip_id"`, `applicableInputSHA256s`,
+`uniquenessEvidenceIDs`, `meaningEvidenceIDs`, `continuityEvidenceIDs`, and `dependencyDigests`
+for every named evidence record. A changed profile needs a new immutable profile ID/version
+and approval; it cannot overwrite a profile used by an older view.
+Scope descriptions are ExactValue text, never an algorithmic uniqueness guarantee. Evidence
+records contain `evidenceID`, `sha256`, `locator`, `role`, applicable `profileID`, input/view
+IDs, exact reference keys, Trip/record IDs and a stipulated disposition (`supports`,
+`unresolved`, `contradicts`). Hashes and locators identify invented evidence; they neither
+authenticate it nor allow the validator to read paths or acquire missing artifacts.
+Applicable proof must cover each claimed correspondence; evidence for another key, feed,
+view or interval cannot fill a gap. No default profile or source-specific assumption.
+
+**Exact S9 association records.** Each artifact adds `proofBindings`, `viewBindings` and
+`dependencyDigests` to its ID, packet bytes/hash and selected run reference. These tables
+are part of the artifact digest, not caller-only annotations:
+
+- A `proofBindings` entry is `{runReference, role, proofUUID, evidenceID, scope}`.
+  Roles are `interval`, `identity`, `continuity`, `origin`, `destination`, `classification`,
+  `mapping`, `movement`. Scope has the exact `tripID`, `profileID`, `profileVersion`,
+  `sourceID`, reference-key set and all four view UUIDs. It additionally carries
+  `occurrence` for classification/mapping, `from`/`to` occurrence UUIDs for interval/
+  continuity/movement, `lineID` for movement, and `occurrence` for the selected boundary of
+  origin/destination. Identity applies to the exact run reference and proposed TripID.
+  Derive uses from every input run, not just the selected output. Every used proof UUID
+  in every role has one matching entry; one UUID used in several roles requires separately
+  matched entries. Sort by run UUID bytes, role in the order above, scope occurrence/span
+  UUID bytes and proof UUID. Duplicate entries reject.
+- The enclosing evidence record contains `applicability`, an array of those exact
+  `{runReference, role, scope}` claims, sorted by the same tuple. Its profile/version and
+  input/view/key/Trip fields must agree with each claim. Movement scope denotes the exact
+  ordered source-occurrence interval and line, retaining the DEC-082 normalization and
+  applicability rules; no gap bridging, station-based visit joining or interval widening.
+  An evidence record can explicitly cover multiple uses, but its mere presence in the
+  packet UUID set supplies none of these claims.
+- A `viewBindings` entry is `{component, revisionUUID, evidenceID, profileID, profileVersion}`,
+  exactly one for each `sourceRevision`, `mappingRevision`, `profileRevision`, `reviewRevision`
+  in the packet view. Each referenced evidence record also carries `viewApplicability`
+  entries `{component, revisionUUID, profileID, profileVersion, inputSHA256s}`. These explicitly
+  stipulate the version association and applicable input set. Match the exact approved
+  profile and its source/input scope; a UUID equality alone is not that association.
+  View entries sort in the component order above. Evidence applicability arrays may be
+  empty for roles they do not serve, but required claims cannot be inferred from emptiness.
+
+All binding evidence and completed profiles, for all runs and transitive predecessors,
+belong in the digest closure. A missing required proof binding holds
+`correspondenceUnavailable`; a missing view binding holds `scopeUnavailable`.
+A binding inconsistent with the actual packet use (wrong UUID,
+occurrence or target) rejects `snapshotConflict`; a missing evidence record or absence of
+an applicable supporting claim holds `correspondenceUnavailable` (`scopeUnavailable` for
+missing profile/view scope). Unrelated evidence is not an affirmative contradiction. An
+established applicable `contradicts` claim rejects `snapshotConflict`, retaining unrelated
+hold diagnostics. An approved dependency digest mismatch rejects `historyConflict` rather
+than masquerading as missing evidence. Check every applicable supplied claim, including
+competing ones; selecting a supporting entry cannot hide a contradictory one. All these
+are local checks of invented assertions; they authenticate no evidence or publisher.
+
+S9 artifacts use a separate version-1 synthetic input-record codec, not a Codable escape
+hatch for `SyntheticTripReviewCandidate`. Encode every field of the existing DEC-082 packet/
+run input: view's four UUIDs, evidence UUID set, run reference, positions with reference/order
+and full classification/mapping/evidence, selected first/last, interval/identity/continuity
+evidence, both boundaries and ordered movements. UUIDs are lowercase hyphenated strings;
+sets sort by UUID bytes; enum objects have `tag` equal to the existing case name plus all
+named associated values; absent optional evidence/order is omitted. Resolved station mapping
+includes the full membership set sorted by exact LineID bytes. Replace the in-memory `prior`
+candidate in **each run** with an optional `priorArtifactID`; artifacts carry unique IDs, exact encoded
+packet bytes/hash and the selected run reference. References must form an acyclic complete
+graph. Reconstruct predecessors in dependency order and call the existing DEC-082 validator
+to obtain candidates, preserving its private classification/mapping/movement proof roles.
+No fabricated candidate, ID-only equality, cropping or lossy public-field serialization.
+Validate complete packets, including unselected runs; an invalid packet cannot be made valid
+by choosing another run. Predecessor cycles reject `snapshotConflict`; absent predecessor
+bytes hold `snapshotUnavailable`. Do not fabricate a predecessor to run a dependent check.
+Continue independently safe conflict checks; missing one dependency cannot mask an already
+established conflict elsewhere. Each selected predecessor candidate must belong to its
+dependent run's TripID; every selected request candidate must equal the request record's
+target TripID exactly. Reconstruction also checks the enclosing bindings above before any
+candidate can support a registration result.
+
+Missing artifact/proof yields held output; an established inconsistency rejects even when
+unrelated evidence is missing. Snapshot revision requires successful candidates for both
+artifacts, the exact retained predecessor association and affirmative same-run correspondence.
+For mode `revision`, the selected new run's `priorArtifactID` must be exactly
+`previousArtifactID`, which must match the checkpoint's retained selection; a different
+artifact with an equal TripID or snapshot is insufficient. Same-view contradictions still
+reject under DEC-082. Changed-view revisions require applicable owner-approved same-run
+evidence and complete new-view proof associations; they do not inherit old proof by shape.
+Full snapshot, view, crosswalk or applicable evidence/profile/binding changes issue revalidation
+obligations for dated T1 facts, original-index associations, train/ride contexts, continuity/
+eligibility and data-view bindings. Equal TripIDs do not discharge those obligations.
+Returning references with non-conflicting shape but no continuity remain held. Retired keys,
+proved reuse, changed targets, retirement/split/merge or any implicit successor following
+remain blocked; no new namespace/ID fallback. Marking absence from source reconciliation is
+outside this minimum slice; fixtures may carry reviewed absent baseline/history records,
+but missing request input never changes registry status.
+
+**Proposed first snapshot selection.** Mode `initialSelection` supplies `nextArtifactID`
+for an already-held active Trip when complete baseline/history replay proves that Trip has
+never had a selected snapshot. Missing selection history holds; a known prior selection
+rejects `snapshotConflict`, not an automatic conversion to revision. The selected run has
+no `priorArtifactID`; its full packet must still validate and its candidate TripID must
+equal the held target. Require a new owner approval of this exact checkpoint-bound request
+and affirmative same-run evidence associating the candidate/run/source keys with the held
+identity; the earlier allocation approval alone does not authorize snapshot selection.
+Preserve every registry entity/reference and attachment authority, changing only registry
+revision and the newly recorded selection in appended history. Account for the selection
+once and atomically with all other records in the same operation batch; no partial output.
+Return obligations to validate any downstream use against this first selected artifact,
+never a claim that real S9 evidence was accepted. Subsequent changes use `revision`.
+
+This is a new **Proposed representation and explicit first-selection precondition**, intended
+to complete DEC-083's identity-only registration followed by snapshot handling. It neither
+changes canonical identity nor permits a new transition. DEC-083 did not explicitly specify
+this operation shape: owner consideration of DEC-084 must expressly include first selection;
+it is not treated as already authorized by calling it a revision. No further identity or
+production semantic extension is proposed, and accepted DEC-083 text remains unchanged.
+
+## D. Lossless conversion or explicit unavailability
+
+Recommend conversion-only candidate checkpoints, reusing DEC-073's strict-old-validation
+and comparison-view approach. Validate 2 under original schema-2 rules (including nonempty
+retirement successors), or 3 under its explicit reader and required retained transition
+history. Compare every entity/reference field unchanged in the schema-4 target; only schema
+and revision advance. Preserve omitted legacy `attachedBy`, all sightings, names, statuses,
+successors and binding-version history. Do not add Trips, fabricate approval, mint, normalize
+keys, flatten successor chains, repair invalid records or reset history during conversion.
+Retain exact predecessor bytes/hashes and legacy sidecar bytes as immutable history roots.
+Conversion does not retrospectively impose Trip-specific evidence requirements on non-Trips.
+
+Reject malformed/unsupported legacy formats. Hold an otherwise valid checkpoint if required
+history completeness cannot be established; report it **unavailable for Trip registration**.
+This invalidates eligibility for this consumer only, not the old artifact's validity under
+its own accepted consumers. Preserve all inputs; never silently discard/reseed a registry,
+drop unknown fields or regenerate real identities. No actual conversion command, migration
+engine, private-file inspection or production persistence is part of any proposed slice.
+
+The ordinary new-lineage test root is an explicitly invented schema-2 empty registry with
+revision 0 and declared empty history. Returning/retired-reference controls may instead
+stipulate an invented schema-4 baseline, with complete retained attachment/status records,
+owner fixture approval and selected S9 artifacts. That explicit seed is a test premise,
+not an output produced by this validator or permission to create absent/retired states.
+History replay starts at that identified seed; it must not claim to have verified the
+external process that established it. This is the same narrow exception admitted in §A.
+Seed attachment/status records retain their complete predecessor/authority assertions and
+are explicitly marked stipulated inventory, not validator-produced boundaries. Missing
+records/completeness yield `historyUnavailable`; conflicting bindings, reused authority IDs
+or a selection inconsistent with the supplied seed yield `historyConflict`, even if another
+inventory item is missing. Other fixtures retain their supplied history; a new
+synthetic root cannot stand in for a real/provisional lineage. Real conversion, source-profile
+acceptance and registry-of-record adoption each require separate authorization and evidence.
+
+## E. Atomic results and focused invented cases
+
+Validate the whole request against one immutable checkpoint. Each entity/reference and
+artifact selection difference must be explained by exactly one record; unrelated differences
+reject. Multiple records cannot claim the same key or introduce the same ID/body. Existing
+non-Trip records are frozen in registration checkpoints. No partial candidate escapes.
+Return `candidateDelta`, `unchangedReplay`, `held`, or `rejected`, with every request record
+accounted for in original order. Candidate output includes complete proposed target bytes,
+proposed history/checkpoint and revalidation obligations, never a publication capability.
+Held/rejected results expose no applicable partial target. Inputs remain byte-identical.
+
+Proposed diagnostic order is: `unsupportedVersion`, `malformedInput`, `historyConflict`,
+`staleCheckpoint`, `approvalConflict`, `identityConflict`, `referenceConflict`,
+`blockedOperation`, `snapshotConflict`, `approvalMissing`, `historyUnavailable`,
+`scopeUnavailable`, `correspondenceUnavailable`, `snapshotUnavailable`. Deduplicate by code
+and invented record locator, sort by that order then locator bytes. Rejection outranks holds
+but retains all applicable uncertainty diagnostics. Do not invent secondary findings where
+malformed/version-invalid structure cannot safely be inspected. Diagnostics contain codes
+and invented locators only, not raw provider values, evidence text or paths.
+
+| Case | Invented input / exact required distinction |
+|---|---|
+| TR84-01 Legacy | Valid 2→4 preserves absent authority, names and references; valid 3→4 preserves empty-successor retirements and complete sidecar. Invalid schema-2 empty successors reject, never relabel. Trip-bearing schema 2 rejects. |
+| TR84-02 Version | Absent/null/string/boolean/fractional/out-of-range required `schemaVersion` rejects only `malformedInput` for that tag. Present supported-type integer 1 or 99 rejects `unsupportedVersion`; 4→2 remains an unsupported conversion. No default version or unsafe partial decoding. Old readers still reject 4. |
+| TR84-03 Checkpoint | Correct revision with wrong digest/lineage/history or an old review base rejects; unchanged exact replay returns the retained target without another revision. Altered replay rejects. |
+| TR84-04 Attachment | Two records assign k to T/U, or k is held on T but proposed on U: atomic `referenceConflict`. Unrelated missing profile also retains `scopeUnavailable`, after the conflict. |
+| TR84-05 Evidence | Missing approval, proved scope, or applicable same/distinct-run evidence holds with ordered diagnostics. Unrelated proof cannot fill it; affirmative contradictory binding still rejects. |
+| TR84-06 Return | Absent k→same T with affirmative continuity may produce a candidate, retaining first attachment authority. Missing continuity holds; retired return/proved reuse rejects without rebinding. |
+| TR84-07 Snapshot | T: [A,B,A,C]→[A,C] preserves both complete artifacts and distinct old A visits; requires revalidation. Wrong predecessor or same-view DEC-082 contradiction rejects; missing predecessor artifact holds. |
+| TR84-08 Atomicity | One valid attachment plus one conflict yields no partial delta; previous bytes/history unchanged. Unexplained non-Trip edit or historical authority rewrite rejects. |
+| TR84-09 Uniqueness | New trp body colliding with a retired stn body rejects, as do two new Trip targets sharing a body. Two dates do not authorize two recurring IDs. No random draws. |
+| TR84-10 Scope limit | Split/merge/retirement requests and namespace changes disguising reuse stay blocked. Conversion plus registration in one checkpoint rejects; separate conversion does not confer registration approval. |
+| TR84-11 Approval closure | Mutate E's applicability/disposition, P's owner approval, B's approval, or transitive A0 while keeping the approved digest: `historyConflict`; mutate an approval's subject/payload digest: `approvalConflict`. Rehash a changed dependency without renewing the request approval: `approvalConflict`. A profile approval refers only to its own payload. Digest cycles reject `historyConflict`; identifier-only P↔E applicability associations are allowed and checked without creating digest edges. |
+| TR84-12 First selection | Register T without a snapshot, then separately approve `initialSelection` of A0 for that same active T: candidate with appended selection and downstream obligations. Prior selection already exists or candidate targets U: `snapshotConflict`. Missing same-run proof holds `correspondenceUnavailable`; missing complete selection history holds `historyUnavailable`. Initial selection plus an independently conflicting record rejects atomically. |
+| TR84-13 Predecessors | A2→A1→A0 reconstructs all complete packets and proofs in dependency order. Missing A0 holds `snapshotUnavailable`; altered retained A0 rejects `historyConflict`; a cycle rejects `snapshotConflict`. A2 naming a lookalike A1 instead of the selected predecessor rejects. A conflicting unselected run cannot be cropped away. Preserve membership, repeated visits and every private proof role, including movement interval/line applicability. |
+| TR84-14 Applicability | Packet proof UUID u has no outer binding/evidence or only unrelated profile/interval evidence: hold `correspondenceUnavailable` (missing profile/view scope: `scopeUnavailable`). A binding disagrees with actual occurrence/UUID/Trip: `snapshotConflict`. Applicable contradictory proof plus missing unrelated profile: exact ordered codes `[snapshotConflict, scopeUnavailable]`. Missing support alone never establishes contradiction. Same-view proof/disposition contradictions still reject; changed-view full proof plus affirmative same-run review can yield a revision candidate with revalidation obligations. |
+| TR84-15 Seeds and inventories | The explicit invented schema-4 return/retired control seed is admitted with stipulated complete inventory, not authenticated external history. Missing inventory holds `historyUnavailable`; conflicting retained binding/approval/selection plus another missing item gives `[historyConflict, historyUnavailable]`. Changed schema-3 sidecar bytes/digest or binding predecessor rejects; a missing required sidecar holds. No real lineage reset or repair through conversion. |
+| TR84-16 Replay and atomic uncertainty | Exact Q replay at its current target is unchanged; at a later checkpoint it is stale. Same ID with different payload/approval/dependency bytes rejects. One established S9 conflict plus an unrelated missing artifact gives `[snapshotConflict, snapshotUnavailable]`, with no partial delta. A malformed packet suppresses only checks requiring its unsafe structure, not an independently established batch/history/reference conflict. |
+
+## Owner choices and exact next boundary
+
+Inherited accepted requirements are Trip kind/prefix, conditional exact references,
+owner-approved checkpoint-bound correspondence, affirmative returning continuity,
+permanent authority/history, atomicity and blocked transitions/reuse. **New choices needing
+review and acceptance** are schema 4 and its reader isolation, version-1 envelope/history/
+S9-input codecs, acyclic profile/baseline/request approval domains and complete dependency/
+proof associations, the narrow stipulated schema-4 seed inventory, request/replay shapes
+including explicit initial snapshot selection, separate conversion checkpoints with
+consumer-only invalidation, and the deterministic result/diagnostic contract. None is
+accepted here. First-selection representation needs express owner consideration as stated
+in §C; it is not silently added to accepted DEC-083 text.
+
+After focused independent re-review and owner acceptance of the proposal, recommend these
+three ordered **separately authorized** DEBUG-only offline, in-memory implementation slices:
+
+| Slice | Boundary and required evidence before the next slice |
+|---|---|
+| A. Strict codecs and closure | Implement only version/shape/encoding rules, deterministic digest fixtures, approval payload domains and dependency/proof association representations. Golden bytes/digests and mutation, missing-dependency, cycle and ordering controls must establish unambiguous closure. No registry-operation candidate or publication authority. |
+| B. Baseline/history/checkpoints and conversion | Build on reviewed A: validate stipulated baseline inventories, immutable history, exact current-target replay/staleness and lossless conversion-only deltas. Prove all-field/sidecar preservation, missing versus conflicting history, body-history retention and unchanged inputs. No registration/attachment or S9 selection application. |
+| C. Registration/attachment and S9 selection | Build on reviewed A/B: supplied invented targets, permanent authority, explicit initial selection and exact-predecessor revision through full DEC-082 replay. Prove all private proof roles, occurrence/view applicability, complete-delta accounting, atomic conflict-plus-uncertainty outcomes and downstream obligations. |
+
+Exercise TR84-01–16 and retained TR83-01–08 in their owning slices with exact outcomes and
+diagnostic ordering. Each slice needs its own implementation authorization and review; A
+does not authorize B or C. Reuse pure checks where possible; do not alter production enum/
+version admission or expose candidate construction. No allocator, filesystem loader/writer,
+CLI publication, parser, real profile or registry resolver belongs in any of these slices.
+
+Real/provisional conversion and mutation, real allocation, authenticated correspondence,
+passenger classification evidence acceptance, authoritative P2-S9, P3-T1 import, production
+registry adoption, rights/publication/delivery and Phase 3 exit remain separate. No new
+decision is accepted, implementation authorized or real artifact accessed by this draft.
 
 ---
 

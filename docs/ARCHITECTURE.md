@@ -1866,6 +1866,28 @@ This reduces migration pain when providers change.
 - **Where minting happens.** Only in the offline tool (§4.1 Tools), and only on an explicit request in the run input. The app never mints.
 - **No production identifiers yet.** Until a registry-of-record decision settles where the registry lives, every registry is provisional, kept outside the repository, and no minted identifier is a production identifier.
 
+**Trip extension (Accepted DEC-083, 2026-10-02 Asia/Seoul; unimplemented).** The
+registration contract adds kind `trip` and prefix `trp`, reusing the DEC-068 format,
+randomness, all-history uniqueness and collision rules. Only the offline workflow may
+apply owner-approved correspondence/allocation requests against an identified registry
+checkpoint. Accepted Trip operations are initial registration, reviewed attachment and
+snapshot revision. Canonical transitions, provider-key reuse and production adoption
+remain separately blocked; DEC-073's existing applier does not support Trip transitions.
+No Domain validity change, implementation, registry mutation or real allocation is
+authorized by DEC-083 alone. DEC-068's provisional/production distinction continues to apply.
+
+The concrete schema/conversion design is [Accepted DEC-084](DECISIONS.md#dec-084--synthetic-trip-registry-schema-and-explicit-legacy-conversion-design)
+(2026-10-02 Asia/Seoul). Only slice A is implemented: separate DEBUG-only wire schemas,
+canonical encoding/SHA-256, dependency closure and a lossless deferred S9-input adapter in
+`Data/Review/SyntheticTripRegistration*.swift`. It returns representation completeness or
+bounded diagnostics, never registry candidates or approval authority. It does not run the
+DEC-082 validator, authenticate evidence, replay history or validate conversion/registration.
+Independent read-only review approved this bounded slice on 2026-10-02 Asia/Seoul; approval
+does not extend representation completeness into any of those later guarantees.
+Slices B/C remain unimplemented and separately unauthorized. Current ordinary registry
+intake still reads schema 2; the DEC-073 reader supports 2/3. Neither supports Trip
+registration. The isolated schema-4 wire codec does not change that production boundary.
+
 ---
 
 ## 39.1 Language Resolution Architecture
@@ -1965,6 +1987,16 @@ See DEC-082 and ROADMAP for scope/evidence.
 Canonical **lines** are also product identity, not provider records (DEC-057 D6): the Tokyo Metro Marunouchi main line and branch are **one** `LineID`, so the mapping layer maps **several provider railway identifiers** — including the provider's separate Marunouchi branch record — to that one canonical line, each as an explicit entry that retains its provider provenance. The same aliasing serves future operators whose records split or merge a canonical line differently (multi-owner airport-access infrastructure, service-corridor brands), and canonical lines are always modelled complete — never clipped at a prefectural boundary (DEC-058 §3). That provenance is what later allows provider-specific status or realtime resources to be scoped to the branch (Phase 4); it never enters the Domain `RailwayLine` value. Canonical adjacency topology (§5.2.1) is populated by the Phase 2 importer from provider stop sequences, and its derived membership is checked against every `Station.lineIDs` at that level (DEC-055 D2, DEC-057 D9).
 
 **Provider references, reviewed records, and revisions (DEC-068).** The mapping layer is made of records in `Data/Mapping/`; it is never held only in code.
+
+**Accepted Trip reference semantics (DEC-083; unimplemented).** Trip-only
+`gtfs.trip_id` references reuse the full scalar-exact source/namespace/value key only
+under an evidenced source profile establishing scope, uniqueness, meaning and continuity.
+No cross-feed or long-term uniqueness is assumed. Returning references require affirmative
+continuity; attachment authority and history are permanent, conflicts reject atomically,
+and no held key may be rebound through ordinary reconciliation. Snapshot/crosswalk and
+evidence changes require downstream revalidation without mutating old Journey snapshots.
+The existing non-Trip records below are not an implemented Trip schema. Real source
+profiles, S9 acceptance, timetable import and production/rights gates remain separate.
 
 - **Provider references.** Every provider value that identifies an entity — a GTFS `agency_id`, `route_id`, `stop_id`, or `stop_code`, or an ODPT operator, Railway `@id`, `owl:sameAs`, or line code — is a provider-reference record. It holds its canonical identifier, source, namespace, status, and the first and last identified input it was seen in. A reference that reconciliation attached to an existing identity through a reviewed record also names that review, for good, and a rerun verifies that same review (registry schema version 2, DEC-068 §C1 as amended). Version 1 registries are rejected, never silently migrated; they are regenerated, which is possible only while every registry is provisional and holds no production identity.
 - **Exact values.** A reference keeps the exact decoded value: the Unicode scalars as read from UTF-8, with no normalization, compared scalar by scalar. It also keeps a source reference: the input and member SHA-256, the table or record index, the field, and the provider key. Source bytes are not stored, and byte-for-byte preservation is claimed only for raw inputs retained outside the repository.
