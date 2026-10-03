@@ -4867,6 +4867,62 @@ permission to select another candidate. This interface cannot authenticate confi
 evidence. No new nomination, real re-read, private evidence opening, registry operation,
 S9/P3-T1 acceptance, publication, commit, push or merge occurs in this task.
 
+#### Owner-reported real inspection pilot — 2026-10-03 Asia/Seoul
+
+Following separate explicit authorization for one same-candidate real re-read using the
+published interface at `a5bbbc7de694407f9cac88521b2283f0ee84991f`, the owner reports using
+the original confirmed candidate and authorized archive identity, successfully opening the
+session, running summary, inspecting the first occurrence and navigating through records.
+The fourteenth occurrence displayed successfully after resolving confusion between uppercase
+letter O and digit zero. The invalid-command incident is resolved; no code defect is established.
+The owner reports exiting and unsetting the local archive-path and confirmed-label variables.
+This is **owner-reported execution**, not agent-observed private inspection, independent
+railway-semantic validation or proof of secure memory/terminal erasure. The one-use re-read
+grant has been exercised; it does not authorize another run or evidence-content access.
+
+Reported summary: transport-order inversions **0**, railway order **unverified**;
+classification gaps **14**, ordering gaps **14**; provenance, identity, mapping, movement
+and endpoints gaps **0 each**. The latter counts mean no additional gaps were recorded,
+not that those requirements were fulfilled. Classification remains unknown for all fourteen
+source occurrences; no passenger-stop count or railway order is accepted. The memory-only
+session does not retain an evidence packet. **P2-S9 remains incomplete.** No private archive
+path, candidate label, source key, locator or occurrence content accompanies this record.
+
+**Next proposed scope: source-document applicability review only; no new tool or archive run.**
+Use [DEC-082 §§1–2 and §6](DECISIONS.md#dec-082--p2-s9-passenger-stop-input-review-recurring-identity-evidence-and-acceptance-plan)
+and the [readiness access matrix](P2_S9_REAL_READINESS.md#exact-proposed-access-scope-for-the-next-task).
+Already identified in tracked records: the accepted Toei DS-01 `dd575706…` snapshot
+(779,699 bytes, feed version 20260921); its historical P2-S2 intake manifests and S4 acceptance;
+the GTFS Schedule Reference dated 2026-04-27 cited by P2-S0/S1; and
+[provider audit §6.8/B11](PROVIDER_FEASIBILITY_AUDIT.md#68-service-type-brand-supplemental-fare-and-seating-field-evidence--b11-offline-2026-09-23-dec-061).
+These are references, not confirmation of currently available evidence files. B11 concerns
+the older Toei `f10d03cd…` hash, not this revision; generic GTFS definitions and archive
+integrity alone cannot establish source-specific applicability. No pilot evidence-reference
+allowlist or content review was reported. Train-timetable JSON remains payload-unverified.
+
+The minimum proposed private allowlist is (1) the exact existing acquisition/provenance record
+and intake manifest for this snapshot, excluding credentials and payload members; (2) exact
+existing Toei/ODPT publisher interpretation documentation or authoritative occurrence-review
+records that explicitly cover this resource/revision's passenger-stop versus traversal rows
+and ordering-key semantics; and (3) only any specification revision explicitly incorporated
+by that source evidence. Item 2's actual artifact names/hashes and revision-applicability
+proof are not identified in tracked records; retained paths/hashes for the allowlist must be
+supplied privately by the owner before access. Do not invent files, search directories or
+substitute an older/newer feed. If authoritative evidence is absent, report that gap and scope
+any research/acquisition separately.
+
+After a named read-only access grant, manually review only those documents in an owner-only,
+unrecorded setting: verify identities/provenance, exact revision applicability, affirmative
+stop/pass definitions, restrictions versus passing, numeric ordering meaning, supported
+variants/exceptions and invalidation conditions. Report supported claims and missing evidence;
+do not apply rules to the fourteen occurrences in this document-only step. No archive/member
+re-read, candidate substitution, raw times, mapping/registry access, export or persistence is
+included. Public reporting is a non-restorable evidence/gap summary only. Reference linking
+in the published interface opens no content and supplies no authority. If an applicable profile
+is supported, separately review it and authorize any later occurrence-level application and
+crosswalk review; unknown interior positions remain held, never cropped. Identity, mappings,
+movement/endpoints, actual registration and scoped S9 acceptance retain their own evidence gates.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
