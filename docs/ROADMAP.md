@@ -4174,6 +4174,317 @@ merge, main push, branch deletion or next-slice implementation. C2, authenticati
 operations/allocation, real S9/import, production adoption, rights/publication/delivery and
 Phase 3 exit remain separate gates.
 
+### DEC-084 C2 scope lock and contract-to-test matrix — 2026-10-03 Asia/Seoul
+
+The owner separately authorizes DEBUG-only C2 on the existing Phase 3 branch, starting
+from clean HEAD `fcb2b6526248a82725a15d201a2de5598f8135a0`. This implements accepted
+DEC-082/083/084 semantics; it accepts no new decision or real evidence. Reuse A/B and
+reviewed C1 through a full-admission entry point; preserve the identity-only entry point.
+Only completed C2 checks may discharge required-S9 limits. No public-field reconstruction
+or fabricated DEC-082 candidate is permitted.
+
+Intended file boundary: new `SyntheticTripRegistrationReconstruction.swift` for complete
+artifact graphs and proof/view admission; new `SyntheticTripRegistrationSnapshots.swift`
+for selection history and downstream obligations; focused integration in
+`SyntheticTripRegistrationAdmission.swift`; new `SyntheticTripRegistrationSnapshotTests.swift`;
+current-truth DECISIONS/ARCHITECTURE/ROADMAP status updates. Existing codecs and DEC-082
+validator remain the authority and should be reused without semantic changes. Additional
+edits require a demonstrated necessity within this boundary.
+
+| Accepted boundary | Focused invented checks |
+|---|---|
+| Full DAG reconstruction via DEC-082, all runs and private proof roles | A2→A1→A0; missing/cyclic/wrong/lookalike predecessor; conflicting/incomplete unselected run; repeated visits |
+| Exact enclosing evidence/profile proof and four-component view applicability | Missing/wrong binding; unrelated support; competing negative; conflict with unrelated missing dependency; split/unsplit spans and changed applicability |
+| Registration with optional snapshot; initial selection; exact revision predecessor | Identity-only/with-snapshot registration; first selection after identity registration; prior-selection conflict; missing history; target mismatch; same-ID and changed-view revisions |
+| Whole retained business history before candidate/replay | C1 regressions; retained required-S9 conversions; exact current replay; stale/altered reuse; incidental catalog controls |
+| Complete accounting, deterministic atomic outcomes and obligations | Multi-record failure; original record order; unchanged inputs; retained bytes; initial downstream validation and changed snapshot/view/crosswalk/evidence revalidation |
+
+Verification will run focused C2 and affected C1/A/B/S9 suites, Debug dependencies and
+Release exclusion for new declarations, keeping overlapping runs and failures separate.
+No allocator, filesystem loader/writer, CLI, source parsing/authentication, actual conversion/
+mutation, consumer rebinding, timetable import, private evidence or production composition.
+No staging, commit, push or merge. Stop with independent implementation review pending.
+Real P2-S9, P3-T1 import, registry adoption, rights/delivery and Phase 3 exit remain separate.
+
+### DEC-084 C2 local implementation and verification — 2026-10-03 Asia/Seoul
+
+C2 is locally implemented under the scope lock above; **independent implementation review
+is pending**. This is author self-review, not independent approval. The seven-file boundary
+is admission integration, new reconstruction/selection sources and snapshot tests, plus
+DECISIONS/ARCHITECTURE/ROADMAP. No A/B codecs, legacy validators, DEC-082 validator, C1 tests,
+shared production reader/enum, project composition or accepted semantic text changed.
+
+The full `SyntheticTripRegistrationAdmission.validate` entry requires mechanical integrity,
+C1 admission and C2 admission of all required retained/incoming operations before atomic
+candidate or current-target replay. The original `validateIdentityOnly` gate remains intact.
+Reconstruction uses complete packets and actual DEC-082-generated predecessors, never a
+public-field candidate factory. All runs and proof roles participate. Approved closures bind
+competing evidence; incidental catalog entries grant no authority. Same-run correspondence must cover the held reference’s actual input hash; an unrelated profile input cannot fill that gap. Known selected IDs remain
+reserved even when their bytes cannot be reconstructed. Revision uses the exact selected
+artifact; first selection requires complete no-prior history. Returned obligations name dated
+T1 facts, original indices, ride contexts, continuity/eligibility and Data-view bindings;
+no consumer is rebound. Stipulated seeds remain premises, not verified external history.
+
+Focused coverage in `SyntheticTripRegistrationSnapshotTests.swift`:
+
+| Contract | Cases |
+|---|---|
+| Registration without/with selection, repeated visits, immutable inputs | s01; s22 |
+| First selection, exact replay, prior selection, incomplete history, missing selected bytes | s02–03, s08, s16, s21 |
+| A2→A1→A0, exact/wrong/lookalike/missing/cyclic predecessor, unchanged private proof applicability | s04–06, s09–10, s17 |
+| Every proof role, wrong/missing occurrence/view association, changed-view missing profile, competing bound versus incidental claims | s07, s12, s18–19, s25–26 |
+| Complete unselected runs; conflicts retain actual mapping uncertainty without inventing it | s11, s24 |
+| Required-S9 retained conversions/replay, atomic multi-record accounting, stale/altered replay, incidental catalog contents | s13–15, s20, s22 |
+| Initial, changed snapshot/view/evidence and reference-binding downstream obligations | s01–02, s04, s06, s23 |
+
+Final combined verification used the explicit iPhone 17 Simulator on iOS 26.5:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationSnapshotTests -only-testing:TSUGINOTests/SyntheticTripRegistrationAdmissionTests -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-dec084-c2-final2.xcresult > /private/tmp/tsugino-dec084-c2-final2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-c2-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-final2-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-c2-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-final2-tests.json
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -resultBundlePath /private/tmp/tsugino-dec084-c2-release.xcresult > /private/tmp/tsugino-dec084-c2-release.log 2>&1
+```
+
+The final combined run passed **204 functions / 516 executed cases**, zero failures,
+skips or runtime warnings. Its saved test tree independently separates C2 **26/54**, C1
+**49/115**, B **65/219**, A **28/56**, and DEC-082 S9 **36/72**. These are disjoint suites
+within this one final run; no intermediate/older run is added. Debug app/extension dependencies
+built. Final Debug compilation recorded **27 existing conformance-isolation warnings** and
+**two AppIntents metadata warnings**. Release app/extension build passed and recorded **33
+existing isolation warnings** (27 conformance warnings plus six `isBlank` actor-call warnings
+in unchanged canonical identifiers) and **one AppIntents warning**. No C2-source warning remains.
+
+Fresh Release symbol inspection ran `nm` on both retained executables, piped its captured
+stdout through `xcrun swift-demangle`, and searched `SyntheticTrip|SyntheticRegistration`.
+Both tools exited 0, raw `nm` stderr was empty, and both outputs had zero matches. Saved
+paths, SHA-256 values and results: `/private/tmp/tsugino-dec084-c2-release-symbols.json`.
+The app hash is `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`;
+the embedded `TSUGINOLiveActivity.appex/TSUGINOLiveActivity` hash is
+`659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`. These also match
+retained C1 Release evidence. All new declarations remain enclosed by `#if DEBUG`. The later input-hash predicate correction and s26 tests change only DEBUG bodies/tests; they add no Release declarations or composition, so the fresh Release build/exclusion result remains applicable without another build.
+
+**Intermediate/failed attempts, excluded from final counts:** focused commands used exactly
+the final test command above with only `-only-testing:TSUGINOTests/SyntheticTripRegistrationSnapshotTests`,
+and substituted `r1`/`r2`/`r3`/`r4`/`r5` for `final2` in the log/result paths. `r1` compiled
+but the test process crashed (saved summary reports eight failed functions / 12 failed runs);
+the copied fixture's forced key lookup did not support snapshot records. After correcting
+that fixture, `r2` passed 8/13. `r3` failed compilation at two overlapping inout accesses in
+new fixture closures; local copies fixed them. `r4` passed 16/31; expanded `r5` passed 23/48.
+The first combined `final` run passed 203/514 before self-review added the held-reference input-hash check and s26 controls. It is not summed with the corrected `final2` result. No intermediate result substitutes for the final run. Their raw logs remain separate: `r1`
+28 compiler warnings (27 conformance plus one existing RailCapabilityTests actor warning)
+and two AppIntents; `r2` 27 + two; `r3` 27 + one; `r4`/`r5` zero compiler + one AppIntents
+each. The first binary-inspection helper used an incorrect extension basename and reported
+it missing; it made no extension-exclusion claim. The corrected inspection above used the
+actual embedded executable and verified both binaries. No Simulator-access failure occurred
+in this C2 task, and no physical device was accessed.
+
+Self-review checked construction boundaries, no partial bytes, exact predecessor/target
+associations, all required conversion dependencies before early returns, and deterministic
+conflict precedence. Mapping diagnostics preserve uncertainty only at an actual missing
+mapping/proof occurrence; an impossible mapping alone does not fabricate a hold. Reference,
+accepted-history preservation and `git diff --check` checks passed. Fresh Release checking
+was required for the new source files; unrelated phase/device evidence is not re-run or
+claimed as C2 coverage. No independent approval, real S9 evidence acceptance, actual registry
+execution/conversion/allocation, source parsing/authentication, P3-T1 import, production
+registry adoption, rights/publication/delivery or Phase 3 exit is conferred.
+
+### DEC-084 C2 independent-review corrections — 2026-10-03 Asia/Seoul
+
+Two independently confirmed findings are corrected locally; **independent re-review is
+pending**. Scope remains Phase 3's bounded DEBUG-only synthetic review. This turn changes
+only `SyntheticTripRegistrationReconstruction.swift`, `SyntheticTripRegistrationSnapshots.swift`,
+`SyntheticTripRegistrationSnapshotTests.swift` and ROADMAP within the existing seven-file
+inventory. Admission integration, ARCHITECTURE and DECISIONS remain byte-identical to the
+start of this correction; accepted semantics and all earlier records are preserved.
+
+1. **Source-key/registry conflict:** selected-run affirmative source-key/Trip assertions
+   now reconcile against exact retained and planned registry bindings. With J→T and K→U,
+   artifact K→T rejects with `referenceConflict`; unrelated J/T correspondence cannot
+   bypass it. Claims require an actual packet use, exact enclosing approved profile/evidence,
+   and approved dependency bytes. Every selected proof role participates, so a coherent
+   identity-role J claim cannot conceal another role's explicit K→T assertion. Unbound
+   keys are not guessed, rejected or implicitly attached. Missing correspondence stays
+   uncertainty, and a proven binding conflict retains that uncertainty. Baseline selections,
+   registration, initial selection, revision and retained/current-target replay use the same
+   checks. The directly related audit also found that later new-key attachments could
+   contradict a retained selection without carrying a new snapshot; retained affirmative
+   scopes are now checked against those planned bindings too.
+2. **Missing bindings hiding contradictions:** authorized claims are checked against actual
+   proof uses and packet view components before chosen-binding completeness branches.
+   All eight proof roles and all four view components retain exact scope, profile approval,
+   source/input/key/Trip and dependency guards. An applicable negative rejects with
+   `snapshotConflict` while missing proof/view bindings retain `correspondenceUnavailable`
+   / `scopeUnavailable`. Unrelated, unapproved and unresolved assertions supply no negative
+   authority. Approved source-profile purpose assertions are also inspected independently
+   where exact applicable scope is available; missing support never fabricates a conflict.
+
+New exact-outcome regressions: s27 covers register/initial/revision × conflicting/coherent/
+unbound keys; s28 retained replay; s29 missing correspondence with/without known conflict;
+s30 all eight missing proof roles × four assertion controls; s31 all four missing view
+components × those controls; s32 complete-binding approved/unapproved controls; s33 later
+attachment versus retained selection; s34 coherent identity proof with conflicting keys in
+other roles. s30–32 run both catalog orders within each executed case, without counting
+those inner permutations as additional test cases. Source/profile/evidence names are invented.
+Input/history preservation and no-partial-output assertions accompany the affected cases.
+
+Final verification (explicit iPhone 17 Simulator, no physical-device access):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationSnapshotTests -only-testing:TSUGINOTests/SyntheticTripRegistrationAdmissionTests -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-dec084-c2-correction-final2.xcresult > /private/tmp/tsugino-dec084-c2-correction-final2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-c2-correction-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-correction-final2-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-c2-correction-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-correction-final2-tests.json
+```
+
+**119 functions / 331 executed cases passed:** C2 **34/144**, C1 **49/115**, DEC-082 **36/72**;
+zero failures, skips or runtime warnings. C2 adds **eight functions / 90 cases** to the
+previous suite. Debug app/extension dependencies built. Compiler diagnostics remain separate:
+**27 existing isolation warnings and two AppIntents warnings**, no correction-source warning.
+The first focused `correction-r1` command used only the C2 `-only-testing` selector and r1
+log/result paths, passing 32/139. The intermediate `correction-final` used the exact final
+three-suite command with final log/result paths, passing 118/328 before the all-role s34
+audit control. Both recorded 27 isolation + two AppIntents warnings. These overlapping
+runs are excluded from final counts. No failed build/test attempt or tooling failure occurred
+in this correction turn; earlier implementation/review failures remain separately recorded.
+
+A/B code, legacy validation, S9 codec/validator and their contracts are unchanged. Reuse A
+28/56 and B 65/219 from the saved prior `tsugino-dec084-c2-final2` run separately, without
+adding them to the final correction count. Release evidence remains applicable: corrections
+and new helpers/tests stay wholly within existing `#if DEBUG` guards, with no production
+reader/composition or Release declaration change. Both retained binaries were rehashed and
+inspected with `nm` and `xcrun swift-demangle`: zero synthetic matches, both tools exit 0,
+empty nm stderr. `/private/tmp/tsugino-dec084-c2-correction-release-reuse.json` retains results.
+App SHA-256 remains `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`;
+embedded extension remains `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`.
+The prior Release 33 isolation + one AppIntents warning record is reused, not a new build.
+
+Self-review covered missing-binding/profile early returns, all proof roles/components,
+known-versus-unbound keys, selection history, original record accounting and sorted diagnostic
+output. Reference/case checks, input/history preservation and `git diff --check` passed.
+No independent approval is asserted. No staging, publication, real registry operation,
+private-data access, import, consumer rebinding or production wiring occurred. Real S9/P3-T1,
+registry adoption, rights/publication/delivery and Phase 3 exit gates remain unchanged.
+
+
+### DEC-084 C2 retained-source-claim correction — 2026-10-03 Asia/Seoul
+
+The focused non-author re-review found one remaining omission: replacing current selection
+A0 with A1 discarded A0's still-applicable affirmative source claims. This is corrected
+locally; **independent re-review remains required**. No approval is asserted by author
+self-review. Phase 3 scope remains DEBUG-only synthetic C2, with no new accepted policy.
+
+`SyntheticTripRegistrationReconstruction.swift` now carries each authorized selected-run
+claim's exact scope and enclosing evidence input hashes into the snapshot audit.
+`SyntheticTripRegistrationSnapshots.swift` retains these assertions separately from current
+selection state. Both baseline selection loading and request selection/revision append to
+that retained collection; neither current artifact replacement nor candidate reconstruction
+can clear it. Later old/planned registry references are compared using exact sourceID,
+namespace and scalar key plus a matching evidence input hash in the reference provenance
+or immutable first-seen input. A different target establishes `referenceConflict`. An absent
+binding, different source/input applicability, or missing affirmative evidence does not
+establish this conflict. These are retained assertions, not implicit attachments, permanent
+reservations of unbound keys, evidence authentication or permission for provider-key reuse.
+Existing current-selection checks, exact predecessor checks, conflict ordering, no-partial
+output and downstream revalidation remain intact. The bounded audit found no other selection
+replacement path: baseline and operation selection are the two writers of current scopes;
+selected IDs/candidates are separate derived state and do not own evidence retention.
+
+`SyntheticTripRegistrationSnapshotTests.swift` s35 adds **one function / 14 cases**:
+seven controls × incoming attachment/current-target replay, each with both catalog orders
+inside the case. A0 asserts unregistered K→T; exact-predecessor A1 changes only mapping
+revision and uses J. Assertions verify unchanged source/profile/review view components.
+The subsequent same-input K→U attachment and retained replay reject atomically with exactly
+`referenceConflict@attach`; K→T succeeds. Different source and different input controls
+succeed without treating the historical claim as a permanent reservation. Missing attachment
+correspondence retains `correspondenceUnavailable@attach-K`, together with an established
+conflict when present. Missing A0 affirmative applicability alone holds exactly
+`correspondenceUnavailable@A0`, without inventing a K→T assertion. Candidate/replay versus
+held/rejected cases are distinguished explicitly; envelope/history bytes remain unchanged.
+Existing s27–34 current-selection/all-role/missing-binding regressions remain passing.
+
+Final verification, using only the explicitly identified iPhone 17 Simulator:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationSnapshotTests -only-testing:TSUGINOTests/SyntheticTripRegistrationAdmissionTests -only-testing:TSUGINOTests/SyntheticTripReviewTests -resultBundlePath /private/tmp/tsugino-dec084-c2-historical-final2.xcresult > /private/tmp/tsugino-dec084-c2-historical-final2.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-c2-historical-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-historical-final2-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-c2-historical-final2.xcresult --format json > /private/tmp/tsugino-dec084-c2-historical-final2-tests.json
+```
+
+**120 functions / 345 executed cases passed:** C2 **35/158**, C1 **49/115**, DEC-082 **36/72**.
+Zero failures, skips or runtime warnings. Debug app/extension dependency graph succeeded.
+The final incremental log has **zero located isolation warnings and one AppIntents warning**;
+the successful preceding `historical-r1` rebuild recorded the existing **27 isolation and
+two AppIntents warnings**, with no correction-source warning. The latter run used the same
+three-suite command with `historical-r1` log/result paths and passed **120/343**, before the
+two missing-historical-support cases were added. It is not summed with the final run.
+
+Failed/tooling attempts are separate: the first same-command attempt with `historical-final`
+paths exited **70** because sandboxed CoreSimulator access failed; it supplies no passing
+case evidence. Retrying with authorized Simulator access succeeded. A sandboxed r1
+`xcresulttool ... summary` extraction failed to create its local TestReport cache; parsing
+that empty output then failed. Authorized extraction succeeded, and final summary/tree
+extraction succeeded. An initial `docs/RULES.md` read used the wrong path and was corrected
+to repository-root `RULES.md`. No test assertion or compilation failed in this correction.
+Raw saved test logs and extracted results, not inferred stderr, support the counts above.
+
+Unchanged A/B evidence remains separately reusable from `tsugino-dec084-c2-final2` (A 28/56,
+B 65/219); A/B, the S9 codec/validator, production readers/composition and project settings
+are unchanged. Release was not rebuilt: changed declarations remain entirely in existing
+DEBUG guards. Both retained Release binaries were rehashed and checked with `nm` followed
+by `xcrun swift-demangle`: both tools exit 0, empty stderr, zero `SyntheticTrip`/
+`SyntheticRegistration` matches. Saved evidence is
+`/private/tmp/tsugino-dec084-c2-historical-release-reuse.json`; app SHA-256 is
+`5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`, extension SHA-256 is
+`659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`, matching the retained
+Release record. Its 33 isolation + one AppIntents warnings are historical build evidence.
+
+Only Reconstruction, Snapshots, SnapshotTests and ROADMAP changed in this correction,
+within the existing seven-file inventory. Admission, ARCHITECTURE and DECISIONS preserve
+their starting bytes. Reference/case checks, accepted-history preservation, self-review and
+`git diff --check` passed. No staging, commit/push, private access, registry operations,
+allocation, import or production enablement occurred. Real P2-S9/P3-T1, production registry
+adoption/search, rights/publication/delivery and Phase 3 exit gates remain separate.
+
+
+### DEC-084 C2 independent approval and publication — 2026-10-03 Asia/Seoul
+
+Returning non-author reviewers independently approved corrected bounded C2. They reviewed
+prior versions but authored none of the implementation/corrections. The author coordinated
+repository/preservation checks and this publication; author self-review supplies no independent
+approval. No material findings or mandatory outstanding verification remain. Optional
+multi-revision, seeded-baseline and first-seen-only fixtures remain nonblocking follow-ups;
+none is implemented here.
+
+The review traced A0 K→T, exact-predecessor A1 using J, then matching-applicability K→U:
+attachment and retained replay reject atomically. Coherent bindings, different applicability,
+missing evidence, independent negatives across all proof/view roles, immutable inputs and
+current/planned binding checks remain sound. Reviewed source/test SHA-256 values:
+
+- `SyntheticTripRegistrationAdmission.swift`: `82255432573388a0c2bf268e78408434253e789193ab5dc1881ed904335b201e`
+- `SyntheticTripRegistrationReconstruction.swift`: `f10e53fd56f5d99890a670e1e9a0678fa17dff6fd0f7f88717b6bf0f1078c24d`
+- `SyntheticTripRegistrationSnapshots.swift`: `5ff573132e052d5204d22e63b855aacccb6e1c7e023004e48eac57d4b9e11d50`
+- `SyntheticTripRegistrationSnapshotTests.swift`: `078c9f59bbc0ed5194aca541e61037f305c0c20965277f7b255946733bbfd4cc`
+
+Reuse `historical-final2`: **120 functions / 345 cases**, including C2 **35/158**, zero
+failures/skips/runtime warnings and successful Debug dependencies. Preceding rebuild warnings
+remain **27 isolation + two AppIntents**, final incremental warnings **zero + one**; this is
+not an overall warning-free build. Overlapping runs are not summed. Unchanged A/B and retained
+Release evidence remain applicable: actual retained hashes matched and both binaries had
+zero matching synthetic symbols under intact DEBUG isolation. No tests/builds are rerun.
+The independent evidence review directly confirmed the Simulator connection/destination
+failure; its numeric exit 70 and the earlier TestReport-cache failure remain documented
+workflow records rather than facts recoverable from that test log/JSON alone. Final saved
+summary/tree extraction succeeded. Earlier detailed commands and failure records are preserved.
+
+Publication authorization covers exactly Admission, Reconstruction, Snapshots, SnapshotTests,
+DECISIONS, ARCHITECTURE and ROADMAP. Fetch origin and inspect branch/upstream divergence,
+verify reviewed bytes, stage these seven explicitly, inspect content/exclusions and publish
+with a normal phase-branch push. No force-push, main update, branch deletion or next slice.
+This record synchronizes approval/status only; accepted semantics and prior records remain.
+Synthetic A/B/C1/C2 completion does not complete real P2-S9, P3-T1 import, production registry
+adoption/search, rights/publication/delivery or Phase 3 exit, and authorizes no real registry
+operations, private-data access or production enablement.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

@@ -8170,7 +8170,7 @@ private access, acquisition or additional decision acceptance is authorized by t
 
 # DEC-084 — Synthetic Trip Registry Schema and Explicit Legacy Conversion Design
 
-**Status:** Accepted — bounded synthetic format contract; slices A/B/C1 independently approved, C2 deferred\
+**Status:** Accepted — bounded synthetic format contract; slices A/B/C1/C2 implemented and independently approved; real S9 and production adoption remain gated\
 **Date:** 2026-10-02 Asia/Seoul\
 **Related:** Accepted DEC-068/073/082/083; RULES Rule 39; ARCHITECTURE §§39–41; ROADMAP P2-S9 follow-up
 
@@ -8310,6 +8310,63 @@ overlapping counts are not summed. Publication preserves the reviewed source/tes
 changes approval/status documentation only. No tests/builds are rerun and no further semantic
 decision is accepted. C2, source authentication, real registry operations/allocation, real
 S9/import, production adoption, rights/delivery and Phase 3 exit remain separately gated.
+
+## Slice C2 authorization and local implementation — 2026-10-03 Asia/Seoul
+
+After C1 publication at `fcb2b6526248a82725a15d201a2de5598f8135a0`, the owner separately
+authorized C2 under the existing accepted contract. Earlier C2-deferred entries remain
+historical. No new semantic decision is accepted.
+
+DEBUG-only `SyntheticTripRegistrationReconstruction.swift` resolves required complete S9
+packets and their exact predecessor graph through the existing DEC-082 validator, preserving
+private proof roles. It checks every run, normalized proof uses, all four view associations,
+approved enclosing profile/evidence scope and applicable competing bound assertions. Catalog
+presence alone grants no authority. Missing dependencies hold; independently established
+conflicts reject while preserving applicable uncertainties.
+
+`SyntheticTripRegistrationSnapshots.swift` derives retained selection state, admits registration
+with an optional snapshot, initial selection and exact-predecessor revision, and emits explicit
+downstream revalidation obligations. Known selection IDs survive unavailable artifact bytes;
+initial selection cannot mistake uncertainty for proof of no previous selection. The full
+`SyntheticTripRegistrationAdmission.validate` entry composes reviewed A/B/C1 checks with C2
+for atomic in-memory `candidateDelta`/`unchangedReplay` output. Required S9 dependencies in
+retained conversions are reconstructed before their early return. `validateIdentityOnly`
+retains its bounded C1 capability gate. B's mechanical success alone never grants admission.
+
+Invented regressions and saved verification are recorded in ROADMAP. This is author
+self-review only; independent implementation review is pending. No real evidence acceptance,
+registry execution/conversion/allocation, authentication, source parsing, import, consumer
+rebinding or production wiring is introduced. P2-S9 acceptance, P3-T1 import, production
+registry adoption, rights/publication/delivery and Phase 3 exit remain separate gates.
+
+## Slice C2 independent approval and publication authorization — 2026-10-03 Asia/Seoul
+
+Returning non-author reviewers independently approved bounded C2 after the source-binding,
+missing-binding contradiction and historical-source-claim corrections. They had prior review
+exposure but authored neither the implementation nor corrections. The author coordinated
+preservation/publication checks; author self-review is not the independent approval.
+
+Approval covers DEBUG-only complete synthetic S9 reconstruction, registration with snapshot,
+initial selection, exact-predecessor revision, retained business-history admission and atomic
+candidate/replay output, including applicable historical source assertions and downstream
+revalidation obligations. No material finding or mandatory verification gap remains in this
+bounded review. Additional multi-revision, seeded-baseline and first-seen-only fixtures are
+optional coverage, not implementation or publication prerequisites.
+
+Reuse the independently checked final 120 functions / 345 passing cases (C2 35/158), zero
+failures/skips/runtime warnings and Debug dependencies. The preceding rebuild's 27 isolation
+and two AppIntents warnings and final incremental run's zero isolation + one AppIntents warning
+remain distinct. Unchanged A/B and retained Release evidence remains applicable, including
+matching binary hashes and zero synthetic symbols. ROADMAP retains commands, overlapping
+runs, tooling failures and evidence limitations separately. No tests/builds are rerun for
+publication, and reviewed source/test bytes are preserved.
+
+The owner authorizes publication of exactly the seven reviewed implementation/documentation
+files on the existing Phase 3 branch. Synthetic A/B/C1/C2 implementation is complete within
+its accepted boundary; this neither accepts real P2-S9 evidence nor authorizes registry
+execution/allocation, P3-T1 import, production registry adoption/search or consumer rebinding.
+Rights/publication/delivery and Phase 3 exit gates remain separate. Earlier pending/deferred
+records above remain historical; no accepted semantic decision changes.
 
 ## Slice A implementation status — 2026-10-02 Asia/Seoul
 

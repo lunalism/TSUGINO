@@ -1,7 +1,7 @@
 #if DEBUG
 import Foundation
 
-/// Capability limits are outside railway admission diagnostics. C2 is not implemented here.
+/// Capability limits for callers deliberately using the identity-only C1 entry point.
 nonisolated struct SyntheticRegistrationC1Limit: Equatable, Sendable {
     enum Reason: Equatable, Sendable { case snapshotAdmission, conversionOnly }
     let requestID: String
@@ -13,6 +13,31 @@ nonisolated enum SyntheticRegistrationC1Result: Sendable {
     case held([SyntheticRegistrationDiagnostic])
     case rejected([SyntheticRegistrationDiagnostic])
     case outsideC1([SyntheticRegistrationC1Limit], [SyntheticRegistrationDiagnostic])
+}
+
+nonisolated enum SyntheticRegistrationResult: Sendable {
+    case candidateDelta(SyntheticRegistrationCandidate)
+    case unchangedReplay(SyntheticRegistrationCandidate)
+    case held([SyntheticRegistrationDiagnostic])
+    case rejected([SyntheticRegistrationDiagnostic])
+}
+
+/// Complete synthetic business admission only; never registry execution or authentication.
+nonisolated struct SyntheticRegistrationCandidate: Sendable {
+    let registryBytes: Data
+    let historyBytes: Data
+    let checkpointBytes: Data
+    let recordIDs: [String]
+    let stipulatedSeed: Bool
+    let selections: [SyntheticRegistrationSelectedSnapshot]
+    /// Retained and incoming obligations remain explicit, including on unchanged replay.
+    let revalidation: [SyntheticRegistrationRevalidation]
+    fileprivate init(_ core: SyntheticRegistrationC1Candidate, _ snapshots: SyntheticTripRegistrationSnapshots) {
+        registryBytes = core.registryBytes; historyBytes = core.historyBytes; checkpointBytes = core.checkpointBytes
+        recordIDs = core.recordIDs; stipulatedSeed = core.stipulatedSeed
+        selections = snapshots.selections.keys.sorted { $0.lexicographicallyPrecedes($1) }.compactMap { snapshots.selections[$0] }
+        revalidation = snapshots.obligations
+    }
 }
 
 /// Supplied-memory, identity-only synthetic output. No authentication, allocation or publication.
@@ -41,6 +66,23 @@ nonisolated enum SyntheticTripRegistrationAdmission {
         return audit.run(envelopeBytes,currentRegistryBytes,currentCheckpointBytes,catalog)
     }
 
+    static func validate(envelopeBytes: Data, currentRegistryBytes: Data,
+                         currentCheckpointBytes: Data, catalog: [Entry] = []) -> SyntheticRegistrationResult {
+        var audit = Audit(includeSnapshots: true)
+        let result = audit.run(envelopeBytes,currentRegistryBytes,currentCheckpointBytes,catalog)
+        switch result {
+        case .candidate(let core):
+            guard let snapshots = audit.snapshots else { return .rejected([.init(issue:.malformedInput,locator:"envelope")]) }
+            return .candidateDelta(.init(core,snapshots))
+        case .unchangedReplay(let core):
+            guard let snapshots = audit.snapshots else { return .rejected([.init(issue:.malformedInput,locator:"envelope")]) }
+            return .unchangedReplay(.init(core,snapshots))
+        case .held(let diagnostics): return .held(diagnostics)
+        case .rejected(let diagnostics): return .rejected(diagnostics)
+        case .outsideC1(_, let diagnostics): return .held(diagnostics)
+        }
+    }
+
     private static func encoded(_ v: V) -> Data { (try? C.encoded(v)) ?? Data() }
     private static func equal(_ a: V?, _ b: V?) -> Bool {
         switch (a,b) { case (nil,nil): true; case let (a?,b?): encoded(a) == encoded(b); default: false }
@@ -65,6 +107,8 @@ nonisolated enum SyntheticTripRegistrationAdmission {
     }
 
     private struct Audit {
+        var includeSnapshots = false
+        var snapshots: SyntheticTripRegistrationSnapshots?
         var findings: [SyntheticRegistrationDiagnostic] = []
         var limits: [SyntheticRegistrationC1Limit] = []
         var documents: [String: [SyntheticRegistrationDocument]] = [:]
@@ -79,6 +123,7 @@ nonisolated enum SyntheticTripRegistrationAdmission {
             if !findings.contains(value) { findings.append(value) }
         }
         mutating func limit(_ id: String, _ reason: SyntheticRegistrationC1Limit.Reason) {
+            guard !includeSnapshots else { return }
             let value = SyntheticRegistrationC1Limit(requestID:id,reason:reason)
             if !limits.contains(value) { limits.append(value) }
         }
@@ -299,6 +344,15 @@ nonisolated enum SyntheticTripRegistrationAdmission {
             owner = base["ownerAuthority"]!.text!
             collect(e)
             for entry in catalog { insert(entry.kind,entry.id,entry.document) }
+            if includeSnapshots {
+                snapshots = .init(reconstruction:.init(documents:documents,owner:owner))
+                snapshots?.reconstruction.authorize(e["baseline"]!["payload"]!, approvals:e["baseline"]!["approval"].map { [$0] } ?? [])
+                for b in e["history"]!["boundaries"]!.items {
+                    snapshots?.reconstruction.authorize(b["request"]!, approvals:b["approvals"]!.items)
+                }
+                snapshots?.reconstruction.authorize(e["request"]!, approvals:e["approvals"]!.items)
+                snapshots?.baseline(base)
+            }
             let baseline = blob(base["registryBytes"]).flatMap(registry)
             if let baseline { seed(base,baseline) }
             let h = e["history"]!, boundaries = h["boundaries"]!.items
@@ -309,6 +363,7 @@ nonisolated enum SyntheticTripRegistrationAdmission {
                 let next = blob(boundary["targetRegistryBytes"]).flatMap(registry)
                 if let old { observe(old) }
                 admit(request,boundary["approvals"]!.items,old,next)
+                snapshots?.inspect(request,approvals:boundary["approvals"]!.items,old:old,next:next)
                 if let next { observe(next) }
             }
             let request = e["request"]!, p = request["payload"]!, requestID = p["requestID"]!.text!
@@ -317,7 +372,9 @@ nonisolated enum SyntheticTripRegistrationAdmission {
             if !identicalReplay {
                 if let current = registry(current) { observe(current) }
                 admit(request,e["approvals"]!.items,registry(current),blob(p["targetRegistryBytes"]).flatMap(registry))
+                snapshots?.inspect(request,approvals:e["approvals"]!.items,old:registry(current),next:blob(p["targetRegistryBytes"]).flatMap(registry))
             }
+            for d in snapshots?.reconstruction.diagnostics ?? [] { add(d.issue,d.locator) }
             if p["operation"]?.text == "convertLegacy" { limit(requestID,.conversionOnly) }
             guard checked != nil, findings.isEmpty, limits.isEmpty else { return finish(nil,false) }
             do {

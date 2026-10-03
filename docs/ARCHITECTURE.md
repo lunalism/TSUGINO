@@ -1901,9 +1901,24 @@ or replay output; B's mechanical result alone supplies no admission. Its explici
 defers snapshot-dependent inputs without a railway rejection or candidate output. Returning
 non-author reviewers independently approved bounded C1 on 2026-10-03 Asia/Seoul, including
 required-S9 deferral before retained conversion returns and corrected retired-body coverage.
-C2 snapshot registration/selection/revision, DEC-082
-proof/view/predecessor reconstruction and downstream snapshot revalidation remain deferred.
-Neither C1 nor its output grants real registry operations, authentication or production adoption.
+The separately authorized C2 implementation adds DEBUG-only
+`SyntheticTripRegistrationReconstruction.swift` and `SyntheticTripRegistrationSnapshots.swift`.
+The full `SyntheticTripRegistrationAdmission.validate` entry replays complete required S9
+packets through DEC-082 with exact transitive predecessors and approved proof/view applicability,
+then admits optional registration snapshots, initial selections and exact-predecessor revisions.
+All retained business operations must pass before candidate or unchanged replay; required S9
+conversion dependencies cannot bypass reconstruction. Incidental catalog artifacts remain
+separate. Missing evidence holds, known conflicts reject, and no partial bytes escape.
+Selection state and obligations are derived from immutable history. Output exposes selected
+candidates plus revalidation obligations for dated timetable facts, original-index associations,
+ride contexts, continuity/eligibility and Data-view bindings; it performs no consumer rebinding.
+`validateIdentityOnly` preserves the reviewed C1-only capability limit. Bounded synthetic
+A/B/C1/C2 implementation is complete and independently approved; returning non-author reviewers
+approved corrected C2 on 2026-10-03 Asia/Seoul. Historical selected-source assertions remain
+separate from current selection and reconcile only within evidenced applicability; they do not
+permanently reserve unbound keys. Neither entry grants real registry operations, evidence
+authentication, P2-S9 acceptance, P3-T1 import or production registry adoption/search. Rights/
+delivery and Phase 3 exit remain separately gated.
 Current ordinary registry
 intake still reads schema 2; the DEC-073 reader supports 2/3. Neither supports Trip
 registration. The isolated schema-4 wire codec does not change that production boundary.
