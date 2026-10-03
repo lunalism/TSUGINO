@@ -4485,6 +4485,220 @@ Synthetic A/B/C1/C2 completion does not complete real P2-S9, P3-T1 import, produ
 adoption/search, rights/publication/delivery or Phase 3 exit, and authorizes no real registry
 operations, private-data access or production enablement.
 
+
+### Real P2-S9 readiness assessment — 2026-10-03 Asia/Seoul
+
+[First real untimed Trip readiness](P2_S9_REAL_READINESS.md) records the repository-only
+assessment after synthetic C2 publication at `3161791`: readiness matrix, missing real
+interpretation/tooling, retained gates and a proposed owner-only access scope. Recommend one
+owner-nominated run from the accepted Toei `dd575706…` snapshot, conditional on actual retained
+availability and a private locator; repository aggregates cannot select or classify a run.
+No private artifacts, new evidence, source implementation or acceptance were accessed/created.
+The first next task is separately authorized evidence-gap review, not execution of DEBUG
+synthetic validators on real data. P2-S9 remains incomplete; P3-T1 real import, launch coverage,
+production adoption/search, rights/delivery and Phase 3 exit are unchanged.
+
+### Trips-only nomination reader — 2026-10-03 Asia/Seoul
+
+**Implemented with invented-fixture verification; independent implementation review pending.**
+The owner authorized only the bounded standalone nomination reader, not execution on the
+retained real archive. Phase 3 still retains real P2-S9 ownership. This fills only the
+nomination-tool gap following the readiness assessment, not its later evidence-review,
+classification, registration or real-use authorization gaps. The assessment's original
+bytes and the pre-existing ROADMAP readiness section are preserved.
+
+Scope: [Tools/TripNomination](../Tools/TripNomination/README.md), Python 3.9+ standard library,
+no dependencies or app/production composition. New `nomination.py`, `test_nomination.py`
+and README, plus this ROADMAP entry. No accepted decision, shared intake reader, registry,
+Domain, app target or build setting changes. The in-memory API returns at most ten records
+in source order, with private `N01`–`N10` labels, exact CSV values and hash-bound byte-span
+locators. The command line prints only a count; it does not expose or persist the choices.
+There is no private presentation UI, exporter or output-file option in this slice.
+
+Safety and accounting: descriptor-relative no-symlink traversal, one opened unbuffered
+regular-file descriptor, expected archive size/SHA-256 before any member decoding, bounded
+ZIP directory inspection and unique safe root-level member names, only `trips.txt` payload
+decoding, actual decompressed size/CRC/member hash, strict scalar-exact UTF-8 CSV, complete
+bounded-table validation before delivery, final archive rehash/state/path checks. Nothing
+sorts, deduplicates, skips a bad row or substitutes a later candidate. Record spans include
+the complete LF/CRLF terminator (if present), quotes and embedded quoted newlines; the final
+unterminated span ends at EOF. They exclude the previous terminator, and data ordinals exclude
+the header. Offsets still count header/BOM bytes. Errors are fixed codes, never source values.
+Unselected members are hashed as opaque archive bytes but never decoded or integrity-certified.
+
+Fixed limits and supported ZIP/CSV profile, exact API/CLI invocation and the independent
+review handoff are in the README. Major bounds: 16 MiB archive, 1 MiB directory/1,024 entries,
+2 MiB trips payload, 64 KiB encoded field, 256 KiB record, 64 columns, 100,000 data records
+checked, ten returned. Stored/deflate and checked ordinary data descriptors are supported;
+ZIP64/multi-disk and unsupported selected-member compression/encryption are not. These are
+tooling bounds, not a new feed interpretation or railway policy.
+
+Final verification on Python **3.9.6** (2026-10-03 Asia/Seoul):
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v > /private/tmp/tsugino-trip-nomination-final4.log 2>&1
+```
+
+**35 test functions passed, zero failures/errors/skips and no unexpected Python warnings.**
+Parameterized subtests are not reported as a separate case total. Expected duplicate-name
+warnings are suppressed only while deliberately constructing those invented ZIP fixtures.
+All fixtures are generated in temporary directories and cleaned up. No real archive or private
+mapping/history artifact was accessed in this implementation task. No Xcode tests or builds
+were required: only standalone Python tooling and documentation changed; no Release target
+can reference the new directory through an app source group. No physical-device interaction.
+
+Focused coverage references in `test_nomination.py`:
+
+| Boundary | Assertions |
+|---|---|
+| Ordered first ten, fewer/zero/more, repeated IDs | `test_source_order_and_duplicates_are_preserved`, `test_zero_fewer_ten_and_more_records` |
+| Exact spans, hashes, quotes/CRLF/EOF, Unicode/BOM | `test_exact_spans_with_quotes_newlines_crlf_and_no_final_terminator`, `test_lf_record_terminator_and_optional_empty_field`, `test_scalar_exact_unicode_whitespace_and_bom` |
+| No skipping, malformed headers/CSV, bad eleventh row | `test_malformed_csv_never_skips_or_substitutes`, `test_header_validation`, `test_malformed_eleventh_record_rejects_whole_result` |
+| Invalid members/ZIP, length/CRC, deflate and descriptors | `test_invalid_and_duplicate_member_names`, `test_missing_or_nested_trips_and_member_symlink`, `test_local_and_central_disagreement`, `test_crc_and_actual_size_are_checked_independently`, `test_truncated_deflate_and_trailing_compressed_bytes`, `test_descriptor_integrity` |
+| Finite bounds, dishonest directory counts/expansion | `test_resource_limits`, `test_exact_field_and_record_limit`, `test_inflation_over_actual_limit_even_with_small_declared_size`, `test_central_count_understatement_and_truncated_directory` |
+| Identity before decoding; mutation/symlink/descriptor safety | `test_identity_rejected_before_member_decoding`, `test_changed_bytes_during_read_reject`, `test_final_hash_detects_change_even_if_metadata_comparison_is_bypassed`, `test_same_bytes_replaced_path_reject`, the four `test_*symlink*` controls |
+| Selected-only reads, no output files, private errors | `test_one_archive_descriptor_and_only_trips_payload_read`, `test_corrupt_unselected_content_is_never_decoded`, `test_inputs_and_permissions_unchanged_no_output_files`, `test_private_repr_cli_success_and_errors`, `test_cli_data_and_path_errors_are_redacted_and_atomic` |
+
+Intermediate attempts are separate and **not summed**: `tsugino-trip-nomination-initial.log`
+ran 30 tests with one failed NUL-name fixture assertion because Python's ZIP writer had already
+truncated the supplied name. The fixture now mutates encoded metadata and reaches the intended
+reader guard. `tsugino-trip-nomination-final.log` ran 34 tests with one failure: a new forced
+mutation check exposed the buffered descriptor's cached final rehash. Unbuffered reads correct
+that omission, independently covered even with the metadata comparison mocked out. `final2`
+(34 passing) and `final3` (35 passing) are superseded intermediate evidence. Self-review then
+added the descriptor-mode local CRC/size consistency check and its regression; `final4` above
+is the final run. No compiler/tooling failure occurred in these runs; Python is not compiled
+through the app build. Logs are synthetic-only local verification artifacts, not Git content.
+
+Final review fingerprints (SHA-256): `nomination.py`
+`9bccbf7999955433fd33f39d3ee1325452b088371bb83ca348572027b9403c10`;
+`test_nomination.py` `b49b36c15522e8e4070b54bdf0ccbdac89cb39bfcf74be944079759b3b60776a`;
+final log `c1dd327d5aee9511636826f9a866d737e3a5aa19b8b3830a975de8f16b569822`.
+
+Author self-review and reference/diff/preservation checks are not independent approval.
+Next: non-author review of the implementation, actual assertions, final saved log, strict
+profile/limits and in-memory output boundary, using the README handoff. Only after review and
+separate authorization may a real archive be read for owner nomination. No real nomination,
+source authentication, passenger classification, recurring identity, real S9 acceptance,
+P3-T1 import, ID allocation, registry mutation/adoption, production search, rights/delivery
+or Phase 3 exit is established. No staging, commit, push or merge in this task.
+
+### Private owner-nomination terminal workflow — 2026-10-03 Asia/Seoul
+
+**Reader independently reviewed; inspect/select workflow implemented with synthetic
+verification, focused independent review pending.** The subsequent non-author reader review
+found no material defect in the bounded library but identified that its counts-only CLI did
+not provide a usable private nomination interface. Thus the preceding record's nomination-tool
+completion covers the reader, not the entire owner workflow. This entry records the separately
+authorized correction; it does not grant real-input execution or make a real nomination.
+
+Scope: new [session.py](../Tools/TripNomination/session.py) and
+[test_session.py](../Tools/TripNomination/test_session.py), updated
+[README](../Tools/TripNomination/README.md#private-inspectselect-workflow) and this ROADMAP
+entry only. The reviewed reader and its 35 tests remain byte-identical. No new semantic
+decision, intake/parser change, app UI/composition, dependency or registry behavior. The
+readiness assessment and all prior ROADMAP records are preserved.
+
+The local terminal wrapper qualifies all three standard streams as the same foreground
+terminal before archive access, refuses redirection/noncanonical input/detected SSH, then
+calls the unchanged reader once. Only complete validation permits display. Previews contain
+the original ordered labels and only `trip_id`, `route_id`, `service_id`, using inert ASCII
+JSON escaping. Original scalar values and locators remain unchanged in memory. Exact label
+entry makes a choice pending; explicit `confirm` retains that original object and locator;
+`inspect` shows the confirmed identifiers and seven locator fields. Invalid input clears a
+pending choice without changing an existing confirmation. `cancel`, `exit`, EOF or interruption
+ends retention; the session repeatedly states that selection is lost on exit. No export,
+output file, logging, clipboard, network, server or browser storage. No other member contents
+are read. Commands are bounded to 32 ASCII bytes including newline; truncated commands never
+select. Input echo is disabled during the session and terminal state/descriptors are restored
+on handled exit/failure. Private writes recheck terminal state and use a duplicate terminal
+descriptor. The README explains terminal capture/scrollback and OS-memory limitations; the
+tool cannot certify that a local terminal is unrecorded or defeat disguised remote capture.
+
+Final verification on Python **3.9.6** (2026-10-03 Asia/Seoul):
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v > /private/tmp/tsugino-trip-nomination-session-final2.log 2>&1
+```
+
+**54 test functions passed: 35 unchanged reader and 19 workflow tests; zero failures,
+errors or skips, no unexpected Python warnings.** Subtests are not reported as a separate
+case total. Expected duplicate-ZIP fixture warnings remain narrowly suppressed by the
+unchanged reader tests. The final run includes actual CLI execution with invented archives
+and controlling pseudo-terminals, with output captured only in test memory. No real archive,
+private mapping/history, physical device, Xcode test or build was used. Standalone standard-
+library tooling remains outside all app/Release targets; no production verification changed.
+
+Focused coverage in `test_session.py`:
+
+| Boundary | Assertions |
+|---|---|
+| Exact source-order label/original-object/locator retention | `test_every_label_selects_original_candidate_and_exact_locator` checks all ten against independently computed record spans and hashes, including quoted CRLF; `test_listing_is_source_order_and_only_required_identifiers` |
+| Confirmation, invalid selection, cancellation and no selection | `test_confirmation_and_inspection_require_explicit_choice`, `test_invalid_input_clears_pending_never_selects_or_replaces_confirmed`, `test_empty_batch_never_selects`, `test_cancel_exit_and_eof_discard_selection_without_returning_private_objects`, `test_interrupt_clears_live_selection` |
+| Failure without exposure, exact escaped Unicode/control display | `test_validation_failure_never_displays_any_candidate`, `test_unicode_and_terminal_controls_are_escaped_without_changing_originals`, `test_redirected_cli_and_argument_errors_never_echo_private_inputs` |
+| Terminal-only boundary and bounded commands | `test_redirection_and_background_terminal_reject_before_archive_access`, `test_different_terminal_and_ssh_are_rejected`, `test_bounded_input_never_interprets_a_partial_or_nonascii_command`, `test_terminal_rechecks_before_private_write` |
+| Actual invocation, cleanup and no persistence | `test_actual_terminal_confirmation_inspection_and_no_files`, `test_actual_terminal_cancel_eof_and_validation_failure`, `test_terminal_restores_echo_and_closes_descriptors_on_exit_and_interrupt`, `test_noncanonical_terminal_rejects_before_reader_and_closes_duplicates`, `test_session_delegates_to_reader_once_no_files_logs_network_or_input_changes` |
+
+Intermediate runs are separate and **not summed**: `tsugino-trip-nomination-session-initial.log`
+passed 52 functions before two terminal-lifecycle controls were added. The subsequent
+`tsugino-trip-nomination-session-final.log` ran 54 with one fixture assertion failure:
+noncanonical `tcgetattr` represents `VMIN`/`VTIME` as integers, while the setter input retained
+byte values. The control now compares the actual installed terminal state before/after;
+no production behavior changed for that correction. `final2` above is the sole final evidence.
+These runs are independent of the earlier reader implementation attempts. One repository
+lookup also included nonexistent `docs/RULES.md`; the actual root `RULES.md` was read, and
+this did not affect verification. Logs contain invented inputs only and are outside Git.
+The extra untracked-file whitespace helper initially treated normal `git diff --no-index`
+exit 1 (different files, no diagnostic) as failure. The corrected inspection found no whitespace
+errors in tool files; it identified only the readiness document's two pre-existing Markdown
+hard-break spaces, preserved byte-for-byte as requested. Tracked `git diff --check`, references,
+test-coverage references and preservation fingerprints passed.
+
+Review fingerprints (SHA-256): `session.py`
+`283956b222450556e48335eea5a9bdb546b3f10fdfb5cb684220200f344811a0`;
+`test_session.py` `cb5002503c07b03c91914af123e5ba7da813e44870751fecd32c0d54559b8c99`;
+final log `8166ca855ff6a77c264569c99706b3173fe54d5db49efc0e12caa50255bbba11`.
+Unchanged reader/test hashes match the preceding review fingerprints. Readiness SHA-256
+remains `2857162f0e746875f8e32393305157561c169a89644fdd56d93cfd8bead72686`.
+
+Author self-review is complete but is **not independent approval of the new workflow**.
+Next: focused non-author review using the README handoff, actual assertions and final log;
+verify the documented invocation, terminal/output boundary, unchanged reader and original
+selection/locator retention. Separate authorization is still required before any real-input
+execution. No real run nomination, passenger classification, recurring identity, S9 acceptance,
+P3-T1 import, registry mutation/adoption, production search, rights/delivery or Phase 3 exit
+is established. No staging, commit, push or merge.
+
+### Nomination tooling independent approval and publication — 2026-10-03 Asia/Seoul
+
+**Bounded reader and private terminal workflow independently approved for tooling readiness.**
+A fresh non-author reviewer inspected actual `session.py`, `test_session.py`, README and
+ROADMAP, the unchanged reader, regression assertions and saved final evidence. No material
+findings or mandatory corrective checks remained. The coordinating agent authored the
+workflow; its own preservation/evidence checks and earlier self-review are not the independent
+approval. This completes the preceding pending review without rewriting its historical record.
+
+Approval covers full validation before display, exact original candidate/byte-bound locator,
+explicit confirmation and cancellation/EOF/interruption, memory-only lifetime, display-only
+escaping, terminal-only private output and no file/log/network/persistence path. Documented
+terminal-capture/locality and memory-erasure limitations remain. No real archive was accessed
+and no run was nominated; real-input execution remains a separately authorized next task.
+
+Reuse the independently inspected final **54 passing functions (35 reader + 19 workflow)**,
+zero failures/errors/skips and no unexpected warnings, with the source/test/log fingerprints
+above. No tests or app builds were rerun for publication; overlapping and failed intermediate
+attempts remain separate. The four reviewed Python files are byte-identical. README status is
+synchronized. Readiness wording is unchanged; only its two header hard-break markers changed
+from trailing spaces to equivalent Markdown backslashes for staged whitespace validation.
+Its earlier recorded fingerprint describes the original reviewed formatting.
+
+Owner-authorized publication includes exactly the five `Tools/TripNomination` source/test/
+README files plus `docs/P2_S9_REAL_READINESS.md` and `docs/ROADMAP.md`, on the existing phase
+branch. Exclude real source data, private paths/keys/locators, saved test logs and generated
+artifacts. Preserve accepted decisions and all prior records. This approval/publication does
+not authorize real S9 evidence review or acceptance, P3-T1 import, allocation, registry
+operations/adoption, production search, rights/delivery or Phase 3 exit; main stays unchanged.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
