@@ -3908,6 +3908,272 @@ preserved. No merge, main push, branch deletion or next slice is authorized. Reg
 admission, real conversion/registry operations, real-data/import, production adoption,
 rights/publication/delivery and Phase 3 exit remain separately gated.
 
+### DEC-084 slice C1 scope lock and contract-to-test plan — 2026-10-02 Asia/Seoul
+
+The owner authorizes the first bounded part of C on the existing Phase 3 branch, starting
+at `6a688b5d593ee5bb03ced3fca8711e48df635528` with a clean tree. C1 covers supplied invented
+Trip IDs for identity-only registration, new-key attachment and returning-reference attachment,
+applicable approved source/correspondence evidence, complete delta accounting and atomic
+in-memory synthetic output. Reviewed A codecs/closure and B mechanical checks are reused.
+Every retained and incoming non-conversion boundary needed by a result must receive business
+admission; mechanical replay alone cannot bypass it. No new semantic decision is accepted.
+
+C2 remains deferred: registration with `snapshotArtifactID`, initial snapshot selection,
+snapshot revision, full DEC-082 predecessor/proof/view reconstruction and downstream snapshot
+revalidation. The C1 entry point/result must expose this incomplete implementation boundary
+without treating deferred functionality as a railway contradiction or emitting a complete
+candidate. C1 cannot approve business history requiring C2.
+
+| Accepted contract / C1 boundary | Planned focused invented controls |
+|---|---|
+| DEC-083 A; DEC-084 A/B: explicit approved distinct-run registration, active supplied `trp`, all-history body uniqueness | Identity-only registration; wrong kind/form; active/retired cross-kind body collision; duplicate entity/key claims; no allocation |
+| DEC-083 B/C; DEC-084 B: active held target and previously unheld scoped key | Valid new-key attachment; missing/retired/changed target; historical key collision and rebinding |
+| DEC-083 C; DEC-084 B/C: exact absent predecessor, affirmative continuity, permanent authority | Valid return; missing/contradictory continuity; wrong predecessor; retired return; unchanged attaching authority/first-seen hash; legal repeated authority associations |
+| DEC-084 C: applicable approved profile/evidence, no heuristic correspondence | Exact source/input/key/Trip/record controls; unrelated support; missing versus contradictory scope/correspondence; conflict with unrelated missing evidence |
+| DEC-084 E: complete accounting and atomicity | Unexplained differences; frozen non-Trip data; multi-record atomicity; record order; exact ordered diagnostics; byte-preserved inputs |
+| DEC-084 B: current-target replay only after business admission | Valid replay; stale/altered reuse; retained invalid registration/attachment cannot pass through mechanical success |
+| C1 authorization boundary, with C2 deferred | Incoming and retained snapshot-dependent operations cannot escape as complete C1 success |
+
+Implementation remains subject to confirming that the accepted representation can express
+these checks without new defaults. Expected work is isolated DEBUG admission code/tests and
+current-truth documentation, with focused C1 and affected A/B regressions, Debug dependencies
+and Release symbol-exclusion verification. No production enum/reader change, allocator,
+filesystem loader/writer, CLI, source parsing/authentication or real/private inputs. No
+staging, commit, push or merge. Real P2-S9/P3-T1 import, registry adoption, rights/delivery
+and Phase 3 exit remain separate.
+
+Contract inspection confirms that the approved operation and named evidence lists supply
+assertion purpose: registration correspondence is the distinct-run claim, attachment
+correspondence is the same-run claim, and profile lists identify uniqueness/meaning/continuity
+support. C1 does not invent a closed vocabulary for the existing descriptive `evidence.role`
+token. Evidence must explicitly cover the actual approved record's key/Trip/record and
+profile/version/input applicability; empty arrays are not wildcards. C1 has no expected S9
+view and does not manufacture one. Missing profile-wide coverage therefore remains held.
+An outer C1 capability result can defer required snapshot admission without adding a railway
+rejection rule. This resolves the representation check within the accepted contract.
+
+### DEC-084 slice C1 local implementation and verification — 2026-10-02 Asia/Seoul
+
+Implemented `SyntheticTripRegistrationAdmission.validateIdentityOnly` and invented
+`SyntheticTripRegistrationAdmissionTests`, both entirely DEBUG-only. A/B sources and tests,
+shared registry readers/enums, production composition and project configuration are unchanged.
+The C1 result separates atomic identity-only candidate/unchanged replay, held/rejected
+diagnostics and `outsideC1` capability limits. Candidate bytes preserve the retained history,
+append the approved boundary and derive its checkpoint through the accepted acyclic encoding;
+the candidate also identifies a stipulated seed premise. It grants no authenticated lineage,
+real mutation, allocation or production adoption. C2 remains unimplemented.
+
+Self-review and read-only implementation-audit assistance checked the complete C1 path;
+neither is independent implementation approval. Scope/correspondence is admitted under one
+applicable approved profile, using exact dependency-bound bytes and explicit applicability.
+Negative assertions require the local approval for their purpose. Baseline owner authority
+cannot be replaced by the envelope label. Missing approval cannot manufacture a contradiction;
+independent key/target/history contradictions still reject with applicable uncertainty. Earlier
+intermediate runs predate these final controls and are recorded separately below.
+
+| Implemented contract coverage | Invented test IDs in `SyntheticTripRegistrationAdmissionTests` |
+|---|---|
+| Identity-only registration, held active targets, exact candidate and returning authority | c01–c09, c38–c43 |
+| Applicable profile/purpose/input/key/Trip/record evidence, complete joint support, competing negatives and uncertainty | c10–c18, c32–c36, c40 |
+| Frozen non-Trip data, explained deltas, atomic record order and duplicate claims | c19–c22, c37 |
+| Retained business admission before unchanged replay; later-checkpoint freshness | c23–c27; affected B replay/altered-reuse controls remain passing |
+| Explicit conversion/C2 capability limits, including retained snapshot operations | c28–c30 |
+| Scalar-exact keys and inline/catalog equivalence | c31, c33 |
+| Profile/request approval gates, independent conflicts and immutable baseline authority | c44–c47 |
+
+**Final focused run (`r4`): 140 functions / 384 executed cases passed**, with zero failures,
+skips or runtime warnings. Counts by suite are A codec **28/56**, B history **65/219**,
+C1 admission **47/109**. This is one combined run; overlapping runs are not summed.
+Debug app/extension dependencies succeeded. The final incremental test-only run emitted zero
+compiler warnings and one AppIntents warning. The preceding `r3` compiled the identical final
+admission source and emitted the existing 27 conformance-isolation warnings plus two AppIntents
+warnings. No warning names either new C1 source/test file. Explicit destination was iPhone 17,
+iOS 26.5 Simulator; no physical device step was taken.
+
+Exact final test command (repository root):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationAdmissionTests -only-testing:TSUGINOTests/SyntheticTripRegistrationHistoryTests -only-testing:TSUGINOTests/SyntheticTripRegistrationCodecTests -resultBundlePath /private/tmp/tsugino-dec084-c1-r4.xcresult > /private/tmp/tsugino-dec084-c1-r4.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-c1-r4.xcresult --format json > /private/tmp/tsugino-dec084-c1-r4-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-c1-r4.xcresult --format json > /private/tmp/tsugino-dec084-c1-r4-tests.json
+```
+
+The same test/export commands with suffixes `r1`, `r2`, `r3` retained the intermediate
+results below. Every run passed with zero failures/skips/runtime warnings; they are not final
+aggregate evidence. The final test-only addition parameterized c19 for a station delta as well
+as a Trip delta; production source did not change after `r3` or Release verification.
+
+| Run | Functions / cases | Diagnostic headers observed, excluding rendered duplicates |
+|---|---|---|
+| `r1` | 136 / 357 | 27 existing conformance warnings, one existing `RailCapabilityTests.init(declared:)` actor warning, seven existing test-macro actor warnings, two AppIntents warnings |
+| `r2` | 139 / 375 | 27 existing conformance warnings, two AppIntents warnings |
+| `r3` | 140 / 383 | 27 existing conformance warnings, two AppIntents warnings |
+
+Fresh Release app/extension dependency build passed for the final source:
+
+```sh
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd > /private/tmp/tsugino-dec084-c1-release-r2.log 2>&1
+```
+
+Release reported 27 existing conformance-isolation warnings, six existing canonical-ID
+`isBlank` actor-call warnings and one AppIntents warning. `nm` exited 0 with empty stderr on
+both retained binaries; the pattern
+`SyntheticTripRegistration|SyntheticRegistration|SyntheticTripLegacyHistory|SyntheticTripReview`
+matched zero symbols in each. Whole-file DEBUG guards and unchanged production readers are
+also verified. Release binary hashes:
+
+| Retained binary under `/private/tmp/tsugino-p3-routing-dd/Build/Products/Release-iphonesimulator/` | SHA-256 |
+|---|---|
+| `TSUGINO.app/TSUGINO` | `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e` |
+| `TSUGINO.app/PlugIns/TSUGINOLiveActivity.appex/TSUGINOLiveActivity` | `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf` |
+
+**Failed attempt, separate from successful evidence:** the first Release invocation used
+`-derivedDataDataPath` instead of `-derivedDataPath`, with the otherwise identical command
+and output `/private/tmp/tsugino-dec084-c1-release-r1.log`. It exited 64 before building
+(`invalid option`); `release-r2` corrected only that option. No test failures or Simulator/
+report-cache failures occurred in this task. Raw redirected stdout/stderr and result bundles
+were inspected; earlier slice-B tooling failures remain their separate historical records.
+
+Evidence indexes: `/private/tmp/tsugino-dec084-c1-verification.json` and
+`/private/tmp/tsugino-dec084-c1-release-symbols.json`. Unaffected DEC-082, ordinary registry
+and unrelated evidence is reused because those source/test bytes and production configuration
+are unchanged. No broader suite or physical validation is claimed.
+
+| Final C1 file | SHA-256 |
+|---|---|
+| `SyntheticTripRegistrationAdmission.swift` | `a32da197fa758023e42b74d165e3ed2daaf39ea02b986ee1420dea9a08666792` |
+| `SyntheticTripRegistrationAdmissionTests.swift` | `0b7507fdecf1967c1e042f2244668d7980058fbf016f743707d1037564602036` |
+
+Final scope/reference/whitespace checks preserve accepted DEC-083/084 semantics, historical
+records and TR84 case identifiers. Only the two new C1 files and DECISIONS/ARCHITECTURE/ROADMAP
+change. HEAD/upstream remain `6a688b5d593ee5bb03ced3fca8711e48df635528` (0/0 against the
+existing tracking ref); main/origin-main remain `e8a463d51f14b3cb1027960c63244b694579a71b`.
+No fetch was required for this local implementation; no live publication check is claimed.
+No staged changes; no staging, commit, push or merge. **Independent C1 implementation
+review is pending.** C2, real P2-S9/P3-T1 import, registry operations/adoption, production,
+rights/publication/delivery and Phase 3 exit gates remain separate.
+
+### DEC-084 C1 review corrections — 2026-10-03 Asia/Seoul
+
+The independent read-only implementation review withheld C1 approval for the retained-
+conversion C2 bypass and identified missing historically retired-body regression coverage.
+This correction changes only `SyntheticTripRegistrationAdmission.swift`, its tests and this
+ROADMAP entry within the existing five-file working inventory. DECISIONS and ARCHITECTURE
+remain byte-identical to the reviewed version; no accepted semantics or historical record
+is changed. The scope is the two reviewed findings, not C2 admission or a new rejection rule.
+
+The required-S9 capability check now runs before the `convertLegacy` early return. A complete,
+digest-bound S9 dependency in retained conversion history prevents both a later C1 candidate
+and unchanged replay, even though A/B can validate its representation and mechanics. Plain
+conversion retains its prior behavior. The related-return audit found no other bypass:
+baseline seeds already check required S9 dependencies; register/attach/reviseSnapshot check
+before their availability guard; exact replay visits retained requests before skipping the
+identical incoming request. Complete inventories include transitive dependencies, while missing
+closure prevents mechanical success. Merely supplied unrelated artifacts and identifier-only
+applicability labels do not become required S9 work. No S9 proof/view admission is performed.
+
+Regression evidence in `SyntheticTripRegistrationAdmissionTests`:
+
+- **c38 corrected:** the original schema-2 baseline already contains a retired station with
+  a nonempty successor list and its active successor. The original registry reader accepts it;
+  A/B validate the lossless retained conversion before the collision proposal. The station
+  remains unchanged in the target. A same-body Trip then requires exactly B's
+  `identityConflict(Q)` and C1's additional `identityConflict(register-T)`. An observer that
+  reserves only active historical bodies would miss the latter and fail this assertion.
+  The prior target-only retirement workaround and inaccurate schema-2 comment were removed.
+- **c48 added, two cases:** fully supplied required S9 bytes are retained in an approved
+  conversion boundary. A reports complete representation and B reports checked mechanics;
+  later registration and exact current-target replay both return only
+  `outsideC1([conversion: snapshotAdmission], [])`, with no candidate/replay bytes.
+- **c49 added, four cases:** plain conversion and an unrelated supplied complete S9 artifact,
+  each followed by registration or replay, retain their exact successful C1 bytes. The same
+  A/B controls ensure these distinctions do not depend on an invalid or incomplete fixture.
+
+**Final focused correction run: 49 functions / 115 executed cases passed**, zero failures,
+skips or runtime warnings. This includes two added functions / six added cases and the revised
+c38 cases; it is not summed with earlier C1/A/B runs. Debug app/extension dependencies passed
+on the explicit iPhone 17 iOS 26.5 Simulator. Raw redirected output contains 27 existing
+conformance-isolation diagnostic headers and two AppIntents warnings, excluding rendered
+duplicates; no other compiler warnings or warnings naming the new C1 files. No physical device
+step, failed build/test attempt or Simulator/report-cache failure occurred in this correction.
+Earlier intermediate runs and the corrected pre-build Release command typo remain separate
+in the 2026-10-02 record above.
+
+Exact commands from the repository root:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-p3-routing-dd -only-testing:TSUGINOTests/SyntheticTripRegistrationAdmissionTests -resultBundlePath /private/tmp/tsugino-dec084-c1-correction-r1.xcresult > /private/tmp/tsugino-dec084-c1-correction-r1.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec084-c1-correction-r1.xcresult --format json > /private/tmp/tsugino-dec084-c1-correction-r1-summary.json
+xcrun xcresulttool get test-results tests --path /private/tmp/tsugino-dec084-c1-correction-r1.xcresult --format json > /private/tmp/tsugino-dec084-c1-correction-r1-tests.json
+```
+
+Saved index: `/private/tmp/tsugino-dec084-c1-correction-verification.json`. Unchanged A codec
+28/56 and B history 65/219 results from the prior `r4` are reused separately; the new C1
+controls also directly exercise their closure, conversion and replay paths. No A/B source/test,
+legacy reader, project or production composition changed. The correction lies entirely inside
+the unchanged whole-file DEBUG guard, so the retained Release build remains applicable without
+a rebuild. Both retained binary hashes were checked again and still match the prior record;
+`nm` again exited 0 with empty stderr and zero matches for the four recorded synthetic symbol
+families. The app hash remains `5c696f6a3ca7fca1417f72f33f36d80ee7ea10b3c0b4e1063731f74d8fae7e1e`;
+the extension hash remains `659150f0d40ca32cbb640afe69afc59037d231b40c449b78e3bc5032b68779cf`.
+
+| Corrected file | SHA-256 |
+|---|---|
+| `SyntheticTripRegistrationAdmission.swift` | `3839aed48f3d337d9cb173858130194b704ccfffac883bdc2a1ef2cadc4575fb` |
+| `SyntheticTripRegistrationAdmissionTests.swift` | `8c1d037775d3edc029dca52b06e464d712d65a2b32ea8fd603fa8967827df838` |
+
+Self-review, the related-path audit, references, accepted-history preservation and whitespace
+checks are complete. Audit assistance is not independent approval. **Focused independent
+re-review is pending.** Branch/HEAD/upstream remain `phase/03-route-search` /
+`6a688b5d593ee5bb03ced3fca8711e48df635528`, 0/0 against the existing tracking ref; main and
+origin/main remain `e8a463d51f14b3cb1027960c63244b694579a71b`. No fetch was required, no staged
+changes and no commit/push/merge. All five pre-existing working paths remain; only the three
+named paths changed during this correction. C2, real S9/import, registry operations/allocation,
+production adoption, rights/publication/delivery and Phase 3 exit remain separately gated.
+
+### DEC-084 C1 independent approval and publication — 2026-10-03 Asia/Seoul
+
+Returning non-author reviewers independently re-reviewed corrected C1 against the actual
+accepted contracts, implementation, regression assertions and saved evidence. Their prior
+involvement was read-only review/audit assistance; neither authored the implementation or
+corrections. No remaining material findings or mandatory verification gaps were found.
+The implementation author coordinated preservation checks and does not supply independent
+approval. All five files remained byte-identical throughout that review. This approval
+supersedes the earlier pending-review status without erasing its historical records.
+
+Approved scope is DEBUG-only synthetic identity registration and reference attachment,
+applicable approved evidence, retained C1 business admission, complete atomic accounting
+and explicit C2 deferral. Required S9 dependencies precede retained conversion returns;
+registration/replay cannot emit bytes when that history requires C2. Plain conversions and
+unrelated supplied artifacts remain valid controls. c38 now begins with a valid already-retired
+historical station and preserves it through conversion; c48/c49 cover the required/incidental
+S9 distinction for registration and current-target replay. No optional follow-up or C2 work
+is included in publication.
+
+Reuse final correction evidence only as recorded above: **49 functions / 115 passing cases**,
+zero failures/skips/runtime warnings and successful Debug dependencies. The **27 existing
+isolation warnings and two AppIntents warnings** remain separate. Unchanged A 28/56 and B
+65/219 evidence is reused, not summed with this run. Retained Release hashes still match and
+both binaries have zero synthetic-symbol matches. Earlier intermediate runs and the corrected
+Release command typo remain separate historical evidence. No tests/builds are rerun here.
+
+Reviewed source/test hashes are unchanged:
+
+| Published file | SHA-256 |
+|---|---|
+| `SyntheticTripRegistrationAdmission.swift` | `3839aed48f3d337d9cb173858130194b704ccfffac883bdc2a1ef2cadc4575fb` |
+| `SyntheticTripRegistrationAdmissionTests.swift` | `8c1d037775d3edc029dca52b06e464d712d65a2b32ea8fd603fa8967827df838` |
+
+The owner authorizes committing and normally pushing exactly those two files plus DECISIONS,
+ARCHITECTURE and ROADMAP to the existing `phase/03-route-search` upstream. Pre-publication
+fetch confirms origin `lunalism/TSUGINO`, HEAD/upstream
+`6a688b5d593ee5bb03ced3fca8711e48df635528` and local/remote main baseline
+`e8a463d51f14b3cb1027960c63244b694579a71b`, with no divergence or unexpected work.
+Only approval/status documentation changes beyond independently reviewed bytes. No force-push,
+merge, main push, branch deletion or next-slice implementation. C2, authentication, real registry
+operations/allocation, real S9/import, production adoption, rights/publication/delivery and
+Phase 3 exit remain separate gates.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

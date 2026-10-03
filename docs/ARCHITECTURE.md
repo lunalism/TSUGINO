@@ -1893,7 +1893,18 @@ still requiring slice-C admission; it emits no registry candidate. Stipulated sy
 are premises, not authenticated external history. Independent review approved this bounded
 mechanical slice on 2026-10-02 Asia/Seoul; it does not establish registration/S9 admission
 or full business-history validity.
-Slice C remains unimplemented and unauthorized. Current ordinary registry
+The separately authorized C1 portion is locally implemented in DEBUG-only
+`SyntheticTripRegistrationAdmission.swift`: identity-only registration with supplied invented
+IDs, new-key/returning attachments, applicable approved evidence, complete delta accounting
+and atomic in-memory candidate bytes. It admits retained C1 business history before candidate
+or replay output; B's mechanical result alone supplies no admission. Its explicit C1 result
+defers snapshot-dependent inputs without a railway rejection or candidate output. Returning
+non-author reviewers independently approved bounded C1 on 2026-10-03 Asia/Seoul, including
+required-S9 deferral before retained conversion returns and corrected retired-body coverage.
+C2 snapshot registration/selection/revision, DEC-082
+proof/view/predecessor reconstruction and downstream snapshot revalidation remain deferred.
+Neither C1 nor its output grants real registry operations, authentication or production adoption.
+Current ordinary registry
 intake still reads schema 2; the DEC-073 reader supports 2/3. Neither supports Trip
 registration. The isolated schema-4 wire codec does not change that production boundary.
 

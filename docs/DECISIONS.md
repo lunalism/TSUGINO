@@ -8170,7 +8170,7 @@ private access, acquisition or additional decision acceptance is authorized by t
 
 # DEC-084 — Synthetic Trip Registry Schema and Explicit Legacy Conversion Design
 
-**Status:** Accepted — bounded synthetic format contract; slices A/B independently approved, slice C unauthorized\
+**Status:** Accepted — bounded synthetic format contract; slices A/B/C1 independently approved, C2 deferred\
 **Date:** 2026-10-02 Asia/Seoul\
 **Related:** Accepted DEC-068/073/082/083; RULES Rule 39; ARCHITECTURE §§39–41; ROADMAP P2-S9 follow-up
 
@@ -8246,6 +8246,70 @@ warnings and intermediate/failed attempts remain separately recorded in ROADMAP.
 reuses that evidence with unchanged reviewed source/test bytes; no tests/builds are rerun or
 overlapping results summed. No further decision is accepted. Slice C, real S9/import,
 registry operations, production adoption, rights/delivery and Phase 3 exit gates remain.
+
+## Slice C1 authorization and local implementation — 2026-10-02 Asia/Seoul
+
+After slice B publication at `6a688b5d593ee5bb03ced3fca8711e48df635528`, the owner
+separately authorized C1: identity-only registration using supplied invented Trip IDs,
+new-key attachment and returning-reference attachment. This is an implementation boundary
+within the accepted contract, not a new semantic decision. Earlier C-unauthorized records
+remain historical; C2 snapshot-dependent admission remains deferred.
+
+`SyntheticTripRegistrationAdmission.validateIdentityOnly` is a separate DEBUG-only entry
+point. It reuses A/B, admits all relevant retained C1 operations before incoming admission
+or unchanged replay, checks applicable approved profile/correspondence assertions, complete
+delta accounting and permanent authority/history, then emits only an atomic supplied-memory
+`SyntheticRegistrationC1Candidate`. The output retains registry/history/checkpoint bytes and
+original record order. It conveys no authentication, allocator, real registry authority or
+publication capability. Missing support holds; established conflicts retain applicable
+uncertainty in the accepted diagnostic order.
+
+Evidence purpose follows the approved operation and named evidence lists; no new meaning
+is assigned to the open descriptive `role` token. Exact profile/version/source/input/key/
+Trip/record coverage is required; empty applicability lists are not wildcards. Scope and
+correspondence cannot be assembled from incompatible incomplete profiles. Every applicable
+C1-purpose contradiction is checked; unrelated S9-purpose evidence supplies neither C1
+support nor a C1 contradiction. Profile-purpose assertions require their valid local owner
+approval; correspondence assertions require request approval. The baseline fixes that owner,
+so changing the envelope label cannot grant authority or suppress an approved contradiction.
+Independent target/key conflicts remain checked during approval uncertainty. S9 proof/view
+association remains C2.
+
+The outer `outsideC1` result exposes capability limits without candidate bytes or business-
+history approval. Required snapshot registration, selection/revision, retained snapshot
+operations/selections or required S9 dependencies defer to C2; an incoming conversion-only
+request stays with B. These limits are not railway rejection policies. C2 still owns full
+DEC-082 predecessor/proof/view reconstruction and downstream snapshot revalidation.
+Independent C1 implementation review is pending; verification is recorded in ROADMAP.
+No source parsing/authentication, filesystem loader/writer, CLI, real conversion/mutation/
+allocation, production wiring, P2-S9/P3-T1 acceptance, registry adoption, rights/delivery or
+Phase 3 exit authority is added.
+
+## Independent slice C1 implementation approval — 2026-10-03 Asia/Seoul
+
+Returning non-author reviewers independently inspected the corrected implementation, accepted
+contracts, regression assertions and saved verification. They had prior read-only review/audit
+exposure but no implementation or correction authorship. They found no remaining material
+findings or mandatory verification gaps. The implementation author coordinated preservation
+checks; author self-review is not the independent approval. All five working files remained
+byte-identical during the focused re-review. Earlier pending-review entries remain historical.
+
+Approval covers only DEBUG-only synthetic identity registration with supplied invented IDs,
+new-key/returning-reference attachment, applicable approved evidence, retained C1 business
+admission, complete accounting and atomic in-memory candidate/replay output. Required S9
+dependencies are checked before conversion returns; registration/replay requiring C2 returns
+`outsideC1` without output bytes. Plain conversion and unrelated supplied artifacts remain
+distinct. The corrected historical-body regression begins with an original-valid retired
+entity, preserves it through conversion and requires the C1 claimant's conflict diagnostic.
+
+Independently verified final evidence is 49 functions / 115 passing cases, zero failures,
+skips or runtime warnings and successful Debug dependencies. The 27 existing isolation and
+two AppIntents warnings remain separately recorded. Unchanged A/B and retained Release
+evidence remains applicable, with matching binary hashes and zero synthetic-symbol matches;
+overlapping counts are not summed. Publication preserves the reviewed source/test bytes and
+changes approval/status documentation only. No tests/builds are rerun and no further semantic
+decision is accepted. C2, source authentication, real registry operations/allocation, real
+S9/import, production adoption, rights/delivery and Phase 3 exit remain separately gated.
 
 ## Slice A implementation status — 2026-10-02 Asia/Seoul
 
