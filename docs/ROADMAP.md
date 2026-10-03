@@ -4923,6 +4923,83 @@ is supported, separately review it and authorize any later occurrence-level appl
 crosswalk review; unknown interior positions remain held, never cropped. Identity, mappings,
 movement/endpoints, actual registration and scoped S9 acceptance retain their own evidence gates.
 
+#### Public interpretation research and tracked evidence trace — 2026-10-03 Asia/Seoul
+
+Public-document research completed after publication of the owner-reported pilot record
+(`d2e563da…`); this follow-up traces tracked records only. No private document, archive or
+candidate was reopened. **Classification gaps remain 14; ordering gaps remain 14; P2-S9
+remains incomplete.** Optional zero gap counts retain the limitations in the pilot record.
+
+**Recorded chain and its limits.** P2-S1 records public Toei acquisition on September 25/26;
+P2-S2 records successful intake of SHA-256
+`dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`, 779,699 bytes,
+feed version 20260921, with two byte-identical external manifests (9 selected members,
+2 unselected fare members by name). DEC-066 §G and the committed `SourceList.toeiStaticGTFS`
+bind DS-01/toei-static-gtfs to dataset `train-toei` and resource
+`35b68908-4558-47ae-bfa5-867e58544a1a`. Manifest hashes/sizes are computed, source metadata
+comes from that committed list, and `obtainedAt` is operator-declared: this is not remote
+authentication or independent acquisition proof. S4's September 30 owner acceptance covers
+reviewed station grouping/line bindings on this hash, not passenger classification/order.
+The older B8/B11 `f10d03cd…` archive (779,674 bytes) and its retained sanitized manifest
+cannot stand in for this revision. Matching aggregates do not establish row equivalence.
+
+**Interpretation already recorded.** DEC-065 §D checked the reader against the GTFS Schedule
+Reference revised April 27, 2026, including its canonical `google/transit` source
+`gtfs/spec/en/reference.md`. It separates specification rules, observed shape and reader
+policy. Zero invalid/unsupported rows establishes success under that bounded reader contract,
+not complete GTFS conformance. It documents numeric `stop_sequence` trip order, nonconsecutive
+keys, and a reader restriction to source rows already in that order; CSV row order is not
+the GTFS ordering definition. No producer conversion contract or accepted source-specific
+stop/pass profile for this revision is identified. DEC-082 permits applicable source/profile
+evidence or authoritative occurrence-specific evidence; a literal adoption statement is not
+the sole route. Documented conformance, incorporation or conversion evidence can contribute
+only to the claims and revision scope it actually supports.
+
+**Official public sources inspected in the completed research:**
+
+- [ODPT dataset](https://ckan.odpt.org/dataset/train-toei) and
+  [exact base resource](https://ckan.odpt.org/dataset/train-toei/resource/35b68908-4558-47ae-bfa5-867e58544a1a):
+  current, undated catalog describes Toei rail coverage and GTFS/GTFS-JP format; the separate
+  Pathways resource is not this input. No applicable specification revision or stop/pass,
+  omission or conversion profile was located there.
+- [GTFS Schedule Reference](https://gtfs.org/documentation/schedule/reference/), revised
+  April 27, 2026: generic numeric trip ordering, pickup/drop-off permissions and timepoint
+  precision. [ODPT-hosted translation](https://gtfs-llm-translation.odpt.org/documentation/schedule/reference/)
+  supplies generic guidance, not evidence of this resource's revision-specific implementation.
+- [Toei announcement](https://www.kotsu.metro.tokyo.jp/pickup_information/news/bus/2020/bus_p_202008179276_h.html),
+  August 17, 2020: bus GTFS realtime/GTFS-JP statements and separate rail JSON information;
+  it does not establish this rail archive's profile. The public
+  [ODPT documentation page](https://developer.odpt.org/documents) exposed only a shell to the
+  research reader; no authenticated fallback was used.
+
+Numeric trip order is a plausible interpretation supported by the generic contract, not
+independent physical railway-order validation. Passenger permissions, timing precision,
+physical stopping/passing and completeness of represented positions remain distinct.
+No inspected public source established the missing resource/revision-specific exceptions
+or omission conventions. This is a bounded research result, not proof no such document exists.
+
+**Identity-only references; investigation complete.** The recorded P2-S2 manifests and the
+acquisition record underlying the declared date could address identity, source linkage,
+declared custody and selected-member metadata, not the unresolved interpretation semantics.
+Their roles are recorded, but exact local file identities and document hashes are not.
+No further provenance tracing or private manifest inspection is the next semantic step.
+B7 separately records retained catalog/terms captures and a source
+matrix (audit §2.5/§3.1); those are historical provenance/rights evidence, not an identified
+20260921 interpretation document, and need not be opened for classification.
+
+**Next scope: public interpretation documentation, then an unsent inquiry if needed.**
+The missing clarification is how this exact base resource/revision represents passenger
+stops, restricted stops, passed or omitted positions, and numeric trip order, including any
+conversion rules and exceptions. Seek an existing producer/distributor document through the
+official resource/documentation references above, or separately scope obtaining that
+clarification from Toei/ODPT if no document is identified. No document title, retained path
+or hash is invented here. Review only its applicable clauses and any specification it
+incorporates; report supported claims and limitations without applying them to the candidate.
+This could support DEC-082 classification/order profiles; identity/custody review alone
+cannot close those gaps. Actual occurrence correspondence, independent crosswalk review,
+mapping/movement/endpoints, registration and S9 acceptance remain separate. No new acceptance
+requirement, semantic decision, private access, provider contact or further real run is granted.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
