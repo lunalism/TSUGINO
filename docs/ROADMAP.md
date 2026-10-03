@@ -4699,6 +4699,104 @@ artifacts. Preserve accepted decisions and all prior records. This approval/publ
 not authorize real S9 evidence review or acceptance, P3-T1 import, allocation, registry
 operations/adoption, production search, rights/delivery or Phase 3 exit; main stays unchanged.
 
+
+### Bounded untimed occurrence extractor — 2026-10-03 Asia/Seoul
+
+**Implemented with invented-fixture verification; non-author independent review pending.**
+Owner authorization covers standalone tooling and synthetic verification only. Phase 3
+retains real P2-S9 ownership; real execution is excluded from this task. No private artifacts,
+source keys, nomination locators or evidence contents were used as fixtures or published.
+
+Scope: new [occurrences.py](../Tools/TripNomination/occurrences.py) and
+[test_occurrences.py](../Tools/TripNomination/test_occurrences.py), a small shared-helper
+change in `nomination.py`, [README contract/invocation](../Tools/TripNomination/README.md#untimed-occurrence-extractor)
+and this record. The directory selector now accepts an internal member name, and the original
+inflation implementation is shared behind the unchanged trips-only wrapper. Public nomination
+behavior/limits remain unchanged; reader tests and terminal workflow source/tests are
+byte-identical. Readiness, accepted decisions and architecture are unchanged.
+
+The extractor reconstructs the exact archive-bound nominated label, checks the complete trips
+table for an ambiguous selected-key join, then validates all bounded occurrence rows using
+one protected descriptor. Only trips/stop_times payloads are decoded. Results preserve every
+matching row in transport order with repeated visits, original ordinals, exact terminator-
+inclusive spans/hashes and complete member digests. Optional absent/empty fields are distinct;
+time values never escape as result fields and are never interpreted. ASCII-decimal syntax and
+selected numeric-key duplicates are checked; gaps and transport inversions are preserved, not
+converted into railway-order claims. Zero matches is explicit, never an accepted empty Trip.
+All integrity/parse/ambiguity/limit failures produce no partial successful result. Existing
+archive/CSV limits remain; occurrence limits are 32 MiB, 500,000 total records, 4,096 matches.
+No persistence, general importer, canonical IDs, registry operation or app composition.
+
+Final verification, Python **3.9.6**:
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v > /private/tmp/tsugino-untimed-occurrences-final.log 2>&1
+```
+
+**84 functions passed: 30 extractor + 35 reader + 19 workflow; zero failures/errors/skips
+and no unexpected Python warnings.** Subtests are not a separate case total. Deliberate
+duplicate-ZIP fixture writer warnings are narrowly suppressed. No app builds, device steps
+or real execution. Intermediate `tsugino-untimed-occurrences-initial.log` passed 81 functions
+before three self-review coverage additions; it is not summed with final evidence. No failed
+test/build attempts occurred. Logs contain invented inputs only and remain outside Git.
+
+Coverage: `test_all_labels_bind_original_nomination_and_only_associations`,
+`test_ambiguous_selected_key_anywhere_in_complete_trips`,
+`test_interleaving_repeated_visits_and_original_ordinals`,
+`test_exact_unicode_quotes_crlf_bom_spans_and_eof`,
+`test_uninterpretable_time_text_only_becomes_presence` and the sequence/zero-match controls
+check the output boundary. Complete-member malformed/corrupted suffixes, actual production
+record/match caps and inflation limits establish no skipping/truncation. Descriptor tracing
+bounds reads to precisely the two payloads; mutation/replacement/symlink checks, final rehash
+independent of metadata, unchanged-input/no-persistence controls and the documented CLI
+subprocess cover I/O and privacy. The full existing nomination/workflow suite passed unchanged.
+
+Final fingerprints: `nomination.py` SHA-256
+`5677ace84b74e4e1855ec559f59cf5f149147ef716937e5c6c3eb22af773902e`;
+`occurrences.py` `87cc3294b8079644ef3bcdee6b1b5ae0563b4c33c174cf3987a4dace327f385d`;
+`test_occurrences.py` `b8a4f32f4c628e8a42d0894bdf1ff8dc9f7f9bdc5a769484807622afb1c73f45`;
+final log `6173fdd2d83245c22aa559d3ef50967ab22214a79a0f318009f18c3e639d7a22`.
+
+Author self-review, preservation/reference checks and `git diff --check` completed; they are
+not independent approval. Next: non-author review of the actual implementation, shared-helper
+diff, assertions, limits, private output boundary and saved final evidence using the README
+handoff. Real execution needs separate authorization after review. Extraction establishes
+neither source authentication, passenger classification, recurring identity, movement/coverage
+proof nor real S9 acceptance. P3-T1 import, registry adoption/operations, production search,
+rights/delivery and Phase 3 exit remain separate. No staging, commit, push or merge.
+
+
+### Untimed occurrence tooling independent approval and publication — 2026-10-03 Asia/Seoul
+
+**Bounded extractor independently approved; real execution remains separately gated.**
+A fresh non-author reviewer inspected the implementation, shared-helper diff, accepted
+boundaries, actual regression assertions and saved verification. No material findings or
+mandatory corrective checks remained. The coordinating agent authored the implementation;
+its self-review and preservation checks are not the independent approval. This closes the
+preceding pending review while preserving that historical implementation record.
+
+Approval covers the standalone memory-only API/counts-only CLI: one protected descriptor,
+only trips/stop_times payload decoding, complete-member integrity/CSV accounting, exact
+nomination reconstruction and selected-key uniqueness, source-order occurrence preservation,
+byte-bound locators, sequence checks without railway-order inference, presence-only time
+fields, atomic failures, explicit zero matches and unchanged nomination/workflow behavior.
+It grants no source authentication, classification, recurring identity or real S9 acceptance.
+
+Reuse the independently inspected **84 passing functions (30 extractor + 54 existing)**,
+zero failures/errors/skips and no unexpected warnings, with the preceding source/test/log
+fingerprints. No tests or app builds rerun for publication; the earlier 81-function run is
+not summed. All three reviewed source/test files remain byte-identical. Only README approval/
+status text and this record were updated. Readiness, accepted decisions and older records
+remain unchanged. The initial sandboxed fetch could not write FETCH_HEAD; the authorized
+permission-enabled retry succeeded. This tooling-access attempt is not test evidence.
+
+Owner-authorized publication contains exactly `occurrences.py`, `test_occurrences.py`,
+`nomination.py`, the TripNomination README and this ROADMAP, on the existing phase branch.
+No private inputs/identifiers/locators, generated artifacts or test logs are included.
+No real extraction, additional private evidence inspection, ID allocation, registry operation,
+merge or further implementation is authorized. Real execution, S9/P3-T1, production adoption/
+search, rights/delivery and Phase 3 exit retain their separate gates; main is unchanged.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

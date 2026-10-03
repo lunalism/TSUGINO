@@ -116,7 +116,7 @@ def _hash_archive(file, size):
     return digest.hexdigest()
 
 
-def _directory(file, size):
+def _directory(file, size, member_name="trips.txt"):
     # Bound the central directory BEFORE zipfile allocates ZipInfo objects.
     # This is the ordinary single-disk ZIP envelope, without ZIP64 records.
     file.seek(max(0, size - 65557))
@@ -172,7 +172,7 @@ def _directory(file, size):
             raise NominationError(Code.INVALID_ARCHIVE)
         seen.add(name)
         offsets.add(info.header_offset)
-    selected = [i for i in infos if i.filename == "trips.txt"]
+    selected = [i for i in infos if i.filename == member_name]
     if len(selected) != 1:
         raise NominationError(Code.INVALID_MEMBERS)
     info = selected[0]
@@ -181,11 +181,15 @@ def _directory(file, size):
 
 
 def _read_trips(file, info, boundary):
+    return _read_member(file, info, boundary, b"trips.txt", MAX_TRIPS_BYTES)
+
+
+def _read_member(file, info, boundary, member_name, max_bytes):
     # Decode only this member. Explicit zlib accounting avoids relying on
     # ZipExtFile's declared-size truncation to establish decompressed length.
     if info.flag_bits & ~0x080E or info.compress_type not in (0, 8) or info.extract_version > 20:
         raise NominationError(Code.UNSUPPORTED_ZIP)
-    if info.file_size > MAX_TRIPS_BYTES or info.compress_size > MAX_ARCHIVE_BYTES:
+    if info.file_size > max_bytes or info.compress_size > MAX_ARCHIVE_BYTES:
         raise NominationError(Code.RESOURCE_LIMIT)
     file.seek(info.header_offset)
     header = file.read(30)
@@ -194,12 +198,12 @@ def _read_trips(file, info, boundary):
     signature, version, flags, method, _, _, crc, compressed, expanded, nlen, xlen = struct.unpack(
         "<4s5H3I2H", header)
     if (signature != b"PK\x03\x04" or flags != info.flag_bits or method != info.compress_type
-            or version > 20 or nlen != len(b"trips.txt")):
+            or version > 20 or nlen != len(member_name)):
         raise NominationError(Code.INVALID_ARCHIVE)
     end = info.header_offset + 30 + nlen + xlen + info.compress_size
     if end > boundary:
         raise NominationError(Code.INVALID_ARCHIVE)
-    if file.read(nlen) != b"trips.txt":
+    if file.read(nlen) != member_name:
         raise NominationError(Code.INVALID_MEMBERS)
     extra = file.read(xlen)
     pos = 0
@@ -226,9 +230,9 @@ def _read_trips(file, info, boundary):
             raise NominationError(Code.MEMBER_INTEGRITY)
         remaining -= len(chunk)
         if decoder is not None:
-            chunk = decoder.decompress(chunk, MAX_TRIPS_BYTES + 1 - len(data))
+            chunk = decoder.decompress(chunk, max_bytes + 1 - len(data))
         data.extend(chunk)
-        if len(data) > MAX_TRIPS_BYTES or (decoder is not None and decoder.unconsumed_tail):
+        if len(data) > max_bytes or (decoder is not None and decoder.unconsumed_tail):
             raise NominationError(Code.RESOURCE_LIMIT)
         if decoder is not None and decoder.unused_data:
             raise NominationError(Code.MEMBER_INTEGRITY)

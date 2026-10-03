@@ -1,6 +1,11 @@
-# Trips-only nomination reader and private terminal session
+# Trip nomination and untimed occurrence tooling
 
-Standalone offline Python 3.9+ standard-library tool for the bounded owner-nomination
+The separately authorized [untimed occurrence extractor](#untimed-occurrence-extractor)
+is independently approved for bounded tooling readiness — 2026-10-03 Asia/Seoul.
+See the [extractor approval record](../../docs/ROADMAP.md#untimed-occurrence-tooling-independent-approval-and-publication--2026-10-03-asiaseoul).
+The earlier approval below covers the nomination reader/workflow separately.
+
+Standalone offline Python 3.9+ standard-library tooling for the bounded owner-nomination
 step before real P2-S9 review. No app target, production composition, Swift reader change,
 networking, allocation, registry operation, manifest writer or general importer.
 
@@ -8,7 +13,7 @@ networking, allocation, registry operation, manifest writer or general importer.
 The non-author reader review identified the missing private selection interface; a fresh
 non-author review subsequently approved the terminal workflow with no material findings or
 mandatory corrective checks. **A separate real-input execution grant remains required.**
-Neither has been executed on the real archive. See
+At that review, neither had been executed on the real archive. See
 [readiness](../../docs/P2_S9_REAL_READINESS.md), the
 [reader record](../../docs/ROADMAP.md#trips-only-nomination-reader--2026-10-03-asiaseoul) and
 [workflow record](../../docs/ROADMAP.md#private-owner-nomination-terminal-workflow--2026-10-03-asiaseoul) and
@@ -201,3 +206,145 @@ the chosen locator only while the session is open. Reuse saved evidence unless a
 requires focused synthetic verification; do not execute on real input. This implementation's
 self-review is not independent approval. Real P2-S9/P3-T1 import, registry adoption/search,
 rights/delivery and Phase 3 exit remain separate.
+
+## Untimed occurrence extractor
+
+**Independently approved for bounded tooling readiness — 2026-10-03 Asia/Seoul.** Real execution
+requires a separate explicit grant; do not run these examples on real artifacts yet.
+`occurrences.py` is an offline memory-only API and counts-only CLI. It has no selection UI,
+export, filesystem writer, logger, network, app composition or registry operation. It does
+not call synthetic S9 validators or emit a canonical Trip.
+
+From the repository root, using the explicitly nominated label and identified archive:
+
+```sh
+python3 -B Tools/TripNomination/occurrences.py \
+  --archive "$ARCHIVE_PATH" \
+  --expected-size "$ARCHIVE_BYTES" \
+  --expected-sha256 "$ARCHIVE_SHA256" \
+  --label "$CONFIRMED_LABEL"
+```
+
+All variables are explicit caller inputs; there is no default path, discovery or candidate
+substitution. Labels are exact `N01`–`N10`. The tool cannot authenticate owner confirmation.
+Archive SHA-256 plus label determines the exact original nomination. It reconstructs that
+record using the nomination parser; a missing label fails. A second complete `trips.txt`
+scan requires exactly one scalar-exact match for its `trip_id`, including beyond the first
+ten choices. Even an identical duplicate makes this selected-key join ambiguous. Unrelated
+trip-key duplicates do not create ambiguity in this join and are not silently deduplicated.
+
+The CLI exits 0 only with a complete extraction result, printing the outcome (`occurrences`
+or `zeroMatches`), matching-record count and transport-order inversion count. Zero matches
+is explicit absence of matching evidence, never an empty accepted Trip. Failure exits 1,
+prints only a fixed diagnostic on stderr and produces no successful/partial output. CLI
+argument errors do not echo private arguments. There is no JSON or output-file option.
+
+For a separately authorized private caller, import with `Tools/TripNomination` on the module
+path and Python `-B`:
+
+```python
+from occurrences import read_occurrences
+
+result = read_occurrences(archive_path, expected_size, expected_sha256, confirmed_label)
+# Keep result and every nested field private, in memory. Do not print/log/serialize.
+```
+
+The immutable result contains:
+
+- `source`: label, scalar-exact `trip_id`, `route_id`, `service_id`, and the reconstructed
+  original nomination locator. It omits headsigns and other trips columns.
+- `occurrences`: every matching record in original CSV source order; each has `stop_id`,
+  original `stop_sequence`, `pickup_type`, `drop_off_type`, `timepoint`, arrival/departure
+  presence and its exact locator. Each record's trip association is the enclosing `source`.
+- `outcome`, complete `stop_times_sha256`, total scanned data-record count and number of
+  adjacent selected sequence decreases in transport order. Nothing sorts the output.
+
+Optional scalar fields use `None` for an absent column and `""` for an explicitly empty
+value. Time fields expose only `Presence.ABSENT_COLUMN`, `EMPTY` or `PRESENT`. Any nonempty
+text, including whitespace or uninterpretable text, means PRESENT; no trimming, clock parsing,
+validity claim or time value is returned. Unknown columns are CSV-validated but not exposed.
+Object representations conceal fields, as with nomination; callers can still explicitly
+access them and are responsible for keeping them private. This is not secure memory erasure
+or protection against OS swap, debuggers, tracebacks captured with local variables, or a
+caller deliberately logging private objects.
+
+Both complete members must pass the existing strict CSV profile. Occurrence headers require
+unique nonempty columns including `trip_id`, `stop_id`, `stop_sequence`; these three values
+must be nonempty in every row. Every sequence must use nonempty ASCII decimal digits only.
+The selected run must not repeat a numeric sequence key (`1` and `001` collide); original
+spelling remains untouched. Gaps, zero and leading zeroes are preserved. Decimal comparison
+uses bounded strings, avoiding integer overflow or interpreter digit caps. Duplicate keys
+are checked within the selected run only, not as a whole-feed semantic audit. A transport
+inversion is reported, not rejected: transport order is not asserted to be railway order.
+Source-specific ordering meaning and any later reordering still require reviewed evidence.
+
+Locators use the existing seven-field contract, with `member_name = "stop_times.txt"` for
+occurrences. Ordinals count **all data records**, including unmatched records, excluding the
+header. `[byte_start, byte_end)` includes quotes, embedded newlines and the full LF/CRLF
+terminator; an unterminated final record ends at EOF. Offsets include preceding header/BOM
+bytes. Each locator binds archive digest, complete uncompressed member digest and exact
+original record bytes/hash. Repeated station visits retain distinct records and locators;
+no source ordering key becomes a canonical passenger index.
+
+### Occurrence integrity and limits
+
+One protected, unbuffered archive descriptor is used from initial expected size/SHA-256
+verification through both payload reads and final rehash/state/path checks. The existing
+no-symlink ancestor traversal and replacement checks apply. Only `trips.txt` and
+`stop_times.txt` payloads are decoded; whole-archive hashing necessarily reads other members'
+opaque compressed bytes. The shared directory helper validates all member names/metadata,
+then selects each required root-level member. The shared inflation routine checks selected
+local/central metadata, supported stored/deflate methods, encryption, actual size, CRC and
+ordinary data descriptors. Both complete uncompressed member digests are computed.
+
+All existing archive/CSV limits above remain unchanged. Additional fixed limits:
+
+| Resource | Limit |
+|---|---:|
+| Decompressed `stop_times.txt` | 32 MiB |
+| Total occurrence data records, matched or not | 500,000 |
+| Matching occurrences | 4,096 |
+
+The complete bounded occurrence member is validated, including records after the final match.
+Any malformed record, ambiguous selected join, duplicate selected sequence, integrity failure,
+substitution or limit excess prevents delivery of the entire result. No skipping, cropping,
+truncation, auto-increase or partial iterator is available. Limits are tooling bounds, not
+feed completeness or railway semantics. No wall-clock guarantee is made for stalled storage.
+
+The nomination public API, its limits, labels and trips-only behavior are preserved.
+`nomination.py` changes only to parameterize internal member selection and share the existing
+bounded inflation routine; `_read_trips` remains its trips-only wrapper. Reader tests and
+terminal workflow source/tests are unchanged. New error codes are `nominationUnavailable`,
+`ambiguousSelectedKey`, `malformedSequence`, `duplicateSequence`; existing reader codes cover
+CSV, ZIP, resource, path and identity failures. This is representation extraction, not source
+authentication, passenger classification, recurring identity, coverage proof or S9 acceptance.
+
+### Occurrence verification and independent-review handoff
+
+Run only invented fixtures:
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v
+```
+
+The [ROADMAP record](../../docs/ROADMAP.md#bounded-untimed-occurrence-extractor--2026-10-03-asiaseoul)
+identifies the saved final run and separate intermediate evidence. `test_occurrences.py`
+checks exact original nomination/occurrence locators, joins beyond ten choices, repeated and
+interleaved visits, zero matches, decimal duplicates/gaps/inversions, Unicode/quoted-newline/
+CRLF/EOF spans, time presence without interpretation, malformed and corrupted suffixes,
+limits, no persistence and the actual counts-only CLI. Descriptor instrumentation asserts
+one archive open and payload reads bounded to precisely the two allowed members; corrupted
+unselected content remains undecoded. Mutation/symlink tests cover pre-open and post-read
+substitution and final rehash independent of metadata checks. Shared nomination/workflow
+regressions run in the same suite; overlapping results must not be summed.
+
+**Completed independent-review scope (retained for future changes):** a fresh non-author
+reviewer inspected `occurrences.py`, `test_occurrences.py`,
+the small shared-helper diff in `nomination.py`, this contract and saved evidence. No material
+findings or mandatory corrective checks remained. Future changes should recheck
+same-descriptor integrity, exact selected-key closure, complete member accounting, omission
+of time values/extra source fields, fixed limits, atomic private errors and preserved reader
+behavior. The coordinating agent authored the extractor; approval came from a separate
+non-author context. Author self-review is not independent approval. Real execution, authoritative
+interpretation, real S9/P3-T1 import, registration/adoption, production search, rights/delivery
+and Phase 3 exit remain separate. No new accepted decision is introduced.
