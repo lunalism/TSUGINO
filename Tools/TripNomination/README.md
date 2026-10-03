@@ -1,5 +1,9 @@
 # Trip nomination and untimed occurrence tooling
 
+The [memory-only occurrence inspection interface](#memory-only-occurrence-inspection)
+adds synthetic-tested private inspection and gap annotations. Its independent review status
+is recorded below; no real review execution is authorized by tooling approval.
+
 The separately authorized [untimed occurrence extractor](#untimed-occurrence-extractor)
 is independently approved for bounded tooling readiness — 2026-10-03 Asia/Seoul.
 See the [extractor approval record](../../docs/ROADMAP.md#untimed-occurrence-tooling-independent-approval-and-publication--2026-10-03-asiaseoul).
@@ -348,3 +352,116 @@ behavior. The coordinating agent authored the extractor; approval came from a se
 non-author context. Author self-review is not independent approval. Real execution, authoritative
 interpretation, real S9/P3-T1 import, registration/adoption, production search, rights/delivery
 and Phase 3 exit remain separate. No new accepted decision is introduced.
+
+## Memory-only occurrence inspection
+
+`review_session.py` reuses the unchanged `read_occurrences` API and the nomination session's
+terminal guard, bounded command input and ASCII JSON escaping. A separate non-author reviewer
+approved this bounded synthetic tooling slice on 2026-10-03 Asia/Seoul with no material findings
+or mandatory corrective checks. This approval grants no real re-read or evidence-content access.
+It is an owner-operated, unrecorded local terminal interface, not an agent-captured PTY,
+browser, exporter, evidence parser or S9 validator. Python 3.9+, standard library only.
+
+**Future real pilot only after separate same-candidate re-read authorization:** from the
+repository root, with the original confirmed label and exact private non-symlink archive path
+supplied locally (never in chat), the supported invocation is:
+
+```sh
+python3 -B Tools/TripNomination/review_session.py \
+  --archive "$ARCHIVE_PATH" \
+  --expected-size 779699 \
+  --expected-sha256 dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4 \
+  --label "$CONFIRMED_LABEL" \
+  --expected-count 14 \
+  --expected-inversions 0
+```
+
+These are assertions for the reported pilot, not limits to truncate output. Synthetic callers
+supply their invented archive's own identity/counts. Count must be 1–4,096 and inversions
+0–(count−1); both flags are required, with no defaults. No candidate selection is provided.
+Missing original confirmation/label is a prerequisite gap, not permission to nominate again.
+The tool cannot authenticate owner confirmation; the owner must supply that same label.
+
+Terminal qualification happens before archive access. The reader is called exactly once,
+with its complete-member validation, all existing limits and final identity checks unchanged.
+Count or inversion mismatch (including zero matches) exits with `unexpectedResult`, before
+any occurrence or review display. Invalid expectations/references fail before archive access.
+No retry, substitution, cropping, sorting, stitching or partial review is available.
+
+After successful validation, all original immutable occurrences remain in memory; the first
+is displayed. `O0001` through `O4096` are session-local transport positions, not canonical
+indices, railway-order assertions or persistent visit IDs. Navigation never removes a row.
+
+| Command | Effect |
+|---|---|
+| `inspect O0001` | Show that original occurrence, seven locator fields and annotations. |
+| `next`, `prev` | Navigate source transport order; remain at the end/beginning boundary. |
+| `source` | Show the original label, trip/route/service associations and nomination locator. |
+| `summary` | Count all retained unknown occurrences and recorded gaps; never claim readiness. |
+| `refs` | Show the explicit reference allowlist as unopened, unverified assertions. |
+| `gap O0001 mapping` | Add a fixed reason in memory, without resolving any other gap. |
+| `link O0001 E01` | Attach an allowlisted reference to one original occurrence; resolve nothing. |
+| `cancel`, `exit`, EOF or Ctrl-C | End the session; return no private objects and discard annotations. |
+
+Commands are exact, case-sensitive, at most 32 ASCII bytes including newline, using single
+spaces as shown. Invalid commands are not echoed and leave review state unchanged. No free-text
+notes, classification setter, gap-clearing, acceptance or candidate-change command exists.
+Gap reasons are `classification`, `ordering`, `provenance`, `identity`, `mapping`, `movement`,
+`endpoints`. Each occurrence starts with classification and ordering gaps. Other zero counts
+mean no gap annotation was entered, not that a prerequisite passed. Every classification stays
+`unknown`, even after a reference is linked. Unknown interior positions remain visible.
+
+Inspection exposes only `stop_id`, original `stop_sequence`, `pickup_type`, `drop_off_type`,
+`timepoint`, arrival/departure presence enums and the exact locator. Optional absent columns
+remain JSON `null`, explicit empty values remain `""`. No raw time values, headsigns or unknown
+columns are exposed. Repeated visits, sequence spelling, ordinals, byte spans and digests remain
+untouched. ASCII JSON escaping is display-only; no stop/pass or railway-order inference occurs.
+
+### Evidence reference boundary
+
+Optionally repeat `--evidence-ref "$EVIDENCE_REFERENCE"`, at most 16 times. Each value is exactly
+`E01:<64 lowercase SHA-256 hex characters>` through `E16:<digest>`; labels must be unique.
+The owner supplies these privately from an explicitly identified future evidence inventory.
+There is no default evidence list. Digests are **owner-asserted references**, not validated hashes:
+the interface neither opens nor authenticates any referenced content, resolves a filename/URL,
+nor checks provenance, applicability, semantic truth or authority. Recording/linking a reference
+does not authorize access, classify a row or resolve a gap. Empty allowlists are supported.
+
+A future substantive evidence review still needs an exact artifact allowlist, named access
+authorization, source/revision applicability, provenance/rights and interpretation evidence.
+Safe evidence-content presentation/application is not implemented in this slice; it needs
+separate design and verification before use. No arbitrary evidence-file reader, new parser,
+real mapping/registry reader or synthetic-validator shortcut has been added.
+
+### Failure, confidentiality and verification
+
+CLI success exits 0 after normal session end; cancellation by Ctrl-C exits 130. Reader failures
+exit 1 with their fixed code; wrapper failures use `invalidArguments`, `invalidExpectations`,
+`invalidEvidenceReferences`, `unexpectedResult`, existing terminal codes, `terminalUnavailable`
+or `internalError`. No failure echoes private arguments or raw exception details. Once an
+inspection session has begun, a later terminal failure ends it; already displayed terminal
+text cannot be recalled. Terminal settings/descriptors use the existing cleanup path.
+
+Input/output/error must share the local foreground canonical terminal. No pipes, redirection,
+SSH, recording, `tee`, `script` or terminal logging. Terminal checks cannot detect arbitrary
+capture, guarantee locality against disguised SSH, erase scrollback or secure OS memory.
+Owners remain responsible for the unrecorded setting. No file, worksheet, log, clipboard,
+network, exported result or private Git artifact is created. `-B` prevents bytecode caches.
+Clearing session references is not secure memory erasure. All annotations disappear at exit;
+this interface cannot create an immutable acceptance packet or establish reproducibility of
+an evidence review. Only separately authorized aggregate findings may be reported publicly.
+
+Synthetic checks (invented archives only):
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_review_session.py' -v
+```
+
+Coverage includes original object/locator preservation, repeated visits, gaps/leading zeroes/
+inversions, permitted fields and safe escaping, fixed-candidate and mismatch rejection,
+unknown-only annotations, unopened allowlists, full validation before display, redacted errors,
+cancel/EOF/interruption cleanup, and actual terminal CLI sessions/no output files. The existing
+nomination/extractor/workflow suite supplies unchanged parser and shared-terminal coverage.
+Independent review must inspect these assertions and the actual boundary, not infer approval
+from test counts. Real same-candidate re-read, named evidence access, classification/profile
+acceptance, registration, S9 acceptance and P3-T1 consumption remain separate.

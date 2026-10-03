@@ -4797,6 +4797,76 @@ No real extraction, additional private evidence inspection, ID allocation, regis
 merge or further implementation is authorized. Real execution, S9/P3-T1, production adoption/
 search, rights/delivery and Phase 3 exit retain their separate gates; main is unchanged.
 
+### Memory-only occurrence inspection and gap recording — 2026-10-03 Asia/Seoul
+
+**Implemented, synthetically verified and independently approved for bounded tooling.** Scope lock: Phase 3
+retains P2-S9; add only `Tools/TripNomination/review_session.py`, its synthetic tests and README,
+and this record. No parser/extractor/nomination semantics, limits, accepted decisions, Domain,
+app targets or dependencies change. Authorization covers development, synthetic verification
+and independent review, not any real archive/evidence access or execution/publication.
+
+**Prior owner-executed evidence, not a run by this implementation task:** the owner reports
+explicitly confirming one candidate in the approved local nomination workflow, then executing
+the counts-only extractor once with the previously authorized 779,699-byte `dd575706…` archive
+identity. Reported output: `occurrences; matching records: 14; transport-order inversions: 0;
+private values not printed`. This is owner-executed, screenshot-supported evidence as reported
+by the owner, not agent-observed execution. Contract inspection established that this success
+path performs expected size/SHA-256 and final archive identity checks. Fourteen matching source
+records and zero numeric transport inversions establish neither fourteen passenger stops nor
+authoritative railway order, recurring identity, registration readiness or S9 acceptance.
+The prior real-extraction grant is consumed. No private path, label, key or locator is recorded.
+
+The new owner-operated unrecorded terminal interface reuses `read_occurrences` once and the
+existing terminal guard/escaping/32-byte command reader. Explicit archive identity, original
+confirmed label and expected count/inversions are required. For the eventual pilot these are
+14 and 0; mismatch/zero matches or reader failure prevents any occurrence display. No retry,
+nomination, substitution, sorting, cropping or partial result. Source-order navigation preserves
+all original immutable occurrences, repeated visits, sequence spelling and exact seven-field
+locators. Only documented source associations, occurrence fields and presence-only time enums
+are exposed. New `O` labels are session-local transport positions, never canonical indices.
+
+Every classification remains unknown. Memory-only fixed gap annotations and occurrence links
+to at most sixteen explicit `E01`–`E16`/SHA-256 references cannot remove gaps or classify a row.
+References are owner assertions only: content is unopened, digest/applicability unverified.
+No evidence file reader, source semantic parser, classifier, acceptance mechanism, persistence,
+export, logs, clipboard or network path. The README documents exact invocation, fields, limits,
+failure/cancellation behavior, evidence boundary and terminal/memory-capture limitations.
+State is discarded at exit; this does not provide secure erasure or an immutable review packet.
+
+Synthetic verification (Python 3.9.6; invented ZIPs and controlling PTYs only):
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v > /private/tmp/tsugino-occurrence-review-synthetic.log 2>&1
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_review_session.py' -v > /private/tmp/tsugino-occurrence-review-targeted-final.log 2>&1
+```
+
+The combined suite passed **97 functions (13 new + 84 unchanged)**. Two test-only controls
+were subsequently added for no file writes/logging/network/subprocess and redacted terminal
+write failure with state cleanup. The final targeted run passed **15 functions**, zero
+failures/errors/skips or unexpected warnings. These overlapping runs are not summed into a
+claimed full run of 99. Implementation bytes did not change between these runs. An earlier
+13-function targeted run also passed; it is not additional coverage. No app build/device work
+is needed for this standalone tool. No test failure occurred. Saved logs contain invented
+inputs only and remain outside Git.
+
+Review fingerprints: `review_session.py` SHA-256
+`516aeedfdee636cb91de572279999fbc1577bc4a63ae1aa5b98526f738f5ec2a`;
+`test_review_session.py` `19fd198a5b9c683223cc318fe20ddb01f44ed972ec48a3fba9bea6e90e41444a`;
+combined log `f19792d2f8c369be6b9bda7c1bc9e3977758573480d147b407692c586aced6cd`;
+final targeted log `b85241cf3a0d5210d55d07f87914c99217da1405b1b1f3189a796f659643c61e`.
+
+A separate non-author reviewer inspected code, all fifteen final test functions, actual
+assertions, both saved logs/fingerprints, README and this ROADMAP record. The reviewer approved
+the bounded synthetic tooling and documentation with no material findings or mandatory
+corrective tests. No tests were rerun by the reviewer; author self-review is not this approval.
+Source/test bytes remained unchanged through review. Remaining real-use gates:
+explicit same-candidate re-read authorization, privately retained original label and exact
+path/identity, owner-operated unrecorded terminal, and a separately designed/authorized named
+evidence-content review if needed. Loss of the original label is a prerequisite gap, never
+permission to select another candidate. This interface cannot authenticate confirmation or
+evidence. No new nomination, real re-read, private evidence opening, registry operation,
+S9/P3-T1 acceptance, publication, commit, push or merge occurs in this task.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
