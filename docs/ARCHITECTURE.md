@@ -1967,6 +1967,16 @@ otherwise → English
 
 The resolver should use the effective app/device language rather than scattered locale checks in individual views.
 
+The bounded route-presentation implementation supplies `Shared/Localization/AppLanguage`
+with a pure `resolve(effectiveLanguageTag:)` entry point (ja/ko/English fallback). The caller
+must supply the effective language; this seam does not read preferences or wire app-wide
+localization. `Features/RouteSearch` holds the pure state/action projection, separate draft
+feedback and centralized project-owned route copy under Consumer §14. These lightweight
+transforms retain canonical evidence without executing requests or exposing diagnostics.
+No screen, observable feature workflow or automatic action is implemented; DEC-087 still
+owns request lifecycle, and Phase 11 language/accessibility hardening remains separate.
+
+
 Railway display names must use canonical localized data.
 
 Provider-localized strings are inputs, not the sole source of truth.

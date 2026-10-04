@@ -5607,6 +5607,68 @@ implementation/deletion, Journey creation, private access, provider contact or p
 adoption. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen
 ordering gaps. No ODPT reply supplied. Leave changes unstaged/uncommitted for publication review.
 
+#### Provider-neutral route-search presentation design — 2026-10-04 Asia/Seoul
+
+Baseline `45818ecaf2ec3cbd5c6ecb5018df9bb781010a39`, clean phase/03-route-search checkout,
+cached upstream identical. [Consumer proposal §14](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#14-provider-neutral-route-search-presentation-contract)
+and DESIGN §13.4 define a documentation-only current-state/action projection and draft
+project-owned JP/KO/EN copy. Canonical payload, scope, contexts and omissions remain internal;
+no raw keys/diagnostics are user copy. Scoped noResults, rejected alternatives, missing evidence,
+incomplete work, cancellation and unconfigured composition remain distinct. DEC-087 matching
+retry/time capture, identity guards, independent owners and recent-station boundaries stay fixed.
+
+Proposed local choices: P1 supplementary rejected-draft feedback and its clearing/stale-action
+behavior; remaining P2 project-owned copy/grouping. The owner approved only the notConfigured
+wording correction in §14: 現在、経路検索はご利用いただけません。 / 현재 경로 검색을 사용할 수 없습니다. /
+Route search is currently unavailable. Internal capability/failure distinctions and actions
+are unchanged; no automatic retry, temporary-outage assertion or restoration promise.
+No lifecycle or objective decision is reopened.
+After approval and implementation authority, the smallest next slice is a pure presentation
+contract mapper and centralized route-status/action copy, with controlled values and language
+policy tests. No actual FeatureModel/screen/observation bridge or live route invocation.
+Phase 3 owns canonical consumption/recoverable failures and route content; Phase 8 owns the
+complete foreground flow and Phase 11 language/accessibility hardening. No new task IDs.
+
+Documentation scope/reference/privacy/whitespace checks passed. Separate non-author review
+approved with no material findings on the original proposal and the focused wording revision.
+P1 and remaining P2 stay Proposed for owner review.
+No code, tests/builds, external research, private access, provider contact, caching/history
+implementation or production adoption. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
+classification and fourteen ordering gaps. No ODPT reply supplied. Leave unstaged/uncommitted.
+
+#### Provider-neutral route-search presentation implementation — 2026-10-04 Asia/Seoul
+
+Owner accepted P1 supplementary rejected-draft feedback and P2 reviewed project-owned
+JP/KO/EN copy/grouping, including the already approved notConfigured wording, and authorized
+this bounded implementation. Historical Proposed/partial approval records above and in
+Consumer §14 are preserved; P1/P2 are no longer awaiting approval. This does not accept UI,
+production adoption or whole-milestone readiness.
+
+Pure Features/RouteSearch values project explicit notConfigured/current lifecycle snapshots
+into status/copy and guarded-operation action descriptors while retaining the full original
+canonical source. Candidate order, scope, contexts, indices and omissions remain unchanged.
+Separate draft-feedback tokens record only current-draft rejection and clear on edit/accepted
+submission. No workflow/task/Clock read or persistence. Shared AppLanguage resolves caller-
+supplied ja/ko/other tags centrally; no ambient preference read or app localization wiring.
+Exact approved notConfigured strings remain in the copy table. DEC-087, AppEnvironment and
+recent-station-history boundaries remain unchanged.
+
+Final focused run `/private/tmp/tsugino-presentation-r1.xcresult`: **28 functions / 98 cases
+passed**, zero failures on explicit iPhone 17 / iOS 26.5 Simulator. Includes presentation
+**6/21**, exact copy/language **2/33**, coordinator **9/28**, composition **5/10**,
+AppEnvironment **3/3**, AppClock **3/3**; one run, no overlapping counts added. Debug test
+action built app/extension dependencies. No compile/test correction or rerun was required.
+Release app/extension build passed (`/private/tmp/tsugino-presentation-release.log`).
+No warnings in changed Swift files; unrelated existing warnings are not claimed fixed.
+Independent source/test/documentation/evidence review approved with no material findings
+remaining; clarified that action-array/table order is not visual priority.
+
+No SwiftUI screens, navigation,
+feature-flow wiring, caching/history storage, Journey/train actions, private access, provider
+contact or production adoption. Full screens remain Phase 8; comprehensive localization/
+accessibility hardening remains Phase 11. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
+classification and fourteen ordering gaps. No ODPT reply supplied. Leave unstaged/uncommitted.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

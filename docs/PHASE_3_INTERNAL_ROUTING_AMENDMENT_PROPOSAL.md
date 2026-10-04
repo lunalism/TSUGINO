@@ -1624,3 +1624,201 @@ Final tests/builds and independent review are recorded in ROADMAP. No cache/hist
 recent-station deletion, Journey creation, real/private input, provider contact, production
 routing or new product decision. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
 classification and fourteen ordering gaps. No ODPT reply supplied.
+
+
+## 14. Provider-neutral route-search presentation contract
+
+**Current scoped acceptance:** the owner accepts P1 rejected-draft feedback and P2 reviewed
+project-owned JP/KO/EN copy/grouping, including the exact notConfigured strings below, and
+authorizes the bounded pure mapper/copy implementation. Historical Proposed labels in this
+section record the reviewed design and earlier partial approval; they are no longer pending
+P1/P2 choices. This accepts neither screens/feature flow nor production routing. See §14.5
+and ROADMAP for implementation evidence; Phase 11 linguistic/layout hardening remains separate.
+
+**Status: Proposed presentation/copy design, 2026-10-04 Asia/Seoul.** Baseline
+`45818ecaf2ec3cbd5c6ecb5018df9bb781010a39` publishes Application composition. This is
+not a complete search UI or implementation authority. DEC-087 C1/C2 and §13 composition
+are accepted inputs; no ranking, lifecycle, retry, source or production decision is reopened.
+
+**Scoped owner approval — notConfigured wording only:** the owner explicitly approved
+「現在、経路検索はご利用いただけません。」 / “현재 경로 검색을 사용할 수 없습니다.” /
+“Route search is currently unavailable.” This correction is accepted; P1 rejected-draft
+feedback and all remaining P2 copy/grouping stay Proposed. The internal notConfigured
+capability remains distinct from dataUnavailable and every invoked-search failure. Its
+no-search/retry/cancel action rules are unchanged. “Currently” describes present capability;
+it asserts neither a temporary outage nor restoration, and authorizes no automatic retry.
+
+### 14.1 Boundary and retained truth
+
+Recommend a pure, presentation-neutral projection of `RouteSearchProvision` and, when ready,
+`RouteSearchLifecycleState`, plus optional local submission feedback. The eventual lifetime
+host owns the coordinator; a projection neither creates it nor submits, cancels, retries,
+reads Clock or observes/polls work. It must be refreshed from current owner state by the
+future host; this document does not imply an implemented observation bridge or feature model.
+
+Retain the exact attempt identity/intent/request and canonical result/failure as the source
+of truth. Keep scope, all candidates in supplied order, dated timetable contexts, snapshots,
+indices and omission/rejection evidence internally, unchanged. A display descriptor contains
+only project-owned status/action identifiers and references to the retained current payload;
+it is not a reduced replacement routing model. Never render raw IDs, omission counts/reasons,
+provider diagnostics or contract-violation error text. Do not derive a user message by enum
+stringification. Existing accepted engine outcomes govern completeness, not presentation.
+
+Success displays every returned canonical alternative without re-ranking, dropping equal
+optima or changing through-service treatment. Use canonical names and supported scheduled
+context when later rendering details; absent optional times/fare/platforms stay absent.
+Provider-asserted schedule and timetable context retain their provenance; neither becomes
+realtime or a guaranteed arrival. No generic “fastest in Tokyo” or complete-network claim:
+this projection cannot authenticate optimum/coverage. Route-card layout, time formatting,
+station-name lookup and train/Journey actions are not designed or implemented here.
+
+### 14.2 State/action/status-copy table (draft)
+
+The text is TSUGINO-owned, not a translation of provider content. Action tokens S/E/R/C are
+specified below. “For this search” limits the empty statement to this request and any retained
+scope; it never asserts that no service exists. Do not print opaque scope/profile keys.
+
+| Input / presentation | Available actions | Japanese | Korean | English |
+|---|---|---|---|---|
+| ready + idle | S, E | 出発地・目的地・出発時刻を指定してください。 | 출발지, 도착지, 출발 시간을 지정해 주세요. | Enter an origin, destination and departure time. |
+| searching | C, E then S for explicit replacement | 経路を検索中… | 경로 검색 중… | Searching for routes… |
+| completed alternatives (scoped or unscoped) | E, S; inspect presented alternatives only | 経路 | 경로 | Routes |
+| completed internalSuccess(.noResults) | E, S; no failed-attempt retry | 今回の検索では経路が見つかりませんでした。 | 이번 검색에서 경로를 찾지 못했습니다. | No route found for this search. |
+| completed unscoped noResults | E, S; same cautious request-level copy, do not fabricate scope | 今回の検索では経路が見つかりませんでした。 | 이번 검색에서 경로를 찾지 못했습니다. | No route found for this search. |
+| failed noUsableAlternatives | R, E, S | ご案内できる経路を確認できませんでした。 | 안내할 수 있는 경로를 확인하지 못했습니다. | Could not verify a usable route. |
+| failed dataUnavailable | R, E, S | 検索に必要な情報が不足しています。 | 검색에 필요한 정보가 부족합니다. | Information needed for this search is unavailable. |
+| failed searchIncomplete | R, E, S | 経路検索を完了できませんでした。 | 경로 검색을 완료하지 못했습니다. | The route search could not be completed. |
+| cancelled (explicit or current port cancellation) | E, S; no failed-attempt retry | 経路検索をキャンセルしました。 | 경로 검색을 취소했습니다. | Route search cancelled. |
+| provision notConfigured | No search/retry/cancel; future host may retain editable draft, without implying capability | 現在、経路検索はご利用いただけません。 | 현재 경로 검색을 사용할 수 없습니다. | Route search is currently unavailable. |
+| rejected invalidRequest, supplementary feedback only | E; corrected S; preserve current state's own actions | 出発地・目的地・出発時刻を確認してください。 | 출발지, 도착지, 출발 시간을 확인해 주세요. | Check the origin, destination and departure time. |
+
+Accepted replacement shows searching with no obsolete route answer/failure. Failure,
+cancellation or notConfigured must not borrow an earlier successful route as a fallback.
+Canonical noResults is success, not a failure requiring R. Failed noUsableAlternatives is
+not a successful empty result. Scope remains attached to internalSuccess even when the
+short empty copy matches unscoped noResults. Detailed human-readable coverage explanation
+requires an actual approved scope/name presentation contract; none is invented here.
+
+The remaining actual canonical failure cases must not fall through to “no route found.”
+Recommend these additional project-owned messages while preserving exact cases internally:
+
+| Input | Actions | Japanese | Korean | English |
+|---|---|---|---|---|
+| invalidEndpoint (retain role/reason internally) | E, S, R | 指定した駅で検索できません。出発地・目的地を確認してください。 | 지정한 역으로 검색할 수 없습니다. 출발지와 도착지를 확인해 주세요. | Cannot search with the specified stations. Check the origin and destination. |
+| unsupportedRequest | E, S, R | この条件では検索できません。 | 이 조건으로는 검색할 수 없습니다. | These search conditions are not supported. |
+| providerUnavailable | R, E, S | 経路検索を利用できません。 | 경로 검색을 이용할 수 없습니다. | Route search is unavailable. |
+| rateLimited | R, E, S | 検索の利用制限に達しました。 | 검색 이용 한도에 도달했습니다. | The search usage limit has been reached. |
+| configurationUnavailable | R, E, S | 現在の設定では検索を実行できません。 | 현재 설정으로 검색을 실행할 수 없습니다. | Cannot run the search with the current configuration. |
+| malformedResponse | R, E, S | 検索結果を読み取れませんでした。 | 검색 결과를 읽을 수 없습니다. | Could not read the search results. |
+| contractViolation | E, S only; no R | 経路検索を処理できませんでした。 | 경로 검색을 처리하지 못했습니다. | Could not process the route search. |
+| disposed | No status surface or actions; lifetime host has ended | — | — | — |
+
+configurationUnavailable is a failure of an invoked configured port, not factory absence.
+contractViolation never fabricates a canonical failure. R is an explicit attempt, not a
+promise it resolves missing evidence, configuration or rate limits; no countdown or automatic
+retry is invented. Exact failure types remain available for future approved recovery detail.
+
+### 14.3 Actions, stale commands and rejected submission
+
+| Token / operation | Japanese action | Korean action | English action |
+|---|---|---|---|
+| S: explicit `submit(intent)` | 経路を検索 | 경로 검색 | Search routes |
+| E: edit draft conditions; no coordinator mutation until S succeeds | 検索条件を変更 | 검색 조건 변경 | Edit search |
+| R: `retry(expectedFailedAttemptID)` for the displayed current failed attempt | 再試行 | 다시 시도 | Retry |
+| C: `cancel(expectedAttemptID)` for the displayed searching attempt | 検索をキャンセル | 검색 취소 | Cancel search |
+
+S validation happens before replacing valid work; editing a draft alone neither clears
+route answers nor cancels work. Accepted S starts a fresh identity. R never submits a stale
+captured request: it delegates to DEC-087 matching failure retry, retaining explicit time
+exactly or recapturing original now intent once. Duplicate/stale R cannot replace new work.
+S after success/empty/cancellation is a new invocation, not retry; no automatic action occurs.
+C may prevent publication even if the port ignores cancellation. Labels are not new APIs.
+
+**Proposed feedback choice P1:** invalidRequest gives supplementary draft-level feedback,
+leaving current searching/results/failure and identity-bound actions intact. Associate the
+notice with the attempted draft, not the active request; clear it on the next draft edit or
+accepted submission, with no timer, toast/modal or persistence mandated. A stale noMatchingFailure
+or unsuccessful stale cancel only refreshes the current projection; it must not show an old
+error over a new result. Disposed rejects submission/retry and has no surviving consumer UI.
+This local feedback choice needs owner approval; the underlying rejection semantics are
+already accepted. No new history operation follows rejection, replacement, cancellation or
+retry. Clearing route results does not delete device-local recent-station history; storage,
+limits, deduplication and deletion UI remain outside this slice.
+
+### 14.4 Localization, phase placement and next slice
+
+Apply existing DESIGN §26 and ARCHITECTURE §39.1 centrally: effective app/device ja-* →
+Japanese, ko-* → Korean, otherwise English. Do not add locale branching in each state/view.
+The repository specifies a LanguageResolver architecture but has no implemented general UI
+resolver/string catalog in the inspected source; `LocalizedRailName` is a separate canonical
+name value, not a status-copy catalog. Do not claim resolver/UI localization is already wired.
+**Proposed copy choice P2 (remaining scope):** except for the owner-approved notConfigured
+wording above, adopt the concise status/action wording and failure grouping
+for the bounded projection. These are draft project-owned strings, not final linguistic,
+layout or accessibility acceptance; no provider name/coverage/arrival promise is introduced.
+No new DEC record is necessary for these local presentation proposals; record approval here
+before implementing the proposed feedback/copy behavior.
+
+Phase 3 owns the canonical result/recoverable-error boundary, JP/EN/KO route content and
+basic diagnostics; it explicitly excludes final route-results visual polish. The smallest
+next implementation after P1/P2 approval and authority is a pure, fake-backed presentation
+contract mapper and centralized route-status/action copy table with an explicitly supplied
+resolved-language value. If no shared language value exists, define only the minimal shared
+language resolution seam under the existing ja/ko/English policy; no app/feature wiring.
+Test every existing state/failure distinction, scope/payload retention, identity-bound action
+availability and local rejected-draft feedback using invented values. Exercise the three
+languages and unsupported-language fallback without duplicating DEC-087 async lifecycle
+or Data routing tests. Mapping must not read Clock or call a port. No observation bridge,
+actual view model, SwiftUI screen, polling, navigation or production port belongs to that slice.
+
+Phase 8 owns feature presentation models, route setup/results, actual connect-route-search
+flow, train selection and Journey start. Phase 5 owns Journey runtime/binding, Phase 6
+persistence/recovery, Phase 7 visual foundations; this proposal adds none of them. Phase 11
+owns comprehensive copy review, Korean naturalness, English clarity, truncation, VoiceOver,
+Dynamic Type and language hardening (basic accessible truth must not be postponed). Phase 12
+owns later reliability/performance/licensing audit. Status meaning and action safety can be
+verified now without promoting Phase 3 tooling into production or accepting any milestone.
+
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply supplied. No code, UI, tests/builds, external research, private access,
+provider contact, caching/history implementation or production adoption in this task.
+
+
+### 14.5 Bounded implementation status
+
+P1/P2 are owner-approved. `Features/RouteSearch/RouteSearchPresentation.swift` is a pure
+lightweight presentation transformation, not a FeatureModel or search workflow. Its input
+is explicitly notConfigured or a current lifecycle snapshot; its source retains the entire
+canonical snapshot. Alternatives are exposed in original order without sorting/selection;
+internal scope/context/omission/failure values are unchanged. Status, feedback and action
+copy identifiers resolve only through the approved project-owned copy table. Retry/cancel
+descriptors carry the snapshot's attempt identity; table/action-array order specifies no
+visual priority or default button. Available operations alone are this contract. The future
+host must call DEC-087 guarded
+operations and refresh from current state after every action. No descriptor executes itself.
+The mapper never obtains a coordinator from AppEnvironment or subscribes/polls for updates.
+
+`RouteSearchDraftFeedback` is separate value bookkeeping: a private reference token identifies
+the current draft, rejected submission can attach only to that draft, and edit/accepted
+submission clear its notice. It stores no draft content/history or tasks. The future host
+reports synchronous submission outcomes with that draft token; delayed feedback for a different
+draft is ignored. Stale retry adds no notice; stale cancel needs no feedback mutation and only
+current-state remapping. No async workflow, timer, retry engine or lifecycle state is added.
+Disposed/notConfigured projections suppress supplementary feedback and expose no actions.
+
+`RouteSearchCopy.swift` centralizes the exact accepted three-language strings, including
+「現在、経路検索はご利用いただけません。」 / “현재 경로 검색을 사용할 수 없습니다.” /
+“Route search is currently unavailable.” Internal capability absence remains distinct from
+invoked-search failure, with no retry/outage/restoration promise. `Shared/Localization/AppLanguage`
+resolves an explicitly supplied effective language tag: Japanese/Korean primary subtags,
+English otherwise (including missing/unsupported input), with case and hyphen/underscore
+locale spelling handled centrally. It never reads device preferences; app-level effective
+language injection, string-resource integration and Phase 11 hardening remain unimplemented.
+
+Deterministic tests cover each state/failure/action distinction, original payload/context/
+index/order/omission preservation, scoped empty, draft feedback boundaries, stale actions,
+exact accepted copy and language fallback. Genuine opaque attempt IDs come from a cancelled-
+before-invocation coordinator fixture, not a relaxed initializer. Existing Application suites
+retain async lifecycle/composition coverage. Final counts/builds/review are in ROADMAP.
+No coordinator or AppEnvironment redesign, UI/feature-flow wiring, cache/history, Journey/
+train action, real/private input, provider contact or production routing adoption.

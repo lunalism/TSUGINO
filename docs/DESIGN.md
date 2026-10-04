@@ -531,6 +531,26 @@ Prefer one strong route card over dense timetable tables.
 
 Alternative routes should feel comparable without becoming visually identical.
 
+### 13.4 Provider-neutral search status contract (Proposed)
+
+**Current scoped acceptance/implementation:** owner approved P1 supplementary rejected-draft
+feedback and all P2 reviewed JP/KO/EN copy/grouping, including the exact notConfigured wording.
+The pure mapper, separate draft-feedback value and centralized copy table now exist, with
+validation recorded in ROADMAP. Historical Proposed wording below is preserved; no P1/P2
+approval remains pending. No screen, FeatureModel, navigation or route-card rendering is added.
+
+[Consumer proposal §14](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#14-provider-neutral-route-search-presentation-contract)
+drafts the minimal state/action contract and project-owned Japanese/Korean/English status
+copy for the published DEC-087 coordinator/composition. It preserves canonical payloads and
+scoped empty versus unavailable/incomplete/unconfigured distinctions, with no raw diagnostics.
+The owner approved only the notConfigured wording correction in §14. P1 rejected-draft
+feedback and remaining P2 copy/grouping stay Proposed. Internal state/action distinctions
+remain unchanged; the wording asserts no temporary outage and promises no restoration.
+Lifecycle and fastest-route policy are unchanged. Clearing route answers does not delete
+recent-station history. This is Phase 3
+contract/copy work, not implementation of this section's route cards or Phase 8 foreground
+flow; Phase 11 localization/accessibility hardening remains separate.
+
 ---
 
 ## 14. Train Selection Screen
