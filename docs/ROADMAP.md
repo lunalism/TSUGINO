@@ -5669,6 +5669,151 @@ contact or production adoption. Full screens remain Phase 8; comprehensive local
 accessibility hardening remains Phase 11. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
 classification and fourteen ordering gaps. No ODPT reply supplied. Leave unstaged/uncommitted.
 
+#### Production-routing algorithm evaluation proposal — 2026-10-04 Asia/Seoul
+
+Baseline `307edac9117d7d1496d88a700f06019d23777513`; clean phase branch, cached upstream
+identical. Consumer proposal §15 compares current-graph strict incumbent pruning, expanded
+state/priority labels and round-based scanning against DEC-086's lexicographic objective
+and complete distinct equal-optimum requirement. Code audit records quadratic pair checking,
+combinatorial copied-path discovery, insertion sorting and late selector limits; no production
+performance claim. One primary RAPTOR paper informs the alternatives, not TSUGINO applicability.
+
+Proposed smallest experiment: retain exhaustive oracle and canonical admission, separate the
+existing internal qualified-graph boundary from discovery, then prune only prefixes with a
+proved strictly worse objective lower bound. Validate all required evidence first; retain
+all equal ties, original occurrence/date/Trip/connection identity and truthful failures.
+Named invented case families, oracle comparisons, logical work/memory/time measurements and
+explicit experiment-only bounds are specified. No benchmark or code executed. Production
+horizon/ride/resource settings, solver ownership and adoption remain unresolved under R6.
+Application coordinator/composition/presentation are untouched.
+
+Documentation scope/reference/privacy/whitespace checks passed. Independent review approved
+with no material findings remaining after clarifying oracle-domain prequalification: all
+original paths/descriptor inputs, including pruned slower paths, must fit existing guards;
+pruning cannot turn an out-of-domain oracle failure into success evidence.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply supplied. No private access, feeds or provider contact. Leave unstaged/uncommitted.
+
+#### Authorized bounded pruning experiment — 2026-10-04 Asia/Seoul
+
+Owner authorization is limited to Consumer §15's DEBUG-only invented-data experiment,
+correctness tests and measurements. The two reviewed proposal documents are preserved;
+no production algorithm, numerical product budget or adoption is accepted. Shared engine
+qualification/discovery is separated without changing the ordinary exhaustive path. The
+experimental adapter requires successful bounded exhaustive preparation/selection/admission
+before the pruned pass, reuses original claims and canonical admission, and retains strictly
+all equal optima. `AppEnvironment.live()` still supplies no routing port.
+
+Consumer §15.7 defines exact abort-only input/graph/frontier/work bounds, the proof from
+preparation invariants to admission, and every metric. Counters are structural counts, not
+allocated bytes. A caller cannot raise the 200,000-step per-pass experimental ceiling.
+No >64-path survivor-based success is permitted. Tested 65-path input fails before pruning.
+
+**Final verification:** iPhone 17 Simulator, iOS 26.5, arm64, Xcode 27.0 (27A266a), macOS
+26.6.2; Debug `-Onone`, Swift 5 language mode, `test` action: **74 functions / 126 executed cases passed**. Included experiment
+subset: **10 functions / 25 cases**; other included suites are exhaustive internal search,
+optimal selection/handoff, route admission and timetable-to-optimal integration. These are
+overlapping subset/total counts, not additive. This run supersedes compile-only and fixture-
+correction attempts (validity windows and deterministic incumbent traversal order); no source
+crash was observed or used as evidence. Debug app/extension dependencies and Release
+app/extension build passed. No-DEBUG declaration probes reject all eight new experiment/graph
+types; Release binary symbol checks exclude experimental and shared synthetic engine types.
+No physical device used. No real/private input or network/provider activity.
+
+Correctness comparisons retain full dated binding/snapshot, original indices, exact endpoints,
+connection leg correspondence, scope/policy and candidate order, and check hand-derived path/
+winner counts. Focused adversaries cover equal-prefix bounds, different arrival prefixes
+converging on one suffix, recurring-Trip history, through segments, repeated visits/dates,
+midnight absolute times, unknown/missing evidence despite direct service, selected all/mixed
+rejection indices, empty completed scope, input/descriptor bounds, cancellation/cutoffs before
+and after an incumbent and during selection/admission/finalization. Existing suites retain
+eligibility/chronology/allowance and cancellation coverage; no independent new route engine.
+
+**Measurement method:** same final Debug run, serialized experiment suite, one warmup plus
+five sequential repetitions for each of twelve named fixtures. Other affected suites may
+share host scheduling; these are observational instrumented Simulator durations, not isolated
+CPU or physical-device latency. Input construction and build/launch/printing/assertions are
+excluded; checkpoint/instrumentation overhead and all per-pass preparation/selection/admission
+are included. Whole experiment includes bounds and mandatory oracle plus pruned passes.
+The grid's direct ID is sorted last and visited first by DFS. This favorable order is explicit.
+Inventory/connection permutation correctness is checked separately. The fixture source SHA-256
+is `2ae02db96de03afb134ac0c3531601c3cb6a3d4ab553d5f6b07215f10b01371a`. No timing threshold determines success.
+
+In the tables **E → P** means instrumented exhaustive pass → pruned pass. `paths` is the
+complete original path count; discovery is charged steps, including extra bound checks in P.
+`frontier` / `retained` are peak path counts; ride-key-slot peaks are separately noted below.
+Outputs are canonical optimal candidates, not explored paths. Pair qualification is identical
+in domain: 16/49/100 checks and 2/8/18 valid edges for q=1/2/3. Qualification charged steps
+were E/P=81/80, 184/184, 328/328; the one-step q=1 difference is dictionary-fed insertion
+ordering, not evidence skipped by pruning.
+
+| q / paths | Variant | Discovery E → P | Popped E → P | Pruned prefixes | Peak frontier E → P | Peak retained E → P | Outputs |
+|---|---|---|---|---|---|---|---|
+| 1 / 2 | fast direct | 20 → 24 | 4 → 4 | 1 | 2 → 2 | 2 → 1 | 1 |
+| 1 / 2 | fast transfer / ties | 20 → 24 | 4 → 4 | 0 | 2 → 2 | 2 → 2 | 1 |
+| 1 / 2 | equal arrival | 20 → 24 | 4 → 4 | 1 | 2 → 2 | 2 → 1 | 1 |
+| 1 / 2 | slow branches | 20 → 18 | 4 → 3 | 1 | 2 → 2 | 2 → 1 | 1 |
+| 2 / 9 | fast direct | 71 → 86 | 15 → 15 | 8 | 4 → 4 | 9 → 1 | 1 |
+| 2 / 9 | fast transfer / ties | 71 → 86 | 15 → 15 | 0 | 4 → 4 | 9 → 9 | 8 |
+| 2 / 9 | equal arrival | 71 → 86 | 15 → 15 | 8 | 4 → 4 | 9 → 1 | 1 |
+| 2 / 9 | slow branches | 71 → 42 | 15 → 7 | 4 | 4 → 3 | 9 → 1 | 1 |
+| 3 / 28 | fast direct | 180 → 220 | 40 → 40 | 27 | 7 → 7 | 28 → 1 | 1 |
+| 3 / 28 | fast transfer / ties | 180 → 220 | 40 → 40 | 0 | 7 → 7 | 28 → 28 | 27 |
+| 3 / 28 | equal arrival | 180 → 220 | 40 → 40 | 27 | 7 → 7 | 28 → 1 | 1 |
+| 3 / 28 | slow branches | 180 → 76 | 40 → 13 | 9 | 7 → 5 | 28 → 1 | 1 |
+
+Retained ride-key slots E=4/25/82 for q=1/2/3; P=1 for direct/equal/slow variants and
+4/25/82 for transfer-tie variants. Frontier key slots E=3/9/15; P unchanged except slow
+branches=2/5/8. Counts exclude popped current path, descriptor/key/output containers, shared
+backing storage and allocator overhead. Memory is not reliably isolated in this shared
+Simulator test host; no RSS/peak RAM numbers or byte estimates are reported.
+
+Median milliseconds (five observations), E/P. Pass ranges show min–max, not confidence
+intervals. Whole is the median total mandatory two-pass experiment, not a speedup claim.
+
+| q / variant | Qualification E/P | Discovery E/P | Selection E/P | Admission E/P | Whole pass E/P | Pass range E/P | Whole experiment |
+|---|---|---|---|---|---|---|---|
+| 1 / fast direct | 0.160 / 0.154 | 0.021 / 0.021 | 0.040 / 0.011 | 0.087 / 0.099 | 0.320 / 0.295 | 0.296–0.706 / 0.257–0.558 | 0.683 |
+| 1 / fast transfer / ties | 0.151 / 0.154 | 0.020 / 0.022 | 0.036 / 0.037 | 0.127 / 0.112 | 0.343 / 0.333 | 0.310–0.809 / 0.324–0.491 | 0.713 |
+| 1 / equal arrival | 0.149 / 0.152 | 0.020 / 0.021 | 0.038 / 0.011 | 0.070 / 0.070 | 0.283 / 0.259 | 0.280–0.290 / 0.252–0.308 | 0.592 |
+| 1 / slow branches | 0.156 / 0.151 | 0.020 / 0.016 | 0.038 / 0.011 | 0.076 / 0.076 | 0.299 / 0.256 | 0.290–0.342 / 0.251–0.285 | 0.630 |
+| 2 / fast direct | 0.396 / 0.402 | 0.086 / 0.078 | 0.218 / 0.011 | 0.080 / 0.076 | 0.902 / 0.578 | 0.876–1.596 / 0.570–0.611 | 1.570 |
+| 2 / fast transfer / ties | 0.414 / 0.417 | 0.086 / 0.092 | 0.932 / 0.919 | 0.737 / 0.794 | 2.431 / 2.658 | 2.190–2.717 / 2.250–3.172 | 5.060 |
+| 2 / equal arrival | 0.409 / 0.409 | 0.085 / 0.079 | 0.221 / 0.014 | 0.091 / 0.092 | 1.573 / 0.618 | 0.882–1.647 / 0.570–1.201 | 2.331 |
+| 2 / slow branches | 0.405 / 0.400 | 0.086 / 0.037 | 0.219 / 0.013 | 0.082 / 0.131 | 0.909 / 0.718 | 0.880–0.944 / 0.537–1.180 | 1.739 |
+| 3 / fast direct | 0.759 / 0.760 | 0.283 / 0.217 | 0.701 / 0.013 | 0.087 / 0.090 | 2.933 / 1.094 | 2.904–3.017 / 1.057–1.723 | 4.218 |
+| 3 / fast transfer / ties | 0.816 / 0.811 | 0.299 / 0.306 | 8.405 / 8.276 | 2.602 / 2.663 | 12.929 / 13.123 | 12.630–19.071 / 12.819–15.943 | 25.957 |
+| 3 / equal arrival | 0.779 / 0.800 | 0.300 / 0.222 | 0.742 / 0.013 | 0.094 / 0.117 | 4.070 / 1.151 | 3.006–6.124 / 1.103–1.172 | 5.388 |
+| 3 / slow branches | 0.757 / 0.753 | 0.282 / 0.068 | 0.767 / 0.013 | 0.102 / 0.084 | 3.317 / 0.930 | 2.863–5.387 / 0.889–1.511 | 5.021 |
+
+**Observed interpretation:** only slow-branch fixtures reduced charged discovery and popped
+prefixes (q=3: 180→76 steps, 40→13 prefixes). Fast-direct and equal-arrival fixtures prune
+at terminal prefixes: they reduce retained paths and selection work, but discovery steps
+increase (180→220). Fast-transfer fixtures retain all 27 equal winners at q=3, with no
+pruned prefix; kernel advances remain 406 and post work 1,519 in both passes. Direct/equal/
+slow q=3 post work drops 636→15 and kernel advances 29→2. These advances are bounded
+comparison/move operations, not exact comparison or CPU counts. Full pair qualification
+remains; noisy timing alone cannot support general performance claims. Median experiment
+cost includes the oracle and exceeds either pass alone. No Tokyo-scale extrapolation.
+
+Recommendation: retain this as a bounded correctness/measurement experiment. The next
+useful design question is removing whole-oracle prequalification safely while retaining
+whole-domain coverage/limit truth; do not adopt this two-pass adapter as production routing.
+Qualification and unavoidable tie enumeration/storage also need workload evidence before
+an algorithm or production setting can be chosen. Larger graphs and reliable isolated
+memory/cancellation-latency measurements need a separately bounded plan; no unresolved
+production proof obligation is waived by these small cases.
+
+Independent non-author review approved source/tests, pruning proof, finite bounds, measurement
+methodology and final documentation with no material findings remaining. Review requested and
+verified added 65-path oracle-domain and equal-bound/converging-history coverage, checked the
+final results/Release isolation, and independently recomputed all twelve timing medians from
+120 saved measurement records. No tests/builds were repeated by the reviewer. Scope, privacy,
+documentation consistency and whitespace checks passed. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering gaps. No ODPT reply
+supplied. No App/UI wiring, cache/history, real import, provider contact or production adoption.
+Leave all six changed files unstaged/uncommitted for publication review.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

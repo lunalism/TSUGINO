@@ -1822,3 +1822,299 @@ before-invocation coordinator fixture, not a relaxed initializer. Existing Appli
 retain async lifecycle/composition coverage. Final counts/builds/review are in ROADMAP.
 No coordinator or AppEnvironment redesign, UI/feature-flow wiring, cache/history, Journey/
 train action, real/private input, provider contact or production routing adoption.
+
+
+## 15. Production algorithm evaluation — bounded experiment authorized; adoption Proposed
+
+**Original reviewed proposal, 2026-10-04 Asia/Seoul; scoped experiment authorized by owner.** Baseline
+`307edac9117d7d1496d88a700f06019d23777513`. DEC-076/077, DEC-080 accepted portions,
+DEC-081 and DEC-086 remain authoritative. DEC-086 R6 algorithm/ownership/adoption and
+production resource settings remain unresolved; this section proposes an experiment, not
+production selection. DEC-087 and published composition/presentation are unchanged.
+
+### 15.1 Published pre-experiment baseline and scaling limits
+
+Code basis: `SyntheticInternalRouteEngine.prepare`, `ordered`, `step`;
+`SyntheticOptimalRouteSearcher`'s private `PreparedOptimalSession.open/admit`;
+`SyntheticOptimalRouteKernel`; `SyntheticInternalRouteSearcher.admit/finalizeOptimal`.
+All these solver declarations are DEBUG-only. Let n be one Trip's occurrence count, d its
+dated slots, R qualified ride intervals, M the profile ride cap, P complete generated paths,
+and T equal winners. These are analysis variables, not chosen production parameters.
+
+- Preparation normalizes the view and requires complete in-profile interval/slot declarations.
+  It visits every b<a occurrence pair, constructs/checks candidates and ridden station/line
+  scope, then visits required intervals per active dated slot. Pair count is quadratic in n;
+  per-pair interval/snapshot work means the entire stage is not simply O(n²). R can grow
+  with the sum of d×n². Inactive slots do not erase required structural declarations.
+- If M>1, every ordered pair of ride keys is checked before discovery (R² iterations,
+  including same-TripID pairs subsequently skipped). Missing/unknown required relations
+  fail even when disconnected from a discovered route. Only explicit absent/prohibited/
+  inactive/out-of-scope cases allowed by the contract are legitimate exclusions.
+- DFS uses a stack of copied full ride-key paths; each popped prefix scans all R keys.
+  It forbids recurring TripID reuse, including across service dates. Branching can grow
+  combinatorially with M (a loose R^M path-count envelope, not a measured complexity bound).
+  Reaching the destination records a path but does not stop extension before the ride cap.
+- Complete arrays, dedup set, normalized paths and insertion-sort outputs coexist. Sorting
+  R keys and P paths has quadratic worst-case comparison/move counts; comparisons also
+  traverse identity bytes/path elements. The optimal kernel scans P descriptors, then
+  insertion-orders/deduplicates T ties, with quadratic tie work possible.
+- `PreparedOptimalSession.open` checks **64 prepared paths** and **4 rides/path only after
+  prepare finishes**. Descriptor checks allow at most 256 entries in each snapshot array
+  and 128 UTF-8 bytes per relevant identity/date string. The separate canonical-candidate
+  selector has a 7-leg ceiling. These are existing synthetic guardrails, not production
+  settings or an early global input/heap bound. In particular, 64 paths does not cap the
+  preceding DFS allocations. The engine has no overall byte-budget allocator.
+- `step` counts logical work, checks cancellation/overflow and throws searchIncomplete at
+  exhaustion. Units are not milliseconds or bytes; one unit can surround variable-length
+  scans/copies. Preparation, selection, admission and finalization share that work allowance.
+  Passing tests proves bounded fixture behavior, not production throughput or memory safety.
+
+### 15.2 Three candidate approaches and exact adaptation obligations
+
+The comparison below is an engineering assessment, not a benchmark result. Every approach
+must consume one pinned qualified view, preserve occurrence addresses (view, Trip, service
+date), exact original indices/snapshot association, directional connection keys/form and
+qualified component-total allowance arithmetic. Never collapse repeated station visits to
+StationID, convert a recurring Trip to a dated execution by guesswork, or infer a transfer
+from a line/operator change. Current through service is one evidenced ride/Trip spanning
+segments, with zero changes inside it. Cross-Trip through joins are not introduced. Every
+algorithm retains the existing no-recurring-TripID-reuse restriction, even across dates.
+
+| Proposed approach | Contract fit and representations | Main feasibility/proof risks |
+|---|---|---|
+| A. Existing ride-graph DFS with strict incumbent lower-bound pruning | Keep current fully qualified ride graph, path identity/used TripIDs and original prepared state; prune only prefixes proved strictly worse than an incumbent. Directional edges retain exact allowances; through remains one ride. Enumerate all equal winners, then existing key order/admission | Smallest change/proof surface; still quadratic pair qualification and potentially exponential tied paths. No promise of production suitability; input/graph construction can dominate |
+| B. Event/ride-state priority-label search | Order a frontier by a proved lower bound; labels must include last dated ride/occurrence, ride count and used recurring TripIDs, plus all identity-distinct predecessor alternatives. Connect only qualified directional events, retaining exact source indices and through continuity | A station/time-only label is insufficient. State/label expansion and all-equal predecessor storage may approach enumeration. Must settle all frontier labels capable of equal objective, not stop at first destination; zero-duration edges require finite ride-count/history treatment, not an assumed strictly-time-ordered DAG |
+| C. Round-based route scanning (RAPTOR-inspired) | Rounds can represent genuine train changes; route patterns must distinguish occurrence positions and compatible dated executions. Keep original onboard ride identity across evidenced through segments; apply occurrence-specific directional relations/allowances, not blanket station transfer times | Requires a new qualified pattern/index representation and proof that scanning/label dominance retains all identity-distinct equal winners. Repeated visits, forbidden recurring-Trip reuse, connection-specific evidence and ties can break simple one-label-per-stop assumptions. Greater initial adaptation surface than A |
+
+For B/C, any shared state compression requires equality of future feasible continuations,
+not just arrival time. Earlier arrival can wait for the same departure and yield the same
+final arrival/change pair: discarding the later identity loses an equal optimum. Even
+strictly earlier partial arrival is not sufficient to delete a path's reconstruction.
+Two histories at the same station/time with different used TripIDs may permit different
+suffixes. Preserve all tied provenance paths (or a lossless predecessor representation),
+then materialize every distinct full key. Enumerating T outputs inherently costs at least
+output size; compact predecessor storage cannot make an arbitrarily large tie set cheap.
+
+### 15.3 Primary references and applicability limits
+
+- Delling, Pajor, Werneck, **Round-Based Public Transit Routing**, ALENEX, January 2012:
+  https://www.microsoft.com/en-us/research/publication/round-based-public-transit-routing/
+  and official paper https://www.microsoft.com/en-us/research/wp-content/uploads/2012/01/raptor_alenex.pdf
+  (§2 definitions/graph approaches; §3 round-based algorithm). The paper describes
+  arrival/transfer Pareto routing and route scans by rounds. Its model uses route patterns
+  and footpaths; that is not a TSUGINO source-evidence or complete-identity contract.
+  We use it to motivate B/C, not to claim its pruning directly preserves DEC-086 ties.
+
+TSUGINO selects lexicographically earliest arrival then changes, not the whole arrival/
+transfer Pareto frontier. Preserving objective values is also different from preserving
+all identity-distinct ties. All adaptation/proof obligations and scaling concerns above
+are our code/contract analysis, not performance claims copied from the paper. No published
+network timings transfer to this iPhone implementation, resource profile or inventory.
+A search surfaced a KIT CSA paper link, but direct retrieval failed; it is not used as
+support for this proposal. No feed, private evidence or provider contact was involved.
+
+### 15.4 Approved bounded first experiment: A
+
+Propose one DEBUG-only variant of existing discovery, not another route engine or live
+RouteSearching implementation. Keep the published exhaustive mode as the oracle. The actual
+API obstacle is that `prepare` currently includes graph qualification AND full enumeration;
+feeding its completed paths to a new selector cannot measure enumeration savings. The
+smallest future correction scope is an internal split at the existing validated graph /
+stack-generation boundary, preserving the exact validation order, original state and
+admission authority. Both modes use that same preparation; no caller-created completion
+flag or public success-capable prepared-state constructor. Review this seam before execution.
+The experimental mode remains behind a DEBUG RouteSearching adapter; no Application changes.
+
+Use the same deterministic key traversal order first (no priority queue, heuristic estimate,
+station dominance or route-pattern preprocessing). For a nonempty prefix with r rides,
+use lower bound L=(last arrival, r−1). Feasible chronology/nonnegative qualified allowances
+and genuine-change edges prove final arrival >= last arrival and final changes >= r−1.
+Maintain incumbent objective B only from a completed prepared path satisfying the same
+preparation invariants required for ordinary admission. If L is **strictly lexicographically
+worse** than B, prune that prefix. If L equals B, preserve it: equal objective is not a
+prune condition. If there is no incumbent, do not prune. Earlier arrival with more changes
+cannot be discarded merely because the changes exceed B while arrival is still earlier.
+Do not use rounded arithmetic or alter qualified allowance comparisons.
+
+Incumbent validity is a proof obligation: map each existing admission predicate to unchanged
+preparation invariants. A missing invariant must block this experiment's claim, not be
+patched by admitting early or skipping a rejected winner. Existing defensive finalization
+remains: every selected winner admitted → all winners; mixed rejection → searchIncomplete
+with no survivors; all rejected → noUsableAlternatives with contiguous selected-index
+accounting. Slower/objectively pruned paths are objective exclusions, not rejection omissions.
+
+Required evidence is validated before pruning, including disconnected unknowns. Preserve
+current failure order rather than promising to diagnose evidence not reached after cutoff.
+Unknown reached required evidence → dataUnavailable, never a direct-only answer; incomplete
+preparation/discovery/tie reconstruction/selection/admission/accounting → searchIncomplete;
+observed cancellation → CancellationError; only proven empty completed exploration → scoped
+noResults. Returning an incumbent after any cutoff is forbidden. Freeze all winners in
+existing deterministic key order before canonical admission. First-found/first-K is insufficient.
+
+### 15.5 Invented workloads, measurements and experiment bounds
+
+The original proposal executed no benchmarks; the authorized execution record is §15.7. Use fixed, named synthetic cases and explicit
+finite manifests of dates, intervals, eligibility, continuity and positive/negative directional
+connections. Stipulate complete inventory separately from generated arrays. Reuse existing
+fixture and converter semantics; do not infer physical railway coverage from these inputs.
+
+| Invented family | Required adversarial variation / comparison |
+|---|---|
+| Small direct/transfer | Fast direct, fast transfer, same arrival fewer changes, one through ride across line segments; exact objective and full key set equal oracle |
+| Tied branching | Distinct trains with same endpoint times; prefixes with different arrivals that catch the same suffix; many equal optima and duplicate identity input normalization |
+| Occurrence/date identity | A→B→A→D with distinct A indices; adjacent service dates and civil-midnight times; retain addresses/snapshots; same recurring TripID cannot be reused on another date |
+| Direction/history | Asymmetric/absent connections, unequal qualified allowances, equal-time/zero allowance; two histories with different used TripIDs must not merge |
+| Slower dense branches | Early valid incumbent with many strictly later continuations; measure saved discovery work separately from unchanged R² qualification |
+| Coverage/admission/cutoff | Unknown disconnected relation/activation, missing/estimated required time despite valid direct route, incomplete manifest; selected rejection all/mixed; cancellation and work-limit exhaustion before/after incumbent and during tie/admission stages |
+
+Concrete first benchmark grid (invented, not a production profile): use stations A/X/Y/D,
+three sequential layers A→X, X→Y, Y→D, with q distinct two-occurrence Trips per layer,
+q in {1, 2, 3}, plus one direct A→D Trip. Each Trip has one dated slot, original interval
+[0,1], exact times, allowed endpoint permissions and affirmed continuity. Layer times are
+08:01→08:05, 08:06→08:10, 08:11→08:20. Explicit inter-layer relations are directional,
+affirmed and carry a stipulated total 60-second allowance (components 0+60+0); all other
+required cross-Trip relations are explicitly absent. Same-station interchange at X/Y is
+stated evidence, not inferred. One invented date label/view/policy set, exact compatible
+snapshots, depart-not-before 08:00, scope ending 08:40 and M=3 define only these fixtures.
+There are 3q+1 ride nodes and q³+1 complete paths (2, 9, 28), before objective selection.
+Run separate direct-arrival variants 08:15 (strictly faster), 08:25 (all q³ transfer ties
+win) and 08:20 (direct wins on changes); direct departure is 08:02. The generator must
+assert these hand-derived counts. A separate slow-branch variant keeps direct arrival 08:15,
+changes layer two arrival to 08:30 and layer three to 08:31→08:35, retaining the same
+allowance and path count; a bound can then prune before exploring the final layer. Add
+the targeted identity/unknown/cutoff cases above
+as separately named small fixtures, not implicit perturbations of a claimed complete grid.
+
+**Experimental bounds only:** begin with the existing oracle domain (no more than 64 complete
+prepared paths, four rides/path, descriptor array/string ceilings above), tiny explicitly
+listed views and horizons sized just to contain each invented case. Do not change those
+ceilings for a favorable result. Count generated prefix/ride/edge/input entries as well as
+complete paths: the existing limits are late and not a substitute for bounding fixture size.
+Before any success comparison, prequalify that fixture through its manifest and successful
+exhaustive oracle run: **every complete path**, including slower paths that would be pruned,
+must fit the 64-path/four-ride domain, and every relevant descriptor input must satisfy the
+existing array/string ceilings. A pruned survivor set is not this prequalification. Otherwise
+pruning could hide a too-long/oversized slower path or excess total paths and turn the
+published oracle's searchIncomplete into success. Out-of-domain variants remain failure-only
+tests; they cannot support an optimized-success claim. Any future production/generalized
+bound placement requires explicit design rather than measuring bounds only on survivors.
+A future experiment manifest must list exact finite input sizes and an abort-only work/heap
+safety ceiling before execution, justified by those fixture sizes and host capacity; this
+proposal chooses no production horizon, cap, latency target or memory budget. Oracle-limit
+violations stay failure cases, not speedup successes. Larger scale experiments require a
+separately reviewed oracle strategy/limits, not an automatic expansion of this slice.
+
+Compare canonical outcomes and complete deterministic winner keys, exact contexts/scope and
+selected-index omissions with exhaustive mode. Also use hand-calculated small cases so shared
+preparation defects cannot be hidden by oracle agreement. Permute inventory/connection input
+order and repeat; verify the same canonical result. A common work limit can make exhaustive
+fail while the variant completes; record that as differential resource behavior, not a
+correctness equivalence result. Correctness comparisons require enough work for both modes;
+separate cutoff tests assert each mode's truthful atomic outcome at its own checkpoints.
+
+Record per-stage logical work and graph pair checks; prefixes expanded/pruned; complete paths,
+tie/key comparisons, selected/materialized outputs; peak live frontier/predecessor/path entries; actual process peak/resident-memory
+measurements only if reliably attributable, with harness baseline separated (structural counts are not bytes); elapsed monotonic duration for preparation,
+discovery, selection and admission plus total. Report instrumentation overhead and warm/cold
+conditions, repetitions/distribution, device/Simulator, compiler/configuration and fixture
+hashes. Simulator timing is not a physical iPhone performance claim. Use measurements, not
+a preset speedup threshold: correctness first, then whether saved discovery exceeds overhead
+and whether qualification/tie output dominates. No AppClock or user departure semantics are
+changed by harness timing. Retain only invented benchmark data/aggregates, no route history.
+
+### 15.6 Owner choices and unresolved production evidence
+
+| Proposed choice | Recommendation / why still a choice |
+|---|---|
+| First experimental algorithm | Owner authorizes A: bounded DEBUG-only strict incumbent pruning on the existing graph, correctness comparison and measurements. No production endorsement |
+| B/C investigation | Defer implementation until A identifies the dominant costs; retain as alternatives if indexing/qualification/frontier size defeats A |
+| Production ownership, limits and adoption (DEC-086 R6) | Remain Proposed/unresolved. Do not choose from synthetic correctness alone |
+
+Before production settings: measure qualified target workload sizes (dated events, intervals,
+directional relations, branching, tie multiplicity), input/update/invalidation costs, memory
+and timing distributions on authorized target hardware, cancellation latency and maximum
+uncharged work/allocations, plus source completeness, rights and applicability. Establish
+supported scope and horizon/ride-cap product behavior explicitly; separately justify resource
+cutoffs and deployment/ownership. No algorithm removes S9/T1 evidence or licensing gates.
+The owner has separately authorized bounded implementation and execution of A. No new semantic decision or new DEC identifier is
+needed merely to prototype A; production algorithm/adoption remains a separate decision.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply supplied. The current authorized experiment includes synthetic code/tests/builds and measurements only; no UI, caching/history,
+private access, feed acquisition, provider contact or production adoption.
+
+
+### 15.7 Bounded implementation and measurement contract
+
+The experiment uses the existing `RouteSearching` boundary, shared qualification/discovery,
+private prepared optimal session, key/selection kernel, and unchanged canonical admission.
+The ordinary engines pass no experiment mode: original checkpoint sequence, validation,
+exhaustive paths and outcomes remain unchanged. No live/default environment is configured.
+`SyntheticPruningRouteExperiment.compare` first validates finite input bounds, then requires
+successful **complete exhaustive** preparation, every descriptor check, selection and admission
+on the original immutable inventory. Only then may it execute the instrumented pruned pass.
+A failed oracle never starts pruning. The wrapper's total cost includes both passes; the
+pruned-pass timing alone is NOT a replacement solver's end-to-end improvement. Preparation
+is deliberately repeated, not cached. The caller still stipulates completeness of invented
+inventory; no array or success establishes real coverage.
+
+Incumbent proof mapped to existing admission predicates:
+
+- Normalization fixes exact dated bindings/snapshots, validates original intervals and every
+  directional form/allowance. Context construction supplies exact chronological endpoints.
+- Coverage checks declared profile membership, activation, allowed required endpoints,
+  in-window exact times and affirmed continuity before graph discovery. Unknown disconnected
+  required evidence is still fatal. Connections are globally checked before pruning.
+- Graph edges require affirmative direction/form and exact nonnegative allowance feasibility;
+  thus next departure >= previous arrival, and next arrival >= departure. Through service
+  stays one ride even across line segments. Every cross-Trip edge adds one change.
+- DFS starts at the requested origin, records only requested-destination paths, enforces M
+  and the original recurring-TripID no-reuse rule. Claims resolve those original ride keys;
+  no facts, addresses, indices or connections are reconstructed. These invariants cover
+  ordinary admission's structure, endpoints, scope, chronology, eligibility, continuity and
+  connection predicates. Defensive rejection injection does not license returning survivors.
+- Therefore `(last arrival, rides−1)` is an admissible lexicographic lower bound. Only a
+  strictly worse bound prunes; equality, earlier arrival with more changes, and all possible
+  identity-distinct optima remain explored. Existing kernel freezes deterministic winners,
+  then shared admission/finalization supplies all/mixed/none outcomes unchanged. Cutoff or
+  cancellation throws; no incumbent result escapes. Objective exclusions are not omissions.
+
+**Experiment-only manifest ceilings (abort, never truncate):** at most 10 inventory entries,
+10 profile Trip IDs, 16 station keys, 8 line keys, 4 occurrences/line segments/service-type
+segments per snapshot, 2 slots per inventory, 6 interval/continuity records per slot/input,
+4 visit facts, 128 UTF-8 bytes per text. Bound nested fact/visit snapshots and connection
+addresses too. At most 1,024 supplied connection records, 32 qualified rides (hence at most
+1,024 pair checks/edges), 128 frontier paths, 4,096 popped prefixes, 64 complete paths, four
+rides/path, and 200,000 charged steps per pass. Limits cannot be raised through the adapter;
+a smaller step limit is abort-only. Caller allocation before invocation is outside these
+bounds. These ceilings accommodate the 10-Trip/10-ride/90-record largest ordinary grid and
+small two-date/repeated-visit adversaries, while bounding all internal array/key materialization.
+The >64-path adversary fails before the pruned pass. Original published selector ceilings
+remain unchanged. This is finite structural allocation control, not an empirical RAM budget
+or a proposed production size/horizon/latency target.
+
+Metrics are bounded scalar counters, not per-path logs. Qualification work counts existing
+charged steps through graph construction; discovery work counts initial frontier generation,
+popped prefixes/successor scans and, in pruned mode, an extra charged bound check per prefix.
+Post work counts deduplication/order, descriptor/kernel and admission/finalization steps.
+Pair checks include same-Trip pairs skipped after the check. Prefix count includes pruned
+prefixes; complete paths counts retained destination paths before deduplication. Kernel
+advances measure bounded comparison/move operations, not CPU instructions. Qualified ride/
+edge counts and peak frontier/complete-path counts (also total ride-key slots in each
+container) are structural counts: exclude the popped current path, descriptors, canonical
+outputs, shared backing allocations and allocator overhead. They are NOT process memory.
+No reliable isolated process-memory measurement is available in the shared Simulator test
+host; no bytes/RSS/peak-memory improvement is claimed.
+
+Monotonic qualification/discovery/selection/admission and whole-pass durations include
+checkpoints and instrumentation. Selection begins after discovery's dedup/order; the remaining
+post-discovery normalization is included in whole-pass time but not those two latter timers.
+Whole experiment additionally includes bounds and both passes; input construction, result
+assertions, formatting/printing, build and Simulator launch are outside timed intervals.
+The explicit sorted-key DFS visits `Z-direct` first by last-in/first-out frontier choice;
+this favorable incumbent order is stipulated, not an optimized production traversal.
+One warmup and five sequential measured repetitions per q/variant use the same immutable
+fixture; collection is bounded to scalar output records. Report distributions, not a timing
+pass threshold. Fixture inputs are the §15.5 grid with seconds relative to an invented
+08:00 anchor; service label `d-a`, one exact view/policy set, scope [0,2400] and view validity
+[0,2501]. None claims civil-time/source applicability. Compilation/run evidence and observed
+results are recorded in ROADMAP; synthetic declaration/Release isolation is required.

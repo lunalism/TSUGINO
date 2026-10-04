@@ -39,6 +39,15 @@ nonisolated struct SyntheticInternalPrepared: Sendable {
     let paths: [[SyntheticInternalRideKey]]
 }
 
+nonisolated struct SyntheticInternalQualifiedGraph: Sendable {
+    let scope: InternalSearchScope
+    let rides: [SyntheticInternalRideKey: SyntheticInternalRide]
+    let slots: [TimetableOccurrenceAddress: SyntheticInternalNormalizedSlot]
+    let connections: [SyntheticInternalConnectionKey: SyntheticInternalConnectionState]
+    let keys: [SyntheticInternalRideKey]
+    let edges: [SyntheticInternalRideKey: Set<SyntheticInternalRideKey>]
+}
+
 /// One value per invocation. No shared mutable state, unowned tasks or network work.
 nonisolated struct SyntheticInternalRouteEngine: Sendable {
     let configuration: SyntheticInternalConfiguration?
@@ -46,11 +55,16 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
     let workLimit: Int?
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
     private var work = 0
+    let experiment: SyntheticPruningMode?
+    private(set) var metrics = SyntheticPruningMetrics()
+    private var measuringDiscovery = false
+    private var measuringPost = false
 
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?, workLimit: Int?,
-         checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void) {
+         checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void,
+         experiment: SyntheticPruningMode? = nil) {
         self.configuration = configuration; self.view = view
-        self.workLimit = workLimit; self.checkpoint = checkpoint
+        self.workLimit = workLimit; self.checkpoint = checkpoint; self.experiment = experiment
     }
 
     mutating func step(_ stage: SyntheticInternalStage) async throws {
@@ -58,12 +72,31 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
         let (next, overflow) = work.addingReportingOverflow(1)
         guard !overflow, workLimit.map({ next <= $0 }) ?? true else { throw RouteSearchFailure.searchIncomplete }
         work = next
+        if experiment != nil {
+            if measuringDiscovery { metrics.discoveryWork += 1 }
+            else if measuringPost { metrics.postWork += 1 }
+            else { metrics.qualificationWork += 1 }
+        }
         do { try await checkpoint(stage) }
         catch { try Task.checkCancellation(); if error is CancellationError { throw error }; throw RouteSearchFailure.searchIncomplete }
         try Task.checkCancellation()
     }
 
+    mutating func recordSelection(_ elapsed: Duration, advances: Int) {
+        if experiment != nil { metrics.selectionTime = elapsed; metrics.kernelAdvances = advances }
+    }
+    mutating func recordAdmission(_ elapsed: Duration) {
+        if experiment != nil { metrics.admissionTime = elapsed }
+    }
+
     mutating func prepare(_ request: RouteSearchRequest) async throws -> SyntheticInternalPrepared {
+        let start = experiment == nil ? nil : ContinuousClock.now
+        let graph = try await qualify(request)
+        if let start { metrics.qualificationTime = start.duration(to: .now) }
+        return try await discover(graph)
+    }
+
+    private mutating func qualify(_ request: RouteSearchRequest) async throws -> SyntheticInternalQualifiedGraph {
         try Task.checkCancellation()
         guard let configuration, configuration.permitted, workLimit.map({ $0 >= 0 }) ?? true else {
             throw RouteSearchFailure.configurationUnavailable
@@ -134,6 +167,7 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
                               let train = TrainCandidate(trip: inventory.trip, boardingIndex: b, alightingIndex: a),
                               let context = TimetableRideContext(train: train, facts: facts) else { throw RouteSearchFailure.dataUnavailable }
                         let key = SyntheticInternalRideKey(address: address, boarding: b, alighting: a)
+                        if experiment != nil && rides[key] == nil && rides.count >= 32 { throw RouteSearchFailure.searchIncomplete }
                         rides[key] = SyntheticInternalRide(key: key, train: train, context: context)
                     }
                 }
@@ -146,6 +180,7 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
             for first in keys {
                 for next in keys {
                     try await step(.coverage)
+                    if experiment != nil { metrics.pairChecks += 1 }
                     guard first.address.tripID != next.address.tripID else { continue }
                     guard let a = rides[first], let b = rides[next],
                           let relation = connections[Self.connectionKey(first, next)] else { throw RouteSearchFailure.dataUnavailable }
@@ -161,24 +196,69 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
                 }
             }
         }
+        if experiment != nil {
+            metrics.qualifiedRides = rides.count
+            metrics.qualifiedEdges = edges.values.reduce(0) { $0 + $1.count }
+        }
+        return .init(scope: scope, rides: rides, slots: slots, connections: connections, keys: keys, edges: edges)
+    }
+
+    private mutating func discover(_ graph: SyntheticInternalQualifiedGraph) async throws -> SyntheticInternalPrepared {
+        let scope = graph.scope, request = scope.request, rides = graph.rides, slots = graph.slots
+        let connections = graph.connections, keys = graph.keys, edges = graph.edges
+        let start = experiment == nil ? nil : ContinuousClock.now
+        measuringDiscovery = experiment != nil
+        var incumbent: (Date, Int)?
         var stack: [[SyntheticInternalRideKey]] = []
         for key in keys {
             try await step(.generation)
-            if rides[key]?.train.anchors.boardingStationID == request.origin { stack.append([key]) }
+            if rides[key]?.train.anchors.boardingStationID == request.origin {
+                if experiment != nil && stack.count >= 128 { throw RouteSearchFailure.searchIncomplete }
+                stack.append([key])
+            }
         }
         var complete: [[SyntheticInternalRideKey]] = []
+        if experiment != nil { metrics.observe(stack: stack, complete: complete) }
         while let path = stack.popLast() {
             try await step(.generation)
             guard let last = path.last, let ride = rides[last] else { throw RouteSearchFailure.dataUnavailable }
-            if ride.train.anchors.alightingStationID == request.destination { complete.append(path) }
+            if experiment != nil {
+                guard metrics.prefixes < 4096 else { throw RouteSearchFailure.searchIncomplete }
+                metrics.prefixes += 1
+            }
+            if experiment == .pruned {
+                // Charge the bound check; equal objectives are never pruned.
+                try await step(.generation)
+                if let best = incumbent,
+                   ride.context.arrival > best.0 || (ride.context.arrival == best.0 && path.count - 1 > best.1) {
+                    metrics.prunedPrefixes += 1
+                    continue
+                }
+            }
+            if ride.train.anchors.alightingStationID == request.destination {
+                if experiment != nil && complete.count >= 64 { throw RouteSearchFailure.searchIncomplete }
+                complete.append(path)
+                if experiment == .pruned {
+                    let value = (ride.context.arrival, path.count - 1)
+                    if incumbent == nil || value.0 < incumbent!.0 || (value.0 == incumbent!.0 && value.1 < incumbent!.1) {
+                        incumbent = value
+                    }
+                }
+            }
+            if experiment != nil { metrics.observe(stack: stack, complete: complete) }
             if path.count >= scope.profile.maximumRailRides { continue }
             for next in keys {
                 try await step(.generation)
                 guard edges[last]?.contains(next) == true,
                       !path.contains(where: { $0.address.tripID == next.address.tripID }) else { continue }
+                if experiment != nil && stack.count >= 128 { throw RouteSearchFailure.searchIncomplete }
                 stack.append(path + [next])
+                if experiment != nil { metrics.observe(stack: stack, complete: complete) }
             }
         }
+        if let start { metrics.discoveryTime = start.duration(to: .now) }
+        measuringDiscovery = false; measuringPost = experiment != nil
+        if experiment != nil { metrics.completePaths = complete.count }
         var unique: Set<[SyntheticInternalRideKey]> = []
         var normalized: [[SyntheticInternalRideKey]] = []
         for path in complete {

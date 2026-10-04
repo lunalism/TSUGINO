@@ -48,6 +48,8 @@ private nonisolated struct PreparedOptimalSession {
 
     static func open(_ request: RouteSearchRequest, engine: inout SyntheticInternalRouteEngine) async throws -> Self {
         let prepared = try await engine.prepare(request)
+        let selectionStart = engine.experiment == nil ? nil : ContinuousClock.now
+        var advances = 0
         try await engine.step(.ordering)
         guard prepared.paths.count <= 64 else { throw RouteSearchFailure.searchIncomplete }
         var descriptors: [SyntheticOptimalRouteDescriptor] = []
@@ -76,8 +78,10 @@ private nonisolated struct PreparedOptimalSession {
         while !kernel.isComplete {
             try await engine.step(.sorting)
             kernel.advance()
+            if engine.experiment != nil { advances += 1 }
         }
         guard prepared.paths.isEmpty || !kernel.winners.isEmpty else { throw RouteSearchFailure.searchIncomplete }
+        if let selectionStart { engine.recordSelection(selectionStart.duration(to: .now), advances: advances) }
         return .init(prepared: prepared, selected: kernel.winners.map { Handle(pathOrdinal: $0) })
     }
 
@@ -118,6 +122,64 @@ nonisolated enum SyntheticOptimalHandoffFailureHarness {
     static func rejectSelectedClaims(searcher: SyntheticOptimalRouteSearcher, request: RouteSearchRequest,
                                      selectedIndices: Set<Int>) async throws -> Never {
         _ = try await searcher.run(request, rejecting: selectedIndices)
+        throw Failure.expectedRejection
+    }
+}
+/// Bounded experiment: successful complete oracle qualification is mandatory on
+/// EVERY invocation, before pruning. End-to-end cost includes both passes.
+nonisolated struct SyntheticPruningRouteExperiment: RouteSearching {
+    let configuration: SyntheticInternalConfiguration?
+    let view: SyntheticInternalView?
+    let workLimit: Int
+    let checkpoint: @Sendable (SyntheticPruningMode, SyntheticInternalStage) async throws -> Void
+    init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?,
+         workLimit: Int = SyntheticPruningBounds.workLimit,
+         checkpoint: @escaping @Sendable (SyntheticPruningMode, SyntheticInternalStage) async throws -> Void = { _, _ in }) {
+        self.configuration = configuration; self.view = view; self.workLimit = workLimit; self.checkpoint = checkpoint
+    }
+    @concurrent
+    func search(_ request: RouteSearchRequest) async throws -> RouteSearchResult {
+        try await compare(request).pruned.result
+    }
+    @concurrent
+    func compare(_ request: RouteSearchRequest) async throws -> SyntheticPruningComparison {
+        try await compare(request, rejecting: [])
+    }
+    fileprivate func compare(_ request: RouteSearchRequest, rejecting: Set<Int>) async throws -> SyntheticPruningComparison {
+        try Task.checkCancellation()
+        guard workLimit >= 0 && workLimit <= SyntheticPruningBounds.workLimit else {
+            throw RouteSearchFailure.configurationUnavailable
+        }
+        let start = ContinuousClock.now
+        try SyntheticPruningBounds.validate(configuration, view, request)
+        let oracle = try await pass(request, mode: .exhaustive, rejecting: [])
+        let pruned = try await pass(request, mode: .pruned, rejecting: rejecting)
+        return .init(oracle: oracle, pruned: pruned, elapsed: start.duration(to: .now))
+    }
+    private func pass(_ request: RouteSearchRequest, mode: SyntheticPruningMode, rejecting: Set<Int>) async throws -> SyntheticPruningPass {
+        let start = ContinuousClock.now
+        var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,
+            checkpoint: { try await checkpoint(mode, $0) }, experiment: mode)
+        do {
+            let session = try await PreparedOptimalSession.open(request, engine: &engine)
+            let admissionStart = ContinuousClock.now
+            let result = try await session.admit(engine: &engine, rejecting: rejecting)
+            engine.recordAdmission(admissionStart.duration(to: .now))
+            return .init(result: result, metrics: engine.metrics, elapsed: start.duration(to: .now))
+        } catch {
+            try Task.checkCancellation()
+            if error is CancellationError { throw CancellationError() }
+            if let canonical = error as? RouteSearchFailure { throw canonical }
+            throw RouteSearchFailure.dataUnavailable
+        }
+    }
+}
+nonisolated enum SyntheticPruningRejectionHarness {
+    enum Failure: Error { case expectedRejection }
+    @concurrent
+    static func reject(_ experiment: SyntheticPruningRouteExperiment, request: RouteSearchRequest,
+                       indices: Set<Int>) async throws -> Never {
+        _ = try await experiment.compare(request, rejecting: indices)
         throw Failure.expectedRejection
     }
 }
