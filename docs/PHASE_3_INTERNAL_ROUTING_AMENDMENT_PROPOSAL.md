@@ -3,6 +3,10 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Production policy update (2026-10-04):** §10 / DEC-086 records bounded owner
+acceptance of route-selection/completion rules. Unresolved ownership, algorithm,
+configuration and adoption choices remain Proposed; no production engine is adopted.
+
 **DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented and approved; slice B local scoped-success values are implemented and independently approved. Production runtime obligations remain unimplemented; the DEC-081 update below records the separate synthetic path.**
 
 **DEC-081 update (2026-10-02 Asia/Seoul):** S1–S6 now accept a finite synthetic-only
@@ -23,8 +27,12 @@ accepted failure additions and synthetic internal preflight/generation/admission
 independent approval of the corrected bounded synthetic slice. Production connection policy and engine
 obligations remain deferred. Owner acceptance does not establish engine adoption, source
 compatibility or production delivery. See DECISIONS for the authoritative acceptance
-and ROADMAP for saved verification. Calendar interpretation/conversion and real
-import remain unimplemented; P2-S9 and all applicable retained gates remain in force.
+and ROADMAP for saved verification.
+
+**Current update — 2026-10-04:** DEC-085 invented calendar/time conversion and the
+test-only timetable-to-search integration are implemented, independently approved and
+published. Real source interpretation/conversion/import remain unimplemented; P2-S9
+and all applicable retained gates remain in force. This does not resolve production P5.
 
 The body below preserves the historical proposal and acceptance-preparation wording
 (including its original “Proposed” labels and undecided implementation choices).
@@ -788,3 +796,211 @@ The full candidate/omission order is retained; a display subset cannot mutate th
 External result behavior and unscoped failures remain unchanged. There is no producer
 or production composition for this branch. P5 remains Proposed; independent slice B
 implementation review approved local values only. All retained gates and launch/Phase 3 exit remain.
+
+## 10. Production objective and execution policy — Proposed DEC-086
+
+**Scoped acceptance — 2026-10-04:** the owner accepts arrival then changes, evidenced
+through counting, all distinct equal optima, identity ordering solely for reproducibility,
+selection before frozen handoff, admitted-candidate preservation, optimum/tie proof,
+no first-found/first-K, searchIncomplete at cutoff, dataUnavailable for unknown required
+evidence and searchIncomplete for defensive mixed rejection. This does not accept
+production adoption, numerical limits, deployment, ownership or algorithm mechanics.
+R6 and unresolved implementation/configuration choices remain Proposed. Historical
+Proposed labels below preserve the reviewed rationale; this overlay governs the
+specified selection/completion rules only. Implementation status is in ROADMAP.
+
+**Status: Revised Proposed, 2026-10-04 Asia/Seoul.** The owner explicitly directs
+fastest-route recommendations: earliest arrival first, fewer train changes at equal
+arrival, and evidenced through service is not a train change. This records product
+direction, **not approval of the earlier R1–R6 package**. Winner multiplicity, identity,
+accounting, pruning, ownership and production configuration remain Proposed.
+The earlier all-distinct-return and first-departure tie-break recommendations are
+withdrawn. Historical §9 P5 text remains a proposal, not accepted production policy.
+Published converter/search integration is complete and is not repeated here.
+
+### 10.1 Objective and choices still requiring approval
+
+For a fixed request, accepted scope and coherent view, compare feasible itineraries
+by the lexicographic objective **(exact final arrival instant, number of train changes)**.
+Depart-not-before remains a hard constraint. Train changes equal rail rides minus one;
+a line/operator change inside one evidenced continuous Trip adds zero. This is earliest
+arrival from the request bound, not shortest on-train duration or earliest departure.
+No preference for fare, walking distance, departure time, comfort or reliability is added.
+
+| Choice | Owner direction / proposed recommendation | Rationale and unresolved prerequisite |
+|---|---|---|
+| R1 Objective | Owner explicitly prefers earliest arrival, then fewer changes. Recommend returning only objective-optimal recommendations | A slower direct route loses to a faster transfer; slower transfer routes need not be recommended. Precise execution/proof contract still needs approval |
+| R2 Equal optima and identity | **Propose all distinct equally optimal candidates**, in deterministic key order with no preference implied | Avoids inventing a third user preference or hiding a train choice. One deterministic winner is the alternative: needs explicit approval of an arbitrary reproducibility selector or an additional product tie-break. No first-departure preference is proposed |
+| R3 Exploration, handoff and accounting | Propose a separately specified production optimizer that selects the proved optimal set before frozen admission handoffs; keep every admitted handoff | Internal explored paths are not returned recommendations or omissions. Requires the production execution clarification in §10.3; no filtering of today's admitted batch |
+| R4 Incomplete evidence and scope | Retain current whole-call coverage failure; no verified-direct fallback under current success shape. Keep explicit finite scope and resolved policies | A direct route may be feasible without being provably fastest. Best-known/degraded output would require a separate explicit amendment, not approved here |
+| R5 Completion and pruning | Prove no better feasible itinerary exists and, for R2, find every equal optimum; only then succeed | First-found/first-K is insufficient. Optimistic bounds and dominance need proof including equal optima and exact state compatibility; resource cutoff remains searchIncomplete |
+| R6 Ownership/adoption | Propose Data-owned replaceable optimizer behind RouteSearching, retaining Domain values and Application lifetime ownership | Prior ownership recommendation remains unapproved. Algorithm, deployment, rights, inventory, numerical defaults and adoption require separate evidence/decisions |
+
+R2 returns multiple candidates only when both objective values are equal. This is not
+all-distinct itinerary return and not arbitrary top-K. Equal-optimum volume can still
+be large; no hidden cap is selected. If it cannot be fully established/materialized
+within resources, fail truthfully or obtain approval for a different multiplicity
+contract. Deterministic ordering alone is not a claim that the first tied item is better.
+No recommendation automatically selects a train or creates Journey state.
+
+### 10.2 Identity and equal-optimum ordering (Proposed)
+
+Retain exact dated ride identity: (view UUID, recurring TripID, service-date label,
+original boarding index, original alighting index). An itinerary key is its ordered
+ride keys interleaved with directional connection keys and form, including both dated
+endpoint indices and canonical from/to stations. A connection key has one compatible
+qualified relation/form/allowance; contradictory definitions are shared-view faults.
+Physical footpaths sharing one canonical relation are not distinct alternatives under
+current representations. Different trains or repeated boarding indices may be equal
+optima; equal station lists or equal times do not merge them. Exact duplicates collapse
+before handoff. Conflicting same-key facts are not deduplication opportunities.
+
+For reproducibility only, order equal optima by the full key: UUID fixed bytes,
+canonical ID/date text unsigned UTF-8 bytes, indices numerically, connection form
+same-station before walking, and shorter sequences before strict extensions. Connection
+fields compare endpoint ride addresses/indices, then canonical from/to station IDs,
+then form. No locale, date-label interpretation, departure-time preference or new score.
+This deterministic tie ordering is **Proposed**, not owner-approved. Preserve every
+full snapshot, occurrence index and dated address; duplicate TripID within one candidate
+remains prohibited even across dates. Current facts do not authenticate source revisions.
+
+### 10.3 Exact contract interaction and recommended execution clarification
+
+- **DEC-076:** external decoded alternatives and their original ordering/accounting
+  remain unchanged. Do not drop a valid decoded route or relabel a slower route as an
+  admission error. This proposal applies only to a separately accepted internal optimizer.
+- **DEC-080 P5:** production objective was explicitly deferred; replacing the earlier
+  all-distinct recommendation does not supersede an Accepted all-distinct production
+  rule. V6/V7 still require complete execution, one handoff/one outcome and preservation
+  of every admitted handoff. Filtering admitted candidates down to winners would violate
+  those accepted rules; returning a first-K prefix would not prove completion.
+- **DEC-081:** all-distinct exploration and ride-count/key handoff order are accepted for
+  the DEBUG synthetic engine. They cannot be silently changed to fastest-only. Keep it
+  unchanged as a small-world oracle; use a separately authorized production-target path.
+- **Recommended production execution clarification (Proposed):** exploration states and
+  complete feasible paths considered by the optimizer are not yet admission handoffs.
+  Establish the optimal set over **all admissible feasible itineraries** within scope,
+  using the same canonical eligibility/continuity/time/structure constraints, before
+  freezing that set in R2 order. Assign contiguous alternative indices only then.
+  Slower or equal-arrival/more-change feasible paths are objective exclusions, not errors,
+  omissions or missing evidence. Every frozen handoff still receives exactly one outcome;
+  admission retains every admitted winner and its original index/order.
+
+This clarification must explicitly define the production generator/admission boundary
+under DEC-079/080; it is not a loophole permitting today's handoffs to be renamed or
+silently discarded. No new public payload is necessarily needed for complete optimal
+recommendations: existing scoped success can carry the selected handoffs under an
+accepted versioned objective. But profile/policy resolution must identify the objective,
+multiplicity and proof contract explicitly; today's profile type does not encode them.
+This representation and compatibility check remain future design/implementation work.
+
+An optimizer must not choose an apparently fastest but inadmissible route and stop.
+Its optimality proof must include the canonical admission predicates, not just times.
+Reuse their semantics rather than create a competing eligibility or continuity engine.
+Shared defects remain dataUnavailable. If a frozen winner unexpectedly fails admission,
+existing one-outcome accounting is preserved: all rejected remains noUsableAlternatives.
+For a mixture of accepted and rejected winners, **propose searchIncomplete**, with no
+success, because the promised complete admissible optimal set has not been established.
+No fallback to a slower route, substitution, retry or partial tied set is implied. This
+mixed-rejection completion rule also requires owner approval; it leaves the existing
+synthetic/external batch behavior unchanged. A normal successful proof should yield
+no admission omissions, but defensive rejection accounting must not be removed.
+
+### 10.4 Optimality proof, safe pruning and cutoffs
+
+Success must establish that a nonempty recommendation set is feasible, that no feasible
+path in the declared scope has a smaller objective pair, and (for R2) that all distinct
+paths with that same pair are returned. A feasible incumbent is only an upper bound,
+not proof of fastest arrival. An exhaustive finite reference enumeration can prove this
+on small invented inputs; a production algorithm needs its own correctness argument and
+comparison against that oracle. Finite scope does not prove practical runtime.
+
+A branch may be pruned if proven infeasible or if a sound optimistic lower bound on
+its achievable objective is **strictly worse** than the incumbent. Equality cannot prune
+under the all-equal-optima recommendation. Bounds cannot depend on guessed transfer
+times or treating unknown links as absent. Dominance is allowed only after proving
+future-state equivalence/simulation with exact dated occurrence, eligibility, continuity,
+connection policy, remaining ride budget and used-TripID constraints. It must preserve
+all equal-optimum distinct prefixes/outputs, not just the best numerical score. Earlier
+arrival at the same station alone is not that proof. No first-found, first-K, beam-width,
+station-pattern dedup or destination-reached stopping by implication. Revisited stations,
+zero-time edges and permitted cycles remain in the oracle unless a proved exclusion
+applies. Numerical bounds and tie comparisons must be exact, not rounded display times.
+
+Completion may use exhausted exploration or a proved frontier bound plus complete tie
+accounting; it need not materialize every slower path. Verification must cover cases
+where the best path is discovered last, equal optima, transfer/through distinctions,
+cycles/repeated visits, pruning equivalence and cutoff before/after each stage.
+Operational work/time/memory cutoff before proof or result completion -> searchIncomplete,
+never partial success. Observed cancellation retains precedence. Budget accounting
+covers input validation, coverage, optimization, tie collection, admission and finalization;
+bound allocation before exhaustion. No numerical budgets are invented here.
+
+### 10.5 Missing evidence, production scope and remaining gates
+
+**Current answer: a verified direct route cannot be returned as successful internal
+search when required potentially faster paths have unknown evidence.** Current required
+coverage preflight fails dataUnavailable even if that direct route is feasible. Unknown
+is neither slower nor absent; no optimality proof follows from known-route comparison.
+This remains the recommended behavior for this proposal. Accepted preflight ordering,
+scoped results and unscoped failures are unchanged. noResults requires completed search
+with zero handoffs, never merely no proved optimum or all handoffs rejected.
+
+A possible future degraded mode could say only “verified available route; fastest route
+not established,” with explicit incomplete-coverage status and limitations. It cannot
+claim fastest, no faster alternatives or no service. “Best among verified routes” would
+itself need a completed defined verified-subset search. Such a mode requires a separately
+approved result/claim contract, requiredness change, caller behavior and acceptance tests;
+it must not reuse current complete internalSuccess or fabricate omission records for
+unknown paths. This task proposes no fallback payload and authorizes no such amendment.
+Even pruning a missing-evidence path using other bounds would need a separately reviewed
+requiredness proof; optimization is not permission to bypass current coverage preflight.
+
+Retain explicit membership/complete dated execution inventory, immutable source/mapping/
+view correspondence, qualified time interpretation, affirmative continuity, permissions
+and directional connection evidence. Include earlier-service-date extended-hour events;
+do not infer completeness from loaded packets, paths, topology or absent transfer files.
+Known prohibition/absence may exclude; unknown required evidence fails. Interpretation
+and connection references must resolve to compatible immutable definitions, including
+all-component directional allowances and applicability; no universal transfer buffer.
+Preserve inclusive [L,L+D] and positive M rides. “Fastest” always means within that
+identified scope, not a global claim beyond supported domain/window/ride cap.
+
+No actual production D/M, freshness threshold, allowance or resource limit is selected.
+Their rationale needs launch-use-case coverage, authorized representative inventory,
+source interpretation, applicable rights, update/revocation handling and measured CPU,
+peak memory, result/tie volume, cancellation responsiveness and cutoff incidence. No
+launch reduction follows from a direct-only fixture. P2-S9 and real T1 import, registry,
+publication/translation/delivery/bundling and expansion gates remain. DEC-077 still
+accepts evaluation priority only; commercial resumption and production adoption are
+separate owner decisions, including provisional DEC-004 history and deployment review.
+
+### 10.6 Invented examples (not execution evidence)
+
+Each row is a separate complete artificial world unless explicitly marked unknown.
+A→D departs no earlier than 08:00; shown times are exact within one compatible scope.
+Transfer examples stipulate affirmative directional connections and adequate allowances;
+no numerical allowance or continuity is inferred merely from the times.
+
+| Case | Inputs | Fastest-route recommendation / claim |
+|---|---|---|
+| Faster direct | Direct arrives 08:20; transfer arrives 08:30 | Recommend direct only; slower transfer need not be returned |
+| Faster transfer | Direct arrives 08:35; feasible transfer arrives 08:25 | Recommend transfer only; fewer changes cannot outweigh earlier arrival |
+| Equal arrival | Direct and transfer both arrive 08:25 | Recommend direct (zero changes); transfer has one change |
+| Evidenced through | One continuous Trip spans two lines and arrives 08:25; a train-change route also arrives 08:25 | Through route wins on zero changes; line change is not a transfer |
+| Equal objective | Distinct direct T1 departs 08:02, T2 departs 08:04; both arrive 08:25 | Proposed R2 returns both, ordered only by deterministic identity key; no preference for either departure. One-winner mechanics remain an alternative requiring approval |
+| Unknown potentially faster route | Verified direct arrives 08:30; a transfer path might arrive 08:20 but its required connection/permission is unknown | Current dataUnavailable. Direct feasibility is known; fastest route is not proved. No best-known fallback is authorized |
+| Cutoff with incumbent | Verified direct 08:30 found; search cutoff occurs before another branch is settled | searchIncomplete, no recommendation batch, even if direct is valid |
+| Objective versus omission | Complete proof finds direct 08:20 and transfer 08:30 | Slower path is excluded before production handoff under proposed R3; never given a false rejection reason or removed from an already admitted batch |
+
+### 10.7 Next bounded slice
+
+After owner approval of the unresolved mechanics and separate implementation authority,
+implement only an invented objective/optimal-set specification helper with exhaustive
+small-world oracle tests: earliest-arrival/change comparison, all equal optima, exact-key
+dedup, deterministic tie order and proposed handoff/defensive-failure accounting. Reuse
+canonical contexts and leave DEC-081 and published converter/search integration unchanged.
+No new production defaults, real inputs or engine wiring. Production algorithm, proof,
+performance/rights evidence, configuration representation, deployment and adoption remain
+separate. P3-T1 and Phase 3 remain incomplete; P2-S9 retains fourteen classification and
+fourteen ordering gaps; no ODPT inquiry reply has been supplied.

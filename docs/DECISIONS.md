@@ -8881,6 +8881,64 @@ silently widen the invented profile to satisfy those needs.
 
 ---
 
+# DEC-086 — Production Route-Search Objective and Execution Policy Target
+
+**Status:** Accepted in bounded part — route selection/completion; ownership, algorithm and adoption deferred\
+**Date:** 2026-10-04 Asia/Seoul\
+**Related:** DEC-004/047/058/076–081/085; Phase 3, P3-T1, P2-S9
+
+## Scoped owner acceptance — 2026-10-04 Asia/Seoul
+
+The owner accepts the revised arrival/change objective, evidenced through-service
+counting, all distinct equal optima, reproducibility-only identity ordering, optimal
+selection before frozen handoff with admitted candidates preserved, complete optimum
+and tie proof, no first-found/first-K shortcut, truthful resource cutoff and unknown
+required-evidence failures, and defensive mixed-winner rejection as searchIncomplete.
+This accepts the route-selection/completion rules in consumer §10, not the prior
+all-distinct-return proposal, numerical limits, production adoption, deployment or
+unresolved ownership/algorithm mechanics. R6 and those unresolved choices remain Proposed.
+Historical unapproved wording below records the preceding review stage; this overlay
+is the exact bounded acceptance. Implementation completion is recorded separately.
+
+## Owner direction and revision history
+
+The owner explicitly wants the fastest route: earliest arrival, then fewer train
+changes at equal arrival; evidenced through continuity is not a train change. This
+is not acceptance of the previous six recommendations. The earlier all-distinct-return
+and departure-time tie-break recommendations are withdrawn. DEC-086 was unused at HEAD
+before drafting. Published synthetic integration remains complete and unchanged.
+
+## Revised Proposed mechanics
+
+[Consumer proposal §10](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#10-production-objective-and-execution-policy--proposed-dec-086)
+is the precise proposal. Recommend all distinct equally optimal candidates, with exact-key
+ordering only for reproducibility; no new departure/comfort/fare preference. Explore as
+needed to prove the optimum, but freeze only the proved optimal set as production admission
+handoffs. Preserve every admitted handoff; slower explored paths are not rejection omissions.
+R3 specifies required production execution clarification and a Proposed searchIncomplete
+rule for mixed defensive rejection of frozen winners. Existing synthetic/external accounting
+is unchanged; all rejected remains noUsableAlternatives. No result-shape change is assumed
+necessary for complete optimal success, but objective/multiplicity policy representation
+and compatibility must be designed and reviewed before implementation.
+
+## Evidence and acceptance boundaries
+
+Unknown required evidence still fails the whole call even with a verified direct route.
+A degraded “verified route, fastest not established” mode would need a separate explicit
+amendment and cannot reuse current complete success. Pruning requires sound objective bounds
+and preservation of equal optima; first-found/first-K is not completion. Cutoffs remain
+searchIncomplete with no partial success. No numeric production limits are selected.
+
+Only the product preference above is owner-directed. R2–R6 and the precise R1 return/proof
+mechanics remain Proposed, not Accepted; no accepted decision is superseded or production
+engine adopted. Next after mechanics approval and separate authorization: invented objective/
+optimal-set oracle and handoff-policy tests, not a production solver. Inventory, rights,
+source interpretation, performance, deployment and adoption remain separate. P3-T1/Phase 3
+remain incomplete; P2-S9 retains fourteen classification and fourteen ordering gaps.
+No ODPT reply supplied. No private inputs, tests/builds or provider contact in this task.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

@@ -5162,6 +5162,105 @@ ordering gaps. No private data, archive re-read, real import, provider contact, 
 adoption, app wiring or milestone acceptance. Leave this slice unstaged/uncommitted for
 publication review; the next bounded step is publication review, not real-data use.
 
+#### Production route-search policy proposal — revised 2026-10-04 Asia/Seoul
+
+Documentation-only after published synthetic integration `f85a3203eb359a0a24d40e694f3d1b5a5b5d23ed`.
+The owner explicitly prefers earliest arrival, then fewer train changes at equal arrival;
+evidenced through service is not a change. This does not approve the previous R1–R6
+recommendations. The all-distinct-return and departure tie-break proposals are withdrawn.
+[Consumer proposal §10](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#10-production-objective-and-execution-policy--proposed-dec-086)
+and **Revised Proposed DEC-086** recommend all equally optimal distinct recommendations,
+with deterministic identity order only, exploration separate from frozen optimal handoffs,
+proved optimality/tie completeness, and truthful cutoff failures. Exact return/accounting/
+pruning mechanics and ownership remain Proposed; current accepted behavior is unchanged.
+
+Required unknown evidence still prevents success even with a verified direct route.
+Best-known/degraded results would require a separate explicit contract amendment; none
+is approved. Production limits, inventory/rights/source/performance evidence and engine
+adoption remain unresolved. The earlier independent review concerned the superseded draft;
+a separate non-author reviewer approved this revised documentation with no material
+findings. Scope, local links, privacy and whitespace checks pass. Only this review-status
+wording changed afterward. No code/tests/builds or repeated integration.
+Next after mechanics approval and separate authorization: invented optimal-set/oracle and
+handoff-policy tests only. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification
+and fourteen ordering gaps. October 3 ODPT inquiry still awaits a supplied reply. No private
+access, feed acquisition, contact, real import, app wiring or milestone acceptance.
+Leave documentation unstaged/uncommitted for owner review.
+
+#### DEC-086 scoped acceptance and synthetic selection — 2026-10-04 Asia/Seoul
+
+The owner accepts earliest arrival then changes, evidenced through counting, all
+identity-distinct equal optima, reproducibility-only key order, selection before frozen
+handoff, preserved admitted candidates, optimum/tie completeness, no first-found/first-K,
+searchIncomplete at cutoff, dataUnavailable for unknown required evidence, and defensive
+mixed-winner rejection as searchIncomplete. Prior Proposed wording records its historical
+review stage. Ownership/algorithm mechanics, production limits/deployment/adoption remain
+unapproved; DEC-081 all-distinct behavior is unchanged.
+
+Bounded scope: `SyntheticOptimalRouteSelection.swift`, its invented test file, and these
+three pending documents. The synchronous DEBUG helper receives an explicitly stipulated
+complete, admissible invented universe with a scope; missing required evidence or incomplete
+enumeration has a separate typed input. An array/constructor cannot authenticate completeness,
+eligibility, continuity, allowances or real optimality. Selection is conditional on the
+fixture assertions, and returns neither RouteSearchResult nor a completeness certificate.
+It reuses canonical scope validation, preserves candidates/snapshots/addresses/indices and
+directional legs, rejects shared snapshot/event conflicts before ranking, deduplicates exact
+keys and retains all minimum-arrival/minimum-change ties in deterministic byte-key order.
+No earlier-departure preference, dominance pruning, network, persistence or clock read.
+
+Fixture ceilings are 64 candidates, seven legs (up to four rides), 256 elements per
+snapshot array and 128 UTF-8 bytes per identifier/date. They make this small comparison
+oracle bounded, not production defaults. Exceeding them returns searchIncomplete without
+partial selection. Snapshot copies and immutable canonical values are not mutated.
+
+**Handoff gap, intentionally not implemented:** existing engine admission accepts
+SyntheticInternalRide claims plus SyntheticInternalPrepared state, not arbitrary canonical
+RouteCandidates. Reusing it for this selection would require an explicit adapter/admission
+API and proof of association with prepared state, or broader engine coupling. No new
+callback, claimed-admitted flag, substitution seam or competing validator is introduced.
+The approved mixed-rejection rule remains an implementation obligation for that later
+separately scoped boundary. This helper does not filter already-admitted search batches.
+
+**Final verification (r3): 38 functions / 68 executed cases passed**, including the
+new selector suite's 9 functions / 10 cases, plus synthetic internal-routing and timetable
+ride-context suites. iPhone 17 / iOS 26.5 Simulator (arm64), zero failures/skips/runtime
+warnings. Debug test action built app/extension dependencies. Earlier r1 passed 37/67
+before boundary additions; r2 failed after an invalid oversized fixture used adjacent
+repeated stops rejected by Trip, and its crash-recovery run was terminated. The fixture
+now alternates A/B, remains 257 stops and reaches the intended bound. r3 supersedes
+prior runs; do not sum overlapping counts. No source correction was required.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-dec085-dd -only-testing:TSUGINOTests/SyntheticOptimalRouteSelectionTests -only-testing:TSUGINOTests/SyntheticInternalRouteTests -only-testing:TSUGINOTests/TimetableRideContextTests -resultBundlePath /private/tmp/tsugino-dec086-r3.xcresult > /private/tmp/tsugino-dec086-r3.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec086-r3.xcresult
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-dec085-release-dd > /private/tmp/tsugino-dec086-release.log 2>&1
+```
+
+Saved final summary: `/private/tmp/tsugino-dec086-r3-summary.json`. Release app/extension
+build succeeded. The no-DEBUG typecheck probe fails exactly for the two new missing
+declarations (`/private/tmp/tsugino-dec086-release-probe.log`); Release executable symbol
+inspection finds no SyntheticOptimalRoute symbols. Final Debug has one existing AppIntents
+warning line; Release has 67 existing isolation/AppIntents warning lines, no new helper
+warning. No physical device used. These are targeted results, not a full-suite claim.
+
+Final SHA-256 fingerprints:
+
+| File | SHA-256 |
+|---|---|
+| `TSUGINO/Data/Routing/SyntheticOptimalRouteSelection.swift` | `fef9f27eb2ba46988ede839507e2c0acc372bac77088b6ee47d430e49f839be6` |
+| `TSUGINOTests/SyntheticOptimalRouteSelectionTests.swift` | `3bb8839880c488cc59edb4dd83ca3bd4d829baaa3fa9601f98b087e98824c95e` |
+
+Independent review found the invalid boundary fixture; corrected as above and re-reviewed
+without further source/test findings. **Final independent review approved:** a separate
+non-author reviewer verified final fingerprints, r3 summary/log, Release build/probe and
+absence of Release symbols, and the completion record; no material findings remain.
+The reviewer reran no tests/builds. Only approval wording changed after final review.
+Scope/privacy/whitespace checks pass. No application wiring or changes to the existing
+synthetic engine. P3-T1/Phase 3 remain incomplete; P2-S9 retains
+fourteen classification and fourteen ordering gaps; ODPT inquiry reply remains unsupplied.
+No private data, real import, provider contact, production adoption or UI work. Leave the
+slice unstaged/uncommitted for publication review.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
