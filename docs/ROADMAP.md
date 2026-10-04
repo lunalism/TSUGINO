@@ -5108,6 +5108,60 @@ evidence and validated real import remain separate. P2-S9 retains fourteen class
 and fourteen ordering gaps. Next bounded step: final publication review of this slice,
 not a real pilot or automatic broadening of the invented profile.
 
+#### Synthetic timetable-to-routing integration — 2026-10-04 Asia/Seoul
+
+Scope: test-only composition under accepted DEC-078/080/081/085, authorized by the
+owner after publication of `853fb9ceccec9ae12deec0cb6244afbeb686a821`. One new
+`TSUGINOTests/SyntheticTimetableRoutingIntegrationTests.swift` reuses the existing
+invented packet fixture; no support file, application source, settings or new decision.
+It invokes the actual converter and passes returned facts unchanged into the existing
+active search input, then invokes `SyntheticInternalRouteSearcher` normally.
+
+The artificial A@0 → B@1 world explicitly stipulates one dated execution slot,
+complete interval [0,1], finite validity window, membership, permissions and continuity.
+Inventory completeness is not inferred from successful conversion or route discovery.
+The fixture associates R1 / invented-civil-day-v1 / Z1 / M1 with its immutable view and
+policy references; Domain facts do not independently retain or authenticate those tokens.
+No calendar scanning, manifest inference, source authentication or real applicability
+is implemented. Success maps to active; inactive has no event facts; unsupported,
+insufficient and invalid map to unavailable while tests retain conversion diagnostics.
+
+Checks cover ordinary canonical output, exact midnight-crossing instants with the
+original service date, inactive scoped noResults, missing/estimated required endpoints,
+missing unused counterparts, every conversion failure category, revision conflicts,
+consumer snapshot/view/inventory rejection, and legitimate prohibited/out-of-window
+exclusions versus coverage failures. Assertions retain the full snapshot, original
+indices/address, time tags and converted endpoints. No facts are manually reconstructed.
+Existing eligibility, chronology, admission, errors and cancellation are unchanged.
+
+**Validation:** one targeted Debug run passed **62 functions / 113 executed cases**,
+zero failures/skips/runtime warnings, on iPhone 17 / iOS 26.5 Simulator (arm64).
+This includes the new integration suite (7 functions / 16 cases), converter, synthetic
+internal search and timetable ride-context suites; these counts overlap, do not sum.
+Debug app/extension dependencies built through the test action. The only build-warning
+line is the existing AppIntents metadata notice. No test/build failure occurred.
+Initial sandboxed Simulator discovery was denied; permitted escalation enabled the run.
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-dec085-dd -only-testing:TSUGINOTests/SyntheticTimetableRoutingIntegrationTests -only-testing:TSUGINOTests/SyntheticTimetableConversionTests -only-testing:TSUGINOTests/SyntheticInternalRouteTests -only-testing:TSUGINOTests/TimetableRideContextTests -resultBundlePath /private/tmp/tsugino-timetable-integration-r1.xcresult > /private/tmp/tsugino-timetable-integration-r1.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-timetable-integration-r1.xcresult
+```
+
+Saved summary: `/private/tmp/tsugino-timetable-integration-r1-summary.json`.
+Test-file SHA-256: `c11671044f2e229dcf84dd564db9a578b899bbf6031fae0315294e93c6263784`.
+The unchanged converter source/test fingerprints match the published DEC-085 evidence;
+reuse its Release build, no-DEBUG declaration probe and Release symbol isolation checks.
+No Release rebuild or physical-device interaction occurred. Scope/privacy/whitespace
+checks pass; only this record and the new test file change. **Independent review approved:**
+a separate non-author reviewer inspected the final test composition, documentation,
+saved summary/log and matching fingerprint; no material findings remain. The reviewer
+ran no tests/builds. Only this approval-status wording changed after that review.
+
+P3-T1 remains partial. P2-S9 remains incomplete with fourteen classification and fourteen
+ordering gaps. No private data, archive re-read, real import, provider contact, production
+adoption, app wiring or milestone acceptance. Leave this slice unstaged/uncommitted for
+publication review; the next bounded step is publication review, not real-data use.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
