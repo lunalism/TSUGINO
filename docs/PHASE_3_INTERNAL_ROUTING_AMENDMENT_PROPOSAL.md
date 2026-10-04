@@ -1004,3 +1004,241 @@ No new production defaults, real inputs or engine wiring. Production algorithm, 
 performance/rights evidence, configuration representation, deployment and adoption remain
 separate. P3-T1 and Phase 3 remain incomplete; P2-S9 retains fourteen classification and
 fourteen ordering gaps; no ODPT inquiry reply has been supplied.
+
+## 11. Prepared-path optimal handoff integration — implementation design
+
+**Owner-authorized bounded implementation design, 2026-10-04.** DEC-086 selection/completion preferences
+are already accepted and are not reopened. This section specifies the missing DEBUG-only
+association and orchestration, not production ownership or a new engine.
+No new decision identifier is needed for this API plumbing. The owner subsequently
+authorized this exact DEBUG slice; implementation and verification are recorded in §11.6.
+Names in the design below remain notation unless mapped to declarations in §11.6.
+
+### 11.1 Actual flow and non-circular insertion point
+
+`SyntheticInternalRouteSearcher.search` creates one per-call engine and awaits
+`prepare(request)`. Preparation performs ordered preflight, normalization, full required
+coverage, qualified ride-token construction and directional connection feasibility;
+then exhaustively enumerates paths, deduplicates and deterministically orders them.
+`SyntheticInternalPrepared` holds scope, ride/slot/connection dictionaries and paths.
+For each path, `claims` (originally fileprivate, now shared internally) resolves keys to
+`SyntheticInternalRide` values.
+`engine.admit` checks those claims against that prepared state and creates the canonical
+`RouteCandidate` only at the end. `finalize` checks accounting against **all** prepared
+paths and permits mixed candidate/omission success under DEC-081.
+
+The correct insertion point is **after successful full prepare, before any admission
+handoff**. Objective is the final ride context's exact arrival plus path.count−1 changes.
+Identity comes from ordered dated ride keys and resolved directional connection keys,
+forms and canonical endpoints in that same prepared state. Through line changes within
+one ride contribute no change. There is no need for a RouteCandidate to compute either.
+Do not admit all paths and subsequently filter, build temporary canonical candidates to
+feed the published selector, or run another discovery/eligibility/chronology algorithm.
+
+The published `SyntheticOptimalRouteSelection` takes canonical candidates, so it cannot
+be used directly at this point. Recommend extracting only its pure objective/key comparison,
+exact-key deduplication and equal-optimum selection into a shared DEBUG utility returning
+opaque input handles. Keep its existing candidate-input adapter and all validation behavior
+intact. A new prepared-path adapter supplies descriptors from the existing prepared state;
+it does not copy candidate validation into a second implementation. Cross-adapter tests
+prove equivalent keys/order for equivalent routes. DEC-081 keeps its all-distinct path
+order and search behavior; it does not call the new optimum selector.
+
+### 11.2 Smallest typed association and provenance boundary
+
+Recommend one immutable, opaque `PreparedOptimalSession`, constructed only by a factory
+that calls the existing engine's full `prepare` for a single invocation. Retain the whole
+original `SyntheticInternalPrepared` privately; never overwrite `paths` with winners to
+make old accounting appear to pass. Internal memberwise construction of a prepared struct
+is not a completion proof: do not offer an entry point accepting arbitrary prepared values,
+arrays of candidates, a boolean `complete`, or caller-supplied objectives/keys.
+
+Within that owner, each `ExploredAlternative` contains:
+
+- a private ordinal into the original complete prepared.paths (association only, not
+  user preference or omission index);
+- the exact ordered ride-key path, or a reference to it through that ordinal;
+- a derived `Objective(arrival, changes)` and full DEC-086 itinerary key.
+
+The owner controls construction and resolution. A handle cannot be constructed publicly
+or used with another session; no independent `(handle, prepared)` consumer API. If handles
+must cross a file boundary, keep their constructors inaccessible and check a per-invocation
+owner token on resolution; a view UUID alone is insufficient. Tokens are ephemeral and
+never new registry IDs or persisted provenance. The simplest implementation keeps handles
+and resolution private to the orchestrator and exposes only its eventual canonical result.
+
+Derive ride data by dictionary lookup, not TripID-only matching: view/date/TripID, exact
+snapshot, original boarding/alighting indices, and unmodified context. Derive each connection
+from `connectionKey(previous,next)` and the resolved present/form/allowance/evidence entry;
+retain the prepared state containing that definition rather than embed a caller-authored
+copy. Derive canonical directional station endpoints from the corresponding snapshots.
+A missing key or incompatible association is dataUnavailable, never omitted as a slow path.
+Resolve selected handles back to the same prepared rides for the existing `admit` method;
+no time, date, index, snapshot, connection or Trip replacement is permitted. Shared snapshots
+and state remain pinned throughout selection and admission.
+
+### 11.3 What establishes completeness and admissibility
+
+Two different prerequisites remain explicit: fixture authors stipulate a complete, qualified
+artificial input universe; the existing prepare operation proves that its **implemented
+finite enumeration** finished over that universe. Successful array construction or admission
+proves neither. The factory returns its session only after all prepare stages finish without
+coverage error, cancellation or resource cutoff, including deduplication/order. No public
+constructor lets a caller promote a prefix into completed exploration. This is synthetic
+completion only; it authenticates no real inventory or production algorithm.
+
+Preparation already checks all required permissions/times/continuity and connection relations
+before discovery, including disconnected required unknowns. Paths already have requested
+endpoints, finite ride cap, distinct recurring TripIDs, qualified ridden scope and feasible
+connections. The implementation review must map each admission predicate to those preparation
+invariants and retained canonical constructors; admission remains the defensive authority.
+Do not assume that prepared paths are admissible merely because a struct exists, and do not
+add a second validator to repair gaps. A discovered missing invariant is a concrete separate
+correction scope, not permission to silently skip that path or admit it early.
+
+The adapter scans every complete prepared path, derives bounded descriptors and retains every
+minimum objective tie in DEC-086 identity order. No pruning or new enumeration is introduced.
+A nonempty explored set must yield a nonempty selected set; otherwise fail searchIncomplete.
+The optimum claim is relative to the stipulated finite universe and accepted scope, not real
+network optimality. Coverage remains conservative even when a verified direct ride exists.
+
+### 11.4 Freeze, admission and truthful finalization
+
+Freeze selected handles in deterministic identity order, then assign **new contiguous
+handoff indices 0...winnerCount−1**. Original explored ordinals remain private associations.
+Slower explored paths have no handoff index and no rejection omission. Call existing
+`admit` exactly once per selected handle with the original prepared state. Process ordinary
+rejections through all selected handoffs to retain full accounting; a thrown shared-input,
+cancellation or resource failure aborts atomically under existing precedence.
+
+| State | Outcome using existing canonical types |
+|---|---|
+| Completed empty exploration, zero selected/handoffs | scoped internalSuccess(.noResults) |
+| Nonempty selection, every selected handoff admitted | scoped internalSuccess(.alternatives(batch)), all winners in frozen order, no omissions |
+| Every selected handoff rejected | unscoped noUsableAlternatives with contiguous selected-index RouteSearchRejections |
+| Some admitted, some rejected | searchIncomplete; no survivors returned as optimal success |
+| Unknown required evidence or inconsistent prepared association | dataUnavailable, never direct-only fallback |
+| Incomplete exploration, selection, accounting or finalization / resource cutoff | searchIncomplete, no partial batch |
+| Observed cancellation | CancellationError takes precedence, including before terminal result/failure |
+
+Use existing `RouteAlternativeOmission` reasons/order and one-handoff/one-outcome accounting.
+Mixed failures may retain bounded omissions locally for assertion while assembling the
+outcome, but `searchIncomplete` has no diagnostic payload: do not add logs, exports or a new
+public result merely to expose them. No slower substitution, retry, selected-winner removal
+or fallback search. All rejected is not an empty universe and cannot produce noResults.
+
+Do not call the present `finalize` unmodified for this flow: its count is original path
+count, and its mixed-success behavior differs. Recommend factoring the small count/outcome
+assembly into a shared DEBUG finalization helper with **explicit expected handoff count and
+completion policy**. Existing DEC-081 entry supplies prepared.paths.count and all-distinct
+policy, preserving behavior; the new orchestrator supplies frozen winner count and accepted
+optimal policy. Both use the same finish checkpoint/cancellation and canonical constructors.
+Policy is fixed by the entry point, not a caller option to weaken optimal completion. This
+is outcome plumbing, not another engine. No fabricated reduced prepared state is allowed.
+
+### 11.5 Bounded synthetic implementation and verification scope
+
+One separate DEBUG-only optimal orchestrator over the existing engine; no change to the
+normal DEC-081 search entry's selection, ordering, admitted-batch or failure semantics.
+Share the minimal claim resolver instead of reconstructing claims independently (originally
+fileprivate on the searcher; now shared internally). Keep engine preparation, predicates and enumeration unchanged.
+Extract the selector's pure key/objective kernel and the shared accounting assembly only
+where needed; no Domain changes, policy registry, production composition or UI.
+
+Require an explicitly supplied finite synthetic work limit using the engine's existing
+counter/checkpoints through preparation, descriptor traversal/comparison, selection,
+admission and finalization. No reset/new counter after prepare. Charge sorting/dedup scans
+as well as path/connection resolution; cancellation remains observable at those boundaries.
+Reuse the selector's fixture ceilings (64 complete alternatives, up to four rides/seven legs,
+256 entries per snapshot array, 128-byte identifiers/dates). Check shape/length before
+materializing descriptor keys; over-limit is searchIncomplete, not first-64 selection.
+Preparation's existing work budget bounds its earlier enumeration; no production budgets
+or algorithm-performance guarantee are chosen here. Oversized/unrepresentable counters fail
+without partial output. No public success-capable mutation hook or arbitrary admission callback.
+
+Targeted invented tests:
+
+- Known exhaustive direct/transfer/through universe: later-discovered optimum wins; all
+  equal optima and distinct dates/repeated original visits preserved; input permutation
+  leaves recommendation and frozen handoff order unchanged.
+- Prepared descriptor versus existing canonical-candidate adapter parity, including same-
+  station/walking connection form and direction; no synthetic departure preference.
+- Selected handle resolves original snapshot/context and connection definition; foreign
+  session/forged handles cannot be supplied through the API. Test exact association checks
+  at the internal seam without permitting production-style caller substitution.
+- Unknown required evidence with a usable direct route fails before selection; every
+  prepare/selection/sort/admission/finalize cutoff and cancellation produces no partial
+  success. Complete empty enumeration is distinct from missing inventory and all rejected.
+- Failure-only harness, modeled on the current synthetic failure harness, corrupts selected
+  claims only inside tests and invokes the real admission predicates: one rejected winner
+  among ties -> searchIncomplete; all rejected -> contiguous selected-index omissions.
+  It can never return success or act as a normal configurable searcher. Verify the slower
+  explored ordinal is absent from omission indices; do not fabricate rejection outcomes.
+- Original DEC-081 regression suite unchanged; existing selector tests and DEBUG/Release
+  isolation checks. No repeat of real data or completed converter-to-search work.
+
+The owner authorized this narrow adapter/extraction/test scope,
+including mechanical edits to shared DEBUG helpers. No new route preference, failure type,
+coverage relaxation or semantic decision is proposed. If predicate factoring or identity
+representation reveals a semantic gap, report it before expanding the implementation.
+The bounded defensive handoff implementation is recorded separately in §11.6.
+P3-T1/Phase 3 remain incomplete; P2-S9 keeps fourteen classification and fourteen ordering gaps.
+
+
+### 11.6 Bounded implementation and verification — 2026-10-04 Asia/Seoul
+
+`SyntheticOptimalRouteSearcher` is a separate DEBUG `RouteSearching` adapter over the
+unchanged `SyntheticInternalRouteEngine.prepare`/`admit`. It requires an explicit finite
+`Int` work limit; its private `PreparedOptimalSession.open` alone can construct a session,
+after successful exhaustive preparation. Both the prepared state and selected ordinal
+handles are private; there is no `(handle, prepared)` API, exported completion flag,
+externally supplied descriptor, or cross-session handle operation. Fixture authors still
+stipulate qualified complete inventory. No runtime wrapper authenticates real coverage.
+
+`SyntheticOptimalRouteDescriptor` shares exact dated ride/directional connection keys,
+objective and snapshot/text ceilings with the published canonical-candidate selector.
+`SyntheticOptimalRouteKernel` scans all bounded descriptors, retains objective ties,
+deduplicates exact keys and insertion-orders them. Its incremental advances are charged
+and cancellation-checked by the original engine counter; the synchronous selector exhausts
+the same machine. Descriptor/path/connection resolution and final selected-claim lookup
+also use that counter. Each advance has bounded comparisons and an at-most-64-element
+move; key construction is bounded by four rides/seven legs, 256 entries per snapshot array
+and 128 UTF-8 bytes per identifier/date. More than 64 complete paths fails atomically.
+No new discovery, eligibility, chronology, source interpretation or pruning algorithm exists.
+
+Selected claims are looked up in the original prepared dictionaries through the shared
+resolver, without evidence reconstruction. Existing admission alone constructs candidates.
+The shared finalizer's private policy is fixed by its two entry methods: DEC-081 still
+uses all explored paths and permits mixed success; `finalizeOptimal` uses the frozen
+selected count, returns all winners only on full admission, throws `searchIncomplete` on
+mixed rejection, and preserves contiguous selected-index `noUsableAlternatives` on total
+rejection. Slower paths never receive handoff indices or rejection omissions. Thrown
+coverage/cutoff/cancellation failures retain the existing precedence and atomic behavior.
+
+`SyntheticOptimalHandoffFailureHarness` is a failure-only `Never` seam, not a searcher or
+normal configuration option. It corrupts a selected claim's alighting key to −1, then
+invokes real admission and shared finalization. It never provides substitute prepared
+state, fake rejection outcomes or a success-capable external callback.
+
+Admission invariant audit (admission remains the defensive authority):
+
+| Admission obligation | Existing preparation/canonical authority |
+|---|---|
+| Nonempty route, requested endpoints, ride cap, distinct TripIDs | Exhaustive path generation from qualified rides |
+| Exact view/date/address, full snapshot, original indices/context | Normalization plus original `TrainCandidate`/`TimetableRideContext` construction and retained dictionary lookup |
+| In-profile ridden stations/lines, scope times, exact allowed endpoints | Full interval/slot coverage and qualified token construction |
+| Affirmed continuous ride | Required interval continuity checked before token creation |
+| Chronology and connection allowance | Exact ride context and feasible directional edge construction |
+| Direction, same-station/walking form, valid allowance | `normalizeConnections` and original resolved relation |
+| Canonical rail/route structure and scoped result | Existing admission constructors and `InternalSearchSuccess`; no replacement validator |
+
+Targeted tests compare prepared selection with the published candidate selector, check
+original dated snapshots/repeated indices, direct/transfer/through objectives, equal ties,
+permutation order and directional walking/same-station relations. Failure tests exercise
+selected-index accounting with an earlier slower explored path, missing inventory despite
+a good direct route, scoped complete empty, the complete-alternative ceiling, and every
+post-preparation work-budget prefix/cancellation checkpoint through finalization.
+Final test/build/isolation and independent-review evidence is recorded in ROADMAP's
+corresponding implementation entry. No production limits, ownership/algorithm mechanics,
+adoption, app wiring, deployment or real inventory evidence is supplied. P3-T1 and Phase 3
+remain incomplete; P2-S9 retains fourteen classification and fourteen ordering gaps.

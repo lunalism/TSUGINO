@@ -5261,6 +5261,86 @@ fourteen classification and fourteen ordering gaps; ODPT inquiry reply remains u
 No private data, real import, provider contact, production adoption or UI work. Leave the
 slice unstaged/uncommitted for publication review.
 
+#### DEC-086 prepared-path handoff design — 2026-10-04 Asia/Seoul
+
+Documentation-only after published selector `b43b5eb10009e318c52207e0c5115bad9e455262`.
+[Consumer proposal §11](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#11-prepared-path-optimal-handoff-integration--implementation-design)
+traces prepare → path/claim → admission → canonical candidate, locating optimal selection
+after exhaustive preparation and before frozen handoffs. Proposes opaque same-session
+path descriptors, shared selector key/objective logic, original prepared-state resolution
+and explicit winner-count finalization. No candidate-to-claim reverse mapping, admission-
+then-filter loop, second validator or reduced prepared-state fabrication. Complete fixture
+inventory and successful enumeration remain separate prerequisites; unknown coverage and
+cutoffs keep accepted failures. Slower exploration is not rejection accounting.
+
+This is API plumbing under accepted DEC-086, not a new preference/decision record. Existing
+DEC-081 code/behavior is unchanged in this task. Next authorized implementation would add
+one DEBUG adapter and minimal shared helper extractions with targeted synthetic/accounting/
+cancellation tests and Release isolation. No implementation occurred here; defensive handoff
+integration is still unimplemented. Scope, local links/section target, privacy and
+whitespace checks pass. A separate non-author reviewer approved the design against the
+actual prepare/claims/admit/finalize and selector APIs with no material findings. Only
+this review-status wording changed after approval.
+No tests/builds, private access, provider contact, real import, production budgets/adoption,
+app wiring or milestone acceptance. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
+classification and fourteen ordering gaps. Leave docs unstaged/uncommitted for review.
+
+#### DEC-086 bounded prepared optimal handoff implementation — 2026-10-04 Asia/Seoul
+
+Owner-authorized implementation of the independently reviewed Consumer proposal §11.
+DEBUG `SyntheticOptimalRouteSearcher` retains a private completed preparation session,
+derives descriptors without canonical candidates, selects every distinct equal optimum,
+and resolves original claims into existing admission. Shared incremental key/objective
+selection and finalization helpers preserve the published selector and DEC-081 all-distinct
+behavior. No engine enumeration or Domain semantic change. Slower paths are objective
+exclusions; selected mixed rejection is `searchIncomplete`, all rejected preserves contiguous
+selected-index omissions, complete empty remains scoped `noResults`. Missing evidence,
+cutoffs and cancellation remain truthful and atomic. Completeness still requires a stipulated
+complete invented inventory plus successful exhaustive preparation; no real optimality claim.
+
+The first sandboxed Xcode attempt could not
+reach Simulator services; the first service-enabled build identified test assertion syntax
+requiring predicate matching for non-Equatable `RouteSearchFailure`. That test-only issue
+was corrected before execution. No application crash or source defect was observed in that
+build failure. The first executed run exposed a test-fixture assumption: randomized
+three-key dictionary order can change preparation insertion-sort work, invalidating a
+cross-run exact-budget assertion. The corrected two-ride fixture has a stable comparison
+count and still exercises tied-key selection. Neither correction changes routing behavior.
+Final evidence below supersedes those attempts; overlapping runs are not added.
+
+- Final targeted run on explicit iPhone 17 Simulator, iOS 26.5: **47 functions / 81 executed
+  cases passed**, zero failures. Included new handoff **9 / 13**, published selector **9 / 10**,
+  existing internal engine/admission **19 / 44**, and timetable context **10 / 14**.
+  Result bundle `/private/tmp/tsugino-optimal-handoff-r4.xcresult`; Debug test action built
+  app and extension dependencies. Counts are one final run, not sums of reruns.
+- Release app/extension build passed (`tsugino-optimal-handoff-release.log`). No-DEBUG
+  compiler probe verified all eight probed new/changed/session declarations are absent;
+  Release executable symbol scan found none. DEBUG `@testable` client compilation cannot
+  name the private prepared session or its handle, ruling out foreign/forged handle input
+  through that boundary. Initial diagnostic-count checker double-counted Swift's repeated
+  error rendering; checking the two source diagnostics confirmed the expected rejection.
+- Separate non-author final review **approved with no material findings remaining**.
+  Reviewer checked source/tests/documentation, mapped admission predicates to preparation
+  invariants, independently read the final xcresult counts, and verified the five fingerprints.
+  Minor kernel-comment and originally-fileprivate wording corrections are resolved; approval
+  covers those wording corrections and this verdict record. Exact eight-file scope, local
+  decision/proposal links/section target, new-file whitespace, DEBUG guards, fingerprint,
+  privacy/persistence/network and `git diff --check` checks pass. No unrelated changes.
+
+Final verified source/test SHA-256 fingerprints (documentation review recorded separately):
+
+| File | SHA-256 |
+|---|---|
+| `TSUGINO/Data/Routing/SyntheticOptimalRouteKernel.swift` | `027cc4e5f83cef6c35f00bdfafd2baeedd90edb9c639605c670f2c89d1ae8a87` |
+| `TSUGINO/Data/Routing/SyntheticOptimalRouteSearcher.swift` | `f2461acf1d5e41ff707b1d42da0f71a0718c738249bc6d426344767819bfc4b7` |
+| `TSUGINO/Data/Routing/SyntheticOptimalRouteSelection.swift` | `c50618f6418ddc4eba402af627cf054fa9f9413ae16cd8d0507e56679a140871` |
+| `TSUGINO/Data/Routing/SyntheticInternalRouteSearcher.swift` | `b4f0cd2acafa723b30c7727b1cc049c60c03ad1a180605a4733531c26663acec` |
+| `TSUGINOTests/SyntheticOptimalHandoffTests.swift` | `294a2f59a98883435f7387094f87879bc6bb136e1540b4e2d7ea1237bcf2e44c` |
+
+No private access, provider contact, real import, production limits/adoption, app wiring or
+milestone acceptance. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification
+and fourteen ordering gaps. Leave all changes unstaged/uncommitted for publication review.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

@@ -40,7 +40,7 @@ nonisolated struct SyntheticInternalRouteSearcher: RouteSearching {
         }
     }
 
-    fileprivate static func claims(_ path: [SyntheticInternalRideKey], _ prepared: SyntheticInternalPrepared) throws -> [SyntheticInternalRide] {
+    static func claims(_ path: [SyntheticInternalRideKey], _ prepared: SyntheticInternalPrepared) throws -> [SyntheticInternalRide] {
         try path.map { key in
             guard let ride = prepared.rides[key] else { throw RouteSearchFailure.dataUnavailable }
             return ride
@@ -56,15 +56,31 @@ extension SyntheticInternalRouteEngine {
     /// Shared outcome path for normal execution and the failure-only generated-claim harness.
     mutating func finalize(prepared: SyntheticInternalPrepared, candidates: [RouteCandidate],
                            omissions: [RouteAlternativeOmission]) async throws -> RouteSearchResult {
+        try await finalize(prepared: prepared, candidates: candidates, omissions: omissions,
+                           expected: prepared.paths.count, optimal: false)
+    }
+
+    /// The optimal entry freezes selected count without rewriting prepared.paths.
+    mutating func finalizeOptimal(prepared: SyntheticInternalPrepared, selectedCount: Int,
+                                 candidates: [RouteCandidate], omissions: [RouteAlternativeOmission]) async throws -> RouteSearchResult {
+        try await finalize(prepared: prepared, candidates: candidates, omissions: omissions,
+                           expected: selectedCount, optimal: true)
+    }
+
+    private mutating func finalize(prepared: SyntheticInternalPrepared, candidates: [RouteCandidate],
+                                   omissions: [RouteAlternativeOmission], expected: Int, optimal: Bool) async throws -> RouteSearchResult {
         try await step(.finish)
-        guard candidates.count <= prepared.paths.count,
-              omissions.count == prepared.paths.count - candidates.count else { throw RouteSearchFailure.dataUnavailable }
+        guard expected >= 0, candidates.count <= expected,
+              omissions.count == expected - candidates.count else {
+            throw optimal ? RouteSearchFailure.searchIncomplete : RouteSearchFailure.dataUnavailable
+        }
         let outcome: InternalSearchSuccess.Outcome
-        if prepared.paths.isEmpty { outcome = .noResults }
+        if expected == 0 { outcome = .noResults }
         else if candidates.isEmpty {
             guard let rejected = RouteSearchRejections(omissions: omissions) else { throw RouteSearchFailure.dataUnavailable }
             throw RouteSearchFailure.noUsableAlternatives(rejected)
         } else {
+            if optimal && !omissions.isEmpty { throw RouteSearchFailure.searchIncomplete }
             guard let batch = RouteSearchBatch(candidates: candidates, omissions: omissions) else { throw RouteSearchFailure.dataUnavailable }
             outcome = .alternatives(batch)
         }

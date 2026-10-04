@@ -8900,6 +8900,20 @@ unresolved ownership/algorithm mechanics. R6 and those unresolved choices remain
 Historical unapproved wording below records the preceding review stage; this overlay
 is the exact bounded acceptance. Implementation completion is recorded separately.
 
+## Prepared-path integration design — 2026-10-04 Asia/Seoul
+
+[Consumer proposal §11](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#11-prepared-path-optimal-handoff-integration--implementation-design)
+describes the owner-authorized bounded implementation connection, not a new semantic decision: select
+from completed prepared paths before claims/admission, retain opaque same-session
+associations, and share key/objective and accounting helpers. Canonical candidates are
+created only by existing admission. Full preparation remains the synthetic exploration
+completion boundary; fixture inventory completeness is still stipulated. A winner-count
+finalization policy preserves accepted mixed/all-rejected outcomes without modifying
+DEC-081 all-distinct behavior. The DEBUG adapter and shared helpers are implemented as
+recorded in §11.6; validation/review is recorded in ROADMAP. This closes only the bounded
+synthetic handoff gap. No owner acceptance of production ownership/algorithm/deployment
+follows. R6 and all unrelated unresolved mechanics remain Proposed.
+
 ## Owner direction and revision history
 
 The owner explicitly wants the fastest route: earliest arrival, then fewer train
