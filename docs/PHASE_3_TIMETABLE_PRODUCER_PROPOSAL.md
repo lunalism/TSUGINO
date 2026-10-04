@@ -12,6 +12,14 @@ acceptance and ROADMAP for exact slice evidence. No calendar interpretation,
 conversion, real import or DEC-079 implementation is supplied by the value slice.
 P2-S9 and all applicable retained gates remain in force.
 
+Next conversion/input slice: §9 and **Accepted DEC-085** (2026-10-04). The owner
+approved C1–C4 and authorized bounded synthetic implementation; completion is tracked
+separately. This does not change the accepted DEC-078 value boundary.
+
+The §9 DEBUG-only inputs/converter are now implemented and targeted/Release checks
+passed; independent completion review approved the bounded slice. ROADMAP records exact evidence.
+No calendar/feed adapter or real import is supplied by that invented implementation.
+
 The body below preserves the historical proposal and acceptance-preparation wording
 (including its original “Proposed” labels and undecided implementation choices).
 Read semantic recommendations selected by the accepted package as accepted contracts;
@@ -344,3 +352,286 @@ binding. Constructed values cannot prove activation, permitted use, source ident
 or current coverage. Tests/builds belong to that future authorized implementation,
 not this documentation task. P2-S9 is mandatory before real Trip consumption and
 real P3-T1 import; it does not block this entirely synthetic value slice.
+
+## 9. Proposed bounded invented conversion profile — DEC-085
+
+**2026-10-04; C1–C4 accepted; bounded synthetic implementation authorized.** The
+owner accepted the independently reviewed proposal. Implementation/review completion
+is tracked separately in ROADMAP. The proposal wording below preserves its rationale;
+the earlier first-value-slice recommendation is historical.
+DEC-078 remains accepted and its five Domain value files remain unchanged. This
+profile has **no Toei, ODPT or GTFS applicability claim**. All inputs are invented
+in-memory values, never a file format, importer, evidence reader or source validator.
+
+### 9.1 Accepted requirements versus new choices
+
+Reuse DEC-078: coherent view and exact Trip snapshot/original indices; one execution
+per recurring Trip/date; activation before event validation; unique exception override;
+no inactive-as-invalid-time confusion; exact/missing/estimated separation; tri-state
+eligibility; all-exact-event chronology; whole-occurrence failure and no routing policy.
+Reuse `TimetableOccurrenceBinding.matches`, `TimetableVisitFacts`,
+`TimetableOccurrenceFacts.validationDiagnostic` and their constructors. Do not change
+Trip equality, Domain date-label permissiveness, consumer context or diagnostic enums.
+
+New owner choices are the invented input envelope and completeness declarations,
+concrete Gregorian/date/clock/zone profile, finite limits, and Data outcome taxonomy
+and deterministic failure order below. These specialize an invented source only;
+they neither establish a production profile nor add real S9 acceptance requirements.
+
+### 9.2 Input envelope and correspondence
+
+Proposed pure Data operation: `convert(one invented packet) -> one conversion outcome`.
+A packet contains exactly one existing binding, one requested service date, one
+invented run/service key, and one immutable view manifest. No request horizon, clock,
+network, file path, resolver, registry allocation or lookup of a mutable latest view.
+
+The manifest names the exact view UUID, source revision, profile ID/version
+`invented-civil-day-v1`, zone-table revision, mapping/correspondence revision, and the
+full existing Trip snapshot. References are opaque invented ASCII tokens, not URLs
+or paths. A finite in-memory reference table stipulates profile applicability,
+calendar coverage/completeness, one-execution-per-date correspondence, event quality
+and eligibility evidence, each bound to the same revisions/run and relevant index/
+event. References are recorded/resolved only within this table; nothing opens their
+contents elsewhere. They are fixture assertions, not authenticated provenance.
+
+The reference table has unique IDs: duplicate IDs (even identical records) or
+conflicting declarations for one ID are invalid, never first-match resolution.
+Each entry has one typed assertion kind and a revision tuple. Applicability is
+either whole-run or one inclusive original-index range with an explicit event-kind
+or eligibility-kind selector; no nested lists, free text, wildcard revisions or
+external references. Each event/permission slot carries at most one reference ID.
+Absent resolution is insufficient; a resolved incompatible assertion is invalid.
+Envelope validation checks bounded table shape, uniqueness and revision tuples;
+requirements for event-quality/eligibility references and their applicability are
+checked only for active dates. Inactive output does not claim those were reviewed.
+
+Binding and manifest must agree on view, TripID and every snapshot field (stops,
+line segments, coverage and service types). Requested date must equal the binding's
+canonical service-date label. Equal IDs alone do not establish correspondence.
+Missing required identity/applicability evidence is insufficient; explicit disagreement
+is invalid. Known multiple executions per run/date are unsupported; uncertain
+multiplicity is insufficient. No automatic candidate selection or revision repair.
+
+For an active date, require exactly one input visit per original index, with distinct
+invented occurrence tokens and explicit one-to-one mapping to those indices. Input
+visits must already be in original-index order; reject duplicates, out-of-range or
+reordered indices and contradictory mappings. A missing mapping/visit is insufficient,
+not an inferred missing time. Repeated stations remain distinct. Arrival and departure
+are separate tagged fields: explicit missing, exact(clock, evidence reference), or
+estimated(clock, evidence reference). An absent field is insufficient, not missing.
+An explicit unqualified(clock) input represents unknown source quality and is
+insufficient; it has no Domain time equivalent and is never coerced to estimated.
+Each boarding/alighting field is separately allowed, prohibited or unknown; absent
+support for an affirmative allowed/prohibited claim is insufficient. Explicit unknown
+requires no affirmative permission claim. Conflicting support is invalid. No raw
+pickup/drop-off/timepoint flags or automatic stop/pass classification enter this API.
+
+### 9.3 Dates and activation
+
+Date syntax is exactly ASCII `YYYY-MM-DD`, using the proleptic Gregorian calendar,
+valid years 2000–2099 and actual month/leap-day validity. No whitespace normalization,
+locale parsing, device calendar or implicit date. Impossible/malformed dates are
+invalid; otherwise valid dates outside the supported year range are unsupported.
+A canonical date outside the packet's inclusive declared service-date coverage is
+insufficient evidence, never inactive. Weekdays use Monday through Sunday explicitly.
+
+Exactly one activation mode is required:
+
+- **Weekly baseline:** one inclusive start/end range (start <= end, within coverage),
+  seven explicit booleans, and a declared complete exception list for that service
+  and coverage. Baseline is active iff in range and that weekday is true; outside
+  the baseline range but inside coverage it is inactive unless uniquely added.
+- **Exception-only:** no baseline; an explicit assertion that the exception list is
+  exhaustive over coverage. Unlisted dates are inactive only under this assertion.
+
+A unique date-specific add/remove overrides baseline status; add can activate outside
+baseline range within coverage. Remove is scheduled inactivity, not observed realtime
+cancellation. Reject duplicate records even when identical, conflicting add/remove,
+reversed ranges, foreign service keys, invalid dates/actions and exceptions outside
+coverage. Validate the entire bounded calendar list before selecting the date; do not
+let a removal mask a conflicting calendar. Missing baseline/mode or exception-list
+completeness is insufficient; multiple baselines are invalid, never unioned. Unknown
+mode/version is unsupported. Absent calendar information cannot prove inactivity.
+
+### 9.4 Explicit civil-day anchor and zone conversion
+
+The invented profile **defines** clocks as a civil-day offset, not elapsed seconds
+from an absolute midnight/noon anchor. The day anchor is the Gregorian service-date
+label at civil 00:00:00, which is a coordinate origin, not an assumed existent instant.
+For `HH:MM:SS`, advance the civil date by floor(HH/24), then use HH mod 24 with MM/SS.
+Resolve that resulting local tuple separately. Do not add HH*3600 to a resolved local
+midnight, advance because a prior clock decreased, or wrap away the civil-day offset.
+This deliberately chooses one of DEC-078's possible source profiles; elapsed-anchor
+profiles are unsupported, not silently treated as equivalent.
+
+Clock syntax: exactly two ASCII digits per component, `00:00:00` through `71:59:59`;
+MM/SS 00–59, no fractions, signs, whitespace or leap seconds. `25:10` is explanatory
+shorthand only; input must be `25:10:00`. Malformed components are invalid; well-formed
+hours 72–99 are unsupported by this slice. More than two hour digits are invalid
+profile syntax. No truncation or overflow-prone conversion of unbounded strings.
+
+Zone input is either an explicit fixed offset in integral seconds within ±50,400,
+or at most eight contiguous, nonoverlapping, half-open UTC intervals `[start,end)`
+with integral-second offsets in that range. The fixture supplies UTC bounds as
+checked Int64 POSIX seconds (no leap-second model); each table has a revision.
+No OS/IANA timezone database, named-zone inference or device-default zone is used.
+A named-zone-only input or an alternative rule kind is unsupported. Missing zone
+rules/coverage is insufficient; reversed/overlapping intervals are invalid. Adjacent
+boundaries must meet exactly; a coverage hole is insufficient. A fixed offset is
+constant over the entire supported conversion range.
+
+Let L be the local tuple encoded as Gregorian seconds on a zero-offset coordinate
+axis. Require the transition table to cover **all** potential instants from
+L−50,400 through L+50,400 inclusive (the final half-open bound must exceed the latter).
+Otherwise return insufficient coverage before diagnosing a gap/fold. For every
+interval with offset o, candidate U = L−o is valid iff U lies in that interval and
+round-trips to exactly the requested local tuple. One candidate yields an instant;
+zero means nonexistent local time, more than one means ambiguous local time. Both
+return insufficient evidence with distinct fixed reasons, never choose first/last,
+shift a gap forward or use an estimate to disambiguate. An authoritative fold selector
+would require a separately reviewed future profile; this invented slice has none.
+
+Compute dates, day offsets, L and U using checked integer arithmetic; validate bounds
+before multiplication/addition/subtraction or conversion to Foundation Date. Permit
+instants only within `[1999-12-29T00:00:00Z, 2100-01-04T00:00:00Z)` to include offset
+and extended-hour spillover around the supported service years. Table endpoints must
+also lie within these bounds (the exclusive upper endpoint may equal the upper bound).
+All externally supplied numeric fields use checked Int64 values before narrowing;
+offsets and indices receive their specific range checks. Overflow/nonfinite
+or out-of-envelope conversion is invalid and emits no facts. The finite existing
+`TimetableInstant` constructor is the final representation check, not the converter.
+
+### 9.5 Qualification, outcomes, ordering and bounds
+
+Convert exact and estimated values by the same unique-instant rule, retaining their
+tags and evidence associations. Unknown quality is insufficient; contradictory quality
+claims are invalid. No interpolation, estimate promotion, counterpart copying or
+mandatory endpoint time invention. Explicit missing remains missing at any index.
+Only exact events constrain chronology: arrival then departure at each original index,
+nondecreasing across missing/estimated gaps. Equal instants pass. Estimates outside
+that envelope remain estimates. Reuse existing validation for the first descending
+exact pair; do not sort, crop or repair the occurrence. Producer success does not
+promise usable boarding/alighting endpoints or through/transfer evidence.
+
+Conceptual Data-only outcomes (not new Domain or routing errors):
+
+| Outcome | Meaning / examples | Projection onto DEC-078 |
+|---|---|---|
+| `success(facts)` | Active, complete correspondence and uniquely qualified events; explicit missing/unknown values permitted | `active(facts)` |
+| `inactive(reason)` | Baseline-off, outside-baseline or explicit removal within complete coverage | `inactive` |
+| `unsupported(reason)` | Recognized but out-of-profile mode, zone kind, year/hour, multiplicity or resource limit | `unavailable` |
+| `insufficientEvidence(reason)` | Missing view/calendar/correspondence/quality support; unknown activation; incomplete zone coverage; gap/fold | `unavailable` |
+| `invalid(reason)` | Contradictory revisions/mappings, malformed dates/clocks, duplicate rules, arithmetic fault or chronology conflict | `unavailable` |
+
+No caller may map unavailable to inactive or routing noResults. Return one primary
+fixed reason plus an existing bounded diagnostic category and optional canonical
+index/event location where valid; never raw tokens, clock text, keys or exception
+messages. Binding faults without established indices have no invented location.
+Project envelope/view/profile/revision/resource faults to `viewUnavailable`;
+calendar/date/zone-rule faults to `activationUnavailable`; snapshot/visit correspondence
+faults to `occurrenceBinding`; event quality/clock/inverse-conversion faults to
+`timeQualification`; exact-order faults to `chronologyConflict`. Shared applicability
+faults belong to view, event-specific applicability faults to qualification. A data
+reason code refines that category without changing the existing diagnostic shape.
+
+Ordered validation: (1) input size/safe shape and view/profile/revision/date envelope,
+including zone kind/revision, offset ranges and interval structure/contiguity;
+(2) complete calendar rules, requested coverage and activation; (3) active-only visit
+correspondence; (4) active-only candidate-window coverage and event qualification in
+index order, arrival before departure; (5) existing chronology validation and atomic
+construction. Unresolvable zone rules fail before inactive; a nonexistent/ambiguous
+event tuple is checked only when active. Collect findings within each safely inspectable
+bounded stage: any invalid finding makes the Data outcome invalid, otherwise unsupported
+precedes insufficient. This aggregate severity does **not** reorder the accepted primary
+diagnostic: retain DEC-078 category order (view, activation, binding, qualification,
+chronology), then unbound before indexed binding faults, lowest index/arrival first,
+then fixed reason code lexically. Thus missing qualification at index 0 and malformed
+clock at index 1 yield an invalid Data outcome with index 0 as the primary diagnostic;
+severity reports that a defect exists, not that the primary location caused that severity.
+Unsafe structures are not traversed to discover more faults. Stop before lower stages.
+Inactive skips stages 3–5;
+malformed inactive clocks do not change inactivity, but size/envelope limits still apply.
+Chronology uses the existing first-descending-pair rule, not lexical reason ordering.
+
+Limits are proposed fixture limits, not feed limits: one occurrence/date per call;
+at most 256 visits, 256 exceptions, 64 evidence references, eight zone intervals,
+64 bytes per ASCII token, 10 per date and eight per clock string. Each supplied Trip
+snapshot (binding and manifest) is limited to 256 stops, 256 line segments and 256
+service-type segments (each existing segment carries one line or service-type ID).
+Evidence entries have the single applicability shape in §9.2,
+and each visit has at most four reference slots (arrival, departure, boarding, alighting).
+All identifier text, including copied snapshot IDs, revisions and reference slots,
+counts toward the total UTF-8 text payload limit of 64 KiB; repeated text is counted
+each time. Snapshot IDs use their existing Domain spelling, with a 128-byte per-ID
+ceiling; the 64-byte ASCII rule applies to invented Data tokens only. Reject top-level
+and nested counts before traversing their elements, then check bounded text lengths
+and total size before semantic work, also on inactive dates. Finite typed record
+shapes contain no arbitrary nesting or extra blobs. Date and clock syntax length faults
+are invalid; other size/count overruns are unsupported(resourceLimit). One overflow
+check cannot be bypassed by narrowing a larger value. All loops are bounded; no date
+range expansion, retries, partial success stream, logs, exports or persistence.
+
+This is a synchronous pure operation on immutable invented values. Temporary facts
+stay local until all checks pass; any failure returns zero facts and discards temporary
+results. No cache, file access, wall-clock access or background task. Cancellation/
+async ownership and production batch-import semantics are outside this small slice.
+
+### 9.6 Invented implementation-ready cases
+
+Common fixture: two original visits [A@0,B@1], coherent V1/R1/profile-v1 mapping;
+service date 2026-04-13 (Monday), coverage April 1–30, weekly April 1–30 Monday–Friday,
+complete exceptions empty, fixed +09:00; exact dep@0 08:00:00, arr@1 08:30:00;
+other times explicitly missing, eligibility explicitly unknown. All evidence is invented.
+
+| Case / change from common fixture | Expected outcome |
+|---|---|
+| Ordinary Monday | success: dep 2026-04-12T23:00:00Z, arr 23:30:00Z; missing counterparts retained |
+| Saturday April 18, no exception | inactive(baselineOff) |
+| April 18 add; baseline ends April 17 | success on April 18; coverage still through April 30 |
+| April 13 remove; clock contains 08:75:00 | inactive(explicitRemoval); clock not validated |
+| April 13 duplicate removes, or add plus remove | invalid(duplicateException), before inactive shortcut |
+| Exception-only complete empty list | inactive(unlistedDate); same list without completeness -> insufficient(calendarCompleteness) |
+| Missing calendar; May 1 outside coverage | insufficient(activationUnavailable); insufficient(calendarCoverage), respectively |
+| dep 23:50:00, arr 24:10:00 | success: April 13 14:50Z then 15:10Z; no modulo-only wrap |
+| dep 25:10:00, arr 25:30:00 | success: April 13 16:10Z then 16:30Z (local April 14) |
+| Missing dep@0; estimated arr@1 07:00:00 | success, missing/estimated preserved; no fabricated exact endpoint |
+| dep@0 exact 08:30:00, arr@1 exact 08:00:00 | invalid(chronologyConflict); whole occurrence fails |
+| Repeated [A@0,B@1,A@2] with complete indexed input | preserve all three; station-only ambiguous A correspondence -> insufficient(occurrenceBinding) |
+| Same TripID but changed snapshot, or event mapping R2 against R1 | invalid(revisionConflict/occurrenceBinding); no latest lookup |
+| View evidence absent | insufficient(viewUnavailable), before calendar/event checks |
+| 2026-02-30; 25:10; 72:00:00 | invalid(serviceDate); invalid(clockSyntax); unsupported(hourRange) |
+| Unknown quality, or exact value with missing support | insufficient(timeQualification); never promote or drop it |
+| UTC transition at April 13 02:00Z: offset 0 before, +3600 after; local 02:30 | insufficient(nonexistentLocalTime); no instant matches |
+| Same transition with +3600 before, 0 after; local 02:30 | insufficient(ambiguousLocalTime); 01:30Z and 02:30Z both match |
+| Either table lacks the full ±14-hour candidate window | insufficient(zoneCoverage), not a claimed gap/fold |
+| Named-zone-only input; overlapping UTC intervals | unsupported(zoneKind); invalid(zoneIntervals), respectively |
+| Zone changes 0 to +3600 at April 14 00:00Z; local April 14 00:10 encoded 24:10:00 | insufficient(nonexistentLocalTime); elapsed seconds from April 13 midnight would incorrectly succeed |
+| Inactive date plus 257 visits | unsupported(resourceLimit) at envelope stage; no partial output |
+| Inactive date plus missing zone or overlapping zone intervals | insufficient(zoneUnavailable) or invalid(zoneIntervals) before activation; no inactive shortcut |
+| Active missing quality support at index 0 and malformed clock at index 1 | invalid outcome; primary qualification diagnostic at index 0, preserving accepted location order |
+| Active input with out-of-range integer UTC bound or checked arithmetic overflow | invalid(arithmeticRange); never trap or return nonfinite Date |
+
+Transition fixtures cover the full candidate window unless the row states otherwise;
+UTC interval endpoints/offsets are supplied literally, never looked up in a real zone.
+Implementation verification must also exercise exact interval endpoints, leap day,
+2099 year-end spillover, all numeric/count boundaries, missing visits, contradictory
+eligibility, same-stage reason precedence and inactive event-skipping. Existing value
+regressions remain authoritative and should be reused, not duplicated mechanically.
+
+### 9.7 Owner choices and smallest next slice
+
+Recommend approval of DEC-085 choices C1–C4 as one bounded synthetic package:
+
+| Choice | Recommended option and rationale | Alternative deferred |
+|---|---|---|
+| C1 Input ownership/correspondence | One typed, immutable invented packet and explicit evidence/revision/index associations; no IO or new Domain fields | File codecs, actual source adapters, multi-date batches and evidence authentication |
+| C2 Civil-day profile/zone rules | Strict Gregorian dates, civil-day rollover, explicit fixed/table offsets and rejection of gaps/folds; deterministic without device or tzdb dependence | Elapsed-anchor or IANA-based profiles, fold selection and gap adjustment |
+| C3 Calendar completeness/outcomes | Explicit weekly or exception-only completeness; typed Data refinements of unavailable with deterministic precedence | Sparse-calendar guessing, duplicate coalescing or routing failure reuse |
+| C4 Bounds/execution | Limits in §9.5 and one atomic synchronous DEBUG-only converter with invented tests | Production scale, async importer, persistence or consumer/app integration |
+
+After owner acceptance **and separate implementation authorization**, implement only a
+DEBUG-only Data converter, its immutable invented inputs/outcomes and targeted tests
+for §9.6, returning existing Domain facts. No changes to completed Domain values,
+searchers or app wiring are expected. Review the exact input/output and boundary tests
+independently before calling that slice complete. Real profiles/import remain separate;
+P3-T1 stays partially complete and P2-S9 retains all fourteen classification/order gaps.

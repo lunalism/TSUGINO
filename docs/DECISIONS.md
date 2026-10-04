@@ -8806,6 +8806,81 @@ decision is accepted, implementation authorized or real artifact accessed by thi
 
 ---
 
+# DEC-085 — Bounded Invented Timetable Conversion Profile and Input Contract
+
+**Status:** Accepted — C1–C4 approved; bounded synthetic implementation verified and independently approved\
+**Date:** 2026-10-04 Asia/Seoul\
+**Related:** DEC-074/075/078–082; P3-T1; P2-S9
+
+## Owner acceptance — 2026-10-04 Asia/Seoul
+
+The owner approves all four recommended choices C1–C4 in the independently reviewed
+producer §9 and authorizes the corresponding bounded synthetic implementation and
+verification. DEC-078 semantics remain unchanged. Historical proposal/next-boundary
+wording below records the design stage, not a continuing acceptance prerequisite.
+This accepts no real source profile/import, engine adoption, app wiring or S9 milestone.
+Implementation completion and independent review must be recorded separately.
+
+The bounded DEBUG-only Data inputs, civil-time helper and atomic converter are now
+implemented with invented tests; see ROADMAP's DEC-085 implementation record for
+final targeted/Release evidence and review disposition. Existing Domain types and
+DEC-078 semantics are unchanged. No real applicability or milestone completion follows.
+
+## Context and accepted boundary
+
+DEC-078 already accepts producer semantics and its pure timetable values are implemented.
+Calendar activation and source-time conversion are not. The ROADMAP dependency assessment
+permits invented conversion-profile design independently of unresolved real S9 semantics.
+This proposal fills that gap without redoing Domain values, consumer contexts or routing.
+DEC-085 was verified unused in tracked records before this entry was added.
+
+## Proposed decision
+
+Adopt only the synthetic contract in [producer proposal §9](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#9-proposed-bounded-invented-conversion-profile--dec-085),
+subject to separate owner approval of these new choices:
+
+1. **C1 — Explicit invented input correspondence.** One immutable in-memory packet,
+   coherent revision/evidence references and exact snapshot/original-index associations.
+   Stipulated evidence resolves within the fixture only; no files or authentication.
+2. **C2 — Civil-day conversion profile.** Strict Gregorian service dates and extended
+   clocks, civil-date rollover rather than elapsed seconds from local midnight, explicit
+   bounded fixed/transition-table offsets, unique inverse conversion only. No device
+   timezone or IANA lookup, gap adjustment or fold choice; no GTFS/ODPT/Toei claim.
+3. **C3 — Calendar completeness and Data outcomes.** Explicit complete weekly or
+   exception-only rules; unique override and inactive event-skipping reuse DEC-078.
+   New typed unsupported/insufficient/invalid outcomes refine its unavailable result,
+   with bounded fixed diagnostics and deterministic stage/failure precedence.
+4. **C4 — Finite atomic scope.** The concrete limits in §9.5; one synchronous DEBUG-only
+   invented converter returning existing Domain facts, all-or-nothing and no persistence.
+
+## Rationale and alternatives
+
+Civil-day offset and elapsed-anchor rules differ around offset transitions; neither is
+universal. An explicitly invented civil profile with finite UTC offset intervals makes
+ordinary, gap and fold cases reproducible without claiming actual source interpretation.
+Fixed-offset-only support would be smaller but would not exercise unique-conversion
+failure. Device/OS timezone defaults would make fixtures environment-dependent. Explicit
+completeness distinguishes inactivity from missing evidence; finer Data failure outcomes
+preserve the existing Domain and routing boundaries. Limits bound verification cost,
+not railway coverage. See §9.7 for per-choice alternatives and §9.6 for expected cases.
+
+## Consequences, review and next boundary
+
+This does not supersede DEC-078 or change accepted S9/Trip invariants. No new calendar,
+parser, input codec, Domain API or converter is implemented by this document. Owner
+acceptance and a separately authorized synthetic implementation are still required.
+That implementation should reuse existing constructors/chronology checks and add only
+bounded Data inputs, conversion and meaningful invented tests, followed by independent
+review. Production profiles, evidence access, real import, engine adoption, app wiring,
+registry/rights/delivery and milestone acceptance remain separate. P3-T1 is partial;
+P2-S9 remains incomplete with fourteen classification and fourteen ordering gaps.
+
+Revisit on a need for elapsed-anchor semantics, timezone database rules, authoritative
+fold disambiguation, multiplicity, larger bounds or real source applicability. Do not
+silently widen the invented profile to satisfy those needs.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

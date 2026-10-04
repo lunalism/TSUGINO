@@ -5000,6 +5000,114 @@ cannot close those gaps. Actual occurrence correspondence, independent crosswalk
 mapping/movement/endpoints, registration and S9 acceptance remain separate. No new acceptance
 requirement, semantic decision, private access, provider contact or further real run is granted.
 
+#### Proposed P3-T1 invented conversion/input slice — 2026-10-04 Asia/Seoul
+
+Documentation-only scope: [producer proposal §9](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#9-proposed-bounded-invented-conversion-profile--dec-085)
+and **Proposed DEC-085** specify one immutable invented occurrence packet, exact
+view/revision/snapshot/index correspondence, complete calendar/exception rules,
+civil-day extended-hour conversion through explicit finite offset rules, gap/fold
+rejection, typed bounded outcomes and atomic failure. Existing DEC-078 values,
+quality/eligibility semantics and chronology checks are reused, not redesigned.
+The example matrix includes ordinary/added/removed service, inactive malformed events,
+missing/estimated times, clock transitions, revisions, limits and contradictions.
+
+C1–C4 (input envelope, civil-day/zone profile, concrete calendar/outcome contract and
+bounds/DEBUG execution) require owner approval; no proposal is Accepted by this work.
+The next implementation, only after approval and separate authorization, is a pure
+DEBUG-only converter and invented boundary tests returning existing Domain facts.
+No production code, tests/builds, real inputs, provenance tracing, provider contact,
+engine adoption, app wiring or registry work occurs. No Toei/ODPT applicability is
+claimed. P3-T1 remains partially complete; P2-S9 and all fourteen classification and
+fourteen ordering gaps remain unresolved. The owner reports sending the interpretation
+inquiry on October 3; no reply has been supplied, and this design does not depend on one.
+
+Independent documentation review approved the revised proposal for owner consideration,
+with no material findings remaining. Corrections bound nested snapshots/reference scopes
+and text, require unique evidence references, validate zone rules before inactivity,
+and preserve DEC-078 primary-diagnostic order separately from Data outcome severity.
+Tracked contract/code/test inspection, link/scope/privacy review and `git diff --check`
+are documentation checks only; no test/build execution evidence is claimed. DEC-085
+remains Proposed and changes are left unstaged/uncommitted for owner review.
+
+#### DEC-085 accepted synthetic conversion implementation — 2026-10-04 Asia/Seoul
+
+The owner approved C1–C4 as independently reviewed and authorized this bounded
+implementation. DEC-078 remains unchanged. Earlier Proposed and no-implementation
+statements record their historical stage. Scope: three new DEBUG-only Data files,
+one invented test file and the three pending design/status documents; no Domain,
+project settings, routing, Application or provider changes.
+
+`SyntheticTimetableInput.swift` supplies immutable typed packets, revision/evidence
+and index associations, explicit calendar/zone/event inputs and bounded outcomes.
+`SyntheticTimetableCivilTime.swift` uses strict Gregorian integer arithmetic and
+civil-day rollover with explicit fixed/finite transition offsets; no device locale,
+Calendar/TimeZone database or wall clock. `SyntheticTimetableConverter.swift` enforces
+counts/text budgets before traversal, then coherent view/references and zone rules,
+complete calendar activation, active-only occurrence correspondence/qualification,
+and existing Domain chronology/atomic fact construction. Inactive skips event checks,
+but never bypasses envelope bounds or unresolvable zone rules. Failure severity and
+primary diagnostic ordering are separate, as accepted. It neither guesses clock
+gaps/folds nor creates facts for missing correspondence, and records no persistent output.
+
+Independent implementation review identified and the author corrected: omitted
+interior/first visits must be insufficient rather than reordered/invalid; out-of-range
+claimed indices must not acquire an invented diagnostic location; overlong-clock
+diagnostics belong to time qualification. Added regressions cover these and allowed/
+exceeded collection/text limits, including exactly 65,536 bytes versus one extra byte.
+Both snapshot copies are bounded. Domain invariants permit at most 255 line/service
+segments with 256 stops; tests cover that valid maximum and oversized manifest input.
+
+**Final targeted evidence, r4:** 42 functions / 60 executed cases passed, zero failures,
+skips or runtime warnings, iPhone 17 / iOS 26.5 Simulator (arm64). Includes all 26 new
+converter functions and the 16 existing timetable-value functions. Debug app and
+Live Activity extension dependencies built through the test action. This is not a
+full-suite claim. Earlier r1/r2 stopped at compilation (fixture missing an existing
+constructor argument, then a before-initialization closure capture); neither ran tests.
+Those fixture issues are fixed. r3 passed 41 functions / 59 cases before the last
+aggregate-boundary test was added; it is superseded by r4, never added to its counts.
+
+Saved local evidence:
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-dec085-dd -only-testing:TSUGINOTests/SyntheticTimetableConversionTests -only-testing:TSUGINOTests/TimetableValueTests -resultBundlePath /private/tmp/tsugino-dec085-r4.xcresult > /private/tmp/tsugino-dec085-r4.log 2>&1
+xcrun xcresulttool get test-results summary --path /private/tmp/tsugino-dec085-r4.xcresult
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=C9B563FC-6192-404C-8953-93152ED217E2' -derivedDataPath /private/tmp/tsugino-dec085-release-dd > /private/tmp/tsugino-dec085-release.log 2>&1
+```
+
+**Release:** app/extension build succeeded. A separate no-DEBUG compiler probe using
+all three new Data files failed as expected only with “cannot find type” for packet,
+converter and civil-time declarations (`/private/tmp/tsugino-dec085-release-probe.log`).
+Release executable symbol inspection found no `SyntheticTimetable` symbols. These
+checks complement the complete `#if DEBUG` guards; no Release API or consumer is added.
+Final incremental Debug log has the AppIntents metadata notice; clean Release reports
+75 warning lines in existing isolation, AppIcon and AppIntents categories (historically
+recorded elsewhere here). No new converter warning appears. No physical device used.
+Initial sandboxed Simulator listing and result-summary cache access required permitted
+escalation; neither was test evidence. Only explicit iPhone Simulator work followed.
+
+**Independent review: approved.** A separate non-author reviewer inspected the accepted
+contract, actual source/tests, corrections and completion documents, confirmed the saved
+r4 summary (42 functions / 60 cases, no failures/skips/runtime warnings), and inspected
+Release/probe evidence. No material findings remain. The reviewer reran no tests/builds;
+author self-review is not this approval. Only approval/status wording changed afterward.
+
+Final tested and independently verified source/test SHA-256 fingerprints:
+
+| File under repository root | SHA-256 |
+|---|---|
+| `TSUGINO/Data/Timetable/SyntheticTimetableInput.swift` | `8fa1b15ba519c843f2e88f320df2c57917927634bc9b8978118b6e3757457b1a` |
+| `TSUGINO/Data/Timetable/SyntheticTimetableCivilTime.swift` | `abc32b6e4e7e35076496f733a6f08dc0cfa82e8e4a1d13db45a7b02bbbd6a7e6` |
+| `TSUGINO/Data/Timetable/SyntheticTimetableConverter.swift` | `10033aac2478fb7a8046802793b315fc384be280b731178e15b229ad6b36ddf7` |
+| `TSUGINOTests/SyntheticTimetableConversionTests.swift` | `5596e4be3774a672f0d70b6069fc47ee076f2e76e5a583940e3aa16e05bae3da` |
+
+Documentation/privacy/scope checks and `git diff --check` pass. Work remains unstaged
+and uncommitted on `34bdea62dba1de0a61aaf7c2a5c19771cc1e07c7` for publication review.
+No private artifact, source feed, archive, provider contact, import, engine adoption,
+app wiring or S9 acceptance occurred. P3-T1 is still partial; source-specific profiles,
+evidence and validated real import remain separate. P2-S9 retains fourteen classification
+and fourteen ordering gaps. Next bounded step: final publication review of this slice,
+not a real pilot or automatic broadening of the invented profile.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
