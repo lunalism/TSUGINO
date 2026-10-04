@@ -2121,10 +2121,11 @@ results are recorded in ROADMAP; synthetic declaration/Release isolation is requ
 
 ### 15.8 Proposed follow-up: whole-domain certificate before standalone pruning
 
-**Standalone follow-up remains Proposed; baseline `023c1c206e1ed0cdabc0df41869455b9a1713ca6`.**
+**Historical follow-up proposal; baseline `023c1c206e1ed0cdabc0df41869455b9a1713ca6`.**
 §15.7 describes the published, approved two-pass experiment and remains unchanged. This
-standalone follow-up has no implementation/execution authority; the separately authorized
-certificate-only harness is recorded in §15.8.7. DEC-086 objective, all equal optima,
+standalone follow-up originally had no implementation/execution authority; the separately authorized
+certificate-only harness is recorded in §15.8.7. Subsequent bounded E1 acceptance and implementation
+are recorded in §15.8.8–9; production adoption remains unapproved. DEC-086 objective, all equal optima,
 identity order and admission outcomes remain accepted. No production algorithm is selected.
 
 Recommend one additional DEBUG adapter using the existing qualified graph and strict-bound
@@ -2554,3 +2555,197 @@ review status is recorded there after final review. Future standalone integratio
 requires a precise approved cutoff contract or proof/emulation of old charged traces,
 including slower branches, sorting, admission and checkpoint-dependent failures. This scalar
 certificate does not provide that proof. No production adoption or resource settings follow.
+
+
+#### 15.8.8 Limit authority and next experiment — scoped E1 acceptance
+
+**Subsequent owner approval:** E1 and its reviewed safeguards below are accepted for the
+separately named DEBUG standalone experiment only. It may complete when its own safeguards
+pass despite an unchanged exhaustive-oracle cutoff at an identical numeric allowance. Exact
+legacy charged/callback traces are not promised. Published searches remain unchanged;
+observed cancellation, truthful incomplete outcomes and no partial success remain mandatory.
+No production resource settings or adoption are approved. The owner separately authorized
+implementation, synthetic correctness tests and whole-pipeline measurements. The original
+authority assessment/options below retain their rationale; §15.8.9 records actual completion.
+
+Authority assessment at `c7fde9f9a60012e8d32b7b81f2be30cbcce51534`: exact legacy charged-trace
+parity is **not a general accepted requirement for every separately identified DEBUG solver**.
+DEC-080 accepts parameterized scope and truthful coverage/completion; DEC-081 accepts its
+synthetic execution/outcome contract; DEC-086 accepts optimality/ties and honest failures,
+expressly not numerical production limits or an algorithm. None defines a common work unit
+across implementations. The existing all-distinct and optimal adapters already charge different
+calls (§15.8.6). Exact parity is required if a change promises identical legacy-budget outcomes,
+or replaces a published entry while preserving its observable cutoff behavior. The §15.8.4/.6/.7
+parity-or-amendment recommendation was a boundary against silently changing that behavior,
+not a newly accepted universal execution-trace requirement. The published entries remain frozen.
+
+| Limit / behavior | Exact source and status | Purpose and implication for a separate experiment |
+| --- | --- | --- |
+| Charged `step` allowance | `SyntheticInternalRouteEngine.step` (lines 70–83): cancellation, checked increment, supplied limit, checkpoint, cancellation. `SyntheticInternalRouteSearcher` / `SyntheticOptimalRouteSearcher` supply their controls. §15.7 and `SyntheticPruningBounds.workLimit` fix the published comparison ceiling at 200,000 **per pass**; §15.8.6 lists charges. Approved bounded synthetic implementation safeguard; its current observable behavior is preserved. No accepted production number or universal unit | Limits that implementation's charged events, not CPU, bytes or mathematical route scope. Overflow/cutoff gives searchIncomplete; invalid configuration is separate. Matching numbers across solvers imply neither matching work nor matching outcomes |
+| Complete paths <=64 | `PreparedOptimalSession.open` checks all prepared paths before selection; §11/§15.7 and the selector's bounded implementation. Experimental DFS also checks before adding path 65. Approved synthetic materialization/selection safeguard, **not a DEC-086 product alternative cap** | §15.8 deliberately retains this as a whole-domain admission predicate for the follow-up, including slower paths. C<=64 must pass before pruning; do not reinterpret as 64 winners |
+| Popped prefixes <=4,096; frontier <=128 | Experimental branches only in `SyntheticInternalRouteEngine.discover`; §15.7. Not generic DEC-081 profile semantics or production policy | Proposed follow-up preserves P<=4,096 over original full exploration and runtime frontier guard; proof <=125 depends on existing LIFO traversal, R<=32 and M<=4. Dead ends count; destination does not terminate expansion |
+| Profile ride cap M versus implementation four-ride cap | DEC-080 accepted V2 parameterizes positive M; DEC-081 §3 enumerates within M and excludes reused recurring TripIDs. `PreparedOptimalSession.open` separately rejects a complete path longer than four; §15.7 input gate restricts M<=4 | M defines semantic scope for that invocation, without choosing a production value. Four is a bounded implementation ceiling. Preserve both here; do not claim broader oracle M>4 rejects every long dead-end prefix |
+| Descriptor and input bounds | `SyntheticOptimalRouteDescriptor.checkBounds`: 256 entries per snapshot array, 128 UTF-8 bytes per text; selector additionally limits candidates to64 and legs to7. `SyntheticPruningBounds.validate` and §15.7: 10 inventories/Trips, 16 stations, 8 lines, four snapshot entries, two dated slots, six interval/continuity records, four visits, 1,024 supplied connections; qualification caps rides at32 | Approved synthetic allocation safeguards, not source coverage or production budgets. Keep exact nested checks and order. The stronger experiment input domain proves descriptor ceilings for all paths, including pruned paths; selected-path checks remain |
+| Certificate 4,160 memo-plus-pending states / depth 4 | §15.8.2/.7 and `SyntheticDomainCertificate.swift`; combinatorial R/T/M proof, tested observations; failure-only probes cannot return a report | Technical harness safeguard, not a route-search limit accepted in DEC-086. Preserve bounded state and checked saturation; a new integration must explicitly map abort and never treat missing certificate as success |
+| Cancellation and failure precedence | DEC-081 accepted S1–S6, §4/G14; DEC-086 scoped acceptance; §11 handoff. Observed cancellation wins; preflight precedes coverage/exploration; resource exhaustion before an established failure yields searchIncomplete without lower-priority probing | Accepted externally observable **synthetic contract**, not an optional metric. Preserve stage/category precedence and no partial result; exact callback counts, wall-clock cancellation timing and identical failure reached at identical step allowance are different, implementation-dependent properties |
+| Production horizons, budgets and adoption | DEC-080 acceptance deferrals; DEC-086 R6 / scoped acceptance; ROADMAP Phase 3 | Unresolved. No production number, solver or deployment is selected by this experiment |
+
+Four distinct obligations remain: (1) whole-domain evidence, even on slower/disconnected
+branches; (2) semantic scope and the explicitly retained original C/P domain predicates;
+(3) finite resource safeguards and truthful aborts; (4) optional exact legacy trace equivalence.
+Passing (1)–(3) does not prove (4), and dropping (4) does not permit weakening (1)–(3).
+An unavailable required fact found during qualification remains dataUnavailable even with a
+usable direct ride. A resource abort before qualification establishes it stays searchIncomplete;
+no speculative lower-priority validation is required. Equal-optimum identity completeness,
+original dated occurrences/connections and canonical admission remain mandatory.
+
+**Options.**
+
+| Option | Cost and value | Recommendation |
+| --- | --- | --- |
+| Exact legacy trace emulation/proof | Must reproduce qualification/sorting encounter order, original DFS prefixes/successors, complete-path order/dedup, descriptor/kernel advances, admission and checkpoint-dependent failure behavior. C/P summaries cannot determine these. An exact shadow traversal may retain much of exhaustive work, plus certificate and pruned work. Useful for a promised drop-in regression contract, not a fair common cost metric | Do not implement without a concrete need for identical-budget compatibility |
+| Separate bounded experiment with declared safeguards | Qualify once, certify, prune, reconstruct/select and admit in one private invocation; oracle runs separately in tests. Measure all costs. Published wrappers/controls untouched. Identical numeric legacy budgets can yield different outcomes; explicitly approve that narrow experimental difference before execution | Smallest useful next full-pipeline experiment, subject to E1 below and implementation authorization |
+| Keep published two-pass comparison / certificate-only harness | Already approved, supplies separate correctness/observations without any new completion contract, but still pays exhaustive prerequisite or produces no routes | Valid fallback if E1 is not approved; repeating these measurements is not the missing standalone proof |
+
+**E1 — accepted bounded experimental behavior only (original proposal).** Allow a separately named DEBUG
+comparison entry to complete when its own specified safeguards and full completion proof pass,
+even if the unchanged oracle fails at the same numeric charged allowance. No published entry
+changes. A standalone safeguard abort returns searchIncomplete, observed cancellation returns
+CancellationError, and neither supplies an incumbent, partial winners or successful comparison.
+This also acknowledges that the first discovered failure may differ when one implementation
+exhausts before the other reaches a later validation; retain established stage/semantic precedence,
+not identical legacy trace position. No ignoring already established evidence failures is allowed.
+This is one scoped execution-contract choice, not approval of production limits or adoption.
+The original documentation assessment did not authorize execution; the scoped owner approval
+above now supplies that authorization.
+
+Recommended initial safeguard specification for E1 (all numbers reused, no new composite unit):
+
+- Retain the exact §15.7 input/graph gates and C<=64 / P<=4,096 over the whole original domain,
+  before discovery. Violations return searchIncomplete; never truncate or narrow scope.
+- Carry one existing engine counter through qualification, pruned discovery, normalization,
+  descriptor/selection and admission, with the existing experiment ceiling 200,000 and existing
+  call-site definitions (§15.8.6), including the pruned-mode bound check. Do not reset between
+  stages. Retain supported smaller abort-only test allowances. This ceiling is borrowed solely
+  as a bounded experimental safeguard, **not asserted equivalent to the oracle allowance**.
+- Certificate observations remain uncharged. Bound certificate work independently by the proven
+  4,160 memo-plus-pending states, depth 4, R<=32 successor scans/state and existing bounded roots;
+  keep arithmetic checks/cancellation polls. Violating this safeguard yields searchIncomplete
+  in the new entry, not a successful count or route result. This mapping is part of scoped accepted E1;
+  the published certificate harness keeps its existing harness-error behavior unchanged.
+- Retain actual runtime frontier<=128, path/descriptor bounds and canonical admission checks.
+  Keep metrics bounded scalars with checked increments; instrumentation/runner abort invalidates
+  the comparison and supplies no successful report. No stopwatch-based route cutoff is proposed.
+  Allocation/Swift runtime failures are not claimed to be fully recoverable by these guards.
+
+Implementation mechanics are recommendations, not further product votes: one opaque private
+session retains the exact qualified graph, certificate and original prepared-state association;
+reuse existing strict-bound DFS and admission rather than a second engine. Do not call the
+public certificate helper and then requalify; expose only the minimal internal certificate/kernel
+seam to qualify once. Prune only strictly worse admissible bounds and retain all distinct equal
+optima. All admitted winners return; mixed rejection is searchIncomplete; all rejected is
+noUsableAlternatives with selected-index omissions. A fully proven empty domain yields scoped
+noResults. Slower objective exclusions are not rejection omissions. Preserve published APIs.
+
+Tests independently invoke the unchanged exhaustive oracle with sufficient existing allowance
+for equivalence cases. Compare full ordered identity sets, objective values, scope, contexts,
+original snapshots/indices/connections, canonical payloads and omissions. Include layered slow
+branches, all ties, 64/65 paths, dead-end prefix failure, disconnected/slower unknowns and
+certificate/discovery/selection/admission aborts. Same-numeric-budget divergence cases are
+classified as resource outcomes under E1, not correctness disagreements or equivalence successes;
+no complete comparison claim when the reference itself is incomplete. No allowance is raised
+just to get a favorable result.
+
+Record qualification, certificate, discovery, reconstruction/selection, admission and whole
+standalone elapsed time, with bounds, instrumentation, cancellation and session allocation/
+release included as far as measurable. Report oracle and paired totals separately; fixture
+construction/build/launch outside timers. Distinguish inherited stage charges, certificate event
+vectors, path/key materialization observations, output size and simultaneous structural storage
+peaks. Do not sum them into a common cost. Use prior warmup/repetition method; no timing pass
+threshold, no fabricated process-memory bytes. If reconstruction cannot be isolated, report its
+containing stage and whole-call cost explicitly. Improvement requires observed whole-invocation
+cost, not fewer charged calls or certificate-only time. This experiment cannot establish Tokyo
+performance, approved resource settings, live wiring or production ownership/adoption.
+
+
+#### 15.8.9 E1 standalone DEBUG implementation and measurement boundary
+
+`SyntheticStandaloneRouteExperiment` implements the scoped E1 pipeline; it is not the live
+RouteSearching default. One private invocation creates one engine in pruned mode, validates
+the unchanged input gates, qualifies once, invokes the same private certificate kernel, checks
+both whole-domain predicates, continues existing discovery, then uses the original private
+prepared-session selection/claims/admission. No exhaustive entry or oracle is called. The
+qualification-only harness retains its previous error behavior. The shared original `open`
+now calls an extracted private selection body with identical charges/order; published exhaustive
+and two-pass wrappers still follow their original paths. Internal preparation seams are not
+public graph/certificate parameters on the experimental port; its caller cannot supply prepared
+state, winning handles or a completion assertion. Certificate memo is released before discovery;
+original graph bindings/keys remain with preparation. No evidence is reconstructed or relabeled.
+
+The engine counter is uninterrupted through qualification, discovery, normalization, descriptor/
+key selection, admission and finalization, with ceiling 200,000 and supported smaller abort-only
+allowances. Certificate observations are uncharged and independently bounded exactly as §15.8.7.
+Normal entry always uses 4,160 memo-plus-pending states/depth 4. C>64 or P>4,096 is rejected before
+pruning even on slower/dead branches. Input/ride/frontier/descriptor checks remain in place.
+Certificate guard errors map to searchIncomplete only in this new entry. Failure-only probes
+can lower/exceed the memo guard or cancel at expansion/successor, but return Never; no probe
+returns a successful report. No new raised limit or common unit was introduced.
+
+Deterministic E1 example: two direct Trips (slow180, fast150, departure100), M=1, explicitly
+complete two-station inventory. Qualification uses 26 inherited calls exactly once; the full
+standalone uses 47 inherited calls and succeeds at allowance 47. The independent exhaustive
+pass requires 51 and returns searchIncomplete at 47. Standalone fails at 46, showing stages do
+not reset the counter. Its certificate adds two summaries but no inherited calls. This is an
+intentional resource-outcome difference, not a correctness comparison success or proof of
+universal trace equivalence. No owner approval of production settings follows.
+
+Tests reuse existing invented layered/dates/dead-end fixtures and the full canonical comparison
+helper rather than duplicating it. They compare ordered identities, objectives via final exact
+arrivals/train changes, canonical leg kinds, bindings, snapshots, indices, contexts, directional
+walking and scope/policy references. They cover q=1/2/3 and four fast/slow/tie variants, 64
+identity-distinct equal winners, 65-path/dead-prefix rejection, empty scope, shared suffix
+multiplicity, different used-Trip histories across dates, repeated visits/through continuity,
+directional allowances, reversed input order, five missing/unknown/estimated qualification
+cases and partial/all selected rejection accounting. Cancellation/guard tests cover certificate
+traversal and inherited stages through finalization, plus oversized input and invalid allowances.
+The <=125 frontier proof and existing runtime 128 check remain; no reachable 129-frontier case
+is fabricated inside a domain whose proof precludes it. Existing certificate arithmetic/bound
+and affected admission/pruning suites were rerun. All claims concern invented inputs only.
+
+Final iPhone 17/iOS 26.5 Simulator run: **96 functions / 181 cases**, including standalone
+**10 / 27**. Debug dependencies and Release app/extension builds passed. Three no-DEBUG type
+probes and Release symbol inspection exclude the experiment/report/failure harness and new
+preparation seams/shared DEBUG code. An initial test-macro compile failure was corrected with
+local throwing-value bindings before execution; subsequent focused evidence is superseded,
+not added to these final counts. Independent final-review status is recorded in ROADMAP.
+
+Measurement method: Xcode 27.0, Debug -Onone, arm64 iPhone 17 Simulator/iOS 26.5, macOS 26.6.2.
+Thirteen fixtures, one warmup per implementation then five sequential standalone/oracle pairs
+per fixture; both inputs and configuration/view/request values frozen outside timing. No timing
+pass threshold. The standalone outer-call timer includes bounds, qualification, certificate
+setup/traversal/release, discovery, complete-path normalization, descriptor/key reconstruction,
+selection, claim reconstruction, admission, return and invocation-local cleanup. Oracle has its
+own full-call timer; paired time is reported separately. Comparison/assertions/printing and
+fixture construction/build/launch are outside timers. Returned result lifetime after the call
+is not measured. Stage timers separately cover qualification, certificate, discovery, selection
+(including descriptors/keys) and admission (including claims); complete-path normalization and
+remaining dispatch/cleanup fall in whole-call time, not an invented zero-cost stage. Medians
+need not sum. Suites ran together, so shared-host scheduling/thermal/allocator noise is possible;
+fixed standalone-first order is a limitation, not randomized statistical evidence.
+
+Event vectors retain roots/lookups/hits/expansions/destination tests/successor tests/eligible
+transitions/scalar additions/writes separately from inherited stage charges. Metrics retain
+qualified graph rides/edges, frontier/complete-path and ride-key storage, kernel advances and
+output count. Different dictionary encounter order can change existing qualification sorting
+charges even with equal source inputs. Certificate observations are not summed with charges.
+Memo/pending stack exists with graph during certification; it is released before path discovery.
+Separate peak values are not assumed simultaneous. Retained descriptors/outputs and allocator
+backing stores are not fully represented by these structural metrics. No reliable process-memory
+measurement was available, so no byte/RSS savings are reported.
+
+ROADMAP records measured whole/stage costs and structural observations. Only q2/q3 direct-winner,
+equal-arrival/fewer-change and slow-branch variants had lower standalone whole-call medians in
+this run. q1 variants, transfer-winning variants and ties64 did not. This supports keeping the
+experiment as a bounded comparison rather than adopting it: certification and all-tie output/
+selection costs remain. No Tokyo-scale latency/memory conclusion, production solver choice,
+production budget, live routing configuration, Application change or phase acceptance follows.

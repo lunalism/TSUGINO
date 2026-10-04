@@ -31,7 +31,7 @@ struct SyntheticPruningExperimentTests {
     }
     /// Compare original snapshots, addresses, indices, time tags, contexts, walking
     /// connections and scoped policy identity, not merely arrivals or abbreviated IDs.
-    private func parity(_ comparison: SyntheticPruningComparison) throws -> RouteSearchBatch {
+    func parity(_ comparison: SyntheticPruningComparison) throws -> RouteSearchBatch {
         guard case .internalSuccess(let oracle) = comparison.oracle.result,
               case .internalSuccess(let pruned) = comparison.pruned.result else { throw F.FixtureError.expectedBatch }
         #expect(oracle.scope.viewID == pruned.scope.viewID)

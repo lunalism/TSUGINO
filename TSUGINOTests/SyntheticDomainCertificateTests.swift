@@ -6,7 +6,7 @@ import Testing
 @Suite(.serialized)
 struct SyntheticDomainCertificateTests {
     private typealias F = InternalFixture
-    private struct Packet {
+    struct Packet {
         let items: [SyntheticInternalInventory]
         let connections: [SyntheticInternalConnection]
         var cap = 3
@@ -21,10 +21,10 @@ struct SyntheticDomainCertificateTests {
             try await SyntheticDomainCertificateHarness.observe(configuration: configuration,view: view,request: request)
         }
     }
-    private func packet(_ items: [SyntheticInternalInventory], overrides: [SyntheticInternalConnection] = [], cap: Int = 3) -> Packet {
+    func packet(_ items: [SyntheticInternalInventory], overrides: [SyntheticInternalConnection] = [], cap: Int = 3) -> Packet {
         .init(items: items,connections: F.connections(items,overrides: overrides),cap: cap)
     }
-    private func layered(_ q: Int, variant: Int = 0, dates: Int = 1, direct: Bool = true) -> Packet {
+    func layered(_ q: Int, variant: Int = 0, dates: Int = 1, direct: Bool = true) -> Packet {
         let stationPairs = [["A","X"],["X","Y"],["Y","D"]]
         let times: [[Double]] = [[60,300],[360,variant == 3 ? 1800 : 600], [variant == 3 ? 1860 : 660,variant == 3 ? 2100 : 1200]]
         var layers: [[SyntheticInternalInventory]] = []
@@ -90,7 +90,7 @@ struct SyntheticDomainCertificateTests {
             #expect(try F.batch(o.result).candidates.count == 64)
         }
     }
-    private func deadEnds(trips: Int = 10, cap: Int = 4) -> Packet {
+    func deadEnds(trips: Int = 10, cap: Int = 4) -> Packet {
         let items = (0..<trips).map { index -> SyntheticInternalInventory in
             let a = F.inventory("t\(index)",stops: ["A","B"],times: [100,100])
             let b = F.inventory("t\(index)",stops: ["A","B"],times: [100,100],label: "second-date")

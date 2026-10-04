@@ -5934,6 +5934,168 @@ timing scopes and precise complete-path-sorting wording. Documentation/scope/pri
 checks passed. Changes remain unstaged/uncommitted.
 
 
+### Legacy-cutoff authority assessment — historical documentation proposal
+
+At `c7fde9f9a60012e8d32b7b81f2be30cbcce51534`, Consumer §15.8.8 traces numeric safeguards
+to their implementations and distinguishes them from DEC-080/081/086 scope, evidence and
+truthful-completion obligations. Exact same-budget legacy trace parity is not a universal
+accepted requirement for every separately identified DEBUG solver. It is required when
+promising identical legacy outcomes or modifying the published entry under that promise.
+Earlier parity-or-amendment wording did not accept a new universal accounting policy.
+
+Recommend one separate full-pipeline experiment: qualification once → whole-domain certificate
+→ strict-bound discovery → reconstruction/selection → canonical admission. Preserve original
+C<=64/P<=4,096, input/descriptor/ride safeguards, all equal identities and failure accounting.
+Keep the published exhaustive/two-pass entries unchanged and invoke the oracle independently
+in correctness tests. No additional certificate-only test slice or legacy emulation is needed
+merely to decide this technical direction.
+
+**E1 was Proposed at this assessment:** permit complete outcomes under separately declared experimental
+safeguards despite an oracle cutoff at an identical numeric allowance; abort/cancellation never
+returns partial success. Reuse one uninterrupted 200,000-ceiling engine counter at existing
+call sites, separate proven certificate state/depth guards and all existing structural guards;
+no new summed work unit or production budget. Mapping a certificate safeguard abort to
+searchIncomplete applies only to the proposed new entry. Existing harness behavior stays intact.
+Preserve stage/semantic failure precedence, not identical failure discovery at equal counters.
+Scope/execution authorization is still required; no new behavior is approved by this assessment.
+
+Measure total standalone qualification/certification/discovery/reconstruction/admission cost,
+not counts as speed. Exact emulation would need order/sorting/admission/checkpoint trace proof
+or substantial shadow execution; scalar C/P cannot establish it. See §15.8.8 for precise source
+references, options, safeguard definitions and comparison tests. No code, tests, builds,
+benchmarks, external research or private access in this task. Separate non-author documentation
+review approved the authority assessment and Proposed E1 with no material findings; an exact
+source-line reference was corrected. Scope, privacy, reference and whitespace checks passed.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps.
+No ODPT reply supplied; live/default routing remains unconfigured.
+
+
+### E1 standalone experiment — scoped implementation and observed results
+
+The owner accepted E1 and its reviewed safeguards (§15.8.8), authorizing only this separately
+named DEBUG experiment. Same-numeric-allowance outcome/callback parity is not promised.
+Published exhaustive/two-pass behavior remains unchanged. One engine qualifies the whole
+invented domain once, certifies original C/P limits, prunes strictly worse bounds, reconstructs
+all equal optima and uses existing canonical admission. Certificate work stays separate from
+one uninterrupted inherited counter; no production budget or adoption is accepted.
+
+Final explicit iPhone 17/iOS 26.5 Simulator run: **96 functions / 181 cases passed**, including
+standalone **10 / 27**. Debug dependencies and Release app/extension builds passed. Three
+no-DEBUG declaration probes and Release symbol checks exclude new experimental types/seams.
+Earlier compile/focused executions are superseded, not summed. Canonical comparison and
+rejection accounting passed. E1's two-direct fixture succeeds standalone at 47 inherited calls,
+while the independent oracle cuts off at 47 (requires 51); standalone at 46 fails. Qualification
+runs once (26 calls). This divergence is recorded separately from correctness agreement.
+
+One warmup and five sequential measured pairs for each frozen fixture, Debug -Onone/Xcode 27.0.
+v0=fast direct; v1=fast transfer; v2=equal arrival/fewer changes; v3=slow transfer branch.
+q1/q2/q3 have2/9/28 full-domain paths. ties64 retains all 64 optima. Full-call medians/ranges
+below include each implementation's complete pipeline; standalone time excludes oracle execution.
+Comparison/assertions/formatting are outside timing. See §15.8.9 for stage boundaries and noise.
+
+| Fixture | Standalone ms median [min–max] | Oracle ms median [min–max] | Paired median ms | Output | Standalone median lower? |
+| --- | --- | --- | --- | --- | --- |
+| q1v0 | 0.409 [0.393–0.469] | 0.393 [0.362–0.533] | 0.804 | 1 | no |
+| q1v1 | 0.503 [0.475–0.677] | 0.469 [0.429–0.517] | 0.974 | 1 | no |
+| q1v2 | 0.452 [0.413–0.488] | 0.408 [0.378–0.903] | 0.861 | 1 | no |
+| q1v3 | 0.430 [0.372–0.542] | 0.390 [0.367–0.775] | 0.812 | 1 | no |
+| q2v0 | 0.903 [0.811–1.325] | 1.187 [1.012–1.964] | 2.150 | 1 | yes |
+| q2v1 | 2.920 [2.635–3.524] | 2.827 [2.756–3.680] | 6.027 | 8 | no |
+| q2v2 | 0.883 [0.802–0.906] | 1.348 [1.094–2.514] | 2.228 | 1 | yes |
+| q2v3 | 0.769 [0.750–0.883] | 1.060 [1.036–1.144] | 1.850 | 1 | yes |
+| q3v0 | 1.831 [1.552–2.566] | 3.575 [3.365–6.453] | 6.141 | 1 | yes |
+| q3v1 | 16.161 [13.306–18.274] | 16.098 [13.206–18.853] | 33.031 | 27 | no |
+| q3v2 | 1.635 [1.462–2.362] | 3.348 [3.177–3.518] | 5.101 | 1 | yes |
+| q3v3 | 1.340 [1.331–1.453] | 3.158 [3.125–3.206] | 4.514 | 1 | yes |
+| ties64 | 58.245 [55.716–63.162] | 56.810 [55.850–61.303] | 116.754 | 64 | no |
+
+Stage medians in milliseconds, qualification / certification / discovery / selection / admission.
+Oracle has no certificate stage (dash). Selection includes descriptor/key reconstruction;
+admission includes original claims. Whole-call totals also include bounds, complete-path
+normalization/sorting, scheduling and cleanup. Independently computed medians need not sum.
+
+| Fixture | Standalone stages Q / C / D / S / A | Oracle stages Q / C / D / S / A |
+| --- | --- | --- |
+| q1v0 | 0.171 / 0.035 / 0.024 / 0.012 / 0.088 | 0.179 / — / 0.026 / 0.046 / 0.079 |
+| q1v1 | 0.173 / 0.036 / 0.025 / 0.047 / 0.123 | 0.177 / — / 0.026 / 0.049 / 0.115 |
+| q1v2 | 0.166 / 0.035 / 0.026 / 0.015 / 0.124 | 0.184 / — / 0.026 / 0.047 / 0.079 |
+| q1v3 | 0.173 / 0.034 / 0.016 / 0.014 / 0.103 | 0.171 / — / 0.023 / 0.043 / 0.078 |
+| q2v0 | 0.428 / 0.100 / 0.077 / 0.017 / 0.111 | 0.448 / — / 0.096 / 0.259 / 0.079 |
+| q2v1 | 0.452 / 0.113 / 0.102 / 1.004 / 0.784 | 0.475 / — / 0.101 / 1.069 / 0.762 |
+| q2v2 | 0.454 / 0.113 / 0.087 / 0.015 / 0.075 | 0.528 / — / 0.115 / 0.269 / 0.086 |
+| q2v3 | 0.423 / 0.108 / 0.037 / 0.013 / 0.074 | 0.418 / — / 0.096 / 0.261 / 0.077 |
+| q3v0 | 0.867 / 0.279 / 0.236 / 0.017 / 0.080 | 0.901 / — / 0.343 / 0.838 / 0.099 |
+| q3v1 | 0.863 / 0.282 / 0.315 / 10.569 / 2.644 | 0.928 / — / 0.326 / 9.961 / 2.609 |
+| q3v2 | 0.807 / 0.280 / 0.235 / 0.016 / 0.075 | 0.818 / — / 0.309 / 0.762 / 0.084 |
+| q3v3 | 0.754 / 0.252 / 0.068 / 0.017 / 0.077 | 0.766 / — / 0.299 / 0.736 / 0.082 |
+| ties64 | 1.131 / 0.258 / 0.870 / 43.071 / 5.691 | 1.161 / — / 0.862 / 42.169 / 6.012 |
+
+Separate structural/discovery observations (S=standalone, O=oracle; counts are not CPU or bytes):
+
+| Fixture | Certificate states / hits / successor tests | Discovery prefixes S / O | Pruned prefixes S | Retained complete paths S / O | Frontier path peaks S / O | Complete-path key peaks S / O | Kernel advances S / O |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| q1v0 | 4 / 0 / 12 | 4 / 4 | 1 | 1 / 2 | 2 / 2 | 1 / 4 | 2 / 3 |
+| q1v1 | 4 / 0 / 12 | 4 / 4 | 0 | 2 / 2 | 2 / 2 | 4 / 4 | 3 / 3 |
+| q1v2 | 4 / 0 / 12 | 4 / 4 | 1 | 1 / 2 | 2 / 2 | 1 / 4 | 2 / 3 |
+| q1v3 | 4 / 0 / 12 | 3 / 4 | 1 | 1 / 2 | 2 / 2 | 1 / 4 | 2 / 3 |
+| q2v0 | 15 / 0 / 49 | 15 / 15 | 8 | 1 / 9 | 4 / 4 | 1 / 25 | 2 / 10 |
+| q2v1 | 15 / 0 / 49 | 15 / 15 | 0 | 9 / 9 | 4 / 4 | 25 / 25 | 45 / 45 |
+| q2v2 | 15 / 0 / 49 | 15 / 15 | 8 | 1 / 9 | 4 / 4 | 1 / 25 | 2 / 10 |
+| q2v3 | 15 / 0 / 49 | 7 / 15 | 4 | 1 / 9 | 3 / 4 | 1 / 25 | 2 / 10 |
+| q3v0 | 40 / 0 / 130 | 40 / 40 | 27 | 1 / 28 | 7 / 7 | 1 / 82 | 2 / 29 |
+| q3v1 | 40 / 0 / 130 | 40 / 40 | 0 | 28 / 28 | 7 / 7 | 82 / 82 | 406 / 406 |
+| q3v2 | 40 / 0 / 130 | 40 / 40 | 27 | 1 / 28 | 7 / 7 | 1 / 82 | 2 / 29 |
+| q3v3 | 40 / 0 / 130 | 13 / 40 | 9 | 1 / 28 | 5 / 7 | 1 / 82 | 2 / 29 |
+| ties64 | 28 / 24 / 144 | 84 / 84 | 0 | 64 / 64 | 10 / 10 | 192 / 192 | 2144 / 2144 |
+
+Inherited engine charges remain their original unit, separated by stage; ranges below
+show variation across five calls. They are not added to certificate observations.
+
+| Fixture | Standalone qualification / discovery / post charges | Oracle qualification / discovery / post charges |
+| --- | --- | --- |
+| q1v0 | 80 / 24 / 15 | 80 / 20 / 25 |
+| q1v1 | 80 / 24 / 37 | 80 / 20 / 37 |
+| q1v2 | 80 / 24 / 15 | 80 / 20 / 25 |
+| q1v3 | 80 / 18 / 15 | 80 / 20 / 25 |
+| q2v0 | 180–183 / 86 / 15 | 183 / 71 / 123 |
+| q2v1 | 178–183 / 86 / 303 | 180–183 / 71 / 303 |
+| q2v2 | 178–184 / 86 / 15 | 181–184 / 71 / 123 |
+| q2v3 | 180–181 / 42 / 15 | 180–181 / 71 / 123 |
+| q3v0 | 327 / 220 / 15 | 327–328 / 180 / 636 |
+| q3v1 | 321–327 / 220 / 1519 | 321–327 / 180 / 1519 |
+| q3v2 | 310 / 220 / 15 | 310 / 180 / 636 |
+| q3v3 | 310 / 76 / 15 | 310 / 180 / 636 |
+| ties64 | 403 / 420 / 5890 | 403 / 336 / 5890 |
+
+For q1/q2/q3/ties64 respectively, graph rides/edges are4/2,7/8,10/18,12/32; memo peaks
+are4,15,40,28 and pending-depth peaks3. Certificate root/lookup counts are2/4,3/15,4/40,4/52;
+state expansions equal destination tests/memo writes; eligible transitions2,12,36,48 imply
+child scalar additions4,24,72,96, while root additions4,6,8,8 remain separate. These match
+the certificate-only structural definitions; none is a new charged work unit. Memo storage
+is released before discovery, so do not add memo and frontier peaks as simultaneous memory.
+The failure fixtures retain the prior C=65 rejection and C=0/P=4,097 saturated rejection for
+86,780 original dead-end prefixes; they are correctness cases, not successful timing rows.
+
+Only slow-branch v3 reduces popped discovery prefixes. v0/v2 on larger grids gain primarily
+by avoiding complete-path normalization/selection work for objective exclusions. All q1 medians
+were higher, and transfer-winning/ties64 cases retain candidate/key/output costs and add
+certification. ties64 standalone 58.245 ms versus oracle 56.810 ms does not support a general
+speedup. Five shared-Simulator samples, fixed standalone-first order, differing dictionary
+sorting charges and runtime noise limit causal/statistical conclusions. No reliable process
+memory was measured and no production-scale extrapolation is made.
+
+Recommendation: retain this as a correctness/reference experiment; do not adopt it as the
+production solver from these results. All-tie key ordering/selection is the measured expensive
+stage worth investigating in a separately scoped synthetic follow-up, preserving every identity.
+Production ownership, algorithm choice and resource settings remain unresolved. No private
+inputs, provider contact, live routing configuration or Application/presentation changes occurred.
+Separate non-author review approved code, counting/pruning reasoning, safeguards, tests,
+instrumentation and final documentation with no material findings remaining. Review suggestions
+added reversed-input tie coverage and stronger scoped-empty comparisons. Final scope, privacy,
+reference and whitespace checks passed. P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification
+and 14 ordering gaps. No ODPT reply supplied. Leave changes unstaged/uncommitted.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

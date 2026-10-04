@@ -62,6 +62,12 @@ nonisolated enum SyntheticDomainCertificateHarness {
         let qualificationStart = ContinuousClock.now
         let graph = try await engine.qualifyForCertificate(request)
         let qualificationTime = qualificationStart.duration(to: .now)
+        return try certify(graph, qualification: engine.metrics, qualificationTime: qualificationTime,
+                           start: start, memoLimit: memoLimit, probe: probe)
+    }
+    fileprivate static func certify(_ graph: SyntheticInternalQualifiedGraph, qualification: SyntheticPruningMetrics,
+                                    qualificationTime: Duration, start: ContinuousClock.Instant, memoLimit: Int,
+                                    probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void) throws -> SyntheticDomainCertificateReport {
         let certificateStart = ContinuousClock.now
         var observations = SyntheticCertificateObservations()
         // This scope includes kernel setup and release in certificate elapsed time.
@@ -73,9 +79,27 @@ nonisolated enum SyntheticDomainCertificateHarness {
         }()
         let certificationTime = certificateStart.duration(to: .now)
         try Task.checkCancellation()
-        return .init(summary, observations: observations, graph: graph, qualification: engine.metrics,
+        return .init(summary, observations: observations, graph: graph, qualification: qualification,
                      qualificationTime: qualificationTime, certificationTime: certificationTime,
                      elapsed: start.duration(to: .now))
+    }
+}
+
+// One engine owns qualification and subsequent discovery; no certificate/graph is accepted
+// from the experiment's caller, and inherited work is never reset between these stages.
+extension SyntheticInternalRouteEngine {
+    mutating func prepareCertified(_ request: RouteSearchRequest, memoLimit: Int,
+                                   probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void) async throws -> (SyntheticInternalPrepared, SyntheticDomainCertificateReport) {
+        let start = ContinuousClock.now
+        let graph = try await qualifyForCertificate(request)
+        let elapsed = start.duration(to: .now)
+        recordCertificateQualification(elapsed)
+        let report = try SyntheticDomainCertificateHarness.certify(graph, qualification: metrics,
+            qualificationTime: elapsed, start: start, memoLimit: memoLimit, probe: probe)
+        guard report.withinCompletePathLimit && report.withinPrefixLimit else {
+            throw RouteSearchFailure.searchIncomplete
+        }
+        return (try await discoverCertifiedGraph(graph), report)
     }
 }
 

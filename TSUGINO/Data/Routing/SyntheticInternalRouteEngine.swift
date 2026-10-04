@@ -102,6 +102,15 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
         try await qualify(request)
     }
 
+    /// Internal continuation used only after this invocation's certificate passes.
+    mutating func discoverCertifiedGraph(_ graph: SyntheticInternalQualifiedGraph) async throws -> SyntheticInternalPrepared {
+        guard experiment == .pruned else { throw RouteSearchFailure.searchIncomplete }
+        return try await discover(graph)
+    }
+    mutating func recordCertificateQualification(_ elapsed: Duration) {
+        metrics.qualificationTime = elapsed
+    }
+
     private mutating func qualify(_ request: RouteSearchRequest) async throws -> SyntheticInternalQualifiedGraph {
         try Task.checkCancellation()
         guard let configuration, configuration.permitted, workLimit.map({ $0 >= 0 }) ?? true else {

@@ -48,6 +48,14 @@ private nonisolated struct PreparedOptimalSession {
 
     static func open(_ request: RouteSearchRequest, engine: inout SyntheticInternalRouteEngine) async throws -> Self {
         let prepared = try await engine.prepare(request)
+        return try await select(prepared, engine: &engine)
+    }
+    static func openCertified(_ request: RouteSearchRequest, engine: inout SyntheticInternalRouteEngine,
+                              memoLimit: Int, probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void) async throws -> (Self, SyntheticDomainCertificateReport) {
+        let (prepared, certificate) = try await engine.prepareCertified(request, memoLimit: memoLimit, probe: probe)
+        return (try await select(prepared, engine: &engine), certificate)
+    }
+    private static func select(_ prepared: SyntheticInternalPrepared, engine: inout SyntheticInternalRouteEngine) async throws -> Self {
         let selectionStart = engine.experiment == nil ? nil : ContinuousClock.now
         var advances = 0
         try await engine.step(.ordering)
@@ -195,4 +203,71 @@ nonisolated enum SyntheticPruningRejectionHarness {
         throw Failure.expectedRejection
     }
 }
+/// E1 experiment only. Does not call either exhaustive search entry or configure live routing.
+nonisolated struct SyntheticStandaloneRouteReport: Sendable {
+    let result: RouteSearchResult
+    let metrics: SyntheticPruningMetrics
+    let certificate: SyntheticDomainCertificateReport
+    let elapsed: Duration
+}
+nonisolated struct SyntheticStandaloneRouteExperiment: RouteSearching {
+    let configuration: SyntheticInternalConfiguration?
+    let view: SyntheticInternalView?
+    let workLimit: Int
+    let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
+    init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?,
+         workLimit: Int = SyntheticPruningBounds.workLimit,
+         checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void = { _ in }) {
+        self.configuration = configuration; self.view = view
+        self.workLimit = workLimit; self.checkpoint = checkpoint
+    }
+    @concurrent
+    func search(_ request: RouteSearchRequest) async throws -> RouteSearchResult {
+        try await observe(request).result
+    }
+    @concurrent
+    func observe(_ request: RouteSearchRequest) async throws -> SyntheticStandaloneRouteReport {
+        try await run(request, rejecting: [], memoLimit: 4160, probe: { _ in })
+    }
+    fileprivate func run(_ request: RouteSearchRequest, rejecting: Set<Int>, memoLimit: Int,
+                         probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void) async throws -> SyntheticStandaloneRouteReport {
+        let start = ContinuousClock.now
+        do {
+            try Task.checkCancellation()
+            guard (0...SyntheticPruningBounds.workLimit).contains(workLimit) else {
+                throw RouteSearchFailure.configurationUnavailable
+            }
+            try SyntheticPruningBounds.validate(configuration, view, request)
+            var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,
+                                                     checkpoint: checkpoint, experiment: .pruned)
+            let (session, certificate) = try await PreparedOptimalSession.openCertified(request, engine: &engine,
+                                                                                      memoLimit: memoLimit, probe: probe)
+            let admissionStart = ContinuousClock.now
+            let result = try await session.admit(engine: &engine, rejecting: rejecting)
+            engine.recordAdmission(admissionStart.duration(to: .now))
+            try Task.checkCancellation()
+            return .init(result: result, metrics: engine.metrics, certificate: certificate, elapsed: start.duration(to: .now))
+        } catch {
+            try Task.checkCancellation()
+            if error is CancellationError { throw CancellationError() }
+            if error is SyntheticCertificateHarnessError { throw RouteSearchFailure.searchIncomplete }
+            if let canonical = error as? RouteSearchFailure { throw canonical }
+            throw RouteSearchFailure.dataUnavailable
+        }
+    }
+}
+/// Failure-only seam: cannot return a successful report or alter the normal bounds.
+nonisolated enum SyntheticStandaloneFailureHarness {
+    enum Failure: Error { case expectedFailure }
+    @concurrent
+    static func exercise(_ experiment: SyntheticStandaloneRouteExperiment, request: RouteSearchRequest,
+                         rejecting: Set<Int> = [], memoLimit: Int = 4160,
+                         cancelAt: SyntheticCertificateProbePoint? = nil) async throws -> Never {
+        _ = try await experiment.run(request, rejecting: rejecting, memoLimit: memoLimit, probe: { point in
+            if point == cancelAt { withUnsafeCurrentTask { $0?.cancel() } }
+        })
+        throw Failure.expectedFailure
+    }
+}
+
 #endif
