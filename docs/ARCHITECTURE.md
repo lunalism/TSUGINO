@@ -1165,9 +1165,15 @@ view stamps fail the whole call as `dataUnavailable`.
 
 Synthetic review flags/qualified instants are assumptions, not authenticated real
 evidence. Real-provider DTO/time interpretation, mappings/joins/rights verification
-and integration remain open. Application supersession is not implemented. No
-networking, provider metadata, fare, caching, persistence, UI, timetable import or
-Journey binding is added. P2-S9, P3-T1 and all applicable retained gates remain.
+and integration remain open. DEC-087 adds a provider-neutral, main-actor Application
+`RouteSearchCoordinator` with injected RouteSearching/AppClock, per-invocation publication
+authority, replacement/cancellation/disposal and matching explicit retry. It preserves
+canonical results/failures and separates cancellation; new route results replace old route
+answers, not recent-station history. The abstraction is available in Release; a read-only
+worker-completion test barrier alone is DEBUG-only. AppEnvironment.live and feature wiring
+remain absent; no production provider is selected. No networking, provider metadata, fare,
+caching, recent-history implementation, persistence, UI, timetable import or Journey binding
+is added. P2-S9, P3-T1 and all applicable retained gates remain.
 See ROADMAP for exact synthetic case coverage and independent-review status.
 
 ---

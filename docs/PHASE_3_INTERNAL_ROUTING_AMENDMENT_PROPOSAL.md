@@ -1242,3 +1242,235 @@ Final test/build/isolation and independent-review evidence is recorded in ROADMA
 corresponding implementation entry. No production limits, ownership/algorithm mechanics,
 adoption, app wiring, deployment or real inventory evidence is supplied. P3-T1 and Phase 3
 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering gaps.
+
+## 12. Application route-search lifecycle — Proposed DEC-087
+
+**Current acceptance overlay, 2026-10-04 Asia/Seoul:** the owner accepts DEC-087 C1/C2
+and authorizes the bounded Application implementation/tests described here. Proposed labels
+below preserve the independently reviewed design history; they are not outstanding approval
+requests for C1/C2. Implementation/verification is separately recorded in ROADMAP. Clearing
+route results never deletes recent-station history. Existing local recent-station policy is
+unchanged; history storage/limits/deduplication/deletion UI are outside this slice.
+
+**Status: Proposed, 2026-10-04 Asia/Seoul.** Documentation only. DEC-087 C1–C2 below
+need owner approval; this section authorizes no implementation, UI or production routing.
+It reuses DEC-076 §A3/6/7 and ARCHITECTURE §§4/10/21–24. Application lifetime ownership,
+obsolete-response suppression, injected-clock resolution, canonical results and no implicit
+retry are already accepted. DEC-086's objective, all equal optima, exact identity ordering
+and incomplete/unavailable rules are unchanged. Application does not rank or admit routes.
+
+### 12.1 Existing boundaries and proposed minimal owner
+
+`RouteSearching.search(RouteSearchRequest)` is a Sendable async-throwing Domain port;
+Data implementations own validation, off-main heavy work, errors and cancellation checkpoints.
+`AppClock.now` returns a Date and supplies no timers or scheduler. `AppEnvironment` is the
+immutable App composition root, currently configuration/clock/logging only. Architecture's
+`Application/Routing/RouteSearchCoordinator.swift` is a planned location, not existing code;
+no Application coordinator implementation currently provides a pattern to copy.
+
+Recommend a provider-neutral, main-actor-isolated reference owner in that planned location,
+constructed with `any RouteSearching` and `any AppClock`. It owns one current attempt/state
+and its task handle. Main-actor operations are lightweight serialization/publication only;
+await the port without moving conversion, sorting or mapping into the owner. An async port
+alone is not an off-main-work guarantee; implementations retain their accepted Data duties.
+Use no SwiftUI, provider type switch, singleton or service locator. Initial fake-backed work
+should not edit `AppEnvironment.live()` or inject a DEBUG searcher into the shipping app.
+These are recommended mechanics, not a choice of production optimizer ownership under R6.
+
+### 12.2 Intent, admission and time capture
+
+Design notation (not declarations or persistent identifiers):
+
+- **Intent:** canonical origin/destination plus departure `.now` or `.at(Date)`.
+- **Attempt:** fresh opaque invocation identity, original intent and the exact resolved
+  `RouteSearchRequest`. State and completion retain this association.
+- **Submission outcome:** accepted attempt identity, invalid request, or disposed owner.
+  Invalid input is an Application admission outcome, not a Data search failure/noResults.
+
+Serialize submission on the owner. Reject a disposed owner and equal endpoints before any
+clock read. For `.at`, use the exact supplied finite instant; never read the clock, round,
+clamp past times to now, reinterpret a timezone or derive a service date. For `.now`, read
+injected `AppClock.now` **once, during submission before the first suspension**, after the
+endpoint/disposal preflight. Construct the existing failable `RouteSearchRequest`; a
+nonfinite instant rejects submission. No clock reads occur on worker start, completion,
+publication, cancellation or disposal. If validation fails, do not replace/cancel existing
+work, allocate an accepted attempt or change state. A failed now capture may have read the
+clock once but launches no work. Syntactic validation does not preflight current station
+support/mapping; those remain Data responsibilities.
+
+For valid submission, allocate a new identity even if endpoints/time equal the previous
+request. In one non-suspending owner operation: invalidate the old publication authority,
+request cancellation of its task, discard its owner-held result/failure, install the new
+attempt as `searching`, then schedule one worker with the resolved request. It invokes the
+port at most once, and zero times if cancellation is observed before invocation.
+No debounce, deduplication, coalescing, cache lookup or implicit fallback is introduced.
+
+### 12.3 Proposed C1: current-request-only observable state
+
+Recommend a small typed state with exactly one of the following payloads. Names are design
+notation; canonical payloads are retained unchanged, not mirrored into another routing model.
+
+| State | Payload / meaning |
+|---|---|
+| idle | No submitted request/result |
+| searching | Current attempt; no previous result or failure |
+| completed | Current attempt and entire `RouteSearchResult`, preserving scope, candidates and omissions |
+| failed | Current attempt and exact `RouteSearchFailure`; explicit retry available, not a promise retry will fix evidence/configuration |
+| cancelled | Attempt whose work was cancelled; no result/failure; resubmit explicitly if wanted |
+| contractViolation | Current attempt; unexpected noncanonical thrown error, no raw details/result; developer integration defect, not evidence of no service |
+| disposed | Terminal owner state, no retained attempt/result; submissions and retries rejected |
+
+C1 requires owner approval because retaining old results versus clearing them affects the
+consumer's visible truth. Recommend clearing on every accepted replacement. Explicit cancel
+of current `searching` work invalidates publication, requests cancellation, clears the task
+handle and moves to `cancelled`. Cancel takes an expected attempt identity: a stale cancel
+cannot cancel a replacement. Cancel outside `searching` is an explicit no-op; clearing a
+completed screen is not invented as a second action in this slice. New valid submission is
+allowed from any nondisposed state. Invalid submission leaves existing state unchanged.
+A current worker's `CancellationError` likewise produces `cancelled`, never an outage.
+
+`dispose` is idempotent: invalidate publication first, cancel/release current work, clear
+state to disposed and release owner-held payloads; never suspend waiting for the worker.
+Its lifetime owner must call it when the consumer scope ends. A deallocation cancellation
+safeguard is desirable but not a replacement for explicit disposal. Already copied results
+cannot be retracted: later consumers must obey current owner state/identity, not re-publish
+old snapshots as answers. Retaining historical results or background caches is excluded.
+
+### 12.4 Invocation identity, task ownership and publication guard
+
+Identity denotes one invocation within one owner, not request equality, Trip/candidate ID,
+wall-clock time, view ID or a persisted registry key. Recommend an opaque per-owner token
+with private construction, nonreuse for that owner's lifetime and equality by invocation.
+Representation is implementation plumbing; prefer a fresh private reference identity rather
+than a wrapping counter or a clock-derived key. Nonreuse must be structural. Two owners cannot accept each
+other's completion authority. Caller cancellation/retry commands must carry the relevant ID.
+
+Only a private owner completion method may publish. On the owner actor, atomically check:
+owner not disposed, state still searching, and completion token identical to its live token.
+Check **every** terminal path (success, canonical failure, cancellation, unexpected error).
+No await occurs between this guard and clearing publication authority/task handle and
+assigning terminal state. Obsolete completions are discarded without changing newer state,
+clearing its task, adding an omission or surfacing an old failure. Guarding only successful
+responses or comparing origin/destination/time is insufficient.
+
+The owner stores the current task handle, cancels it on replacement/cancel/dispose and
+releases it at terminal completion. Worker capture should retain only its immutable request,
+port and token across the await, and a weak route back to the owner; do not retain the owner
+through the whole suspended operation. Never create detached tasks or an unbounded history
+of handles/results. Check cancellation before invoking the port, then forward its terminal
+outcome through the guarded owner path. Data remains responsible for its owned child work.
+
+Cancellation is cooperative: issuing cancel does not prove an ignoring worker has stopped.
+After cancellation the old task may finish independently; the publication guard still
+prevents effects. Do not await that task before accepting a replacement, claim forced
+termination, or add a timeout/retry policy to solve a contract-violating worker. Normal Data
+implementations already observe cancellation; deliberately ignoring fakes test the caller
+boundary, not a redesign of Data mechanics. One current owner handle does not promise a
+bound on resource use of arbitrarily many noncooperative workers.
+
+### 12.5 Canonical outcome preservation
+
+| Port outcome for the current live attempt | Application transition |
+|---|---|
+| alternatives(batch) or internalSuccess(.alternatives(batch)) | completed with the original result, exact candidate order/contexts, scope and omissions; no re-ranking, truncation, reselection or Journey creation |
+| noResults or internalSuccess(.noResults) | completed with that original empty result; preserve scoped versus unscoped meaning; never imply a global no-service claim |
+| noUsableAlternatives(rejections) | failed with the exact rejection payload/indices/reasons; not empty success |
+| dataUnavailable | failed; no older/direct-result fallback, no guessed evidence repair |
+| searchIncomplete | failed; no partial winners or retained previous answer |
+| Other RouteSearchFailure | failed preserving its exact case/payload, including endpoint role/reason; future localized recovery can distinguish cases |
+| CancellationError | cancelled, never providerUnavailable/noResults |
+| Other thrown error (port-contract violation) | contractViolation, fixed Application-local category; never expose raw text or invent a canonical no-route/evidence claim |
+| Any obsolete/disposed completion | discard entirely regardless of outcome |
+
+This is presentation-neutral state, not localized copy, a recovery engine or new Domain
+failure vocabulary. No automatic retry occurs. An unexpected-error containment state needs
+no new provider semantics; its implementation and negative fake test stay Application-local.
+
+### 12.6 Proposed C2: explicit retry preserves intent, not invocation identity
+
+Recommend `retry(expectedFailedAttemptID)` only while `failed` for that exact identity.
+A stale retry or retry in another state is rejected/no-op without cancellation, clock read,
+new invocation or state change. Duplicate retry gestures cannot start two requests: the
+first accepted retry changes state to searching before the next command can be admitted.
+Retry unavailable/invalid configuration is allowed as an explicit attempt, without promising
+success or contacting anything automatically. `contractViolation` requires integration
+correction; cancellation/empty success may be followed by explicit submit, not hidden retry.
+
+Every accepted retry is a fresh attempt scheduling one worker, with at most one port call
+(zero if cancelled before invocation). Retain endpoints and original
+departure intent. For `.at(t)`, retry exactly t, no clock read. For `.now`, capture clock once
+again at retry admission and construct a fresh request, reflecting the user's current
+“leave now” intent. Failure of that construction leaves the failed attempt/state intact.
+This is the additional genuine owner choice: replaying the old captured now instant is
+possible, but should be a distinct explicit-time submission rather than silently changing
+what retry-now means. C2 is Proposed; no accepted contract currently settles this distinction.
+
+### 12.7 Concrete invented transition examples
+
+| Event sequence | Proposed observable effect |
+|---|---|
+| Submit slow A→B now at 08:00 (id α); submit A→C now at 08:01 (id β) | Two separate clock reads, one per accepted intent; clear A→B state, cancel α, publish searching β only |
+| β succeeds; α returns success later despite cancel | Keep β's complete canonical result; α cannot replace it or add omissions |
+| β succeeds; α throws dataUnavailable later | Keep β; obsolete failure cannot overwrite or clear it |
+| Submit α then cancel(α); α subsequently succeeds | Remain cancelled α; no candidate is published |
+| Cancel(α) after β replaced it | No effect on β or its work |
+| Current now attempt α fails at 08:02; retry(α) at 08:03 | Fresh β, clear old failure, one clock capture at 08:03; same endpoints, new exact depart-not-before |
+| Explicit 09:00 attempt α fails; retry(α) at 08:03 | Fresh β still uses 09:00; zero clock reads for both submissions |
+| Submit identical intent twice, then old completion arrives | Distinct IDs; only the second invocation may publish even if its resolved Date equals the first |
+| Dispose while α waits; α later returns/fails; then submit/retry | Disposed remains terminal; no publication and no new work |
+
+### 12.8 Owner choices and next bounded implementation
+
+| Choice | Recommendation | Why approval is needed |
+|---|---|---|
+| DEC-087 C1 — current-request-only state | Clear prior results/failures on accepted replacement; explicit current cancel yields cancelled; preserve current canonical failure and explicit retry; disposed is terminal | Defines observable prior-result/cancellation behavior not established by Data contracts; retaining historical content would need separately labeled state |
+| DEC-087 C2 — retry departure intent | Fresh identity always; explicit time unchanged; now captures once anew; retry only the matching current failed attempt | Chooses now-retry intent versus exact replay and prevents stale gestures from replacing newer requests |
+
+No new approval is needed to restate accepted Application ownership, obsolete-response
+suppression, injected-clock use, no implicit retry, canonical preservation or DEC-086
+preferences. Actor/token/constructor mechanics are proposed implementation details, not
+production algorithm/adoption decisions. Do not mark C1/C2 Accepted on the owner's behalf.
+
+After C1/C2 approval and separate implementation authority, the smallest slice is one
+Application/Routing owner and minimal Application-local intent/attempt/state values, plus
+focused fake-port/clock tests and a ROADMAP completion record. Use an ordinary provider-
+neutral Application component (no real dependency or DEBUG provider adoption); fake workers
+remain test-only. Retain Release support for the Application abstraction, while existing
+synthetic converters/searchers remain DEBUG-only. No Domain result redesign, engine changes,
+AppEnvironment.live wiring, feature/UI, cache, persistence or automatic Journey/train action.
+
+Tests must exercise controlled completion ordering rather than sleeps: A→B replaced by A→C,
+old success AND failure after newer success, cancellation-ignoring completion, cancellation
+before worker invocation (zero port calls), disposal,
+stale cancel/retry IDs, identical-request replacement, failed retry-now versus explicit-time
+clock counts, invalid-input nonreplacement, every canonical outcome including scoped empty
+and rejection accounting, unexpected error containment, and release of owner-owned references.
+Reuse existing Data cancellation/admission/conversion suites; do not rebuild their internals
+or call the synthetic solver just to test caller identity. Appropriate targeted tests and
+explicit iPhone Simulator app/extension builds belong to that future implementation, not
+this documentation task. No new production limits, provider, scheduler or cache policy.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply, real/private input access or source applicability is established here.
+
+
+### 12.9 Bounded implementation status — 2026-10-04 Asia/Seoul
+
+C1/C2 are owner-approved. `Application/Routing/RouteSearchCoordinator.swift` implements the
+provider-neutral main-actor owner and Application-local intent, invocation identity, attempt,
+submission and state values. A private immutable reference token supplies nonreused identity;
+no counter, persistent ID or wall clock forms identity. Validation precedes replacement.
+All completions enter the same private searching/identity guard. Canonical values are stored
+unchanged. Matching retry reuses original intent, not the prior invocation ID. Disposal is
+terminal; deinit additionally requests current cancellation. The worker retains the port and
+immutable attempt with a weak owner across suspension, so late ignored-cancellation work
+cannot retain the owner or publish obsolete results.
+
+The owner remains available in Release, without any concrete provider or DEBUG-routing
+reference. Only `completionCheckpointForTesting` is DEBUG: it returns a read-only async
+barrier for the captured worker, including superseded workers, enabling deterministic tests.
+It exposes no task cancellation handle, replacement evidence or state-mutation callback.
+No observer/UI integration, recent-history storage/limits/dedup/deletion, cache, live
+AppEnvironment wiring, source interpretation, Journey/train mutation or routing adoption.
+The lifetime consumer still must explicitly dispose; cooperative cancellation cannot force
+arbitrary nonconforming workers to terminate. Final tests/builds/review are recorded in
+ROADMAP; implementation completion does not complete P3-T1 or Phase 3.

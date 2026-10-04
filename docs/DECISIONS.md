@@ -8953,6 +8953,57 @@ No ODPT reply supplied. No private inputs, tests/builds or provider contact in t
 
 ---
 
+# DEC-087 — Application Route-Search Current-Request Lifecycle and Retry Intent
+
+**Status:** Accepted — C1/C2 and bounded Application implementation authorized\
+**Date:** 2026-10-04 Asia/Seoul\
+**Related:** DEC-076 §A3/6/7, DEC-079/080/086; ARCHITECTURE §§4/10/21–24; Phase 3
+
+## Scoped owner acceptance — 2026-10-04 Asia/Seoul
+
+The owner accepts C1 current-request-only route-result state and C2 matching-failed-attempt
+retry with fresh identity, explicit-time preservation and renewed one-time now capture.
+The independently reviewed §12 lifecycle and bounded provider-neutral Application owner/tests
+are authorized. Acceptance does not itself establish implementation completion; see ROADMAP
+for verified status. Historical recommendations below record the reviewed rationale.
+Clearing route answers does **not** delete recent-station history. Existing device-local
+recent-station policy remains unchanged; storage, limits, deduplication and deletion UI are
+outside this slice and neither implemented nor newly accepted by this decision.
+No live AppEnvironment wiring, UI, cache, Journey/train selection or production routing adoption.
+
+[Consumer proposal §12](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#12-application-route-search-lifecycle--proposed-dec-087)
+specifies the missing provider-neutral Application request owner, identity/publication guard,
+canonical outcome preservation, dependency injection and fake-backed verification slice.
+Application task lifetime, obsolete-response suppression, injected Clock resolution and
+no implicit retry are accepted constraints, not newly proposed routing policies.
+
+- **C1, recommended:** current-request-only observable state. Accepted replacement clears
+  old results/failures; current explicit cancellation prevents later publication and yields
+  cancelled; failure retains the current request and exact canonical failure for explicit
+  retry. Disposed is terminal. Rejected submissions leave prior state unchanged. Keeping
+  historical results visible would require distinct labeling/state; no stale fallback.
+- **C2, recommended:** retry only the identified current failed attempt, with a fresh
+  invocation identity. Preserve explicit departure time exactly; recapture injected now
+  once for a now-intent retry. An exact replay of an earlier captured now is instead an
+  explicit-time submission. Stale/duplicate retry gestures cannot replace newer work.
+
+Rationale: cancellation alone cannot prevent a late completion from overwriting a newer
+answer. Request equality is insufficient for identical repeated submissions. Retaining
+original intent distinguishes leave-now retry from explicit-time replay without moving
+service-date/timezone interpretation into Application. Section 12's typed state includes
+canonical empty versus failure distinctions and fixed unexpected-error containment, not
+another Domain result or provider exception vocabulary.
+
+Consequences: bounded current state, explicit disposal, no response cache/history, no
+implicit retries, canonical candidates untouched. Concrete actor/token/constructor mechanics
+are implementation choices after acceptance. DEC-086's fastest/equal-optimum rules and
+Data cancellation stay unchanged. Production optimizer ownership, limits and adoption remain
+separate; this proposal does not select a provider, wire AppEnvironment or create a Journey.
+Revisit if a future consumer requests prior-result retention, background request ownership,
+automatic refresh/retry or persisted search state; none is silently included here.
+
+---
+
 ## 3. Decision Maintenance Rules
 
 ### 3.1 Do Not Delete Important Old Decisions

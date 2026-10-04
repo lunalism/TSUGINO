@@ -5391,6 +5391,164 @@ No private access, real import, provider contact,
 production adoption or app wiring. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
 classification and fourteen ordering gaps. Leave both files unstaged/uncommitted for review.
 
+#### Phase 3 current progress map — 2026-10-04 Asia/Seoul
+
+Audit baseline: published `fa3ee9d1865eb5854786c4b4c0946107943c6461` on
+`phase/03-route-search`; initial working tree/index clean, cached upstream identical.
+This is a current-state consolidation, not a new work breakdown or acceptance decision.
+The earlier numbered planning sequence is historical **Proposed order**, not task IDs.
+Rows below use the existing Phase 3 Included/Implementation Tasks/criteria titles and
+accepted decision references; P2-S9 is a carried-over dependency. Earlier “next task” and
+“unimplemented” entries describe their recorded dates; use this map with the subsequent
+accepted overlays and published completion records, not those historical proposals alone.
+
+Current position: pure route/timetable contracts, bounded DEBUG conversion, all-distinct
+search, optimal selection/admission and their end-to-end invented composition are verified.
+They establish neither production solver adoption nor real timetable/source readiness,
+Application consumption or Phase 3 acceptance. DEC-086's accepted arrival/change objective,
+all distinct equal optima, through-service treatment and truthful incomplete/unavailable
+outcomes remain settled; its historical Proposed preference wording is not current truth.
+No ODPT interpretation reply has been supplied. The owner reported sending that inquiry
+on October 3; it is distinct from the retained publication/translation/bundling rights gates.
+
+| Existing task / milestone reference | Accepted scope | Implemented / verified evidence | Remaining work | Dependencies | Can proceed without ODPT reply/private access? |
+|---|---|---|---|---|---|
+| **P2-S9** (carried over, DEC-075/082) | Untimed canonical passenger-stop Trip structures and reviewed correspondence | Bounded extraction/review/registration tooling; owner-reported pilot 14 occurrences, zero transport-order inversions | All 14 classification and 14 ordering gaps; applicable interpretation, occurrence evidence, review/registration and S9 acceptance | Source/revision interpretation, explicit real-access scope, S4 identity/provenance; zero optional recorded gaps are not satisfied requirements | No real closure from current evidence. Independent design remains possible; do not repeat provenance tracing or private reads |
+| **P3-T1 — Timetable Contract and Static Schedule Import** (DEC-074/078/085) | Dated facts separate from recurring Trip; qualified activation/time/eligibility, immutable view/snapshot/index binding | Domain facts/context/chronology; DEBUG invented calendar/civil-time converter; converter-to-search composition published at `f85a320` and optimal composition at `fa3ee9d` | Source-specific profiles/applicability, complete execution/calendar/connection inputs, real normalization/import, version/update/consumer qualification and T1 acceptance | S9 before real Trip use; S4 and accepted local baseline, identified authorized inputs, applicable rights and revision evidence | Synthetic/contract work yes; real import/acceptance no. DEC-085 is not a Toei/ODPT profile |
+| **integrate selected provider**; DEC-077, DEC-080 P5, DEC-086 R6 | Replaceable routing boundary; ODPT-first evaluation priority; accepted fastest objective/completion rules | DEBUG external adapter and finite internal engine; optimal wrapper/handoff published `d92c854`, not a production solver | Select/adopt production provider or internal strategy; algorithm/pruning proof, optimizer ownership/deployment, versioned objective-policy resolution (accepted objective unchanged), production horizon/ride/resource limits, measured suitability | Complete inventory, source/transfer/through evidence, licensing/operations and performance measurements; DEC-004 stays Provisional, R6 unresolved, commercial evaluation/contact paused | Ownership/algorithm/resource-policy design and invented performance methodology yes; actual budgets/adoption require evidence and explicit decisions |
+| **map provider stations/lines to canonical IDs** | Reviewed canonical identities, exact mappings, no name/coordinate substitution | Accepted Phase 2 local provisional station/line baseline; DEBUG route mapping/coherent-view rejection | Qualify actual route/source joins and runtime mapping view; real Trip mapping remains S9; shipping identity/delivery | DEC-068 registry-of-record/adoption, P2-S8 delivery/composition, relevant rights gates; local acceptance is not production promotion | Synthetic interface design yes; actual joins/delivery need authorized evidence |
+| **normalize route candidates**; Included `RouteCandidate` | Canonical proposals, no automatic train selection/Journey creation; evidence and omission accounting | Domain route values; DEBUG external admission and internal preparation/admission; context/identity/chronology tests | Real source qualification and selected production integration; no need to rebuild constructors/admission | Provider/source decision, mappings, real timetable where consumed | Existing bounded implementation complete; source-independent consumers can proceed |
+| **route alternatives** (Included; DEC-086) | Earliest arrival, then fewer changes; all distinct equal optima; identity order only reproducibility | Shared DEBUG selector, private prepared session, winner-only admission; mixed rejection incomplete, total rejection accounted; `fa3ee9d` uses unchanged converter facts | Production optimum/tie completeness proof and bounded execution, not another synthetic comparison helper | Production strategy, complete inventory and justified limits; no first-K or fallback on unknown evidence | Design yes; no production completeness claim from synthetic arrays |
+| **represent transfers** | Explicit directional connection evidence and qualified allowance; canonical stated walking links | Canonical structures; DEBUG same-station/walking validation and transfer/multi-transfer tests | Applicable real transfer relations, directional allowances and policy resolution | Source/profile/rights evidence; station equality alone is insufficient | Invented design yes; real feasibility closure no |
+| **preserve through-service continuity** | One evidenced continuous train is not a change across line/operator boundaries | Indexed Trip segments and canonical admission; synthetic through/fewer-change tests | Source-backed continuous-train joins and coverage for supported real routes | S9/Trip correspondence and applicable continuity evidence | No new mechanism needed for tested synthetic case; real qualification remains gated |
+| **expose scheduled train context** | Provider assertions and dated timetable-derived context remain distinct, not realtime | `ProviderScheduledContext`, `TimetableRideContext`, conversion-to-canonical exact instants/date/index proof, including midnight | Real qualified schedule production/consumption and source validity/update handling | P3-T1/source contract and applicable mappings/evidence | Consumer design yes; real scheduled readiness no |
+| **handle provider errors**; **basic route-search diagnostics** (Included) | Typed recoverable failures, truthful empty/unavailable/incomplete, cancellation distinct from outage | `RouteSearchFailure`, omission vocabulary, DEBUG raw-error containment and cancellation/concurrency tests | Application recovery/publication workflow, localized presentation, actual provider failure qualification | Caller lifecycle contract; provider-specific evidence for real errors | Yes for Application contract/consumer work; do not reimplement tested Data cancellation/errors |
+| **RouteSearching** (Included; DEC-076 §A, ARCHITECTURE §10) | Domain async Sendable port; Application owns task lifetime/superseded-response suppression; injected Clock resolves now once | Port and DEBUG implementations exist; Data calls retain independent coherent views | Provider-neutral Application request owner, injected port/Clock, current-request publication guard, disposal/cancel/recovery contract | Application observable-state design; production implementation selection only for later live composition | **Yes**, with fake port and clock. R6 optimizer ownership is not a blocker to accepted Application lifetime ownership |
+| **feature code receives canonical RouteCandidate** (Acceptance Criteria) | App/feature consumption through provider-neutral boundary, DTO isolation | Canonical outputs verified in tests; `AppEnvironment` currently contains only configuration/clock/logging; no route coordinator or route-search feature binding | Actual composition/injection and route workflow, supported state/error consumption; candidate-to-Journey behavior stays in its later owner | Application contract, subsequently approved live implementation/data; no silent DEBUG-to-live promotion | Consumer design/fake-backed work yes; live app integration/acceptance requires later authority/evidence |
+| **cache safe route-search responses where permitted** | Only permitted, coherent safe response caching | No route-response cache implemented; Phase 2 SQLite/repository caches are different deliverables | Rights-specific eligibility, key/revision/scope identity, freshness/invalidation/deletion and stale-response policy before implementation | Selected source/provider terms and runtime update model; no invented TTL or persistence default | Policy options/design yes; real caching cannot be approved from generic/local-storage support |
+| **Japanese / English / Korean route content** (Included) | Canonical names and centralized language resolution; provider DTO/text cannot leak | Canonical localized railway name values and reviewed Phase 2 names; identity/leakage fixtures | Route-specific labels/failure/recovery content, actual route/headsign coverage and rendering validation | Source/name rights and Q4 for new Metro-derived translations; broader language/accessibility audit remains Phase 12 | Project-owned generic wording/consumer design yes; gated source translations and coverage no |
+| **Tests / Acceptance Criteria / Exit Criteria / Decision Gate** (Phase 3) | Direct/one-/multi-transfer/local-express/through/malformed/unknown-mapping/outage; canonical-only feature results, continuity and recoverability; usable supported Tokyo plans; quality/pricing/licensing/Trip identity/mapping stability | Synthetic contract, admission, failure, conversion and optimal-handoff suites; latest new composition 4 functions/6 cases plus separate unchanged regressions 51/78 | Real supported-plan and feature-consumer evidence, production suitability, scope/architecture/docs audit and applicable delivery gates; no whole-phase acceptance | All relevant rows above; unchanged 15-line launch boundary, S9/T1, identity/rights/delivery; Track A/P2-S10 only for expansion claims | Audit/design and independent synthetic work yes; Phase 3 exit no. No additional physical-device task is specified by Phase 3 itself |
+
+**Smallest useful next slice (recommendation, not implementation authority):** a bounded
+**Application route-search lifecycle/consumer contract design**, under the existing
+`RouteSearching`/recoverable-failure work, using a fake port and injected `AppClock` in its
+examples. Produce a concrete request-owner state/transition and injection specification:
+submit/replacement, one-time “now” capture, cancel/dispose, current-generation publication,
+canonical result/failure preservation and explicit user retry. Include delayed old success
+and delayed old failure after replacement, repeated identical requests and cancellation
+that an underlying worker observes late. Do not add a solver, change candidate ordering,
+cache responses, construct Journey state, wire AppEnvironment or implement UI in that slice.
+
+Why it is missing: `RouteSearching.swift` and DEC-076 §A6–7 explicitly assign this responsibility
+to Application; ARCHITECTURE §10 says supersession is unimplemented. `RouteSearchingTests`
+verify separate Data calls and cancellation, explicitly “No UI supersession.” The new optimal
+composition tests likewise invoke a searcher directly. They cannot prove caller publication
+ownership. `AppEnvironment.swift` has no RouteSearching dependency. This is a real consumer
+gap, not a reason for another converter/search integration test or cancellation rewrite.
+
+**Settled versus new choice:** Application ownership, cancellation propagation, suppression
+of obsolete results, no implicit retry and no automatic train/Journey selection are already
+accepted. The observable treatment of a previous successful result during replacement,
+explicit cancellation or failure is not specified. Recommend a minimal current-request-only
+state: invalidate old published results on replacement and clear on explicit cancel, with
+manual retry; any retained historical result must remain explicitly separate, never presented
+as the replacement request's answer. This is a Proposed consumer-state choice for owner review,
+not a newly accepted UI policy. Request-generation mechanics and constructor injection are
+routine implementation choices after that contract is clear. Production Data optimizer R6,
+numerical budgets, deployment/adoption and source evidence stay separate. After approval and
+separate authorization, the resulting smallest code slice would implement that Application
+owner with deterministic fake-port tests, without live AppEnvironment/UI wiring.
+
+Audit checks: tracked docs/code and recorded completion evidence only; no tests/builds,
+external research, private access or provider contact. Documentation scope/privacy/whitespace
+checks pass. Separate non-author review found no material findings; it verified task references,
+accepted overlays, code-grounded lifecycle gaps and the Proposed consumer-state boundary.
+P3-T1 and Phase 3 remain
+incomplete; P2-S9 retains fourteen classification and fourteen ordering gaps.
+
+#### Application route-search lifecycle proposal — 2026-10-04 Asia/Seoul
+
+Documentation-only follow-up to the preserved, independently reviewed progress map above.
+[Consumer proposal §12](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#12-application-route-search-lifecycle--proposed-dec-087)
+and Proposed DEC-087 specify intent-to-request Clock capture, opaque per-invocation identity,
+serialized replacement/cancellation/disposal, a guard for every terminal completion,
+unchanged canonical outcomes and fake-backed dependency injection. Existing Application
+ownership and Data cancellation contracts are reused, not redesigned. There is no existing
+Application implementation to adopt; AppEnvironment still has no RouteSearching dependency.
+
+Owner choices remain **Proposed**: C1 current-request-only results/failures, cancellation
+state and terminal disposal; C2 explicit retry of the matching failed attempt, fresh identity,
+explicit-time preservation versus a new one-time Clock capture for now. Examples include
+slow A→B then A→C, old success/failure after replacement, completion after cancel/dispose,
+identical requests, stale actions and retry. No production route preference is reopened.
+Next after approval and implementation authority: the minimal Application owner/state and
+controlled fake-port/Clock tests, without live app wiring, caching or another solver test.
+
+Documentation scope/reference/privacy/whitespace checks pass. Separate non-author review
+approved with no material findings remaining. The review corrected one wording conflict:
+accepted attempts schedule one worker with at most one port call (zero if cancellation is
+observed before invocation); the future test scope includes that case. C1/C2 stay Proposed.
+No code, tests/builds, private access, provider contact, production adoption, UI or app wiring.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply has been supplied. Leave all documents unstaged/uncommitted for review.
+
+#### DEC-087 Application request-owner implementation — 2026-10-04 Asia/Seoul
+
+Owner accepted C1 current-request-only route results and C2 matching-failure retry, with
+fresh invocation identity, unchanged explicit departure and renewed one-time now capture.
+This overlay supersedes the historical Proposed/next-implementation wording above; the
+previous independently reviewed progress consolidation and Consumer §12 design are preserved.
+Clearing route results **does not delete recent-station history**. Existing device-local
+recent-station policy is unchanged; history storage, limits, deduplication and deletion UI
+are neither implemented nor newly accepted by this slice.
+
+`Application/Routing/RouteSearchCoordinator.swift` provides the main-actor request owner,
+immutable intent/attempt identity and typed lifecycle states. It validates before mutation,
+uses injected RouteSearching/AppClock, cancels obsolete work and guards every terminal
+completion by live invocation identity and searching state. Invalid submissions preserve
+existing state; cancellation is separate; disposal is terminal. Retry requires the current
+failed identity and schedules a new worker with at most one port call. Pre-invocation
+cancellation can produce zero calls. Canonical results/scopes/contexts/omissions and failure
+payloads remain unchanged; no ranking/admission is duplicated. Worker capture is weak with
+respect to the owner. State is provider-neutral and Release-capable; the read-only captured
+worker completion barrier is DEBUG-only and has no mutation/cancel handle.
+
+Controlled fake-port/Clock tests cover obsolete success/failure/cancellation/raw error,
+replacement and identical requests, late completion after cancel/dispose, stale/foreign IDs,
+matching retry timing, invalid-input nonreplacement, every canonical failure, scoped and
+unscoped empty/alternatives with contexts and omissions, unexpected-error containment,
+zero-call pre-invocation cancellation and owner release during suspended work. No sleeps,
+actual provider, synthetic routing engine invocation or duplicated Data cancellation tests.
+
+Initial compilation found two test-only Swift syntax/type-inference errors (await inside a
+boolean autoclosure and a mixed-error ternary); corrected before test execution.
+
+- Final focused run `/private/tmp/tsugino-lifecycle-r2.xcresult`: **35 functions / 56 cases
+  passed**, zero failures, explicit iPhone 17 / iOS 26.5 Simulator. Includes owner **9/28**,
+  RouteSearching **10/10**, AppClock **3/3**, InternalSearchSuccess **13/15**. These are one
+  final run; no overlapping/superseded execution counts are added. Debug test action built
+  app and extension dependencies.
+- Release app/extension build passed (`/private/tmp/tsugino-lifecycle-release.log`). Release
+  object symbols contain RouteSearchCoordinator and exclude completionCheckpointForTesting:
+  the Application abstraction ships as code, while the read-only test barrier does not.
+  This is compilation evidence, not live composition or production routing adoption.
+- Independent source/test review found no material defect; it requested the narrow stale
+  ARCHITECTURE supersession-status correction, which is applied. Final independent
+  documentation/evidence review approved with no material findings remaining. No source
+  change was needed after source review.
+
+Final source/test SHA-256:
+
+- `TSUGINO/Application/Routing/RouteSearchCoordinator.swift`: `a9e485cf291480e22bfa7197ba54b404e820c41602597eef86158b4bfd7829fc`.
+- `TSUGINOTests/RouteSearchCoordinatorTests.swift`: `91826ad99a3f54eef4606c35fb0f5ee3bc2c835daf7c767222575bc8dba451f1`.
+
+Debug/Release checks are scoped to this new Application source. ARCHITECTURE's formerly missing-supersession
+statement is updated narrowly; live AppEnvironment and feature integration remain unimplemented.
+No private access, provider contact, UI, cache, recent-history implementation, automatic
+Journey/train selection or production routing adoption. P3-T1/Phase 3 remain incomplete;
+P2-S9 retains fourteen classification and fourteen ordering gaps. No ODPT reply supplied.
+Leave changes unstaged/uncommitted for publication review.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
