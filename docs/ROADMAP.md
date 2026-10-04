@@ -5814,6 +5814,126 @@ supplied. No App/UI wiring, cache/history, real import, provider contact or prod
 Leave all six changed files unstaged/uncommitted for publication review.
 
 
+
+#### Standalone pruning qualification proposal — 2026-10-04 Asia/Seoul
+
+Published baseline `023c1c206e1ed0cdabc0df41869455b9a1713ca6`; clean phase branch and
+cached upstream identical at inspection. Consumer §15.8 proposes one bounded DEBUG follow-up,
+not implementation: qualify the full invented evidence/graph once, certify whole-domain
+complete-path and prefix counts using `(last dated ride, used recurring TripIDs)` scalar
+memoization, then reuse strict-bound pruning and canonical admission. Count multiplicity
+preserves distinct histories; it is not a license to merge discovery identities or drop ties.
+
+The exact 64-complete-path predicate still includes slower paths. Existing M<=4 and nested
+input bounds prove four-ride/descriptor ceilings for this experiment only; a LIFO frontier
+bound proves <=125 pending paths under the existing 128 cap. A separate 4,097-saturating
+prefix count preserves the original 4,096 guard. At most 4,160 memo states are proposed from
+T<=10,R<=32,M<=4, with combinatorial generalization risk. Whole-state traversal can still be
+exhaustive; no cheaper qualification, measured benefit or standalone implementation is claimed.
+
+Accounting clarification: the certificate/session strategy is a technical experiment choice,
+not a new product preference requiring owner selection. The earlier recommendation to combine
+all work into one 200,000-unit counter is withdrawn and remains unapproved. Consumer §15.8.6
+lists every existing charged call site and defines separate proposed observational event
+counters; equal counts do not imply equal computational cost. The hand-derived two-direct
+example has 51 exhaustive calls versus 47 inherited pruned calls plus a distinct certificate
+event vector; these are not a new common unit or budget. Published counters reset per pass.
+
+Recommend first implementing only certificate correctness and observational comparison in a
+test harness, after work authorization, without altering published search/cutoff behavior.
+Only a change to externally observable completion/cutoff or failure precedence requires a
+policy decision: for example standalone success when the mandatory oracle would exhaust its
+allowance. No such change is approved. Exact parity requires retaining or proving/emulating
+the old charged trace, including work on slower branches, sorting and admission. Scalar path
+counts alone cannot provide it. R6 adoption remains unresolved.
+
+Correctness plan independently calls the unchanged exhaustive oracle from tests, compares
+full canonical winners/failures, and includes 64/65 slower-branch limits, dead ends, converging
+histories, repeated destination visits, all ties and unknown evidence. Report total standalone
+cost including certificate storage/work; structural counts are not process-memory savings.
+No tests/builds/benchmarks, code, private input, provider contact or external research in this
+documentation task. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and
+fourteen ordering gaps. No ODPT reply supplied. Live/default routing remains unconfigured.
+The count/multiplicity and state/frontier proofs retain their prior independent approval.
+Separate non-author review approved the accounting clarification with no material findings,
+including all existing step sites and hand-derived 51/47 counts. Scope/reference/privacy and
+whitespace checks passed. No implementation evidence is claimed. Leave unstaged/uncommitted.
+
+
+### §15.8 certificate harness — scoped technical validation
+
+The owner authorized the DEBUG certificate and independent observational comparison; the
+preceding accounting clarification remains the policy boundary. Implemented a certificate
+without an oracle call or RouteSearching result, reusing unchanged whole-domain qualification.
+Two small observation seams expose existing qualification and the existing exhaustive pass
+for tests. Published exhaustive/two-pass behavior and charged controls remain unchanged.
+Consumer §15.8.7 records counting proofs, safeguards and methodology. No standalone solver,
+new common work unit, budget, failure precedence or production setting is approved.
+
+Final iPhone 17 Simulator run: **86 functions / 154 cases passed**, including certificate
+**12 / 28**. Debug dependencies and Release app/extension builds passed. Seven no-DEBUG
+declaration probes and Release symbol checks exclude the certificate and new seams.
+Earlier executions are superseded and not added. No private data or provider access occurred.
+
+Separate certificate observations (q variants have identical structural counts):
+
+| Fixture | C / P (saturated) | Roots | Lookups / hits | Expansions = destination tests = writes | Successor checks / eligible edges | Child / root scalar additions | Memo / pending-frame peaks | Oracle outcome |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| q1, all four variants | 2 / 4 | 2 | 4 / 0 | 4 | 12 / 2 | 4 / 4 | 4 / 3 | 2 paths |
+| q2, all four variants | 9 / 15 | 3 | 15 / 0 | 15 | 49 / 12 | 24 / 6 | 15 / 3 | 9 paths |
+| q3, all four variants | 28 / 40 | 4 | 40 / 0 | 40 | 130 / 36 | 72 / 8 | 40 / 3 | 28 paths |
+| 64 equal optima | 64 / 84 | 4 | 52 / 24 | 28 | 144 / 48 | 96 / 8 | 28 / 3 | 64 winners |
+| 65 paths | 65 / 85 | 5 | 53 / 24 | 29 | 169 / 48 | 96 / 10 | 29 / 3 | searchIncomplete |
+| 86,780 dead prefixes | 0 / 4097 | 20 | 13340 / 10740 | 2600 | 18400 / 13320 | 26640 / 40 | 2600 / 4 | searchIncomplete |
+
+Combined memo-plus-pending peaks equal the memo peaks above; all are <=4,160. Successor
+checks include unsuccessful edges/reuse checks. Memo hits reuse scalars with incoming-path
+multiplicity, not complete-path identities. Oracle frontier/retained-path peaks are 2/2,
+4/9, 7/28 and 10/64 respectively for q1/q2/q3/ties64. Failure reports expose no complete
+oracle storage metrics. The <=125 frontier bound is independently derived and checked;
+fixtures do not claim to saturate it. Structural counts are not measured process memory.
+
+Median milliseconds, one warmup + five measured pairs per row; v0 fast direct, v1 fast
+transfer, v2 equal arrival/fewer changes, v3 slower transfer branch. Ties64 has all 64
+identity-distinct equal optima. See §15.8.7 for included costs and noise limitations.
+
+| Fixture | Certificate qualification | Certification | Whole certificate | Oracle qualification / discovery / selection / admission | Whole oracle | Whole paired harness median [min–max] |
+| --- | --- | --- | --- | --- | --- | --- |
+| q1v0 | 0.168 | 0.038 | 0.252 | 0.169 / 0.026 / 0.050 / 0.080 | 0.478 | 0.729 [0.580–1.331] |
+| q1v1 | 0.146 | 0.031 | 0.226 | 0.147 / 0.022 / 0.039 / 0.105 | 0.366 | 0.587 [0.582–0.603] |
+| q1v2 | 0.161 | 0.032 | 0.246 | 0.153 / 0.023 / 0.043 / 0.071 | 0.343 | 0.595 [0.566–1.220] |
+| q1v3 | 0.148 | 0.030 | 0.229 | 0.147 / 0.022 / 0.038 / 0.066 | 0.343 | 0.572 [0.539–0.596] |
+| q2v0 | 0.389 | 0.095 | 0.567 | 0.396 / 0.085 / 0.225 / 0.066 | 0.980 | 1.568 [1.492–1.572] |
+| q2v1 | 0.399 | 0.097 | 0.590 | 0.393 / 0.086 / 0.927 / 0.669 | 2.291 | 2.877 [2.860–3.521] |
+| q2v2 | 0.391 | 0.097 | 0.577 | 0.396 / 0.086 / 0.222 / 0.077 | 1.007 | 1.574 [1.554–2.736] |
+| q2v3 | 0.400 | 0.100 | 0.592 | 0.396 / 0.087 / 0.228 / 0.096 | 1.012 | 1.625 [1.555–3.631] |
+| q3v0 | 0.769 | 0.243 | 1.152 | 0.832 / 0.317 / 0.726 / 0.083 | 3.183 | 4.332 [4.238–5.437] |
+| q3v1 | 0.793 | 0.245 | 1.197 | 0.752 / 0.284 / 9.029 / 2.367 | 14.076 | 15.251 [14.125–17.786] |
+| q3v2 | 0.830 | 0.244 | 1.225 | 1.021 / 0.563 / 0.753 / 0.098 | 5.461 | 6.644 [4.294–10.422] |
+| q3v3 | 0.776 | 0.267 | 1.205 | 0.803 / 0.310 / 1.006 / 0.101 | 3.738 | 4.891 [4.668–10.336] |
+| ties64 | 1.779 | 0.422 | 2.409 | 1.653 / 1.291 / 78.287 / 9.132 | 109.088 | 112.290 [91.308–167.876] |
+| paths65 | 2.482 | 0.529 | 3.952 | unavailable (throw) | 4.245 | 8.243 [6.521–9.606] |
+| dead86780 | 4.178 | 33.761 | 37.713 | unavailable (throw) | 59.138 | 105.999 [86.331–131.753] |
+
+Medians are taken independently and need not sum. Qualification step observations can differ
+between identical inputs because dictionary encounter order affects existing sorting work;
+no accounting change normalizes those observations. Certificate counters and inherited
+charged calls are never summed. Whole certificate time is not standalone search time:
+it produces no winners, reconstruction or admission. All-tie oracle selection/admission
+remains costly. The dead-end certificate still explores 2,600 memo states and 18,400
+successor checks despite zero output. No speedup or process-memory saving is established.
+
+Recommendation: retain this harness as evidence for the domain-count proof; resolve the
+old charged-trace parity or a narrowly specified cutoff-policy amendment before building a
+standalone solver. R6 adoption remains unresolved. Live/default routing stays unconfigured.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps.
+No ODPT reply supplied. Separate non-author review approved code, counting proofs, tests,
+instrumentation and final evidence with no material findings remaining. Review corrections
+added distinct-used-set coverage, cancellation inside certificate traversal, construction-free
+timing scopes and precise complete-path-sorting wording. Documentation/scope/privacy/whitespace
+checks passed. Changes remain unstaged/uncommitted.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

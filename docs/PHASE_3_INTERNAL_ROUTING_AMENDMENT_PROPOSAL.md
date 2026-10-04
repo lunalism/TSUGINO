@@ -2118,3 +2118,439 @@ pass threshold. Fixture inputs are the §15.5 grid with seconds relative to an i
 08:00 anchor; service label `d-a`, one exact view/policy set, scope [0,2400] and view validity
 [0,2501]. None claims civil-time/source applicability. Compilation/run evidence and observed
 results are recorded in ROADMAP; synthetic declaration/Release isolation is required.
+
+### 15.8 Proposed follow-up: whole-domain certificate before standalone pruning
+
+**Standalone follow-up remains Proposed; baseline `023c1c206e1ed0cdabc0df41869455b9a1713ca6`.**
+§15.7 describes the published, approved two-pass experiment and remains unchanged. This
+standalone follow-up has no implementation/execution authority; the separately authorized
+certificate-only harness is recorded in §15.8.7. DEC-086 objective, all equal optima,
+identity order and admission outcomes remain accepted. No production algorithm is selected.
+
+Recommend one additional DEBUG adapter using the existing qualified graph and strict-bound
+DFS, preceded by a bounded memoized **domain count certificate**, not a call to the oracle.
+The certificate checks all original feasible paths, including paths an incumbent would
+exclude. It stores scalar summaries of continuation states rather than complete path arrays.
+The unchanged exhaustive searcher remains an independently invoked test oracle. This removes
+mandatory complete-path materialization and duplicate qualification; it does not remove
+whole-domain reasoning or guarantee lower time/storage. No new provider/route engine, queue,
+station-label dominance or Application/presentation change belongs here.
+
+#### 15.8.1 Boundaries and costs
+
+Use precisely §15.7's input domain: T<=10 recurring TripIDs, R<=32 qualified rides, M<=4,
+all nested input/string bounds unchanged. N denotes bounded supplied input size, E<=R²
+qualified edges, S reached certificate states. Counts below concern logical operations;
+Swift hashing, snapshot comparisons and bounded string work are not free.
+
+| Stage | Work and retained state | Whole-domain responsibility |
+|---|---|---|
+| Input bounds / existing qualification | Bounded input scan; existing interval/date/eligibility/continuity checks and normalization. Retain original snapshots, slots and ride dictionary. Existing per-Trip interval enumeration is quadratic in occurrences before interval/snapshot costs | Preserve current validation order and all required evidence, including disconnected unknowns and slower paths. Do not check only routes useful to the request |
+| Qualified graph | Existing R² pair loop, exact directional forms/allowances and deterministic ride-key order; O(R+E) graph entries | No evidence pruning. Keep absent/prohibited/inactive exclusions exactly as accepted |
+| Domain certificate | Memoized states `(last full ride key, used recurring TripID set)`; at most S states, O(S×R) successor tests using existing key order/edge predicate, O(S) summaries plus depth<=M evaluation stack | Count every original destination-ending path and every original popped prefix, independent of incumbent. Verify original 64-path and experimental 4,096-prefix guards before pruning |
+| Pruned discovery | Existing original-key path stack and used-Trip rule, strict lower bound only; O(R×visited prefixes), not a promised reduction; original path storage caps remain | Materialize all possible equal optima; no merging of histories or identity reconstruction from certificate states |
+| Selection / admission | Existing descriptor/kernel and private prepared-state claim handoff; bounded winner/key sorting and original admission/finalization | No early admission, no relabeling, no survivor-only success after mixed rejection |
+
+Reuse qualification **once** within an invocation. The graph, certificate and discovered
+paths belong to one private opaque session pinned to the exact scope/view/snapshots and
+original connections. No public caller-supplied count/completion flag, certificate constructor
+or interchangeable handle. Refactor only the minimum internal seams: current `qualify` is
+private and `PreparedOptimalSession.open` invokes `prepare` itself, so merely handing an array
+to that API would repeat discovery. A future internal factory must own qualification,
+certification, pruned preparation and the existing descriptor/claim/admission operations.
+Published exhaustive and two-pass entry points remain unchanged. Canonical candidates still
+come only from admission. Tests compare both outcomes, not certificate creation alone.
+
+#### 15.8.2 Exact counting proof, including slower paths
+
+A ride key contains the exact dated occurrence address and original boarding/alighting
+indices. Give each of at most T recurring TripIDs a deterministic local bit position; this
+is temporary indexing of canonical IDs, never a replacement ID. For state `(v,U)`, v's
+TripID is in U and depth d=|U|. Successors are precisely the existing qualified edges from v
+to w whose recurring TripID is not in U, only when d<M. Each successor adds its TripID.
+Therefore the **state graph** is acyclic by increasing |U|, even with zero-time connections;
+no assumption that railway/time graphs are acyclic is needed.
+
+For each state compute, using checked saturating addition:
+
+- `C(v,U) = [v ends at requested destination] + sum C(w,U∪{TripID(w)})`, saturated at 65.
+- `P(v,U) = 1 + sum P(w,U∪{TripID(w)})`, saturated at 4,097.
+- At depth M the sums are zero. Sum each summary over every distinct origin-boardable root
+  `(v,{TripID(v)})`, with the same saturation. Destination arrival is **not terminal** for
+  this recurrence: count its current path and any later destination-ending extensions,
+  exactly as the existing DFS does. Roots and successors use normalized unique ride keys.
+
+C<=64 is an exact predicate for the original number of complete paths, not an explored-path,
+selected-winner, or incumbent-survivor limit. Saturation retains the exact pass/fail predicate,
+not an exact above-limit count. P<=4,096 likewise checks every original DFS prefix, including
+branches without a destination. There is no duplicate-path overcount: original normalized
+roots/adjacency have one entry per key and each distinct sequence is generated once; the
+existing dedup consequently cannot collapse two different generated key sequences. Repeated
+input records normalize before this stage. A future multigraph/identity amendment would
+invalidate that argument and must not silently reuse the recurrence.
+
+Two different prefixes may reach the same `(v,U)`. Their feasible suffix sets are identical
+**only under the current code**: scope is fixed, departure/arrival is fixed in v, each edge
+already includes occurrence-specific direction/allowance, and the only extra history rule
+is recurring-TripID exclusion. Different earlier date/order histories with the same U have
+no further effect on suffix feasibility. Reuse a scalar suffix count at each incoming prefix;
+do not count the shared state only once in root totals. This preserves path multiplicity.
+Most importantly, discovery does NOT reuse that state to delete prefix identities. All equal
+optima still need their own original paths and canonical outputs.
+
+A loose state ceiling is `R × sum(k=0...M−1) choose(T−1,k)` (v's TripID is already used).
+At T=10,R=32,M=4 this is 4,160 states, plus a virtual root if represented. This is an
+experiment-derived cap, not production policy or a promise all those states are reached.
+Propose allocating at most 4,160 memo summaries (no virtual-root entry needed), checking the
+cap before insertion and observing each successor test/summary operation separately. These
+observations do not select a new cutoff charge; §15.8.6 separates the two. This bound grows
+combinatorially if T/M are enlarged. Memoization may save nothing on unshared histories;
+then it is exhaustive prefix-state traversal in different form. Moving the check is not
+making it cheap. No complete route list is built by certification.
+
+#### 15.8.3 Which limits are independently provable, and which are not
+
+- **Four rides per complete path:** existing experiment already rejects input M>4 and DFS
+  cannot exceed M. That is sufficient here, with unchanged input rejection. Do not generalize
+  this to the broader exhaustive searcher: for M>4, its later four-ride guard fails only if
+  a generated complete path exceeds four, not because a dead-end prefix does. Widening the
+  domain would require a destination-reaching length predicate or equivalent traversal.
+- **64 complete paths:** C certifies the exact whole-domain predicate without materializing
+  paths; evidence on pruned slower branches remains included. Ordinary reachability or a
+  shortest-path count is insufficient. General counting still needs all relevant state
+  transitions or an equivalent proof; no general polynomial-complexity claim is made.
+- **Descriptor arrays/text:** §15.7 already bounds every input snapshot to four entries and
+  text to 128 UTF-8 bytes, including nested bindings. These stronger *existing experiment*
+  bounds imply the selector's 256-entry/128-byte checks for every possible path. Keep the
+  actual selected-path checks too. Do not move a new descriptor rejection onto disconnected
+  rides in the wider oracle domain; without these existing bounds, one must establish which
+  rides lie on a complete admissible path before reproducing its path-specific failure.
+- **32 rides / 1,024 connection records / nested input bounds:** preserve existing checks
+  before graph/certificate work. They already bound allocations before DFS; 64 paths does not.
+- **128 frontier paths:** with at most R roots, depth<=M and at most R children per expansion,
+  the unchanged LIFO full-path DFS peak is <= `R+(M−1)(R−1)` =125 here. Each expansion pops
+  one pending prefix then pushes children; at most M−1 ancestor levels have pending siblings.
+  This proves the existing 128 limit cannot be exceeded anywhere in this input domain,
+  including slower branches. Keep its runtime check; change of traversal invalidates proof.
+- **4,096 popped prefixes:** P preserves the original whole-domain guard even if pruning
+  would visit fewer. Both C and P are required; many dead ends can overflow P with C=0.
+- **Logical work/cancellation:** a numeric step allowance bounds an execution, not the set
+  of mathematically valid routes. Certification introduces work and removes other work.
+  Reproducing the old oracle's exact checkpoint-by-checkpoint cutoff requires simulating or
+  proving its qualification, DFS, sorting, descriptor/kernel and admission charges; C alone
+  does not do that. No such equivalence is claimed. See the explicit Proposed choice below.
+
+The new path-domain proofs do not validate arbitrary claims: §15.7's preparation-to-admission
+invariant mapping remains required for every incumbent. Unknown reached evidence returns
+`dataUnavailable`; incomplete certificate, discovery, tie enumeration, selection/admission
+or accounting returns `searchIncomplete`, never a partial incumbent. Cancellation stays
+CancellationError. Completed empty C=0 still needs successful full certificate/qualification
+before scoped noResults. All selected admitted → all winners; mixed rejection →
+searchIncomplete; all rejected → noUsableAlternatives with frozen contiguous selected indices.
+Slower objective exclusions create no rejection omissions. If future admission adds a
+history-sensitive predicate, revise the certificate state/proof before running this variant.
+
+#### 15.8.4 Technical experiment and genuine behavior boundary
+
+The memoized certificate, private session seam and existing strict-bound DFS are a recommended
+**technical experiment strategy**, not a new product preference for the owner to select.
+Implementation still requires a subsequent work authorization; this documentation task supplies
+none. DEC-086 objectives/ties/admission and R6's unresolved production adoption are unchanged.
+
+The previous draft unnecessarily coupled measurement counters to a proposed single 200,000-unit
+cutoff. **That recommendation is withdrawn, not accepted.** Keep observational event counters
+separate from execution controls. No new event weights, composite work unit, budget, or automatic
+charging of certificate observations to `step` is approved. The published adapter still uses
+its existing independent per-pass controls and mandatory oracle prerequisite.
+
+Only a change to observable execution behavior needs an owner policy decision: may a future
+standalone entry return a complete result where the published adapter would exhaust its oracle
+allowance, provided all whole-domain guards and the standalone completion proof pass? If so,
+the actual standalone safety/cutoff accounting must be specified and reviewed before exposing
+that entry. The owner has not accepted this change. If exact old outcome/diagnostic precedence
+at the same allowance is required, preserve or prove/emulate that accounting; certificate counts
+alone cannot provide it. Do not silently broaden either policy while implementing metrics.
+
+Recommend the smallest next authorized implementation be the bounded certificate and named
+observational counters in a test-only comparison harness, leaving all published search entry
+points and `step`/workLimit semantics untouched. Check certificate truth against the unchanged
+oracle independently; measure its real cost. No replacement RouteSearching success contract
+is needed for that first slice. Existing finite input/state bounds and explicit cancellation
+checks bound/interrupt this helper; their derivations remain in §15.8.2–3. A harness timeout
+invalidates a measurement, never produces a complete search result or silently becomes a new
+user-facing cutoff. Any added reachable resource-abort rule must be described explicitly.
+
+After that evidence, review the precise standalone cutoff contract or an equivalent old-
+accounting proof. Do not advertise standalone speed from a certificate-only or pruned-pass-only
+measurement: qualification, certification, discovery, reconstruction/selection, admission and
+all retained state are part of total cost. Additional structural ceilings remain experimental
+safeguards, not production budgets; do not raise old limits for a favorable comparison.
+
+#### 15.8.5 Correctness and measurement plan — standalone solver not executed
+
+Tests call the unchanged `SyntheticOptimalRouteSearcher` independently, on the same pinned
+invented input and with sufficient work for a correctness comparison. Also compare the
+published two-pass adapter's domain rejections where its stronger input bounds apply.
+The standalone implementation must have no oracle invocation. A call-count/private seam
+check verifies one qualification and no oracle call, without accepting caller-created state.
+Compare full ordered optimal identity sets/objectives, canonical bindings/snapshots/indices,
+contexts/scope and selected-index omissions; hand-derived expectations supplement the shared
+oracle. Match canonical failures before cutoff; compare exhausted runs as resource outcomes,
+not equivalence successes. Existing lower-bound proof (strictly worse only) is unchanged.
+
+Reuse q=1/2/3 grids (2/9/28 paths), slow branches and all-tie variants. Add minimal cases for:
+
+- Exactly 64 versus 65 original complete paths with an early fast direct incumbent: 65 fails
+  before pruning; 64 succeeds only if all other proofs finish. Use three layers with two
+  distinct Trips/layer and two explicitly inventoried dated slots/Trip: four choices/layer,
+  4³=64 equal transfer paths. Six inventories/twelve rides fit existing bounds. Adding one
+  fast direct Trip gives 65 original paths; without it retain all 64 equal outputs.
+- Multiple histories converging on `(v,U)` and histories differing in U; count multiplicity
+  against a tiny hand enumeration, while discovery retains all distinct equal identities.
+- Destination reached then left/reached again, zero-duration edges and repeated station visits;
+  count every destination-ending prefix, keep M and recurring-Trip reuse rules across dates.
+- Unknown disconnected relation/slot and missing/estimated required time on slower paths;
+  an oversized slower input is rejected by the existing experiment gate, not hidden by pruning.
+- Dead ends with C=0 but P over 4,096: ten distinct A→B Trips, two dated slots each,
+  twenty rides with equal exact departure/arrival instants, requested destination D, M=4.
+  Explicit affirmed zero-allowance walking relations B→A connect every pair of different
+  recurring TripIDs (360 records). Whole-domain prefixes =20+360+5,760+80,640=86,780;
+  P saturates to 4,097 and fails before pruning, despite no complete path. All input sizes
+  remain inside the old bounds. Invented equal-instant dates authenticate no real service.
+- Abort/cancel during qualification, count saturation/memo insertion, pruned discovery,
+  tie processing and admission; no result after any incomplete stage. Same selected rejection
+  harness, original indices and deterministic output order; permute input order.
+
+Measure comparable stages in both independently run variants: input/qualification and graph
+pair checks, certificate states/hits/successor tests and C/P totals (zero certificate work for
+oracle), discovery popped/pruned/expanded prefixes and successor checks, key/kernel work,
+admitted output count, and existing step-call totals separately from each new observational
+counter. Do not sum unlike events into a newly invented charged-work total. Report qualification, certificate, discovery,
+selection/admission and **whole standalone invocation** monotonic times. Include bounds,
+certificate allocation/clearing and cancellation checks; exclude separately reported fixture
+construction/build/launch/assertion/output formatting. Do not compare oracle+variant total
+against variant-only time as a speedup. Keep warmup/repetition/configuration reporting and
+avoid timing thresholds; isolate measurement runs where feasible and disclose scheduling noise.
+
+Report graph, certificate memo, evaluation stack, frontier, retained path/key and output
+structural peaks separately; their simultaneous lifetime matters. Only report process memory
+if reliably measured with a stated baseline; never convert counts into claimed RAM savings.
+Certificate state exploration and all-tie reconstruction/output may dominate, so a slower
+standalone measurement is a valid result. The scoped certificate-only measurements in §15.8.7 do not execute this standalone plan. Synthetic
+proof/measurement cannot establish Tokyo-scale performance, production limits or adoption.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen ordering
+gaps. No ODPT reply supplied. Live/default routing remains unconfigured.
+
+
+#### 15.8.6 Work-accounting clarification — documentation only
+
+**Existing meaning.** `SyntheticInternalRouteEngine.step(stage)` checks cancellation, computes
+work+1 with overflow checking, and checks `next <= workLimit` when a limit is supplied. Only
+then does it assign work and increment the corresponding experiment qualification/discovery/
+post metric. It invokes the checkpoint and checks cancellation again. A failed budget attempt
+is not incremented; a throwing checkpoint has already consumed its unit. Checkpoint failure
+is normalized as implemented, not retried. Stage labels are classifications, not weights.
+The ordinary internal engine can have no supplied limit; optimal/published experiment callers
+supply one. The published comparison resets the counter in **each** pass (up to 200,000 each),
+not one shared 200,000 budget across both. `SyntheticPruningBounds.validate` runs outside those
+counters. Timers, storage peaks, pair/prefix/pruned counts and kernel-advance metrics are separate
+observations, though the stage work metrics mirror successful `step` increments.
+
+Every charged call site on normal exhaustive/optimal search is covered below. One means one
+`step` call before the named work, subject to earlier guards/returns; conditions matter.
+Failure-only harness corruption adds no different unit definition.
+
+| Existing charged event | Count / increment position | Costs not individually charged |
+|---|---|---|
+| Stage boundaries | One each before view validation (`configuration`), normalization (`validation`), endpoint validation (`endpoints`), scope construction (`intent`), global coverage (`coverage`): five on successful preparation | Configuration preguard, both endpoint scans, scope arithmetic, line/Trip subset construction |
+| Inventory normalization | One per supplied inventory; one per declared interval; one per supplied slot; one per active continuity record | Train/binding construction, visit/snapshot equality, set/dictionary construction and hashing |
+| Duplicate inventory reconciliation | One per normalized slot of a duplicate inventory after outer equality guards pass | Outer trip/interval/count comparisons, entire slot equality scan |
+| Profile coverage | One per profile station, per profile Trip, per b<a occurrence pair, per normalized dated slot, and per required interval in an active slot | Ridden station/line scans, permission/time guards, context/candidate creation, insertion into ride/slot maps |
+| Connection normalization | One per supplied connection record | Address/slot/index lookup, form validation, component arithmetic, duplicate comparison |
+| Pair qualification | One per ordered ride pair when M>1, including same-Trip pairs later skipped | Relation lookup, exact allowance arithmetic, edge insertion |
+| Stable insertion sort (ride keys and complete paths) | One per inserted value; one per `while i>0` comparison attempt, including the attempt that breaks | String/path comparison length, append, shift/assignment/COW allocation; no extra unit per moved element |
+| DFS root scan | One per qualified ride key before testing origin | Singleton path creation and initial stack append |
+| DFS popped prefix | One after each pop, before ride lookup | Pop, lookup and destination test; original-path storage checks |
+| DFS successor scan | One per ride key for each expanded non-pruned prefix with depth<M, before edge/used-Trip checks | Scan of used path TripIDs, `path+[next]` copying/allocation, stack append |
+| Strict-bound check (published pruned mode only) | One additional call per popped prefix before incumbent comparison, even without an incumbent | Actual comparison; pruned-prefix metric update. Exhaustive mode has zero of these calls |
+| Deduplication | One per retained complete path before set insertion | Hashing full path and normalized array append |
+| Optimal descriptors | One after prepare; one per complete path; one per ride; one per inter-ride connection | Claims lookup, descriptor bounds, full identity-key materialization and copying |
+| Optimal kernel | One per `advance()` until complete | An advance can scan an objective, compare a whole tie key, move/reset an insertion cursor or insert into the winners array; not one primitive comparison |
+| Selected handoff | One per selected winner, plus one per ride before resolving its claims | Handle lookup, claims-array materialization, rejection injection in failure-only tests |
+| Shared admission | Five calls per ride that reaches all loops: association; scope/chronology; eligibility; continuity; leg construction | Endpoint/ride-cap guards, membership/snapshot scans, qualified connection validation, walking/rail construction, final RouteCandidate validation |
+| Finalization | One before accounting, then uncharged final cancellation check | Omission/rejection or batch/success construction, payload validation |
+
+The DEC-081 all-distinct adapter has one outer admission call per generated path but no
+optimal descriptor/kernel or selected-handoff per-ride precharge. Its shared admission and
+finalization use the same calls above. Thus even the two existing adapters have different
+step totals for the same inventory. Do not describe either as a universal operation count.
+Uncharged input-bound scans, instrumentation, async scheduling, ARC/allocations and constructor
+work still affect total elapsed time. No test runner or clock duration is a work unit.
+
+**Proposed observations, not proposed charges.** Use one increment in each named counter per
+event below; do not add the columns together. These definitions make measurements reproducible
+without attaching a threshold or inserting new `step` calls. They are technical measurement
+choices, not accepted cutoff policy. If the implementation changes the event boundary, update
+the metric definition before comparing results.
+
+| Proposed counter | One event / increment site | Exhaustive counterpart / comparability |
+|---|---|---|
+| Certificate root request | Before requesting summary for each origin-boardable key | Origin matches, not all R root-scan tests |
+| Memo lookup / hit | Before each root/successor summary lookup; additionally increment hit when a completed memo entry is found | No memo in oracle; do not equate a hit with a DFS pop or a skipped route |
+| State expansion | Once on memo miss before initializing/evaluating `(v,U)` | Oracle can visit many path prefixes with this state; distinct metric |
+| Destination test | Once per expanded state | DFS performs it per surviving prefix; neither is a complete-path count |
+| Certificate successor test | Before each of R key tests for a state with depth<M, using original edge/used-Trip predicate | Same predicate category as DFS successor test, but different state multiplicity and used-set representation |
+| Eligible certificate transition | When an edge passes both checks, before requesting child summary | Successful DFS extension; certificate does not copy a full path |
+| Summary additions | One per scalar saturating addition of C or P after a child return, and one per scalar C/P addition into root totals | No direct old unit. Vector update means **two** scalar additions; repeated hits still contribute multiplicity |
+| Memo write | Once when a completed state summary is stored | Not a path append; key hashing/allocation and initialization are not additional events |
+| Discovery root/pop/successor/bound/pruned | Separate observations at the existing corresponding sites | Direct event-count comparison is possible with the same definition, not CPU-cost equivalence |
+| Discovery extension / copied key slots | One per `path+[next]`, plus the resulting path length in a separate structural-volume counter; singleton roots separately counted | Measures intended key slots, not physical copies/bytes (COW/ARC can differ); oracle same sites |
+| Complete-path retention / descriptor materialization / kernel advance | One per append, per descriptor, per advance respectively | Same event kinds; keep them separate from how many `step` calls surround them |
+| Admission attempt / output construction | One per selected handoff, per constructed canonical rail/walking leg, and per candidate constructor invocation, separately | Existing admission units are not these events. No predecessor-tree reconstruction exists in current DFS: resolving original paths, keys and claims is the reconstruction cost |
+
+No new single “certificate work unit” has been defined. Observational counters need bounded
+storage/overflow-safe handling and timing includes their overhead; they must not select a
+search outcome. Existing active cutoff controls remain active where reused. Additional
+cancellation polls need not call `step` or consume a new budget unit; they still add real cost.
+
+**Hand-derived example, not a run or a new budget.** Two distinct one-ride Trips A→D,
+`A-slow` and `Z-fast`, one dated slot and one interval/affirmed-continuity record each, two
+profile stations, one line, coherent view and exact eligible times. Departures both 100,
+arrivals 180 and 150. M=1, scope contains all times, no connection records. Sorted roots are
+pushed slow then fast; LIFO visits fast first. Both fit all existing bounds. Dictionary order
+cannot change the two-key insertion-sort count. The proposed certificate expands the two
+terminal states: C=2, P=2, no successor scan.
+
+| Event group | Existing exhaustive optimal pass | Pruned pipeline after proposed certificate |
+|---|---:|---:|
+| Qualification charged calls | 26 = 5 boundaries + 8 normalization + 2 station coverage + 8 Trip/interval/slot coverage + 3 key-sort | Same 26 |
+| Root scan / popped prefix / successor tests | 2 / 2 / 0 = 4 charged calls | 2 / 2 / 0, plus 2 bound calls = 6 |
+| Singleton paths / extension copies | 2 / 0 | 2 / 0; certificate constructs no paths |
+| Complete retained paths / pruned prefixes | 2 / 0 | 1 / 1 |
+| Dedup / complete-path sort | 2 / 3 charged calls | 1 / 1 |
+| Descriptor construction calls / kernel advances | 5 / 3 charged calls | 3 / 2 |
+| Admission / finalization | 7 / 1 charged calls; one rail leg and one candidate constructor | Same 7 / 1 |
+| Total inherited `step` calls | **51** | **47**, excluding all certificate observations; NOT an approved standalone cutoff total |
+| Certificate root requests / memo lookups / hits | 0 / 0 / 0 | 2 / 2 / 0 |
+| State expansions / destination tests / memo writes | 0 / 0 / 0 | 2 / 2 / 2 |
+| Certificate successor tests / eligible transitions | 0 / 0 | 0 / 0 |
+| Child C/P scalar additions / root C/P scalar additions | 0 / 0 | 0 / 4 |
+
+There is no valid “47 + certificate work = common cost” equation. Initialization, key lookup,
+checks, copying and output construction have different costs, and several receive no separate
+charge. The published wrapper executes **51 then 47** with counters reset; its aggregate 98
+successful calls is an observation, not a shared cutoff. As an illustration of existing API
+behavior, a supplied allowance of 50 fails in its oracle although the pruned pipeline has only
+47 inherited calls. Making certificate observations uncharged would not preserve that outcome:
+it would merely hide the policy change. 50 is an illustrative existing caller value, not a
+recommended limit. A shared certificate state hit would avoid suffix evaluation but would
+still incur lookup and both summary additions; the two-direct example deliberately has no hits.
+
+**Four separate concepts:**
+
+1. Measurement: named event vectors, structural peaks and monotonic whole-invocation time;
+   never determines success/failure. No common weighted unit is invented.
+2. Execution safeguards: existing `step` controls, cancellation, bounded experiment allocations
+   and any future explicitly specified abort control. These can stop computation and must
+   report incomplete/cancelled, never return an incumbent. Not latency or memory guarantees.
+3. Domain limits: the whole-domain 64-complete-path/four-ride predicate and original evidence
+   rules remain unchanged. The certificate also preserves experiment-wide 4,096-prefix and
+   nested guards; these are synthetic domain/safety constraints, not production policies.
+4. Observable behavior: allowing success where the old oracle budget failed, changing which
+   earlier failure wins, or introducing a different reachable cutoff is not just measurement.
+   No such change is approved by this clarification.
+
+Exact preservation has a real cost. Retaining the published wrapper trivially keeps its old
+controls but still enumerates/materializes the oracle paths. A shadow/emulated counter must
+reproduce charged qualification order, original DFS prefix/successor activity, dedup and
+insertion-sort work, original descriptor/kernel processing and selected admission/finalization,
+including early failures/cancellation/checkpoint ordering if that is the promised parity.
+C/P aggregates alone do not capture sorted key comparisons, path ordering, tie processing or
+checkpoint-dependent failures. Charging each certificate state once is particularly incorrect
+when several original prefixes share it. A conservative bound may be a useful safeguard but
+can reject runs the old engine completes, so it is not exact equivalence. Exact emulation or
+a code-specific equivalent proof may retain much of the supposedly removed exhaustive cost.
+Retaining only old calls on surviving pruned paths also does not preserve old accounting.
+
+Therefore separate the technical proof/measurement slice from any cutoff-policy amendment.
+Keep the published behavior while evaluating certificate correctness/cost independently; only
+then specify the genuine behavioral difference, if needed. A future faster-search comparison
+must include qualification, certificate, all required path/key/claim reconstruction, selection,
+admission, instrumentation and safety-check costs. Neither fewer `step` calls nor lower
+pruned-pass time establishes a faster standalone solver.
+
+
+#### 15.8.7 Scoped certificate validation — implemented, not a standalone solver
+
+The owner authorized the certificate-correctness and observational test harness only. No
+new charged-work unit, budget, cutoff outcome or failure precedence was accepted. The
+published exhaustive and two-pass searches retain their behavior. This DEBUG-only harness
+has no RouteSearching conformance and never invokes the oracle, discovery or admission.
+Tests invoke the existing exhaustive pass separately through an observation-only seam;
+ordinary optimal-search results are also checked. Full evidence qualification reuses the
+existing engine and existing 200,000-step experiment control without changing any step site.
+Certificate events are separate observations, never charged to a new allowance.
+
+The opaque count report is not a route result or authority for inventory completeness.
+Its C/P fields saturate at 65/4,097, preserving exactly the <=64 and <=4,096 predicates.
+Each root adds its suffix summary; each incoming edge adds the memoized summary again.
+State identity is the exact dated ride key plus used recurring TripIDs. Different dates of
+one Trip cannot bypass reuse restrictions. A destination contributes C=1 but **does not
+terminate expansion**; P includes every visited prefix, including dead ends. Traversal
+continues after saturation. Addition clamps before subtraction/addition, including Int.max
+boundary tests. No canonical evidence or discovery identity is merged by memoization.
+
+Under the existing R<=32, T<=10, M<=4 input bounds, a fixed last ride admits at most
+sum(C(9,k), k=0...3)=130 used-Trip sets, hence <=4,160 states. Used-set size strictly
+increases, so pending recursion is <=4. Tests independently enumerate masks and check
+observed memo-plus-pending states against this bound. The existing DFS frontier proof is
+R+(M-1)*(R-1)<=125, below the unchanged 128 guard; observed oracle frontiers are checked
+against their fixture-specific bound. These are analytical bounds supported by tests,
+not claims that fixtures attain every maximum. The largest observed memo was 2,600.
+
+A separate fixed memo-plus-pending safeguard rejects overflow with a harness error, never
+a complete comparison or canonical route outcome. Failure-only probes lower that guard
+or cancel isolated child tasks at expansion/successor checkpoints; they cannot return a
+certificate. No new route-search cutoff policy is introduced. Event counters are bounded
+by at most 4,160 expansions, 32 successor checks per expansion and the finite roots/edges;
+they are not summed into a common cost. Root requests, lookups/hits, expansions, destination
+tests, successor checks, eligible transitions, scalar additions and memo writes remain
+separate. A hand-counted fixture verifies 26 qualification callbacks and no discovery,
+complete-path sorting or admission in the certificate; published exhaustive/pruned passes still charge
+51/47 calls respectively. Equal charged counts do not imply equal CPU cost.
+
+Validation covers q=1/2/3 layered variants; 64/65 paths; dead ends with exactly 86,780
+hand-derived prefixes (reported saturated P=4,097,C=0); a smaller exact 78-prefix dead-end
+oracle agreement; convergent multiplicity; different used sets; destination revisits;
+repeated occurrences/dates; directional walking and evidenced through service; unavailable
+slots, unknown disconnected relations and missing/estimated required times despite a usable
+route. Successful oracle observations retain canonical outputs; existing admission and
+pruning regression suites supply full-payload/rejection coverage. A certificate cannot
+supply or reconstruct canonical winners. Domain-predicate failures agree with oracle
+searchIncomplete; qualification failures agree with dataUnavailable. Failure cases are not
+reported as successful route comparisons.
+
+Measurement methodology: Xcode 27.0, Debug -Onone, arm64 iPhone 17 Simulator / iOS 26.5,
+macOS 26.6.2. Each of 15 fixtures uses one warmup and five measured sequential certificate /
+oracle pairs. Input/configuration/view construction is outside timers. Qualification,
+certificate setup/traversal/release, oracle discovery, selection/reconstruction and admission
+are timed separately where available. Whole certificate/oracle calls include bounds and
+async dispatch; paired totals include both calls, excluding assertions and formatting.
+Failed oracle calls expose total elapsed time only, not invented per-stage measurements.
+Output/report lifetime after the call is not measured. Repetitions ran with affected suites,
+so scheduling/Simulator noise is possible; times are observations, never pass thresholds.
+Certificate-only totals exclude discovery/admission because that work is **not performed**,
+not because it is free. Selection timings include existing key/objective reconstruction;
+oracle whole-call time includes remaining preparation/reconstruction. The published
+instrumentation does not isolate every allocation or reconstruction operation as a counter.
+No reliable process-memory measurement was obtained. Memo/frontier/path counts are structural,
+exclude graph/input/allocator costs, and establish no byte savings or standalone speedup.
+
+Final validation: 86 functions / 154 executed cases passed (certificate 12 / 28 included),
+with Debug app/extension dependencies built. Release app/extension build passed; all seven
+new declaration probes and Release certificate/seam symbol exclusions passed. Earlier runs
+are superseded, not added. Measurements and event tables are recorded in ROADMAP. Independent
+review status is recorded there after final review. Future standalone integration still
+requires a precise approved cutoff contract or proof/emulation of old charged traces,
+including slower branches, sorting, admission and checkpoint-dependent failures. This scalar
+certificate does not provide that proof. No production adoption or resource settings follow.

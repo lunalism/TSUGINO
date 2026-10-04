@@ -156,6 +156,18 @@ nonisolated struct SyntheticPruningRouteExperiment: RouteSearching {
         let pruned = try await pass(request, mode: .pruned, rejecting: rejecting)
         return .init(oracle: oracle, pruned: pruned, elapsed: start.duration(to: .now))
     }
+    /// Observes the existing exhaustive pass independently for certificate tests.
+    /// Not a replacement search entry; the published compare/search stays two-pass.
+    @concurrent
+    func observeOracleForCertificateTests(_ request: RouteSearchRequest) async throws -> SyntheticPruningPass {
+        try Task.checkCancellation()
+        guard workLimit >= 0 && workLimit <= SyntheticPruningBounds.workLimit else {
+            throw RouteSearchFailure.configurationUnavailable
+        }
+        try SyntheticPruningBounds.validate(configuration, view, request)
+        return try await pass(request, mode: .exhaustive, rejecting: [])
+    }
+
     private func pass(_ request: RouteSearchRequest, mode: SyntheticPruningMode, rejecting: Set<Int>) async throws -> SyntheticPruningPass {
         let start = ContinuousClock.now
         var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,

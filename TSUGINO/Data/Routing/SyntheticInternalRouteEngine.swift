@@ -96,6 +96,12 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
         return try await discover(graph)
     }
 
+    /// DEBUG certificate harness seam. Same complete qualification and step calls;
+    /// no discovery, admission or caller-supplied completion assertion.
+    mutating func qualifyForCertificate(_ request: RouteSearchRequest) async throws -> SyntheticInternalQualifiedGraph {
+        try await qualify(request)
+    }
+
     private mutating func qualify(_ request: RouteSearchRequest) async throws -> SyntheticInternalQualifiedGraph {
         try Task.checkCancellation()
         guard let configuration, configuration.permitted, workLimit.map({ $0 >= 0 }) ?? true else {
