@@ -5341,6 +5341,56 @@ No private access, provider contact, real import, production limits/adoption, ap
 milestone acceptance. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification
 and fourteen ordering gaps. Leave all changes unstaged/uncommitted for publication review.
 
+#### DEC-085 → DEC-086 test-only optimal-routing composition — 2026-10-04 Asia/Seoul
+
+After published handoff `d92c854ecede7ce586941e0b32c6c22ddfc1027c`, the missing proof
+was the complete converter → prepared optimal selection → admission → canonical result
+composition. Existing timetable-routing integration proves converter-to-DEC-081 all-distinct
+search; existing optimal-handoff tests start with authored timetable facts. Those remain
+unchanged. No accepted API or application-source change is necessary.
+
+`SyntheticTimetableOptimalRoutingIntegrationTests.swift` reuses the invented converter
+packet fixture and passes each actual conversion success value unchanged into an active
+inventory slot for `SyntheticOptimalRouteSearcher`. Test composition preserves inactive and
+unavailable mappings; it adds no application adapter. The fixture explicitly stipulates
+complete finite Trip/date/interval inventory within a one-hour window, active permissions,
+affirmed continuity and every directional connection (absent except one evidenced same-
+station connection with a 60-second allowance). These are invented test values, not new
+production defaults. R1/profile/Z1/M1-to-view/policy correspondence is stipulated explicitly;
+Domain facts do not authenticate revision tokens, and conversion does not prove completeness.
+
+Four test functions / six scenario cases cover faster direct, faster transfer, equal-arrival
+fewer changes, all distinct equal optima, a civil-midnight transfer using extended hours,
+and missing timezone evidence alongside a usable direct route. Assertions check canonical
+route keys, no rejection omissions for slower alternatives, converted exact/missing tags,
+permissions, full dated snapshot/index association and literal UTC instant oracles. The
+unavailable conversion retains its typed diagnostic and causes `dataUnavailable`, never a
+direct-only fallback. No manually constructed timetable facts substitute for any route.
+Calendar edge cases, other conversion failure categories, scope/revision mismatch mechanics,
+through-service, defensive admission rejection and cancellation limits reuse existing suites.
+
+Validation: combined targeted run `tsugino-timetable-optimal-integration-r1.xcresult`
+passed **55 functions / 84 cases** on explicit iPhone 17 Simulator, iOS 26.5. Independent
+review recommended distinct packet run keys per Trip (evidence IDs stay packet-local;
+calendar service may be shared). This fixture-only clarification was applied. Final new
+subset `tsugino-timetable-optimal-integration-r2.xcresult` passed **4 functions / 6 cases**,
+zero failures. Retain unchanged regression evidence **51 functions / 78 cases**
+from r1: converter 26/39, optimal handoff 9/13, selector 9/10, and prior timetable-routing
+integration 7/16. The earlier new-subset 4/6 is replaced, never added to its final rerun.
+Debug test actions build app/extension dependencies. Unchanged Release build,
+declaration/symbol exclusion and private session/handle access evidence from the published
+converter/handoff slices is reused: application source, configuration and target membership
+are unchanged. No Release rebuild is needed for this test-only slice.
+
+Independent source/documentation and final evidence review approved with no material
+findings remaining. Exact two-file scope, empty index, whitespace, DEBUG guard, reviewed
+handoff source fingerprints, absence of fact reconstruction/private data/network/persistence/app wiring and
+`git diff --check` checks pass. Final test SHA-256:
+`0b212efe26690bd197a93ba17721c8417d0ccfbf84fb9bb4ca24e161bf605451`.
+No private access, real import, provider contact,
+production adoption or app wiring. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
+classification and fourteen ordering gaps. Leave both files unstaged/uncommitted for review.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
