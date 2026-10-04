@@ -5549,6 +5549,64 @@ Journey/train selection or production routing adoption. P3-T1/Phase 3 remain inc
 P2-S9 retains fourteen classification and fourteen ordering gaps. No ODPT reply supplied.
 Leave changes unstaged/uncommitted for publication review.
 
+#### Application route-search composition design — 2026-10-04 Asia/Seoul
+
+Published lifecycle baseline: `d35fc8426bda597dcc0cac3b2f2aac09affa9e83`; clean initial
+checkout on phase/03-route-search, cached upstream identical. [Consumer proposal §13](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#13-application-composition-and-coordinator-provisioning-design)
+addresses the next missing App-owned constructor/factory boundary, not another lifecycle
+implementation. Recommend optional explicitly injected RouteSearching in immutable
+AppEnvironment, plus a main-actor typed notConfigured/ready provisioning method. Each ready
+result is a fresh coordinator using the existing environment Clock; construction does not
+read time or invoke search. Consumer lifetime hosts retain/dispose their own owners.
+Live/default assembly stays unconfigured; no fallback or DEBUG solver is installed.
+
+No new semantic decision: DEC-087 C1/C2 and recent-station policy remain unchanged. Next
+bounded implementation is AppEnvironment provisioning plus controlled fake composition tests
+and documentation, without TSUGINOApp/AppShell/UI changes or production adoption. Tests should
+prove exact dependency wiring, independent owners, host disposal, unchanged canonical handoff
+and explicit unconfigured behavior; reuse existing lifecycle edge coverage. This entry and
+§13 are design only, not evidence of implemented factory or feature consumption.
+
+Documentation-only scope; no tests/builds, private access, provider contact or external
+research. Scope, preservation, local-link, privacy and whitespace checks passed. Separate
+non-author documentation review approved with no material findings. P3-T1/Phase 3 remain incomplete; P2-S9
+retains fourteen classification and fourteen ordering gaps. No ODPT reply supplied.
+Leave changes unstaged/uncommitted for review.
+
+#### Application route-search composition implementation — 2026-10-04 Asia/Seoul
+
+Owner authorized the independently reviewed Consumer §13 design. AppEnvironment now keeps
+an optional explicitly injected RouteSearching, with nil default preserving old constructor
+calls, and a MainActor factory returning typed notConfigured or a fresh coordinator using
+the same injected Clock. No clock read/search occurs during composition. Each consumer
+lifetime host owns/disposes its independent coordinator. Live/default assembly remains
+explicitly unconfigured in Debug and Release; no fallback, DEBUG solver or false empty result.
+The prior reviewed design/progress records are preserved with implementation overlays.
+
+New controlled-fake composition tests cover inert construction, exact now/explicit dependency
+wiring, independent environments and per-consumer owners, copied environments, host disposal
+isolation/late completion, fresh idle owners, canonical scope/context/omission/failure handoff
+and explicit nil, omitted port, live and SwiftUI defaults. No sleeps. Existing coordinator
+suite supplies lifecycle edge coverage; coordinator and real app/feature roots are unchanged.
+
+Validation (one final run, no overlapping counts added):
+
+- `/private/tmp/tsugino-composition-r1.xcresult`: **20 functions / 44 cases passed**,
+  zero failures, explicit iPhone 17 / iOS 26.5 Simulator. Includes composition **5/10**,
+  coordinator **9/28**, AppEnvironment **3/3** and AppClock **3/3**. Debug test action
+  built app and extension dependencies; no test corrections or reruns were required.
+- Release app/extension build passed (`/private/tmp/tsugino-composition-release.log`).
+  AppEnvironment uses the same unconditional nil live/default port in Debug and Release;
+  no synthetic/fallback dependency reference. No changed-Swift-file compiler warnings;
+  existing unrelated Domain isolation/AppIntents warnings are not represented as fixed.
+- Independent source/test/documentation/evidence review approved with no material findings.
+  Scope, reviewed-design preservation, privacy and whitespace checks passed.
+
+No UI, caching, recent-history
+implementation/deletion, Journey creation, private access, provider contact or production
+adoption. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen
+ordering gaps. No ODPT reply supplied. Leave changes unstaged/uncommitted for publication review.
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

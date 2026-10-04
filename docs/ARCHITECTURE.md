@@ -1176,6 +1176,26 @@ caching, recent-history implementation, persistence, UI, timetable import or Jou
 is added. P2-S9, P3-T1 and all applicable retained gates remain.
 See ROADMAP for exact synthetic case coverage and independent-review status.
 
+**Current composition implementation overlay (2026-10-04 Asia/Seoul):** the owner authorized
+Consumer §13's bounded composition slice. AppEnvironment now stores the optional explicitly
+injected RouteSearching port (initializer defaults to nil) and exposes a MainActor factory
+returning App-local `RouteSearchProvision.notConfigured` or a fresh RouteSearchCoordinator
+using the environment Clock. Construction reads no time and invokes no search. Consumer
+lifetime hosts retain/dispose their own owners; the environment caches no coordinator.
+Live/default environments explicitly remain unconfigured in Debug and Release. Existing
+TSUGINOApp/AppShell and DEC-087 coordinator behavior are unchanged; there is no feature/UI
+consumer or production routing adoption. The following design wording is preserved as
+history; see ROADMAP for actual validation rather than interpreting it as pending design.
+
+**Composition design (not implemented):** [Consumer proposal §13](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#13-application-composition-and-coordinator-provisioning-design)
+recommends an immutable optional RouteSearching dependency in AppEnvironment and a main-actor
+factory returning either an explicit not-configured capability result or a fresh coordinator
+using that port and the environment Clock. Each consumer lifetime host owns/disposes its own
+coordinator; Application consumers receive the owner directly, never look up AppEnvironment.
+Live/default assembly remains unconfigured in Debug and Release; no fallback/synthetic port
+or successful-empty search stands in for absent routing. No feature/UI wiring is implemented.
+
+
 ---
 
 ## 11. Train Selection Architecture

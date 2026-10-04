@@ -1474,3 +1474,153 @@ AppEnvironment wiring, source interpretation, Journey/train mutation or routing 
 The lifetime consumer still must explicitly dispose; cooperative cancellation cannot force
 arbitrary nonconforming workers to terminate. Final tests/builds/review are recorded in
 ROADMAP; implementation completion does not complete P3-T1 or Phase 3.
+
+
+## 13. Application composition and coordinator provisioning design
+
+**Implementation overlay, 2026-10-04 Asia/Seoul:** owner authorized this bounded composition
+implementation. The design text below is preserved; its future/not-implemented wording is
+historical. Actual source and verification status are recorded in §13.5 and ROADMAP.
+
+**Status: design recommendation, 2026-10-04 Asia/Seoul; not implemented.** Baseline
+`d35fc8426bda597dcc0cac3b2f2aac09affa9e83` publishes the DEC-087 owner. This section
+connects its existing constructor to App-owned dependency assembly; it does not change
+C1/C2, select a provider or authorize production routing. No new decision record is needed
+for this constructor/factory plumbing under ARCHITECTURE §§4.1/10/21/23–24.
+
+### 13.1 Existing code and smallest composition boundary
+
+`TSUGINOApp.init` creates `AppEnvironment.live()` once and injects the immutable Sendable
+value into the hierarchy. Its dependencies are configuration, `any AppClock` and logging.
+The SwiftUI EnvironmentValues default also calls `live()`; neither path may activate routing
+implicitly. `AppShellView` is a placeholder, not a route consumer. The DEBUG Live Activity
+section demonstrates explicitly supplied dependencies and per-consumer ownership, but is
+not a routing lifetime or production dependency template. No route feature/model exists.
+
+Recommend the following small addition to `App/Environment/AppEnvironment.swift` (design
+notation, not new declarations in this task):
+
+- Private immutable `routeSearching: (any RouteSearching)?`, supplied through the explicit
+  environment initializer; default `nil` preserves existing infrastructure-only callers.
+  `nil` means no implementation has been configured, never that there is no service.
+- `@MainActor makeRouteSearchCoordinator() -> RouteSearchProvision`, where the App-local
+  typed result is `.notConfigured` or `.ready(RouteSearchCoordinator)`. It is a local
+  main-actor handoff, not a Domain search result, error thrown by the port or persistent state.
+- The factory branches only on dependency presence. Configured: construct the existing
+  coordinator with that exact injected port and the environment's exact `clock` dependency.
+  Unconfigured: return `.notConfigured`, without creating a coordinator or search task.
+  No clock read, port call, discovery, provider selection or network action occurs at either
+  environment construction or factory invocation. Time capture stays in DEC-087 submission.
+- Keep the environment immutable/nonisolated/Sendable; isolate the construction method
+  (and provisioning handoff as needed) to MainActor because the existing owner requires it.
+  Store neither a coordinator singleton nor a registry/lookup closure. No factory protocol,
+  service locator, second clock, provider wrapper or fallback RouteSearching is needed.
+
+App assembly supplies an explicitly chosen port only when a caller is authorized to do so.
+For the next bounded slice, that caller is a test constructing AppEnvironment with a
+controlled fake and test clock. A future App assembly boundary calls the factory once at
+consumer creation, branches on its result and constructor-injects the ready coordinator
+into an Application workflow owner or feature model. The Application consumer must not
+import SwiftUI/AppEnvironment or look up dependencies itself. It receives the coordinator,
+not the whole environment. Neither SwiftUI body evaluation nor request submission calls
+the factory. Implementing that future feature/lifetime host remains outside this slice.
+
+### 13.2 Lifetime, independent consumers and disposal
+
+Each successful factory invocation returns a fresh idle owner, even when the environment
+or injected port is shared. Separate consumer scopes receive distinct coordinators and
+request identities; copying AppEnvironment does not copy or retain route results. Sharing
+one Sendable port/clock does not merge coordinator state. Concurrent-call isolation remains
+the existing RouteSearching implementation responsibility; no per-consumer provider cloning
+or new global cancellation API is introduced.
+
+The receiving consumer's lifetime host strongly retains exactly its coordinator for that
+scope and explicitly calls `dispose()` on MainActor when the scope ends or is replaced,
+then releases it. AppEnvironment and TSUGINOApp do not retain created owners or dispose
+unrelated scopes. A later consumer gets a new owner; a disposed owner is never reset/reused.
+Transient view reconstruction is not by itself the end of an Application consumer scope;
+actual navigation/UI lifecycle hooks must be designed with the eventual host, not guessed
+as an `onDisappear` policy now. Deinit cancellation remains a safeguard, not the primary
+lifetime contract. Provisioning imposes no new tasks, observation system or teardown await.
+
+DEC-087 submission/replacement/cancellation/publication/retry rules remain unchanged.
+Cancelling or disposing consumer A cannot revoke B's publication authority. Clearing route
+answers never deletes recent-station history; storage, limits, deduplication and deletion UI
+remain outside this design and implementation. No automatic Journey/train selection.
+
+### 13.3 No approved live port: explicit absence, not a search outcome
+
+`AppEnvironment.live()` explicitly supplies no routing implementation in both Debug and
+Release, as does the SwiftUI default through that same live construction. The current shell
+remains unchanged and creates no route owner. The factory therefore reports `.notConfigured`
+if asked. This is a composition capability result, not `.noResults`, `.dataUnavailable` or
+an invented port that throws `.configurationUnavailable`. No successful search is claimed.
+There is no request to resolve or retry until an actual configured owner exists.
+
+If an explicitly injected port later throws an existing canonical failure, the coordinator
+preserves it normally; absence at composition does not rewrite that vocabulary. A future
+consumer must branch on `.notConfigured` and not offer a working search capability; exact
+localized UI/recovery presentation is outside this task. Never fill absence with a DEBUG
+synthetic searcher, automatic provider discovery or a system-clock fallback. Providing a
+production port in live assembly requires separate approval/evidence; this design does not
+settle DEC-086 ownership/algorithm/limits or provider suitability.
+
+### 13.4 Smallest implementation and meaningful verification
+
+After implementation authority, change `AppEnvironment.swift` only for the immutable optional
+port, explicit unconfigured live path, App-local typed provisioning result and main-actor
+factory. Add one `RouteSearchCompositionTests.swift` using a small controlled fake consumer
+host/port and counting clock; update the relevant documentation status. Do not change the
+published coordinator, Domain/Data engines, TSUGINOApp, AppShellView or app configuration flags.
+The existing initializer and infrastructure tests remain valid through the default nil value.
+
+| Composition proof | Controlled assertion |
+|---|---|
+| Explicit dependency assembly | Environment/factory creation reads Clock zero times and calls port zero times; first now submission uses injected time and supplied port exactly once; explicit-time submission makes no clock read |
+| Fresh owners from one environment | Two factory calls produce separate idle owners; one shared controlled fake receives their exact requests; replacing/cancelling/disposing A leaves B's state and completion authority intact |
+| Consumer ownership | Fake lifetime host receives and retains ready owner; ending it disposes that owner before release; captured late completion cannot publish; a fresh host gets a fresh owner, not disposed state |
+| Canonical handoff | One configured fake completion is retained unchanged, including scoped result/context/omissions; one canonical failure remains failure. Reuse existing fixtures; do not rebuild the full lifecycle outcome matrix |
+| Unconfigured construction | Explicit nil, omitted optional argument and `live()` all provision `.notConfigured`; no synthetic/fallback instance or worker; current shell remains unmodified |
+| No ambient dependency leakage | Separate environments with different fake ports/clocks deliver requests to their own injected dependencies; shared environment does not cache owner state |
+
+Use continuations and the existing DEBUG-only worker completion barrier, never sleeps.
+Reuse DEC-087 lifecycle tests for exhaustive stale completion, invalid submission, retry and
+cancellation edge cases; these tests prove factory wiring and lifetime-host composition only.
+Future verification: focused composition plus AppEnvironment/coordinator/Clock suites on an
+explicit iPhone Simulator, appropriate Debug/Release app/extension build checks, and review
+that live/default assembly references no synthetic/fallback port. No test/build run belongs
+to this documentation task. Ordinary Application provisioning must work in Release; test
+fakes stay in tests and the existing worker barrier remains DEBUG-only.
+
+**Owner choices:** no new product-semantic approval is requested. Fresh per-consumer owners,
+App-owned assembly, explicit dependency absence and unchanged DEC-087 disposal follow existing
+boundaries and the current no-live-provider constraint. API spelling is a recommended routine
+implementation detail. Actual production injection, future UI lifetime hooks/presentation,
+cache/history behavior and provider/optimizer adoption remain outside scope, not implicitly
+accepted. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen classification and fourteen
+ordering gaps. No ODPT reply has been supplied.
+
+
+### 13.5 Bounded implementation status — 2026-10-04 Asia/Seoul
+
+`AppEnvironment.swift` implements the optional private immutable port, backwards-compatible
+initializer default, main-actor factory and App-local `RouteSearchProvision` enum. Ready
+creates the existing coordinator with the exact injected port/Clock, without reading time
+or starting work; notConfigured creates no owner. The live path explicitly passes nil and
+the SwiftUI default still delegates to that live path in both configurations. No fallback,
+DEBUG engine, closure registry or global coordinator was added. No production provider was
+selected. Coordinator, TSUGINOApp, AppShell, Domain and Data source are unchanged.
+
+`RouteSearchCompositionTests` uses controlled continuations, a counting mutable test Clock,
+a fake lifetime host receiving only its coordinator, and existing canonical fixture values.
+It checks inert construction, now/explicit wiring, separate environment dependencies,
+independent owners from one/copied environment, scoped host disposal with late completion,
+fresh owners after disposal, unchanged scoped canonical context/omissions and canonical
+failure, and explicit-nil/omitted/live/SwiftUI-default notConfigured provisioning.
+Existing DEC-087 tests continue to own exhaustive lifecycle/retry coverage. The host is
+only a test fixture; actual feature host/lifetime hooks and UI remain unimplemented.
+
+Final tests/builds and independent review are recorded in ROADMAP. No cache/history storage,
+recent-station deletion, Journey creation, real/private input, provider contact, production
+routing or new product decision. P3-T1/Phase 3 remain incomplete; P2-S9 retains fourteen
+classification and fourteen ordering gaps. No ODPT reply supplied.
