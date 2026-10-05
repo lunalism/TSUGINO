@@ -52,6 +52,7 @@ nonisolated struct SyntheticInternalQualifiedGraph: Sendable {
 nonisolated struct SyntheticInternalRouteEngine: Sendable {
     let configuration: SyntheticInternalConfiguration?
     let view: SyntheticInternalView?
+    let captureView: (@Sendable () async -> SyntheticInternalView?)?
     let workLimit: Int?
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
     private var work = 0
@@ -63,8 +64,9 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
 
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?, workLimit: Int?,
          checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void,
-         experiment: SyntheticPruningMode? = nil, profileSelection: Bool = false) {
-        self.configuration = configuration; self.view = view
+         experiment: SyntheticPruningMode? = nil, profileSelection: Bool = false,
+         captureView: (@Sendable () async -> SyntheticInternalView?)? = nil) {
+        self.configuration = configuration; self.view = view; self.captureView = captureView
         self.workLimit = workLimit; self.checkpoint = checkpoint; self.experiment = experiment; self.profileSelection = profileSelection
     }
 
@@ -135,7 +137,17 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
             throw RouteSearchFailure.configurationUnavailable
         }
         try await step(.configuration)
-        guard let view, view.validFrom.timeIntervalSinceReferenceDate.isFinite,
+        // The optional in-memory read occurs only after existing preflight and its
+        // charged checkpoint. Keep this engine/counter and the captured value for
+        // all subsequent qualification, discovery and admission. No I/O error API.
+        let suppliedView: SyntheticInternalView?
+        if let captureView {
+            suppliedView = await captureView()
+            try Task.checkCancellation()
+        } else {
+            suppliedView = view
+        }
+        guard let view = suppliedView, view.validFrom.timeIntervalSinceReferenceDate.isFinite,
               view.validUntil.timeIntervalSinceReferenceDate.isFinite, view.validFrom < view.validUntil,
               view.policies.qualifiedManifest == configuration.profile.serviceDateInterpretation,
               view.policies.directionalTotalAllowance == configuration.profile.connectionPolicy else {

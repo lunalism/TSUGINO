@@ -6675,6 +6675,41 @@ P3-T1/Phase 3 incomplete; S9 retains 14 classification/14 ordering gaps. No ODPT
 provider contact, persistence/cache, UI or production adoption.
 
 
+#### DEBUG preflight/capture integration — 2026-10-05
+
+The owner authorized the assessed optional-view seam under DEC-081/E2. The optimal searcher's
+opt-in nonthrowing Sendable async capture initializer now reaches capture inside existing engine
+qualification, after entry cancellation, configuration/permission/allowance checks and the charged
+configuration checkpoint. One read is followed immediately by cancellation observation, then
+unchanged qualification/selection/canonical admission with the same engine and allowance. Fixed-
+view entry behavior remains preserved; no outer duplicate validation, reset or new charged unit.
+
+Focused tests prove zero reads for missing/disallowed configuration, negative allowance, zero
+configuration-step budget and pre-capture cancellation; eligible calls read once. Nil/incoherent
+views fail unavailable, with observed cancellation taking precedence. Exact dated bindings,
+full snapshots, indices and canonical contexts survive capture/replacement. Every allowance
+prefix through successful admission is compared against fixed-view execution on a one-interval
+fixture; no partial success or budget reset occurs. Controlled tasks/gates are cancelled/joined.
+Supplier read success is not coverage proof; E2 does not establish production invalidation.
+
+Final `/private/tmp/tsugino-preflight-r1.xcresult`: **55 functions / 117 cases passed**, zero
+failures/skips, explicit iPhone 17 / iOS 26.5 Simulator. Included subsets: new preflight **7/14**,
+capture isolation **6/8**, internal routing **19/44**, optimal handoff **9/13**, coordinator **9/28**,
+composition **5/10**. Counts come from the structured summary/tree, not summed overlapping runs.
+Debug test action built app/extension dependencies. Standard Release app/extension build passed
+(`/private/tmp/tsugino-preflight-release.log`); two no-DEBUG declaration probes and Release app plus
+both changed-object symbol checks passed. These checks/builds are newly executed. Existing
+unrelated AppIntents/asset/Domain warnings do not establish a new failure; no benchmark/device run.
+
+Separate non-author review approved final implementation/tests/docs with no material findings.
+Scope/privacy/reference and whitespace checks passed. Only two DEBUG source files, the focused
+test file and existing Consumer/ROADMAP records change; leave unstaged/uncommitted for publication
+review. No production supplier, throwing acquisition API, network/data access, update publisher,
+invalidation/storage/cache, Application redesign or adoption. All 15 services remain preserved;
+append opt-in, reference default, live unconfigured. P3-T1/Phase 3 remain incomplete; P2-S9 retains
+14 classification and 14 ordering gaps. No ODPT reply has arrived.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

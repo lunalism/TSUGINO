@@ -7,12 +7,22 @@ import Foundation
 nonisolated struct SyntheticOptimalRouteSearcher: RouteSearching {
     let configuration: SyntheticInternalConfiguration?
     let view: SyntheticInternalView?
+    private let captureView: (@Sendable () async -> SyntheticInternalView?)?
     let workLimit: Int
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
 
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?, workLimit: Int,
          checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void = { _ in }) {
-        self.configuration = configuration; self.view = view
+        self.configuration = configuration; self.view = view; self.captureView = nil
+        self.workLimit = workLimit; self.checkpoint = checkpoint
+    }
+
+    /// Opt-in DEBUG in-memory capture. Qualification owns preflight, capture and
+    /// the uninterrupted allowance; this initializer performs no read or validation.
+    init(configuration: SyntheticInternalConfiguration?, workLimit: Int,
+         captureView: @escaping @Sendable () async -> SyntheticInternalView?,
+         checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void = { _ in }) {
+        self.configuration = configuration; self.view = nil; self.captureView = captureView
         self.workLimit = workLimit; self.checkpoint = checkpoint
     }
 
@@ -23,7 +33,7 @@ nonisolated struct SyntheticOptimalRouteSearcher: RouteSearching {
 
     fileprivate func run(_ request: RouteSearchRequest, rejecting indices: Set<Int>) async throws -> RouteSearchResult {
         var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view,
-            workLimit: workLimit, checkpoint: checkpoint)
+            workLimit: workLimit, checkpoint: checkpoint, captureView: captureView)
         do {
             let session = try await PreparedOptimalSession.open(request, engine: &engine)
             return try await session.admit(engine: &engine, rejecting: indices)

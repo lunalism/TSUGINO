@@ -3330,8 +3330,9 @@ Recommend a **documentation-only per-call execution/isolation contract** for the
 `RouteSearching` implementation, limited to the seam between an immutable view supplier and
 the existing port. AppEnvironment can share one injected port among independent coordinators;
 DEC-087 guards publication, but does not specify production solver workspace sharing, capture
-of a replaceable view or cancellation responsiveness. The internal/optimal synthetic searchers retain
-fixed supplied views and therefore do not settle that production update/concurrency seam.
+of a replaceable view or cancellation responsiveness. The internal/optimal synthetic searchers originally retained only
+fixed supplied views; §19.7 now adds bounded DEBUG optimal capture after preflight.
+Neither that seam nor the earlier test-only composition settles production update/concurrency.
 The earlier provider-style SyntheticRouteSearcher already has a per-call loadView seam;
 §19 reuses that pattern rather than proposing another loading framework.
 
@@ -3354,7 +3355,7 @@ without automatically cancelling, relabelling or switching existing calls. This 
 reviewed test-only composition, not production invalidation, update publication or adoption.
 Historical Proposed E2 wording and unexecuted-validation statements in §§19.1–19.5 below
 record the design stage; unresolved production choices remain Proposed. Current implementation/
-verification is recorded in §19.6 and ROADMAP.
+verification is recorded in §§19.6–19.7 and ROADMAP.
 
 2026-10-05. DEC-086's preferred on-device location is accepted; this section does not adopt
 an engine or production scheduling/resource policy. It narrows §18.4 using current code.
@@ -3366,7 +3367,7 @@ No change to RouteSearching, DEC-087 or canonical admission is proposed.
 | --- | --- | --- |
 | Domain `RouteSearching` | `nonisolated protocol …: Sendable`, async throwing request/result; only canonical failures or CancellationError cross the port | `async`/Sendable alone is not an off-main execution guarantee or proof of cancellation responsiveness |
 | `RouteSearchCoordinator` | MainActor owner creates one retained `Task` per accepted invocation; explicit cancellation/disposal, weak owner across port await and identity/state publication guard; AppEnvironment can share one port among independent coordinators | This is an explicitly owned unstructured Task, not an automatically lifetime-scoped child. It does not choose a Data executor or wait for arbitrary ignored cancellation to finish |
-| Internal/optimal synthetic searchers | Nonisolated Sendable conformers, explicit `@concurrent search`, immutable supplied configuration/view, locally created engine, preparation/session, selection, claims and accounting; no detached worker | They have fixed views, not a replaceable internal-view supplier. DEBUG evidence does not establish production scheduling or resource feasibility |
+| Internal/optimal synthetic searchers | Nonisolated Sendable conformers, explicit `@concurrent search`, immutable supplied configuration/view, locally created engine, preparation/session, selection, claims and accounting; no detached worker | Fixed-view behavior remains the default; §19.7 adds opt-in DEBUG optimal capture. No production supplier, scheduling or resource feasibility is established |
 | Earlier `SyntheticRouteSearcher` | `@concurrent search` awaits one `@Sendable loadView`, retains that value, validates it and checks cancellation around awaits; working output is local | Its provider-style view/envelope types are not the internal timetable view; do not interchange them or create duplicate admission |
 | Internal engine `step`, catch/finalize | Cancellation checks before charges, around checkpoint suspension, before pending failure and final return; cutoffs discard partial result; per-call work/metrics | Charges count existing work, not latency. Checkpoints do not force a suspension, guarantee fairness, or interrupt arbitrary synchronous work |
 
@@ -3526,3 +3527,43 @@ scope/privacy/reference and whitespace checks passed. Source behavior, E1 safegu
 selection and nil live/default routing remain unchanged. No new real qualification, data access,
 rights, production supplier/adoption or milestone acceptance follows. All 15 services remain;
 P3-T1/Phase 3 and S9's 14 classification/14 ordering gaps remain incomplete. No ODPT reply.
+
+
+### 19.7 Bounded DEBUG preflight/capture integration — 2026-10-05
+
+The owner separately authorized this source-neutral integration under DEC-081 and accepted E2.
+`SyntheticOptimalRouteSearcher.init(configuration:workLimit:captureView:checkpoint:)` is an
+opt-in DEBUG entry taking an in-memory `@Sendable () async -> SyntheticInternalView?`.
+It performs no read at construction and exposes no throwing acquisition/network error API.
+Fixed-view initializers remain unchanged in behavior, and reference selection stays default.
+
+The existing engine performs entry cancellation, configuration/permission/nonnegative-allowance
+validation and its charged configuration checkpoint **before** invoking capture. It then reads
+once, checks cancellation immediately after the await, retains the captured value locally, and
+continues the same qualification/discovery/selection/admission path with the same engine and
+uninterrupted allowance. No duplicate outer preflight, extra charged unit, reset, empty-view
+fallback, snapshot relabeling or second qualification authority. Fixed inputs take the original
+view branch without capture or added charged checkpoints. Capture closure storage does not make
+arbitrary work bounded: callers in this experiment supply only the controlled in-memory read;
+production acquisition and responsiveness remain unestablished.
+
+Outcomes reuse accepted precedence: missing/disallowed configuration or negative allowance is
+configurationUnavailable with zero reads; exhaustion at configuration is searchIncomplete with
+zero reads; missing or incoherent captured view is dataUnavailable after one read. Observed
+cancellation wins before pending failures, including nil/invalid captured inputs. All qualification
+and completion obligations still apply after a successful read. E2 retains older captured views
+and affects only later captures on replacement, not currentness, revocation or publication policy.
+
+`SyntheticRoutePreflightCaptureTests` checks all those boundaries, construction without reading,
+pre-cancelled invalid configuration, cancellation at configuration and immediately after capture,
+exact dated snapshot/indices/canonical context and fixed/captured output agreement. A one-interval
+invented fixture sweeps every allowance from zero through the complete fixed-run charge count:
+all smaller allowances fail incomplete on both paths, the final allowance succeeds on both, and
+capture reads are zero at zero and one thereafter. This scoped accounting parity is not a general
+callback-trace or computational-cost claim. A gated overlapping replacement test proves A retains
+V1 and B uses V2; tasks are cancelled/joined on every exit with existing cancellation-aware gates.
+
+Final validation and Release exclusion evidence are recorded in ROADMAP. No Application changes,
+production supplier, update publisher, acquisition/error mapping, invalidation/storage/cache or
+adoption. All 15 services stay preserved; append opt-in/reference default/live unconfigured;
+P3-T1/Phase 3 remain incomplete; S9 retains 14 classification/14 ordering gaps. No ODPT reply.
