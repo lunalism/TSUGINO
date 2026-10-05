@@ -6749,6 +6749,81 @@ does not resolve classification/ordering gaps, feed-revision applicability or ri
 Earlier dated no-reply records remain historical.
 
 
+#### ODPT reply applicability checkpoint — 2026-10-05
+
+**Review history and current evidence:** the initial partial assessment had no accessible image
+and correctly treated the owner's summary as unexamined correspondence; its independent review
+approved that limited status. The owner subsequently attached a readable screenshot, now directly
+examined for the four quoted questions, answers and specification link. It displays the ODPT
+secretariat as sender and an October 3 quoted-message date; October 5 receipt remains owner-reported
+(the reply header shows a time/relative age, not a full receipt date). This is examination of the
+supplied image, not mail-header authentication or private mailbox access. No screenshot, contact
+details, full correspondence, local attachment path or private occurrence content is committed.
+
+Tracked inquiry context: the October 3 public research/trace above identifies Toei `train-toei`
+resource `35b68908-4558-47ae-bfa5-867e58544a1a`, retained feed version `20260921`, and asks about
+stop/pass/restricted-position, omission, ordering and conversion/exception conventions. Consumer
+§17.5 records the owner-reported sending date. The visible questions match those topics and Q4
+explicitly requests revision 20260921 applicability or the version/period/scope that can be confirmed.
+The screenshot does not visibly identify the resource UUID; association to that exact resource
+still rests on tracked inquiry context, not an explicit identifier in the displayed answer. Quoting
+Q4 acknowledges the question, **not confirmation of the requested historical applicability**.
+
+**Public reference reused:** the screenshot's answer to Q4 links exactly to
+[official GTFS Schedule Reference](https://gtfs.org/documentation/schedule/reference/).
+The earlier October 5 public review of its [stop_times.txt fields](https://gtfs.org/documentation/schedule/reference/#stop_timestxt)
+is reused; the served document labels itself **Revised April 27, 2026**. `pickup_type` and
+`drop_off_type` describe passenger access independently: 1 prohibits the respective operation;
+0/empty denotes regular service; 2/3 require arrangements. `stop_sequence` is a nonnegative
+integer trip ordering key, increasing but not necessarily consecutive. These generic meanings
+do not prove physical passing or traversal completeness. Neither a current reference nor an
+undated conformance answer identifies the exact historical profile implemented by this snapshot.
+No further public retrieval was necessary.
+
+| Existing obligation / quoted question | Explicit answer visible in the screenshot | Scoped contribution and unanswered questions |
+|---|---|---|
+| Classification, Q1: what row inclusion represents; whether non-passenger positions are included | Besides stopping stations, passing stations of Toei Shinjuku Line express trains are included in stop_times.txt. | Direct source-specific interpretation evidence that inclusion is not exclusively passenger stopping. It does not classify the candidate or establish that every physically traversed station/point is represented. |
+| Classification, Q2: passenger stops, restricted stops, passing positions, omissions and exceptions | Passing stations have pickup_type=1 and drop_off_type=1. | Preserve passing ⇒ 1/1 only. The answer does not assert 1/1 ⇒ physical passing, exclude restricted physical stops with 1/1, or explain one-sided restrictions, omitted positions or all exceptions. Generic GTFS permission meanings remain separate. |
+| Ordering, Q3: guaranteed order, conversion/adoption rules, exceptions, represented versus complete physical order | stop_sequence follows the station order of stopping and passing stations. | Supports ordering of represented stations in the answer's scope. It does not answer completeness of all traversed positions, conversion rules or exceptions. No independent physical traversal/crosswalk proof follows. |
+| Resource/revision/specification, Q4: supporting profile and applicable version/period, specifically 20260921 or confirmable alternatives | The resource follows GTFS Schedule, with the official reference link above. | This is an explicit conformance statement, not merely inferred adoption. It supplies no explicit feed_version 20260921 confirmation, alternative applicability period, named specification revision or conversion profile. Resource association is contextual as noted above. |
+| Rights/delivery | No permission statement appears in these answers. | Publication, translation, offline retention and bundling gates remain separate. No rights authorization follows from technical interpretation or reply receipt. |
+
+**Inference, not accepted row classification:** this reply explains how some non-passenger
+traversal rows can appear in the source and supports a represented-station ordering convention.
+It is reasonable to regard it as a response to the tracked interpretation inquiry; exact resource
+and retained-revision scope still need corroboration. It cannot identify which of the fourteen
+pilot occurrences belong to any class. **Classification gaps remain 14; ordering gaps remain 14;
+P2-S9 is incomplete.** No source profile, candidate classification or semantic change is accepted.
+Identity, mappings, movement/endpoints, independent crosswalk, registration and acceptance retain
+the existing DEC-082/readiness obligations. Zero transport-order inversions is not railway proof.
+
+**Smallest next evidence task:** review only a supplied inquiry excerpt identifying the public
+resource UUID, if available, and an applicable authoritative statement/document establishing
+whether these conventions cover retained feed_version 20260921 (or precisely what scope can be
+supported instead). The current screenshot need not be requested again. No private archive,
+manifest or candidate access is needed to answer that association question. If clarification is
+required, ask precisely whether the stated conventions apply to that resource/revision, whether
+1/1 can also describe restricted physical stops, how one-sided restrictions are represented, and
+what omissions/conversion exceptions limit the stated ordering. These are unanswered evidence
+questions, not new product choices or authorization to contact the provider. Applicable existing
+conformance/conversion or occurrence-specific evidence can contribute; a new literal adoption
+statement is not the only permissible evidence route.
+
+After the applicable interpretation boundary is supported, a separately authorized owner-only
+review still needs the same candidate's complete 14-row set: exact locators, original sequence
+spelling/numeric order, repeated visits and pickup/drop-off fields, with affirmative applicable
+classification and independent scoped order/crosswalk evidence. Unknown interior positions remain
+held; no raw times, candidate substitution, cropping or automatic classification by flags. Existing
+review_session displays permitted fields but cannot classify, clear gaps or establish an acceptance
+crosswalk. Its earlier one-use grants remain consumed; this document grants no new re-read or
+private evidence access. No retained feed or source occurrence was examined in this task.
+
+Separate non-author review directly examined the supplied screenshot and approved this revised
+assessment with no material findings. Scope/privacy/reference and whitespace checks passed.
+No code/tests/builds, provider contact or production adoption. P3-T1/Phase 3 remain incomplete; all 15 launch services
+remain preserved, live/default routing unconfigured, reference default and append opt-in.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
