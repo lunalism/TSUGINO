@@ -6323,6 +6323,118 @@ supplied. Changes remain unstaged/uncommitted for publication review.
 
 
 
+### Compiler-optimized append evaluation — unchanged code, opt-in retained
+
+Consumer §15.8.12 records this bounded measurement authorization, exact invocation and isolation.
+Only the published append suite ran: **7 functions / 13 cases passed**, no failures/skips/runtime
+warnings. Do not add historical 49 / 96 or included subsets. Actual Swift compiler commands for
+app/routing module, tests and extension use **-O, -DDEBUG, -enable-testing, -g**, batch mode without
+whole-module optimization. The only override is invocation-level `SWIFT_OPTIMIZATION_LEVEL=-O`
+in a separate temporary DerivedData directory. No source, test, project, scheme, signing,
+deployment, default selector, limits or E1 behavior changed. Debug-with-O dependencies built;
+standard Release was not rebuilt. Existing Release build and no-DEBUG exclusion evidence is
+reused with matching fingerprints/provenance; ordinary Release settings still omit DEBUG.
+Separate non-author independent review approved configuration isolation, correctness evidence,
+measurement tables and conclusions with no material findings.
+
+One warmup per variant/profile mode; eight balanced four-slot rotations, each position twice.
+Xcode 27.0, iPhone 17/iOS 26.5 Simulator arm64, macOS 26.6.2. Same frozen input per comparison;
+canonical ordered outputs/identities checked outside timing. Only append tests selected, serialized;
+host conditions not controlled. Whole pipeline includes all standalone stages, excludes fixture
+construction/oracle comparison/assertions/printing. Tables report **milliseconds, median [min–max]**.
+Timing is observational. Primary profile-disabled timings are not merged with enabled observations.
+
+**Profile-disabled whole pipeline and selection/reconstruction:**
+
+| Ties | Reference whole | Append whole | Reference selection | Append selection |
+| --- | --- | --- | --- | --- |
+| 1 | 0.1365 [0.1132–0.1461] | 0.1284 [0.1153–0.1547] | 0.0094 [0.0091–0.0116] | 0.0098 [0.0090–0.0115] |
+| 8 | 0.6187 [0.5337–0.6671] | 0.6047 [0.5306–0.6481] | 0.0761 [0.0736–0.0859] | 0.0693 [0.0655–0.0776] |
+| 27 | 1.9814 [1.8546–2.1852] | 1.7913 [1.7058–1.9558] | 0.3375 [0.3329–0.3515] | 0.2260 [0.2194–0.2398] |
+| 64 | 5.2786 [5.2205–5.8537] | 4.5922 [4.4478–4.6660] | 1.1906 [1.1746–1.2293] | 0.5339 [0.5161–0.5617] |
+
+Canonical admission is separate and unchanged. For 64/profile-disabled it was 1.9820ms reference
+and 1.9809ms append at the median; selection medians were 1.1906/0.5339ms. Nested stage times or
+separately computed medians must not be summed to fabricate a CPU/allocation partition.
+
+**Profile-disabled kernel permutations:** normal whole pipelines still normalize prepared paths;
+these separately permute canonical-derived descriptors and exclude other pipeline costs.
+
+| Ties / order | Reference kernel | Append kernel |
+| --- | --- | --- |
+| 1 / ascending | 0.0003 [0.0002–0.0005] | 0.0003 [0.0002–0.0009] |
+| 1 / descending | 0.0003 [0.0002–0.0004] | 0.0003 [0.0002–0.0007] |
+| 1 / mixed | 0.0003 [0.0002–0.0005] | 0.0002 [0.0002–0.0004] |
+| 8 / ascending | 0.0102 [0.0098–0.0108] | 0.0055 [0.0054–0.0070] |
+| 8 / descending | 0.0056 [0.0053–0.0059] | 0.0091 [0.0087–0.0098] |
+| 8 / mixed | 0.0085 [0.0085–0.0095] | 0.0116 [0.0112–0.0128] |
+| 27 / ascending | 0.0895 [0.0893–0.0905] | 0.0204 [0.0203–0.0210] |
+| 27 / descending | 0.0202 [0.0200–0.0257] | 0.0321 [0.0318–0.0327] |
+| 27 / mixed | 0.0743 [0.0740–0.0746] | 0.0735 [0.0732–0.0736] |
+| 64 / ascending | 0.4641 [0.4633–0.4653] | 0.0537 [0.0531–0.0547] |
+| 64 / descending | 0.0556 [0.0553–0.0560] | 0.0833 [0.0829–0.1008] |
+| 64 / mixed | 0.3592 [0.3580–0.3608] | 0.3406 [0.3396–0.3414] |
+
+**Separate profiling-enabled observations:** these are not primary timing estimates. Enabled
+counters/timers materially perturb optimized comparison work; profile-off retains existing
+stage clocks and cutoff accounting. No precise overhead correction is inferred.
+
+| Ties | Reference whole on | Append whole on | Reference selection on | Append selection on |
+| --- | --- | --- | --- | --- |
+| 1 | 0.1263 [0.1180–0.1533] | 0.1247 [0.1180–0.1518] | 0.0108 [0.0099–0.0118] | 0.0109 [0.0102–0.0118] |
+| 8 | 0.6406 [0.5599–0.6760] | 0.6131 [0.5875–0.6593] | 0.0922 [0.0890–0.1094] | 0.0762 [0.0746–0.0800] |
+| 27 | 2.0378 [1.9028–2.2480] | 1.8285 [1.7797–1.9405] | 0.4478 [0.4391–0.4583] | 0.2515 [0.2479–0.2536] |
+| 64 | 5.8484 [5.7113–5.9637] | 4.7306 [4.5735–6.8610] | 1.7395 [1.7045–1.7646] | 0.6006 [0.5803–0.6242] |
+
+| 64-tie order / variant | Equality | Fallback order | Fallback atom calls | Added fast checks | Fast atom calls | Advances | Shifted slots |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| ascending / reference | 2016 | 2016 | 21120 | 0 | 0 | 2144 | 0 |
+| ascending / append | 0 | 0 | 0 | 63 | 2889 | 128 | 0 |
+| descending / reference | 63 | 63 | 2889 | 0 | 0 | 128 | 2016 |
+| descending / append | 63 | 63 | 2889 | 63 | 660 | 191 | 2016 |
+| mixed / reference | 1520 | 1520 | 16256 | 0 | 0 | 1616 | 528 |
+| mixed / append | 1024 | 1024 | 11424 | 63 | 1487 | 1152 | 528 |
+
+These structural kernel counts match the published unoptimized fixture counts. All 64 winners
+remain present. Both pipeline variants retain peak 10 frontier paths, 192 complete-path key slots,
+80 logical extensions/224 elements. No allocator bytes/RSS were measured or inferred. For 64 ties,
+post charges remain 5890 reference / 3874 append; discovery 420; qualification observed 398 in both
+variants in this run (dictionary encounter order is run-dependent, not a universal fixed cost).
+Certificate observations are still separate. No heterogeneous counter sum is used as a cost unit.
+
+**What persists and what remains inconclusive:**
+
+| Case | Optimized observations | Assessment relative to published Debug direction |
+| --- | --- | --- |
+| Normalized 64 whole pipeline | Append lower in 8/8 paired observations; median 5.2786→4.5922ms, nonoverlapping ranges | Favorable direction persists in this fixture; no general speedup claim |
+| Normalized 27 whole pipeline | Append lower in 8/8 pairs; median 1.9814→1.7913ms, overall ranges overlap | Favorable in this sample, smaller relative benefit than historical -Onone |
+| Normalized 8 whole pipeline | Append lower in 7/8 pairs; median 0.6187→0.6047ms, broad overlap | Whole-call benefit inconclusive despite a lower selection median |
+| Singleton pipeline/kernel | Four of eight whole-call pairs favor each variant; tiny kernel differences | Inconclusive |
+| Descending 8/27/64 kernels | Append slower in every pair at each size; 64 median 0.0556→0.0833ms | Previously unfavorable direction persists |
+| Mixed 8 kernel | Append slower in 8/8 pairs; 0.0085→0.0116ms | Published mixed-eight regression persists |
+| Mixed 27 kernel | Append lower in 8/8 pairs, but paired median saving only 0.0008755ms | Tiny directional result; practical significance inconclusive here |
+| Mixed 64 kernel | Append lower in 8/8 pairs; 0.3592→0.3406ms | Modest favorable direction in this kernel sample, not a reversed-pipeline claim |
+
+The 64 selection advantage persists, but absolute times and its share of whole cost are far smaller
+than the earlier -Onone run. Those runs differ in host load/test selection and generated run
+identities; they do not isolate a causal compiler-only multiplier. Within this run both variants
+share identical packets and all output checks pass. Eight repetitions, Simulator hardware and
+retained Debug/testability settings cannot establish production feasibility or physical-iPhone
+performance. Fine-grained sub-microsecond observations warrant restraint even with consistent signs.
+
+**Recommendation:** keep append opt-in with reference as default; no further kernel optimization
+or adoption is justified by these measurements alone. Favorable normalized ties coexist with
+reversed/mixed regressions, and the whole-call advantage is inconclusive at 8 ties. Any later adoption
+assessment needs representative workload/coverage and production resource-policy evidence rather
+than inferring it from these small invented fixtures. No additional benchmark, data access or
+policy change is authorized by this record. Compiler-optimized evaluation is now completed only
+for this bounded Debug experiment; a production optimized solver is not established.
+
+P3-T1/Phase 3 remain incomplete. P2-S9 retains 14 classification and 14 ordering gaps. Live/default
+routing remains unconfigured; no ODPT reply supplied. Changes remain unstaged/uncommitted.
+
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

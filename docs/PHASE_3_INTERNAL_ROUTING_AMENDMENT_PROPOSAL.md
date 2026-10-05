@@ -2896,3 +2896,73 @@ observational with ranges, no pass threshold. Profile-on adds per-comparison cou
 off still includes optional instrumentation branches. No precise overhead correction or
 production feasibility claim follows. Final measurements/validation/review are recorded below
 in ROADMAP; any earlier execution is superseded rather than added.
+
+
+#### 15.8.12 Compiler-optimized evaluation of the unchanged append experiment
+
+Owner authorized bounded measurements only (2026-10-05). No algorithm/source/test/helper,
+project, scheme, signing or deployment setting was edited. The published §15.8.11 fixture and
+benchmark code is unchanged. Only these proposal/ROADMAP records change. Standard Debug and
+Release remain as configured; default selection remains reference and Release has no experiment.
+
+**Isolation and effective mode:** existing Debug scheme, separate temporary DerivedData
+`/private/tmp/tsugino-append-optimized-dd`, and the sole build-setting override
+`SWIFT_OPTIMIZATION_LEVEL=-O`. Effective app settings report -O, DEBUG, testability YES,
+automatic signing and iOS deployment 18.0. Actual emitted SwiftDriver compile commands for
+TSUGINO (the app module containing the routing library), TSUGINOTests and TSUGINOLiveActivity
+all contain -O and -DDEBUG, with -enable-testing and -g. No conflicting -Onone/-Osize/-Ounchecked
+flag appears. Batch compilation is retained; whole-module optimization was not enabled. This is
+an optimized Debug experiment, not a claim of Release-equivalent performance. No optimization,
+compilation-condition or signing override was persisted. Only Swift optimization was overridden;
+other Debug settings/instrumentation were retained.
+
+Reproduction form using the named destination (execution used its resolved Simulator identifier):
+
+```sh
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug \
+  -destination 'platform=iOS Simulator,name=iPhone 17,OS=26.5' \
+  -derivedDataPath /private/tmp/tsugino-append-optimized-dd \
+  SWIFT_OPTIMIZATION_LEVEL=-O \
+  -resultBundlePath /private/tmp/tsugino-append-optimized.xcresult \
+  -only-testing:TSUGINOTests/SyntheticAppendFastPathTests test
+```
+
+Use a fresh result-bundle path for a separately authorized repeat. No temporary xcconfig or
+committed benchmark helper was necessary. Ordinary Release settings were inspected without
+building: no DEBUG compilation condition, testability NO, wholemodule, deployment 18.0 and
+automatic signing. Prior E1 Release app/extension build evidence has verified source/review
+provenance; the published append no-DEBUG two-declaration/object-symbol evidence matches the
+unchanged source fingerprints. These checks remain applicable because no source/project/scheme
+changed. They are reused evidence, not newly executed Release builds or exclusion probes.
+
+**Method and interpretation:** same §15.8.11 four tie counts and descriptor permutations, one
+warmup per variant/profile mode, eight balanced four-slot rotations. Each slot occupies each
+position twice. Frozen inputs are identical between reference/append in this run. Full ordered
+canonical payload/identity comparison against the unchanged exhaustive oracle occurs outside
+timing. Kernel permutations verify the ordered identity keys outside timing; no pipeline evidence
+reorder hook is introduced. Whole pipeline retains qualification, certification, discovery,
+reconstruction/selection and canonical admission. Kernel-only samples omit those other costs.
+Profile-disabled runs are primary; profiling-enabled runs explain event counts separately.
+Existing stage timers/charged counters still run when profileSelection is false; this is not
+zero instrumentation. No heterogeneous work totals or timing pass threshold are introduced.
+
+Xcode 27.0, arm64 iPhone 17 Simulator/iOS 26.5, macOS 26.6.2; only the append suite was selected,
+with serialized test execution. Host scheduling and thermal state were not controlled. Prior
+-Onone runs included other suites and are historical context, not a contemporaneous causal
+compiler-only comparison. Compare reference versus append within each run. Small effects without
+a stable paired advantage remain inconclusive; no physical-device, production-scale, Release or memory claim.
+
+Focused optimized validation passed 7 functions / 13 cases, zero failures/skips/runtime warnings.
+Debug-with-O app/extension dependencies built as part of that test action. It verifies sorted
+uniqueness, all 64 ties, duplicate/permutation/prefix/mixed objectives, canonical snapshots/dates/
+indices/continuity, selected rejection accounting, whole-domain failure guards, cancellation and
+E1 numeric-budget differences. The unchanged two-direct case remains reference 76 / append 75;
+append 74 and reference 75 abort without a partial result. No new limit or accounting policy.
+Historical 49 / 96 is separate unchanged unoptimized evidence, not added to this run.
+
+ROADMAP records full primary timing ranges, separate enabled observations, limitations and
+independent review. The normalized 64 whole-pipeline advantage persists under -O, but much less
+of total cost lies in selection. Reversed kernels and mixed 8 still regress. Keep the experiment
+opt-in/reference default: this order-sensitive result does not justify further optimization or
+adoption. Before a future adoption decision, representative workload/coverage and production
+resource-policy evidence would be needed; no new acquisition or benchmark is authorized here.
