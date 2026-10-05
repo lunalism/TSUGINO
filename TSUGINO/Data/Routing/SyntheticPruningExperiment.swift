@@ -4,6 +4,7 @@ import Foundation
 /// Experiment modes only. Neither certifies a real inventory or enables live routing.
 nonisolated enum SyntheticPruningMode: Sendable { case exhaustive, pruned }
 nonisolated struct SyntheticPruningMetrics: Sendable {
+    var selectionProfile = SyntheticSelectionProfile()
     var qualificationWork = 0, discoveryWork = 0, postWork = 0, pairChecks = 0
     var prefixes = 0, prunedPrefixes = 0, completePaths = 0
     var qualifiedRides = 0, qualifiedEdges = 0, kernelAdvances = 0

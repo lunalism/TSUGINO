@@ -59,6 +59,8 @@ nonisolated struct SyntheticOptimalRouteDescriptor: Sendable {
 /// The asynchronous adapter charges/checks cancellation before EVERY advance;
 /// the existing synchronous candidate adapter exhausts the same finite machine.
 nonisolated struct SyntheticOptimalRouteKernel {
+    private let profiling: Bool
+    private(set) var profile = SyntheticKernelProfile()
     private let descriptors: [SyntheticOptimalRouteDescriptor]
     private var scan = 0
     private var best: Int?
@@ -66,15 +68,21 @@ nonisolated struct SyntheticOptimalRouteKernel {
     private var tie = 0
     private var insertion = 0
     private(set) var winners: [Int] = []
-    init(_ descriptors: [SyntheticOptimalRouteDescriptor]) { self.descriptors = descriptors }
+    init(_ descriptors: [SyntheticOptimalRouteDescriptor], profiling: Bool = false) { self.descriptors = descriptors; self.profiling = profiling }
     var isComplete: Bool { scan == descriptors.count && tie == ties.count }
     mutating func advance() {
         if scan < descriptors.count {
             let index = scan; scan += 1
             if let best {
                 let current = descriptors[index], previous = descriptors[best]
+                let start = SyntheticProfileClock.start(profiling)
+                if profiling { profile.objectives += 1 }
                 if current.isBetter(than: previous) { self.best = index; ties = [index] }
-                else if !previous.isBetter(than: current) { ties.append(index) }
+                else {
+                    if profiling { profile.objectives += 1 }
+                    if !previous.isBetter(than: current) { ties.append(index) }
+                }
+                if let start { profile.objectiveTime += start.duration(to: .now) }
             } else { best = index; ties = [index] }
             return
         }
@@ -82,12 +90,27 @@ nonisolated struct SyntheticOptimalRouteKernel {
         let index = ties[tie]
         if insertion < winners.count {
             let other = descriptors[winners[insertion]].key, key = descriptors[index].key
-            if key == other { tie += 1; insertion = 0; return }
-            if !key.lexicographicallyPrecedes(other, by: SyntheticOptimalRouteAtom.less) {
+            let equalityStart = SyntheticProfileClock.start(profiling)
+            let equal = key == other
+            if let equalityStart { profile.equalities += 1; profile.equalityTime += equalityStart.duration(to: .now) }
+            if equal { tie += 1; insertion = 0; return }
+            let orderStart = SyntheticProfileClock.start(profiling)
+            let precedes: Bool
+            if profiling {
+                precedes = key.lexicographicallyPrecedes(other) { a, b in
+                    profile.atomOrderCalls += 1
+                    return SyntheticOptimalRouteAtom.less(a, b)
+                }
+            } else { precedes = key.lexicographicallyPrecedes(other, by: SyntheticOptimalRouteAtom.less) }
+            if let orderStart { profile.orders += 1; profile.orderTime += orderStart.duration(to: .now) }
+            if !precedes {
                 insertion += 1; return
             }
         }
+        let insertionStart = SyntheticProfileClock.start(profiling)
+        if profiling { profile.inserts += 1; profile.shiftedWinnerSlots += winners.count - insertion }
         winners.insert(index, at: insertion)
+        if let insertionStart { profile.insertionTime += insertionStart.duration(to: .now) }
         tie += 1; insertion = 0
     }
 }

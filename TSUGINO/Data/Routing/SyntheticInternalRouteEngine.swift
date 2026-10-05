@@ -55,6 +55,7 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
     let workLimit: Int?
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
     private var work = 0
+    let profileSelection: Bool
     let experiment: SyntheticPruningMode?
     private(set) var metrics = SyntheticPruningMetrics()
     private var measuringDiscovery = false
@@ -62,9 +63,9 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
 
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?, workLimit: Int?,
          checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void,
-         experiment: SyntheticPruningMode? = nil) {
+         experiment: SyntheticPruningMode? = nil, profileSelection: Bool = false) {
         self.configuration = configuration; self.view = view
-        self.workLimit = workLimit; self.checkpoint = checkpoint; self.experiment = experiment
+        self.workLimit = workLimit; self.checkpoint = checkpoint; self.experiment = experiment; self.profileSelection = profileSelection
     }
 
     mutating func step(_ stage: SyntheticInternalStage) async throws {
@@ -80,6 +81,23 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
         do { try await checkpoint(stage) }
         catch { try Task.checkCancellation(); if error is CancellationError { throw error }; throw RouteSearchFailure.searchIncomplete }
         try Task.checkCancellation()
+    }
+
+    mutating func recordSelectionProfile(_ profile: SyntheticSelectionProfile) {
+        // Preserve discovery observations while copying selection-only fields.
+        var combined = profile
+        combined.pathCopies = metrics.selectionProfile.pathCopies
+        combined.pathElements = metrics.selectionProfile.pathElements
+        combined.dedupInserts = metrics.selectionProfile.dedupInserts
+        combined.pathCopyTime = metrics.selectionProfile.pathCopyTime
+        combined.pathDedupTime = metrics.selectionProfile.pathDedupTime
+        combined.pathOrderTime = metrics.selectionProfile.pathOrderTime
+        metrics.selectionProfile = combined
+    }
+    mutating func selectionStep(_ stage: SyntheticInternalStage, profile: inout SyntheticSelectionProfile) async throws {
+        let start = SyntheticProfileClock.start(profileSelection)
+        try await step(stage)
+        if let start { profile.checkpointTime += start.duration(to: .now) }
     }
 
     mutating func recordSelection(_ elapsed: Duration, advances: Int) {
@@ -267,7 +285,13 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
                 guard edges[last]?.contains(next) == true,
                       !path.contains(where: { $0.address.tripID == next.address.tripID }) else { continue }
                 if experiment != nil && stack.count >= 128 { throw RouteSearchFailure.searchIncomplete }
+                let copyStart = SyntheticProfileClock.start(profileSelection)
                 stack.append(path + [next])
+                if let copyStart {
+                    metrics.selectionProfile.pathCopyTime += copyStart.duration(to: .now)
+                    metrics.selectionProfile.pathCopies += 1
+                    metrics.selectionProfile.pathElements += path.count + 1
+                }
                 if experiment != nil { metrics.observe(stack: stack, complete: complete) }
             }
         }
@@ -278,8 +302,14 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
         var normalized: [[SyntheticInternalRideKey]] = []
         for path in complete {
             try await step(.deduplication)
+            let dedupStart = SyntheticProfileClock.start(profileSelection)
             if unique.insert(path).inserted { normalized.append(path) }
+            if let dedupStart {
+                metrics.selectionProfile.pathDedupTime += dedupStart.duration(to: .now)
+                metrics.selectionProfile.dedupInserts += 1
+            }
         }
+        let orderStart = SyntheticProfileClock.start(profileSelection)
         let paths = try await ordered(normalized, stage: .sorting) { a, b in
             if a.count != b.count { return a.count < b.count }
             // The sole connection for two rides is determined by their address/indices.
@@ -287,6 +317,7 @@ nonisolated struct SyntheticInternalRouteEngine: Sendable {
             for (x, y) in zip(a, b) where x != y { return SyntheticInternalRideKey.precedes(x, y) }
             return false
         }
+        if let orderStart { metrics.selectionProfile.pathOrderTime += orderStart.duration(to: .now) }
         return SyntheticInternalPrepared(scope: scope, rides: rides, slots: slots, connections: connections, paths: paths)
     }
 

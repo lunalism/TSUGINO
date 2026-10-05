@@ -2749,3 +2749,85 @@ this run. q1 variants, transfer-winning variants and ties64 did not. This suppor
 experiment as a bounded comparison rather than adopting it: certification and all-tie output/
 selection costs remain. No Tokyo-scale latency/memory conclusion, production solver choice,
 production budget, live routing configuration, Application change or phase acceptance follows.
+
+
+#### 15.8.10 Equal-optimum selection profiling — observations only
+
+Owner-authorized DEBUG instrumentation profiles the existing algorithm, not an optimization.
+`profileSelection` defaults false on the two experimental adapters and engine. The private
+selection session wraps each existing selection step with a timer while invoking exactly one
+original `step`; no charge, guard, objective, comparison order, winner or admission rule changes.
+The kernel optionally records its existing objective/equality/lexicographic/insertion branches;
+profiling-disabled order comparison still uses the original comparator directly. All new types
+and changes are inside DEBUG. No profiler observation controls search or introduces a work unit.
+
+| Observation | Actual timed/count boundary and limits |
+| --- | --- |
+| Claims | Existing prepared-path claims lookup/array construction once per descriptor; element counts are logical records, not allocated bytes |
+| Bounds validation | `checkBounds` per ride; excludes charged checkpoints, connection lookup/form validation and surrounding guards |
+| Descriptor/key construction | Existing `rides.map(context)` plus descriptor initializer and append: UTF-8 atom arrays, contextual key concatenation and arrival/change assignment. Atom totals count retained key positions. Allocation/ARC and key-building suboperations are not separately attributable |
+| Objective kernel scan | Existing isBetter calls plus best/tie-array updates; objectiveTime is not pure Date-comparison CPU time |
+| Identity equality/order | One whole-array equality and, when unequal, the existing lexicographic comparison. Optional atom comparator-call count includes repeated calls made by lexicographic iteration. Standard-library equality element scans and byte scans are not counted |
+| Winner insertion | Existing Array.insert and structural shifted-slot count (`count−insertion`). Not allocation/copy bytes; sorted fixtures append with zero shifted slots |
+| Kernel advances | Whole `advance` time; contains objective/equality/order/insertion timers and their overhead. Do not sum nested timers with this total |
+| Selection checkpoints | Wall duration around original async step, including cancellation/charge/checkpoint/scheduling. It is not isolated instrumentation cost; no baseline checkpoint is removed |
+| Path extension | `path+[next]` plus frontier append; count one logical construction and path-length elements. Root arrays, COW sharing, stack/result appends and all ARC/allocator operations are not exhaustively counted |
+| Complete-path dedup/order | Set insertion plus conditional normalized append, and existing checkpointed complete-path ordering respectively. Set hashing/equality internals are not isolated. These stages occur before the historical selection timer; path-order timing includes its checkpoints |
+
+Descriptor identity keys are not hashed in this private selection kernel; it uses equality and
+lexicographic scanning. Complete-path Set hashing is a different, earlier operation. Canonical
+admission has its existing separate timer. Whole-pipeline times retain qualification, certificate
+for standalone, discovery, normalization, reconstruction/selection, admission and cleanup.
+No allocation profiler/isolated process-memory series was collected in this shared test host.
+Structural operations cannot establish bytes/RSS or prove allocator-specific causes.
+
+Method: same immutable invented packets for both variants; three-ride equal ties 1/8/27/64,
+plus eight one-ride ties. Existing bounds are unchanged (64 uses two dates on each of two
+Trips/layer). The one-ride comparison also changes graph/key/common-prefix shapes, so it is
+not a pure path-length intervention. One warmup per variant/profiling mode, then eight rotations
+of four slots (standalone/off, oracle/off, standalone/on, oracle/on): each slot occupies each
+position twice. Inputs/configuration are outside timers; assertions/printing follow timing.
+Xcode 27.0, Debug -Onone, arm64 iPhone 17 Simulator/iOS 26.5, macOS 26.6.2. Focused suites shared
+the test host; ranges are observations, no elapsed pass threshold. No measurement from an
+incomplete run is presented as a successful comparison.
+
+Profile-on/off comparison estimates enabled instrumentation perturbation only. Off still has
+new wrappers, branches and profiling storage in this build; it is not the unmodified historical
+binary. On adds clock calls, Duration arithmetic and a comparator closure/counter. Nested timers
+and comparison instrumentation affect measured work. Some on medians are lower than off due
+to variation; this is not negative instrumentation cost or evidence instrumentation is free.
+Report ranges and paired differences, not a falsely precise overhead correction. Historical
+~43ms and current samples are separate runs, not an optimization before/after result.
+
+Final focused/affected run: 42 functions / 83 cases passed, including profiling 4 / 8. Tests preserve
+full canonical payload/order and post charges/advance counts with profiling on/off for all five
+packets; mixed better/worse objectives, duplicates and shifted insertions also match. E1's 47/46
+standalone boundary and oracle 47 cutoff persist; profiling-enabled cancellation through finalization
+returns no result. Affected selector, handoff, standalone and pruning suites passed. Debug app/
+extension dependencies built. Existing unmodified Release app/extension evidence from the published
+E1 slice is reused; new no-DEBUG declaration probes and an optimized no-DEBUG object verify all
+three profiling types are excluded. No broad suite or Release app rebuild was needed. Prior focused
+run is superseded, not added. Independent final review is recorded in ROADMAP.
+
+**Supported finding:** in the 64-tie sample, existing lexicographic scans dominate selection,
+not objective evaluation, descriptor creation, insertion shifts or selection checkpoints.
+There are 2,016 equality checks and 2,016 lexicographic checks, 21,120 atom comparator invocations,
+and 2,144 kernel advances. All 64 winners are retained and insert at the end, yet insertion starts
+its scan at zero for each tie. That exact count is N(N−1)/2 on this already ordered fixture.
+Array/UTF-8 common-prefix traversal is within the measured ordering operation, but these probes
+do not partition generic iteration, ARC, allocations and byte comparisons into independent costs.
+No general network/production bottleneck is inferred. ROADMAP contains timings and counts.
+
+**Recommended next optimization experiment — not implemented or authorized here:** test one
+isolated DEBUG append fast path for an equal-optimum key strictly greater than the current last
+winner. Sorted unique winners imply it exceeds every earlier key and cannot duplicate one;
+otherwise fall back to the original scan, including equality suppression. Keep objective scanning,
+identity spelling, canonical ordering/admission and all equal optima unchanged. Leave the published
+kernel as reference. Require complete winner-index/payload comparisons across sorted, reversed,
+permuted, duplicate, prefix-heavy and mixed-objective inputs; equality/smaller cases must take the
+fallback. Keep a bounded incremental transition and the existing pre-advance charge/cancellation
+hook; explicitly report experimental advance/cutoff differences under scoped E1 rather than
+silently changing the published kernel. Do not add a new cutoff unit or raise limits. Balance
+on/off measurement as appropriate and judge full pipeline cost, including fallback overhead.
+This is a technical experiment recommendation requiring separate implementation authorization,
+not a new product preference, approved speedup or production algorithm adoption.

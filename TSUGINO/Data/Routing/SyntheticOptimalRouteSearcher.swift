@@ -58,21 +58,26 @@ private nonisolated struct PreparedOptimalSession {
     private static func select(_ prepared: SyntheticInternalPrepared, engine: inout SyntheticInternalRouteEngine) async throws -> Self {
         let selectionStart = engine.experiment == nil ? nil : ContinuousClock.now
         var advances = 0
-        try await engine.step(.ordering)
+        var profile = SyntheticSelectionProfile()
+        try await engine.selectionStep(.ordering, profile: &profile)
         guard prepared.paths.count <= 64 else { throw RouteSearchFailure.searchIncomplete }
         var descriptors: [SyntheticOptimalRouteDescriptor] = []
         for path in prepared.paths {
-            try await engine.step(.ordering)
+            try await engine.selectionStep(.ordering, profile: &profile)
             guard !path.isEmpty else { throw RouteSearchFailure.dataUnavailable }
             guard path.count <= 4 else { throw RouteSearchFailure.searchIncomplete }
             // Bound before resolving/materializing keys. Claims are the original values.
+            let claimsStart = SyntheticProfileClock.start(engine.profileSelection)
             let rides = try SyntheticInternalRouteSearcher.claims(path, prepared)
+            if let claimsStart { profile.claimsTime += claimsStart.duration(to: .now); profile.claims += 1; profile.claimElements += rides.count }
             var forms: [Int] = []
             for (i, ride) in rides.enumerated() {
-                try await engine.step(.ordering)
+                try await engine.selectionStep(.ordering, profile: &profile)
+                let validationStart = SyntheticProfileClock.start(engine.profileSelection)
                 try SyntheticOptimalRouteDescriptor.checkBounds(ride.context)
+                if let validationStart { profile.validationTime += validationStart.duration(to: .now); profile.validations += 1 }
                 if i > 0 {
-                    try await engine.step(.ordering)
+                    try await engine.selectionStep(.ordering, profile: &profile)
                     let key = SyntheticInternalRouteEngine.connectionKey(rides[i - 1].key, ride.key)
                     guard case .present(let form, _, .affirmed) = prepared.connections[key] else {
                         throw RouteSearchFailure.dataUnavailable
@@ -80,14 +85,22 @@ private nonisolated struct PreparedOptimalSession {
                     forms.append(form == .walking ? 1 : 0)
                 }
             }
+            let descriptorStart = SyntheticProfileClock.start(engine.profileSelection)
             descriptors.append(.init(contexts: rides.map(\.context), forms: forms))
+            if let descriptorStart {
+                profile.descriptorTime += descriptorStart.duration(to: .now)
+                profile.descriptors += 1; profile.keyAtoms += descriptors[descriptors.count - 1].key.count
+            }
         }
-        var kernel = SyntheticOptimalRouteKernel(descriptors)
+        var kernel = SyntheticOptimalRouteKernel(descriptors, profiling: engine.profileSelection)
         while !kernel.isComplete {
-            try await engine.step(.sorting)
+            try await engine.selectionStep(.sorting, profile: &profile)
+            let kernelStart = SyntheticProfileClock.start(engine.profileSelection)
             kernel.advance()
+            if let kernelStart { profile.kernelTime += kernelStart.duration(to: .now) }
             if engine.experiment != nil { advances += 1 }
         }
+        if engine.profileSelection { profile.kernel = kernel.profile; engine.recordSelectionProfile(profile) }
         guard prepared.paths.isEmpty || !kernel.winners.isEmpty else { throw RouteSearchFailure.searchIncomplete }
         if let selectionStart { engine.recordSelection(selectionStart.duration(to: .now), advances: advances) }
         return .init(prepared: prepared, selected: kernel.winners.map { Handle(pathOrdinal: $0) })
@@ -138,12 +151,13 @@ nonisolated enum SyntheticOptimalHandoffFailureHarness {
 nonisolated struct SyntheticPruningRouteExperiment: RouteSearching {
     let configuration: SyntheticInternalConfiguration?
     let view: SyntheticInternalView?
+    let profileSelection: Bool
     let workLimit: Int
     let checkpoint: @Sendable (SyntheticPruningMode, SyntheticInternalStage) async throws -> Void
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?,
-         workLimit: Int = SyntheticPruningBounds.workLimit,
+         workLimit: Int = SyntheticPruningBounds.workLimit, profileSelection: Bool = false,
          checkpoint: @escaping @Sendable (SyntheticPruningMode, SyntheticInternalStage) async throws -> Void = { _, _ in }) {
-        self.configuration = configuration; self.view = view; self.workLimit = workLimit; self.checkpoint = checkpoint
+        self.configuration = configuration; self.view = view; self.workLimit = workLimit; self.checkpoint = checkpoint; self.profileSelection = profileSelection
     }
     @concurrent
     func search(_ request: RouteSearchRequest) async throws -> RouteSearchResult {
@@ -179,7 +193,7 @@ nonisolated struct SyntheticPruningRouteExperiment: RouteSearching {
     private func pass(_ request: RouteSearchRequest, mode: SyntheticPruningMode, rejecting: Set<Int>) async throws -> SyntheticPruningPass {
         let start = ContinuousClock.now
         var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,
-            checkpoint: { try await checkpoint(mode, $0) }, experiment: mode)
+            checkpoint: { try await checkpoint(mode, $0) }, experiment: mode, profileSelection: profileSelection)
         do {
             let session = try await PreparedOptimalSession.open(request, engine: &engine)
             let admissionStart = ContinuousClock.now
@@ -213,13 +227,14 @@ nonisolated struct SyntheticStandaloneRouteReport: Sendable {
 nonisolated struct SyntheticStandaloneRouteExperiment: RouteSearching {
     let configuration: SyntheticInternalConfiguration?
     let view: SyntheticInternalView?
+    let profileSelection: Bool
     let workLimit: Int
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?,
-         workLimit: Int = SyntheticPruningBounds.workLimit,
+         workLimit: Int = SyntheticPruningBounds.workLimit, profileSelection: Bool = false,
          checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void = { _ in }) {
         self.configuration = configuration; self.view = view
-        self.workLimit = workLimit; self.checkpoint = checkpoint
+        self.workLimit = workLimit; self.checkpoint = checkpoint; self.profileSelection = profileSelection
     }
     @concurrent
     func search(_ request: RouteSearchRequest) async throws -> RouteSearchResult {
@@ -239,7 +254,7 @@ nonisolated struct SyntheticStandaloneRouteExperiment: RouteSearching {
             }
             try SyntheticPruningBounds.validate(configuration, view, request)
             var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,
-                                                     checkpoint: checkpoint, experiment: .pruned)
+                                                     checkpoint: checkpoint, experiment: .pruned, profileSelection: profileSelection)
             let (session, certificate) = try await PreparedOptimalSession.openCertified(request, engine: &engine,
                                                                                       memoLimit: memoLimit, probe: probe)
             let admissionStart = ContinuousClock.now

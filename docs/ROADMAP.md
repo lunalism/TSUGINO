@@ -6096,6 +6096,104 @@ reference and whitespace checks passed. P3-T1/Phase 3 remain incomplete; P2-S9 r
 and 14 ordering gaps. No ODPT reply supplied. Leave changes unstaged/uncommitted.
 
 
+### Equal-optimum profiling — no algorithm change
+
+Consumer §15.8.10 records the owner-authorized optional DEBUG instrumentation. Both adapters
+use the same existing algorithm, safeguards, charges and canonical admission. Profile mode
+never feeds a failure/selection decision. No optimization was implemented. Separate non-author final review approved instrumentation,
+methodology, numerical tables and conclusions with no material findings. Exact timing boundaries/
+caveats and the next unimplemented experiment are there.
+
+Final focused/affected validation: **42 functions / 83 cases**, including profiling **4 / 8**.
+Debug dependencies built; previous E1 Release app/extension build evidence reused. Three new
+no-DEBUG declaration probes plus optimized no-DEBUG object-symbol inspection passed. Selector,
+handoff, standalone/pruning and instrumentation correctness passed; earlier focused counts are
+not added. No broad test suite/build, private access or provider contact occurred.
+
+One warmup per variant/mode, eight four-slot rotations per frozen fixture, each slot in each
+run position twice. Xcode 27.0 Debug -Onone, iPhone 17 Simulator/iOS 26.5 arm64; shared-host noise
+possible. S=standalone, O=exhaustive oracle. Medians [min–max] in ms; whole includes all pipeline
+costs and excludes comparison/formatting. Admission remains separately timed.
+
+| Fixture / variant | Whole off | Whole on | Selection off | Selection on | Admission on |
+| --- | --- | --- | --- | --- | --- |
+| tie1 / S | 0.400 [0.384–0.458] | 0.392 [0.362–1.603] | 0.037 [0.033–0.044] | 0.041 [0.037–0.043] | 0.116 [0.105–1.340] |
+| tie1 / O | 0.350 [0.330–1.717] | 0.408 [0.320–1.463] | 0.035 [0.033–0.038] | 0.041 [0.033–0.090] | 0.125 [0.113–0.988] |
+| direct8 / S | 1.654 [1.475–4.630] | 1.748 [1.513–4.213] | 0.432 [0.396–0.883] | 0.431 [0.423–0.761] | 0.580 [0.350–2.646] |
+| direct8 / O | 1.687 [1.426–2.025] | 1.828 [1.466–2.550] | 0.421 [0.394–0.640] | 0.431 [0.421–0.933] | 0.430 [0.359–0.738] |
+| tie8 / S | 3.104 [2.530–4.022] | 3.321 [2.481–4.747] | 1.159 [1.013–1.681] | 1.237 [1.003–1.761] | 0.926 [0.725–2.926] |
+| tie8 / O | 2.730 [2.486–4.294] | 2.508 [2.244–6.960] | 1.158 [1.019–2.023] | 1.027 [0.963–2.091] | 0.772 [0.672–3.858] |
+| tie27 / S | 13.188 [12.830–18.616] | 13.219 [12.972–21.274] | 8.253 [8.084–12.799] | 8.374 [8.238–10.052] | 2.298 [2.236–9.973] |
+| tie27 / O | 13.126 [12.847–13.893] | 13.022 [12.677–13.384] | 8.280 [8.163–8.911] | 8.403 [8.272–8.625] | 2.356 [2.227–2.474] |
+| tie64 / S | 55.874 [51.453–66.724] | 54.332 [51.627–63.347] | 41.788 [38.025–52.362] | 40.487 [38.594–47.107] | 5.750 [5.061–6.610] |
+| tie64 / O | 54.261 [51.750–130.086] | 54.593 [52.604–74.023] | 40.141 [38.680–109.000] | 40.375 [39.199–48.537] | 5.594 [5.214–6.477] |
+
+Profile-on 64-tie breakdown, ms medians. Kernel components are **inside** kernel elapsed;
+path extension/dedup/order are outside the historical selection stage. Do not add nested
+values or separately computed medians as if they formed a CPU/allocation partition.
+
+| Operation | Standalone | Oracle |
+| --- | --- | --- |
+| Prepared claims | 0.1406 | 0.1458 |
+| Descriptor bounds checks | 0.5056 | 0.5210 |
+| Descriptor/key construction | 0.7049 | 0.7279 |
+| Selection checkpoints | 0.3508 | 0.4352 |
+| Kernel total | 37.9806 | 37.7814 |
+| ↳ Objective/tie updates | 0.0076 | 0.0079 |
+| ↳ Key equality | 2.7618 | 2.6938 |
+| ↳ Lexicographic ordering | 34.5960 | 34.4806 |
+| ↳ Winner insertions | 0.0320 | 0.0367 |
+| Path extensions | 0.0363 | 0.0400 |
+| Complete-path Set dedup | 0.0971 | 0.0956 |
+| Complete-path ordering with checkpoints | 5.5273 | 5.9430 |
+
+Structural counts agree between S/O with profiling enabled; no byte or equal-cost inference:
+
+| Fixture | Winners / rides per winner | Key atoms | Objective calls | Equality / order checks | Atom comparator calls | Kernel advances | Claims elements | Path extensions / elements | Winner shifts |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| tie1 | 1 / 3 | 37 | 0 | 0 / 0 | 0 | 2 | 3 | 2 / 5 | 0 |
+| direct8 | 8 / 1 | 40 | 14 | 28 / 28 | 112 | 44 | 8 | 0 / 0 | 0 |
+| tie8 | 8 / 3 | 296 | 14 | 28 / 28 | 456 | 44 | 24 | 12 / 32 | 0 |
+| tie27 | 27 / 3 | 999 | 52 | 351 / 351 | 4212 | 405 | 81 | 36 / 99 | 0 |
+| tie64 | 64 / 3 | 2368 | 126 | 2016 / 2016 | 21120 | 2144 | 192 | 80 / 224 | 0 |
+
+Claims arrays/descriptors/Set insertions each equal winner count; bounds checks equal claim
+slots for these fixtures. Zero winner shifts means insertion-at-end, not zero allocation.
+Identity keys are not hashed by the selection kernel. Earlier path Set work includes hashing/
+equality, but standard-library internals and exact bytes/allocations were not measured.
+
+Enabled-overhead observations: paired per-repetition on−off whole-call differences, ms median
+[min–max]. Negative values reflect run variation, not negative instrumentation cost.
+
+| Fixture | Standalone paired delta | Oracle paired delta |
+| --- | --- | --- |
+| tie1 | -0.017 [-0.038–+1.203] | -0.001 [-1.251–+1.133] |
+| direct8 | +0.075 [-2.286–+1.426] | +0.260 [-0.525–+0.525] |
+| tie8 | +0.328 [-1.324–+1.663] | -0.185 [-1.687–+4.132] |
+| tie27 | +0.319 [-5.482–+3.372] | -0.127 [-1.006–+0.352] |
+| tie64 | +0.233 [-6.077–+2.125] | +0.149 [-69.912–+22.273] |
+
+These deltas do not isolate pure instrumentation overhead; off shares added wrappers/branches/
+state, on perturbs comparator execution, and other suites share the host. Instrumentation has
+real clock/counter costs even where medians decrease. No reliable allocation/RSS measurement
+was collected, so no process-memory saving or allocator-specific bottleneck is claimed.
+
+The 64-tie ordering operation accounts for about 34.5ms of about 40.4ms profiled selection in
+both variants. Descriptor construction is about 0.7ms, objective/tie updates about 0.008ms,
+and checkpoint wall time about 0.35–0.44ms. This identifies repeated identity ordering as the
+primary measured target in this fixture; it does not implicate pure hashing, allocation or
+UUID conversion as a separately measured cause. Eight three-ride keys also cost more than
+eight direct keys with the same 28 pair checks but 456 versus 112 comparator calls; graph/key/
+common-prefix differences prevent attributing that solely to path length.
+
+Recommend a separately authorized isolated append-fast-path experiment for already ordered
+strictly greater equal-optimum keys, falling back to unchanged duplicate/order scanning otherwise.
+Its proof and permutation/duplicate/cutoff obligations are in §15.8.10. No optimization, raised
+limit, product decision, production adoption or live/default routing configuration is established.
+P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps. No ODPT
+reply supplied. Changes remain unstaged/uncommitted.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
