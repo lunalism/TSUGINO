@@ -2831,3 +2831,68 @@ silently changing the published kernel. Do not add a new cutoff unit or raise li
 on/off measurement as appropriate and judge full pipeline cost, including fallback overhead.
 This is a technical experiment recommendation requiring separate implementation authorization,
 not a new product preference, approved speedup or production algorithm adoption.
+
+#### 15.8.11 Opt-in append-fast-path experiment
+
+Owner-authorized bounded technical experiment, 2026-10-05. This does not adopt an algorithm,
+change production settings or enable live routing. `SyntheticStandaloneRouteExperiment` accepts
+`selectionVariant: .appendFastPath`; omission keeps `.reference`. The published
+`SyntheticOptimalRouteKernel` and exhaustive engine remain byte-identical references. The
+exhaustive adapter still uses the reference selection path. No discovery/prepared-path reorder
+hook was added. Both variants retain original prepared ordinals and use existing canonical
+admission; complete evidence qualification and certificate checks precede either selection.
+
+The separate DEBUG `SyntheticAppendFastPathKernel` retains the same descriptor, objective and
+atom comparator. Objective scanning finishes before ordering; a later better objective resets
+the tie list exactly as before. During ordering, winners start empty. The first winner is inserted
+by the original rule. For each later tie, one new advance asks whether `last.key < incoming.key`
+using the exact existing lexicographic comparator. If strictly true, append. Otherwise return
+from that advance and begin the original equality/order scan at index zero on the next advance.
+Equality is never interpreted as strict ordering. Duplicate suppression retains the original
+first representative. No key, snapshot, service date, index, connection or evidence is rewritten.
+
+**Invariant/proof:** empty/singleton winners are sorted and unique. Original insertion/dedup
+maintains that property. Given sorted unique winners and `last < incoming`, every earlier key is
+strictly smaller than incoming by transitivity, so no earlier key can be a duplicate. Appending
+preserves the invariant. Tests check sorted uniqueness after every experimental advance across
+ascending, descending, mixed, duplicate, long shared-prefix and mixed-objective inputs; fixture
+arrival order is not the premise. The descriptor limit remains 64, with unchanged input/key bounds.
+
+**Charges and aborts:** one existing `.sorting` engine step precedes every kernel advance. A
+successful fast check and bounded append occupy one advance; a failed fast check occupies one
+advance and performs no fallback equality. The next advance is separately charged before fallback.
+The first insertion needs no fast check. Objective and original fallback advances remain as before.
+The same uninterrupted allowance spans qualification through admission; no reset, new common
+unit or increased ceiling. E1 permits experimental numeric-budget outcomes to differ, not ignored
+charges or partial success. Cancellation/failed checkpoint prevents the next advance; resource
+abort remains searchIncomplete. Existing observed-cancellation and established-failure precedence
+are retained, without claiming identical callback traces or numeric-budget parity. Selected-winner
+rejections retain mixed→searchIncomplete / all→noUsableAlternatives selected-index omissions.
+
+Observations retain original objective/equality/order/shift/advance counters. Added fastChecks,
+fastAtomCalls, fastAppends and fastTime are separate: baseline order checks do not include fast
+checks. Do not sum heterogeneous counters into a cost unit. Successful append counts as an insert
+with zero shifted slots. Structural path copies, retained keys/frontier and winner count are not
+allocated bytes. No process-memory/allocator-byte measurement is available.
+
+**Measurement design:** fixed invented three-ride tie packets of 1/8/27/64 alternatives. All
+configuration/view/request values are frozen outside timed invocations. Kernel-only runs derive
+real descriptors from oracle canonical contexts, then use ascending/reverse/odd-even permutations;
+this separates unfavorable fallback behavior without changing evidence or pipeline ordering. Whole
+standalone runs retain normal prepared-path normalization and compare reference/append variants on
+the identical packet. They do not claim descending/mixed descriptor order reaches production-style
+admission: normalized pipeline order is unchanged. Full ordered payload parity is checked outside
+timing against the separately invoked unchanged exhaustive oracle. Kernel-only times exclude
+qualification, reconstruction and admission and cannot establish whole-search improvement.
+
+One warmup for each variant/profiling mode, then eight four-slot rotations (reference/off,
+append/off, reference/on, append/on), each slot in each position twice. Timers include kernel
+construction/advances/output extraction at kernel level and the full standalone call at pipeline
+level; preparation, qualification, certification, discovery, descriptor construction, selection,
+reconstruction, admission and return costs remain included in the latter. Fixture construction,
+assertions, oracle comparison and printing are outside timers. Debug -Onone, Xcode 27.0,
+iPhone 17 Simulator/iOS 26.5 arm64, macOS 26.6.2; other affected suites share the host. Timing is
+observational with ranges, no pass threshold. Profile-on adds per-comparison counters/timers;
+off still includes optional instrumentation branches. No precise overhead correction or
+production feasibility claim follows. Final measurements/validation/review are recorded below
+in ROADMAP; any earlier execution is superseded rather than added.

@@ -4,6 +4,8 @@ import Foundation
 /// Observations only. Never charged, used for pruning, or consulted by a failure guard.
 nonisolated struct SyntheticKernelProfile: Sendable {
     var objectives = 0, equalities = 0, orders = 0, atomOrderCalls = 0
+    var fastChecks = 0, fastAppends = 0, fastAtomCalls = 0
+    var fastTime: Duration = .zero
     var inserts = 0, shiftedWinnerSlots = 0
     var objectiveTime: Duration = .zero, equalityTime: Duration = .zero
     var orderTime: Duration = .zero, insertionTime: Duration = .zero

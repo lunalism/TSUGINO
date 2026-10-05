@@ -51,11 +51,13 @@ private nonisolated struct PreparedOptimalSession {
         return try await select(prepared, engine: &engine)
     }
     static func openCertified(_ request: RouteSearchRequest, engine: inout SyntheticInternalRouteEngine,
-                              memoLimit: Int, probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void) async throws -> (Self, SyntheticDomainCertificateReport) {
+                              memoLimit: Int, probe: @escaping @Sendable (SyntheticCertificateProbePoint) -> Void,
+                              selectionVariant: SyntheticSelectionVariant = .reference) async throws -> (Self, SyntheticDomainCertificateReport) {
         let (prepared, certificate) = try await engine.prepareCertified(request, memoLimit: memoLimit, probe: probe)
-        return (try await select(prepared, engine: &engine), certificate)
+        return (try await select(prepared, engine: &engine, variant: selectionVariant), certificate)
     }
-    private static func select(_ prepared: SyntheticInternalPrepared, engine: inout SyntheticInternalRouteEngine) async throws -> Self {
+    private static func select(_ prepared: SyntheticInternalPrepared, engine: inout SyntheticInternalRouteEngine,
+                               variant: SyntheticSelectionVariant = .reference) async throws -> Self {
         let selectionStart = engine.experiment == nil ? nil : ContinuousClock.now
         var advances = 0
         var profile = SyntheticSelectionProfile()
@@ -92,18 +94,35 @@ private nonisolated struct PreparedOptimalSession {
                 profile.descriptors += 1; profile.keyAtoms += descriptors[descriptors.count - 1].key.count
             }
         }
-        var kernel = SyntheticOptimalRouteKernel(descriptors, profiling: engine.profileSelection)
-        while !kernel.isComplete {
-            try await engine.selectionStep(.sorting, profile: &profile)
-            let kernelStart = SyntheticProfileClock.start(engine.profileSelection)
-            kernel.advance()
-            if let kernelStart { profile.kernelTime += kernelStart.duration(to: .now) }
-            if engine.experiment != nil { advances += 1 }
+        let winners: [Int]
+        switch variant {
+        case .reference:
+            var kernel = SyntheticOptimalRouteKernel(descriptors, profiling: engine.profileSelection)
+            while !kernel.isComplete {
+                try await engine.selectionStep(.sorting, profile: &profile)
+                let kernelStart = SyntheticProfileClock.start(engine.profileSelection)
+                kernel.advance()
+                if let kernelStart { profile.kernelTime += kernelStart.duration(to: .now) }
+                if engine.experiment != nil { advances += 1 }
+            }
+            winners = kernel.winners
+            profile.kernel = kernel.profile
+        case .appendFastPath:
+            var kernel = SyntheticAppendFastPathKernel(descriptors, profiling: engine.profileSelection)
+            while !kernel.isComplete {
+                try await engine.selectionStep(.sorting, profile: &profile)
+                let kernelStart = SyntheticProfileClock.start(engine.profileSelection)
+                kernel.advance()
+                if let kernelStart { profile.kernelTime += kernelStart.duration(to: .now) }
+                if engine.experiment != nil { advances += 1 }
+            }
+            winners = kernel.winners
+            profile.kernel = kernel.profile
         }
-        if engine.profileSelection { profile.kernel = kernel.profile; engine.recordSelectionProfile(profile) }
-        guard prepared.paths.isEmpty || !kernel.winners.isEmpty else { throw RouteSearchFailure.searchIncomplete }
+        if engine.profileSelection { engine.recordSelectionProfile(profile) }
+        guard prepared.paths.isEmpty || !winners.isEmpty else { throw RouteSearchFailure.searchIncomplete }
         if let selectionStart { engine.recordSelection(selectionStart.duration(to: .now), advances: advances) }
-        return .init(prepared: prepared, selected: kernel.winners.map { Handle(pathOrdinal: $0) })
+        return .init(prepared: prepared, selected: winners.map { Handle(pathOrdinal: $0) })
     }
 
     func admit(engine: inout SyntheticInternalRouteEngine, rejecting indices: Set<Int>) async throws -> RouteSearchResult {
@@ -228,13 +247,16 @@ nonisolated struct SyntheticStandaloneRouteExperiment: RouteSearching {
     let configuration: SyntheticInternalConfiguration?
     let view: SyntheticInternalView?
     let profileSelection: Bool
+    let selectionVariant: SyntheticSelectionVariant
     let workLimit: Int
     let checkpoint: @Sendable (SyntheticInternalStage) async throws -> Void
     init(configuration: SyntheticInternalConfiguration?, view: SyntheticInternalView?,
          workLimit: Int = SyntheticPruningBounds.workLimit, profileSelection: Bool = false,
+         selectionVariant: SyntheticSelectionVariant = .reference,
          checkpoint: @escaping @Sendable (SyntheticInternalStage) async throws -> Void = { _ in }) {
         self.configuration = configuration; self.view = view
         self.workLimit = workLimit; self.checkpoint = checkpoint; self.profileSelection = profileSelection
+        self.selectionVariant = selectionVariant
     }
     @concurrent
     func search(_ request: RouteSearchRequest) async throws -> RouteSearchResult {
@@ -256,7 +278,7 @@ nonisolated struct SyntheticStandaloneRouteExperiment: RouteSearching {
             var engine = SyntheticInternalRouteEngine(configuration: configuration, view: view, workLimit: workLimit,
                                                      checkpoint: checkpoint, experiment: .pruned, profileSelection: profileSelection)
             let (session, certificate) = try await PreparedOptimalSession.openCertified(request, engine: &engine,
-                                                                                      memoLimit: memoLimit, probe: probe)
+                                                                                      memoLimit: memoLimit, probe: probe, selectionVariant: selectionVariant)
             let admissionStart = ContinuousClock.now
             let result = try await session.admit(engine: &engine, rejecting: rejecting)
             engine.recordAdmission(admissionStart.duration(to: .now))

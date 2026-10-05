@@ -6194,6 +6194,135 @@ P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering
 reply supplied. Changes remain unstaged/uncommitted.
 
 
+### Append-fast-path experiment — opt-in DEBUG only
+
+Consumer §15.8.11 records the scoped owner-authorized experiment. The published selector kernel
+and exhaustive engine remain byte-identical references. Standalone defaults to `.reference`;
+`.appendFastPath` is explicit opt-in. Qualification/certification/pruning and canonical admission
+are retained. No new budget, raised limit, live routing, provider access or product adoption.
+
+Final explicit iPhone 17 Simulator run: **49 functions / 96 cases passed**, including append
+experiment **7 / 13**. Selector, handoff, standalone, profiling and pruning suites passed in that
+same run; do not add subsets or the superseded first focused execution. Debug app/extension
+dependencies built. Prior E1 Release app/extension build evidence is reused (published baseline
+fingerprints verified), not newly run: all changed/new Swift is DEBUG-guarded, no project/build
+configuration changed. Two new no-DEBUG declaration probes and optimized no-DEBUG object-symbol
+exclusion passed. Initial probe hit sandbox module-cache permissions; rerun with a writable
+explicit temporary module cache verified the intended absence, not that permission failure.
+Separate non-author independent review approved the final implementation, safeguards, tests,
+measurement methodology, numerical tables and conclusions with no material findings.
+
+Tests compare original winner ordinals, all ordered canonical payloads, snapshots/dates/indices,
+scopes and contexts against unchanged references. Empty/singleton, 64 ties, permutations,
+duplicates, long shared-prefix identifiers, mixed objectives, repeated visits/dates and evidenced
+through service pass. Sorted uniqueness is checked after every experimental kernel advance.
+Mixed/all selected rejection retains searchIncomplete / noUsableAlternatives with original
+selected-index reasons. Existing whole-domain overflow/unknown evidence and certificate abort
+remain failures; no incumbent result. The local charged kernel driver aborts at the fifth step
+after a failed fast check, before fallback equality, for cutoff and cancellation.
+
+**E1 example:** stable two-direct-tie fixture completes at 75 inherited charges with append;
+reference requires 76 and fails at 75; append fails at 74. All stages share one uninterrupted
+allowance. This intentional numeric-cutoff difference is not equal-cost accounting. Large-fixture
+qualification charges may vary with dictionary encounter order; exact-budget assertions use the
+stable two-key fixture. No change to published default/reference failure semantics is claimed.
+
+Method: one warmup per variant/profiling mode, then eight balanced four-slot rotations, each
+slot occupies each position twice. Same frozen inputs for both; Debug -Onone, Xcode 27.0,
+iPhone 17/iOS 26.5 Simulator arm64, macOS 26.6.2. Other affected suites share the test host. No timing
+threshold. Below are medians [min–max] in milliseconds from the final run only. Profile-on and
+-off are distinct observations; negative on−off differences reflect noise, not free instrumentation.
+
+**Whole standalone pipeline and containing selection/reconstruction stage.** These use normal
+prepared-path ordering, not artificially reversed evidence. Timers include all standalone costs;
+oracle comparison/fixture construction/assertions/printing excluded. Canonical admission is
+separate: for 64/profile-off its median is 5.014ms reference and 4.867ms append; profile-on 5.035/4.919ms.
+Do not sum separately computed medians or nested stage timers.
+
+| Ties / profiling | Reference whole | Append whole | Reference selection | Append selection |
+| --- | --- | --- | --- | --- |
+| 1 / off | 0.324 [0.299–0.334] | 0.321 [0.304–0.328] | 0.032 [0.029–0.035] | 0.033 [0.030–0.036] |
+| 1 / on | 0.311 [0.297–0.331] | 0.316 [0.309–0.374] | 0.033 [0.030–0.036] | 0.033 [0.031–0.073] |
+| 8 / off | 2.166 [2.112–2.262] | 1.772 [1.747–1.879] | 0.892 [0.868–0.900] | 0.523 [0.511–0.533] |
+| 8 / on | 2.164 [2.136–2.282] | 1.785 [1.749–1.888] | 0.908 [0.894–0.919] | 0.539 [0.529–0.552] |
+| 27 / off | 11.643 [11.496–12.024] | 6.167 [6.057–6.332] | 7.410 [7.319–7.539] | 1.970 [1.932–2.051] |
+| 27 / on | 11.748 [11.625–11.943] | 6.324 [6.103–6.460] | 7.548 [7.486–7.594] | 2.019 [1.984–2.070] |
+| 64 / off | 51.057 [50.229–53.839] | 18.064 [17.726–18.710] | 37.928 [37.296–40.521] | 5.210 [5.101–5.388] |
+| 64 / on | 51.723 [50.761–54.022] | 18.437 [17.857–23.433] | 38.701 [37.575–39.658] | 5.421 [5.186–5.532] |
+
+**Kernel-only descriptor-order experiment.** Same canonical-derived three-ride descriptors, with
+ascending, reversed and odd-index-then-even-index orders. No pipeline reorder seam exists;
+these exclude descriptor construction, preparation and admission. They isolate unfavorable
+fallback behavior and cannot themselves establish whole-search benefit.
+
+| Ties / order | Reference off | Append off | Reference on | Append on |
+| --- | --- | --- | --- | --- |
+| 1 / ascending | 0.001 [0.001–0.002] | 0.001 [0.001–0.002] | 0.001 [0.001–0.003] | 0.001 [0.001–0.002] |
+| 1 / descending | 0.001 [0.001–0.001] | 0.001 [0.001–0.001] | 0.001 [0.001–0.003] | 0.001 [0.001–0.002] |
+| 1 / mixed | 0.001 [0.001–0.001] | 0.001 [0.001–0.001] | 0.001 [0.001–0.001] | 0.001 [0.001–0.002] |
+| 8 / ascending | 0.682 [0.671–0.686] | 0.315 [0.307–0.324] | 0.690 [0.685–0.693] | 0.317 [0.313–0.323] |
+| 8 / descending | 0.339 [0.338–0.344] | 0.500 [0.496–0.526] | 0.342 [0.332–0.351] | 0.502 [0.498–0.512] |
+| 8 / mixed | 0.561 [0.553–0.579] | 0.643 [0.623–0.653] | 0.578 [0.560–0.586] | 0.642 [0.630–0.666] |
+| 27 / ascending | 6.947 [6.761–7.060] | 1.316 [1.278–1.619] | 7.056 [6.795–7.586] | 1.348 [1.307–1.633] |
+| 27 / descending | 1.399 [1.366–1.450] | 1.858 [1.824–1.969] | 1.415 [1.356–1.487] | 1.891 [1.881–1.966] |
+| 27 / mixed | 5.652 [5.510–5.735] | 4.462 [4.415–4.610] | 5.689 [5.620–5.854] | 4.510 [4.398–4.601] |
+| 64 / ascending | 35.314 [34.959–36.779] | 3.583 [3.573–3.672] | 35.667 [35.368–37.420] | 3.630 [3.589–4.707] |
+| 64 / descending | 3.898 [3.829–3.932] | 4.981 [4.863–5.266] | 3.891 [3.825–4.193] | 4.980 [4.877–5.189] |
+| 64 / mixed | 26.947 [26.745–27.855] | 20.789 [20.578–21.658] | 27.323 [27.145–28.168] | 21.061 [20.832–21.490] |
+
+**Separate structural observations (profile on).** Each advance has one pre-advance checkpoint
+in the pipeline. Fast checks are additional comparisons, not hidden in fallback-order counts.
+Objective comparisons remain 126 for 64 ties in both kernels; they are not mixed into ordering
+counts. No heterogeneous common work unit is formed.
+
+| 64-tie order / variant | Equality | Fallback order | Fallback atom calls | Fast checks | Fast atom calls | Fast appends | Advances | Shifted winner slots |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ascending / reference | 2016 | 2016 | 21120 | 0 | 0 | 0 | 2144 | 0 |
+| ascending / append | 0 | 0 | 0 | 63 | 2889 | 63 | 128 | 0 |
+| descending / reference | 63 | 63 | 2889 | 0 | 0 | 0 | 128 | 2016 |
+| descending / append | 63 | 63 | 2889 | 63 | 660 | 0 | 191 | 2016 |
+| mixed / reference | 1520 | 1520 | 16256 | 0 | 0 | 0 | 1616 | 528 |
+| mixed / append | 1024 | 1024 | 11424 | 63 | 1487 | 31 | 1152 | 528 |
+
+| Ascending ties | Reference advances | Append advances | Reference fallback order | Append fast checks | Reference / append fallback atom calls | Append fast atom calls |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | 2 | 2 | 0 | 0 | 0 / 0 | 0 |
+| 8 | 44 | 16 | 28 | 7 | 456 / 0 | 257 |
+| 27 | 405 | 54 | 351 | 26 | 4212 / 0 | 1086 |
+| 64 | 2144 | 128 | 2016 | 63 | 21120 / 0 | 2889 |
+
+For 64 ties, pipeline post charges are 5890 reference /3874 append (difference 2016, exactly the
+removed advances). Qualification and discovery remain separate inherited counters; discovery 420,
+qualification observed range reported below. Certificate observations remain separate. Both retain
+64 output winners, peak 10 frontier paths, 192 retained complete-path keys, 80 logical path extensions/
+224 element slots. Descriptor/tie/winner arrays retain existing <=64 limits. Shift counts and these
+structural values do not measure allocator bytes, ARC costs or process-memory savings.
+
+- Reference observed qualification charges across profiling on/off: 411–412.
+- Append observed qualification charges across profiling on/off: 411–412.
+
+**Interpretation and next step:** profile-off normalized 64 whole median fell 51.057→18.064ms;
+selection fell 37.928→5.210ms. Ascending 8/27 also improved; singleton differences are tiny/noisy.
+Kernel 64 descending regressed 3.898→4.981ms because all 63 fast checks fail and original work remains.
+Mixed 8 also regressed 0.561→0.643ms; mixed 27/64 improved. A fast path is therefore not universally
+faster. It helps this normalization/order pattern while adding bounded work on unfavorable input.
+On 64 ascending it replaces 2016 fallback ordering checks with 63 strict-last checks, which have 2889
+atom calls rather than 21120 fallback calls. Equal event counts would still not imply equal cost.
+
+Recommend retaining this as an opt-in experiment, with the reference/default unchanged. The
+next useful evaluation is an optimized build of this same bounded DEBUG experiment (explicit
+DEBUG enabled in an isolated test configuration, never Release routing adoption) before considering any adoption; Debug generic/comparator overhead can differ
+from optimized code. That follow-up needs separate authorization and must retain all-tie identity,
+ordered-payload, fallback and E1 abort checks. No additional optimization, raised limits or default
+replacement is justified by this run. No general scale/production feasibility, measured memory
+saving or guaranteed speedup is established. Instrumentation has real clock/counter/closure costs;
+paired rotations reduce order bias but do not isolate them exactly in a shared host.
+
+P3-T1/Phase 3 remain incomplete. P2-S9 retains 14 classification and 14 ordering gaps. No ODPT reply
+supplied. Changes remain unstaged/uncommitted for publication review.
+
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
