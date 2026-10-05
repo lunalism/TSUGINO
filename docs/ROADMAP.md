@@ -6751,6 +6751,9 @@ Earlier dated no-reply records remain historical.
 
 #### ODPT reply applicability checkpoint — 2026-10-05
 
+Historical reply-only assessment below; the subsequent inquiry/reply association checkpoint
+updates its resource-association finding and next step, without changing the retained S9 gaps.
+
 **Review history and current evidence:** the initial partial assessment had no accessible image
 and correctly treated the owner's summary as unexamined correspondence; its independent review
 approved that limited status. The owner subsequently attached a readable screenshot, now directly
@@ -6822,6 +6825,59 @@ Separate non-author review directly examined the supplied screenshot and approve
 assessment with no material findings. Scope/privacy/reference and whitespace checks passed.
 No code/tests/builds, provider contact or production adoption. P3-T1/Phase 3 remain incomplete; all 15 launch services
 remain preserved, live/default routing unconfigured, reference default and append opt-in.
+
+
+#### ODPT inquiry/reply association checkpoint — 2026-10-05
+
+**Current evidence:** both supplied screenshots are readable and were directly examined: the
+original inquiry and the reply including its four quoted questions and original-message reference.
+The previously missing inquiry image is now available; earlier attachment/context-only assessments
+remain review history. No screenshots, full correspondence, personal/contact details or local
+attachment paths are committed. This is visual correspondence assessment, not mailbox/header
+verification. No retained feed, source occurrence, private correspondence archive or manifest access.
+
+| Observable comparison | Finding and limit |
+|---|---|
+| Original inquiry resource block | Explicitly identifies Tokyo Metropolitan Bureau of Transportation railway-related information, UUID `35b68908-4558-47ae-bfa5-867e58544a1a`, its [ODPT catalog resource URL](https://ckan.odpt.org/dataset/train-toei/resource/35b68908-4558-47ae-bfa5-867e58544a1a), and requested feed_version `20260921`. These agree with the tracked inquiry target. The catalog was not reopened. |
+| Four questions | The reply quotes the same four questions, in the same order, covering row inclusion; passenger/restricted/passed positions and omissions; ordering/conversion exceptions versus full physical traversal; and specification/revision applicability. The visible wording agrees apart from layout/quotation formatting. |
+| Message reference | The original inquiry header displays October 3, 2026, 22:09; the reply's original-message reference gives that same date/time. Visible author identification also agrees, without reproducing it here. No timezone conversion or transport timestamp is inferred. |
+| Association conclusion | Matching questions, message date/time and visible author identification support associating this reply with the inquiry about the identified resource. Resource association now has direct screenshot-based support, rather than tracked context alone. Full email headers, Message-ID/In-Reply-To linkage, delivery logs and image authenticity are not verified; this is not cryptographic authentication. |
+| Requested versus answered revision | The original resource block and quoted Q4 request 20260921 applicability (or the confirmable version/period/scope). The actual Q4 answer states GTFS Schedule conformance and links the official reference; it does not affirm that revision or identify another applicable period. Association resolves which question was asked, not the unanswered historical applicability. |
+
+The reply's substantive contribution remains as previously examined: Shinjuku Line express
+passing stations are included alongside stopping stations; passing stations have pickup/drop-off
+1/1; stop_sequence follows represented stopping/passing station order. **Passing ⇒ 1/1 remains
+one-way.** Generic GTFS passenger permissions do not prove physical passing. No answer establishes
+complete representation of every traversed station/point, restricted physical-stop conventions,
+one-sided permissions, omission/conversion exceptions or rights/delivery permission. The earlier
+public-reference review (served revision April 27, 2026) is reused; no new public retrieval.
+
+**Smallest next step:** obtain/review narrowly targeted authoritative clarification before applying
+these conventions to the retained revision, unless already available applicable evidence supplies
+the same answers. No further general resource-association inquiry is needed on the evidence now
+examined. The precise open questions and their acceptance relevance are:
+
+- Do these inclusion, passing-encoding and ordering conventions apply to this resource's
+  feed_version 20260921? If not confirmable, what version/period/scope is supported? This bounds
+  the interpretation profile before using it for the historical candidate.
+- Can 1/1 also describe a physically stopping station with no passenger exchange, and how are
+  one-sided boarding/alighting restrictions represented? This prevents unsupported classification
+  of restricted stops as passes; permissions and physical stopping must remain distinct.
+- Are any traversed stations/positions omitted, and what conversion/adoption rules or exceptions
+  qualify the stated sequence order? This bounds represented-position coverage and the existing
+  scoped ordering/crosswalk obligations without equating trip order to complete physical traversal.
+
+These questions are not sent and introduce no new acceptance policy. Rights/retention/bundling
+remain separate gates, not implied answers to a technical inquiry. After applicable interpretation
+is supported, occurrence-specific application and independent crosswalk review still require a
+separately authorized, complete same-candidate review; no previous one-use grant is renewed here.
+**All 14 classification and 14 ordering gaps remain unresolved.** No source row was examined or
+classified. P2-S9, P3-T1 and Phase 3 remain incomplete; live/default routing stays unconfigured,
+reference selection default, append opt-in and all 15 launch services preserved.
+
+Separate non-author review directly examined both screenshots and approved this association update
+with no material findings. Scope/privacy/reference and whitespace checks passed. No code, tests,
+builds, provider contact, data acquisition or production adoption; leave changes unstaged/uncommitted.
 
 
 ## Goal
