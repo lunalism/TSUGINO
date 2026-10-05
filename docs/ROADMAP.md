@@ -6710,6 +6710,45 @@ append opt-in, reference default, live unconfigured. P3-T1/Phase 3 remain incomp
 14 classification and 14 ordering gaps. No ODPT reply has arrived.
 
 
+#### Test-only Application/capture integration — 2026-10-05
+
+`RouteSearchCaptureIntegrationTests` injects the actual DEBUG capture-enabled optimal searcher
+through a test-local AppEnvironment factory. Two deterministic cases close the bounded test-only
+Application/capture integration workstream under DEC-087/E2 and Consumer §19.7. The complete
+invented A→D/T1 domain uses service date 2026-04-13, original interval [0,1], V1 times 100→150
+and fresh V2 times 100→160; coverage, permissions, continuity and policy coherence are stipulated.
+Explicit departure is 100; no real-source qualification follows from these fixtures.
+
+A captures V1 atomically before suspension. Supplier replacement alone leaves A searching;
+submitting B cancels A's supplier gate, B captures V2 once, and both workers are joined before
+asserting B remains current with exact scope, dated binding, full snapshot, indices and canonical
+context. Explicit matching cancellation separately leaves the joined worker's owner cancelled,
+with only configuration checkpoint work and one capture. No cancelled V1 success is fabricated.
+Existing cancellation-aware gates and coordinator completion barriers support disposal, release
+and joins on both success/error exits; no sleeps, polling or latency claims. No missing-view or
+presentation matrix is duplicated.
+
+Final `/private/tmp/tsugino-app-capture-r1.xcresult`: **29 functions / 62 cases passed**, zero
+failures/skips, explicit iPhone 17 / iOS 26.5 Simulator. Included subsets: new integration **2/2**,
+coordinator **9/28**, composition **5/10**, preflight/capture **7/14**, capture isolation **6/8**.
+Structured result summary/tree establish these counts; subsets are not additional runs.
+Debug test action built app/extension dependencies. No additional Release build was required:
+application source and build settings are unchanged. No benchmark or physical-device run.
+
+Separate non-author review approved the final tests and documentation with no material findings.
+Scope/privacy/reference and whitespace checks passed. Only the new test file and this status entry
+change, unstaged/uncommitted for publication review. This closes no production
+supplier/integration, responsiveness, real qualification or milestone gate. All 15 launch services
+remain preserved; append opt-in, reference default, live routing unconfigured. P3-T1/Phase 3 remain
+incomplete; P2-S9 retains 14 classification and 14 ordering gaps.
+
+Correspondence status at publication: the owner reports receiving an ODPT interpretation reply
+on 2026-10-05 and supplying its screenshot in the conversation. Repository applicability review
+has not occurred; no correspondence content is examined in this publication task. Receipt alone
+does not resolve classification/ordering gaps, feed-revision applicability or rights/delivery gates.
+Earlier dated no-reply records remain historical.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
