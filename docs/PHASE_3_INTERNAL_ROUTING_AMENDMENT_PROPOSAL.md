@@ -2966,3 +2966,115 @@ of total cost lies in selection. Reversed kernels and mixed 8 still regress. Kee
 opt-in/reference default: this order-sensitive result does not justify further optimization or
 adoption. Before a future adoption decision, representative workload/coverage and production
 resource-policy evidence would be needed; no new acquisition or benchmark is authorized here.
+
+## 16. Supported inventory, request coverage and workload evidence — Proposed evaluation plan
+
+2026-10-05. Documentation-only technical matrix under Phase 3's existing selected-provider,
+P3-T1 and suitability gates; not a new product decision or implementation authorization.
+DEC-076/078/080/081/085/086/087 remain authoritative. The bounded §15 investigation is
+complete for now: append stays opt-in, reference stays default. No further kernel work is
+proposed. Historical progress-map consumer gaps are superseded by §§12–14 implementation.
+
+### 16.1 Product boundary and one coverage/workload matrix
+
+[PRODUCT initial coverage](PRODUCT.md#initial-release-coverage-dec-047-dec-058) retains all
+15 canonical lines/services: Toei Asakusa, Mita, Shinjuku, Oedo; Tokyo Metro Ginza,
+Marunouchi including its branch, Hibiya, Tozai, Chiyoda, Yurakucho, Hanzomon, Namboku,
+Fukutoshin; Tokyo Sakura Tram and Nippori-Toneri Liner. DEC-047/058 capability tiers
+classify journey guidance, **not schedule-routing readiness**. Verified realtime capability
+does not qualify calendars, passenger stops or transfer inventory; scheduled-tier status
+does not prove those inputs either. Complete canonical lines are not clipped at Tokyo's
+boundary. Through service does not recursively admit outside operators. Expansion gates
+and permitted unsupported-segment presentation are unchanged. A finite evaluation scope
+is not permission to narrow launch coverage or claim the untested remainder ready.
+
+In the matrix, test names refer to current source in `TSUGINOTests`; they record invented
+functional evidence, not new executions, source conformance or production completeness.
+A qualified request needs a pinned view, request departure bound, declared finite scope,
+and affirmative coverage of every required inventory member under resolved policies.
+A packet or a successful route does not establish that coverage.
+
+| Accepted obligation / case | Required request evidence | Existing bounded synthetic evidence | Missing production evidence / later measurement |
+| --- | --- | --- | --- |
+| Launch inventory; direct and transfer routing | Canonical station/line/Trip bindings and complete required dated-slot and eligible-interval declarations for the scope; explicit known absence distinct from missing inventory | `SyntheticInternalRouteTests.g1DirectInclusiveAndOutsideBounds`; `SyntheticTimetableOptimalRoutingIntegrationTests.convertedDirectVersusTransfer` exercises faster direct, faster transfer and fewer-change tie | Per-baseline-service inventory coverage and cross-service joins, source revision applicability; dated ride/interval volume and OD/time strata. No supplied baseline-wide qualified inventory |
+| Calendar and service-day coverage | Applicable ranges/weekdays, unique additions/removals and precedence; supported execution-per-date correspondence; all service dates capable of contributing within resolved request bounds, including prior-date extended-hour service | `SyntheticTimetableConversionTests` calendar cases; `SyntheticInternalRouteTests.g7OpaquePriorDateAndMixedDates`, `g8InactiveUnavailableQualityAndPermissions` | Applicable source calendar/execution profile and completeness. Proven inactivity is not unknown service; production date/horizon resolution remains unresolved |
+| Passenger occurrences, repetition, skipped stops and eligibility | S9-reviewed passenger-stop sequence and movement/ordering; exact original indices, repeated visits and dated snapshots; affirmative boarding/alighting eligibility for required endpoints. Passed positions are not fabricated passenger stops | `SyntheticInternalRouteTests.g6RepeatedVisitsAndPartialSnapshotClosure`, `g8InactiveUnavailableQualityAndPermissions`; `SyntheticStandaloneRoutingTests.datesMultiplicityThroughAndRepeatedVisits`; `SyntheticTripReviewTests` passed-position review cases | All 14 classification and 14 ordering gaps remain. Passed-position review tests are not a source-to-routing local/express acceptance test; source-specific skipped-stop correspondence and its end-to-end evidence remain a gap. Measure repetition and eligible intervals separately from raw rows |
+| Timezone, midnight and time quality | Source-authorized civil-day anchor, zone rules, extended hours and unique instant conversion; exact/missing/estimated distinctions and chronology, no interpolation; arrival/departure roles remain separate | `SyntheticTimetableConversionTests.gapAndFoldRejectWithoutGuessing`, `civilRolloverDoesNotAddElapsedSecondsFromMidnight`, `missingEstimatedUnknownAndChronologyAreSeparate`; optimal integration `convertedMidnightTransferKeepsOriginalServiceDateAndInstants` | DEC-085 invented profile has no Toei/ODPT applicability. Need actual calendar/zone/quality profile and revision binding; measure service-day overlap and relevant temporal strata |
+| Explicit directional transfers and qualified allowances | Each required directional relation has present/absent/unknown evidence; known eligibility prohibitions remain distinct from unknown, and usable relations require an applicable directional allowance/policy; station equality or geographic proximity is insufficient | `SyntheticInternalRouteTests.g3DirectionalWalkAndInclusiveAllowance`, `g4SameStationNeedsItsOwnAllowance`; standalone `directionalEvidence` | Real transfer relations, directions, applicability/validity and policy resolution. Measure required relation pairs as well as usable edge density, fan-out and disconnected components |
+| Through-service continuity | Affirmative same-train continuity and compatible line segments at original indices; no change counted for evidenced through service | `SyntheticInternalRouteTests.g2ThroughServiceAndMissingContinuity`; standalone `datesMultiplicityThroughAndRepeatedVisits` | Source-backed continuous-run correspondence, including supported operator boundaries; measure through depth separately from train-change depth. Never infer continuity from names or adjacency |
+| Equal optima and canonical output | Earliest arrival then changes; every identity-distinct equal optimum retained; original dated snapshot/index/connection payloads, deterministic identity order only | Optimal integration `distinctConvertedEqualOptimaAllSurviveAdmission`; `SyntheticAppendFastPathTests` 64 ties, duplicate/permutation/shared-prefix cases | Actual tie multiplicity, identity lengths, output/context volume and end-to-end admission cost. Invented 64 ties is a guardrail case, not a production output cap |
+| Disconnected inventory and missing evidence | Whole required domain qualified, including slower/disconnected branches; known negative is different from unknown. Scoped noResults requires completed, qualified empty exploration | `SyntheticInternalRouteTests.g5CompleteNegativeVersusUnknownWithAnotherGoodRoute`; optimal integration `unavailableConversionPreventsUsableDirectFallback`; standalone `unknownSlowerEvidence` | Actual completeness evidence and qualification failure distribution. Unknown required evidence remains dataUnavailable even with a usable direct route; no silent exclusion |
+| Coherent revisions and updates | Source/profile/mapping/calendar/connection revisions and validity windows correspond to one immutable view; no snapshot/index relabeling or mixed-generation joins. Updates require requalification of affected claims | Conversion `exactSnapshotRevisionAndDateMustMatch`, `indexMappingFailuresAreAtomic`; internal `g9ConflictingInputsAndIdenticalDuplicates`; timetable-routing integration mismatch cases | Source update cadence, atomic publication/invalidation and consumer transition evidence. Measure rebuild/requalification size and costs; preserve existing immutable contexts, no caching policy implied |
+| Completion and resource safeguards | Proof of no better route and all equal optima before success; canonical admission and omission accounting; cancellation and any cutoff yield no partial complete result | Internal `g13CutoffsAtEveryStage`, `g14CancellationAtEveryStage`; standalone `guardAndCancellationAborts`, `selectedRejections`, `uninterruptedBudgetAndE1` | Production safeguards, optimum/tie proof and total feasibility. Mixed selected rejection stays searchIncomplete; all rejected stays noUsableAlternatives with selected omissions. E1 is experimental, not a production budget or legacy-trace equivalence |
+
+### 16.2 Evidence classes and later measurement plan
+
+Keep four evidence classes separate in every future report:
+
+- **Invented functional fixtures:** explicit complete small universes proving a contract case;
+  coverage is the named assertion, not prevalence or complete product behavior.
+- **Invented stress cases:** adversarial bounds, ties, repetition, dense/disconnected graphs
+  and failure branches. They expose growth and failure handling, not Tokyo distributions.
+- **Source-derived structural evidence:** authorized aggregates bound to identified source,
+  revision, profile, declared service/date coverage and extraction method. Raw source row
+  counts alone do not equal qualified rides, usable edges or passenger occurrences. Rights
+  and privacy review precede acquisition, derivation, retention or publication as applicable.
+- **Representative workload evidence:** a justified sampling/coverage frame across the accepted
+  baseline, relevant service/date/time and origin/destination strata, ordinary and adverse
+  cases, with omissions, uncertainty, provenance and update sensitivity declared. Source-derived
+  samples alone are insufficient without this argument. No such workload is established here;
+  use of real user search histories is neither required nor authorized.
+
+Later measure dated slots and activation states; qualified b<a ride intervals per Trip/date;
+occurrence counts/repetition and eligible endpoint proportions; required connection-pair count,
+usable directional density and degree distribution; branching, reachable/dead-end prefix and
+complete-path counts, ride depth versus through depth and recurring-Trip restrictions;
+service-date overlap; equal-optimum multiplicity, key lengths, canonical output/context size;
+and update/requalification volume. Report distributions and extreme cases by declared strata,
+not one average or invented Tokyo-scale values. Establish what is countable before attempting
+potentially unbounded complete-path enumeration; any bounded/censored observation must say so.
+
+A later authorized evaluation should include qualification, certification where used, discovery,
+reconstruction, selection and canonical admission in total elapsed cost; report stage costs,
+separate event counts, peak structural storage and reliable measured memory only if available.
+Include cold/update work where applicable, cancellation and abort behavior, build/compiler mode,
+hardware, warmup, balanced repetitions and ranges. Do not sum heterogeneous counters or overlapping
+stage timers. Existing Simulator measurements and structural copy counts do not prove device
+latency, memory savings, deployment suitability or general speedup. No benchmark is authorized here.
+
+### 16.3 Decisions, dependencies and smallest follow-up
+
+Before selecting a production solver, demonstrate full identity/tie correctness and whole-domain
+failure behavior on the qualified scope, then representative total cost and usable output size.
+Before deployment/ownership adoption (DEC-086 R6), compare measured resource/operational needs,
+licensing/delivery constraints and maintainability behind RouteSearching. Before choosing horizon,
+ride limits or safeguards, state which requests/inventory they cover, how omitted service dates
+or paths are ruled out, and what truthful failure occurs when limits are reached. Numerical
+production settings remain unresolved; synthetic bounds cannot be promoted implicitly.
+
+**Genuine owner choices remain Proposed:** production provider/solver and R6 deployment/ownership;
+production horizon/resource policy and adoption. Any change to accepted launch coverage or failure
+semantics would require its own explicit decision; none is recommended here. Constructing this
+matrix, selecting measurement strata and identifying existing assertions are technical planning,
+not new product preferences. Objectives, identity, lifecycle and presentation are not reopened.
+
+Without an ODPT reply, tracked-contract audits and a source-neutral qualification evidence schema
+can proceed. Real stop/pass/order closure, source calendar/time/connection applicability and
+representative structural extraction require relevant authoritative evidence and separately scoped
+access; the reply is one possible evidence source, not the only possible conformance evidence.
+The October 3 interpretation inquiry has no supplied reply. It is distinct from Q3 publication,
+Q4 translation, item-5 bundling/deletion and registry/delivery gates; rights are source-specific.
+No private reread, acquisition, provider contact or permission inference follows from this proposal.
+
+**Smallest follow-up recommendation:** design one source-neutral request-qualification evidence
+manifest, using an invented filled example and a missing-evidence example, bound to existing
+view/snapshot/interval and policy references. Specify for each matrix obligation the evidence
+reference, scope/revision, affirmative/negative/unknown state and invalidation condition; references
+must not open files or assert authenticity. Reuse existing types/contracts; no parser, new solver,
+benchmark, storage or numerical budget. Completion is an independently reviewed contract showing
+how completeness would be substantiated (not just asserted by a flag), what is still external,
+and how each unresolved obligation prevents the corresponding readiness claim. This advances the
+inventory prerequisite without requiring private data; later real qualification remains gated.
+
+P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps.
+Live/default routing remains unconfigured. No new semantic decision record is necessary.

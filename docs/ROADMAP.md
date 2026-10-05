@@ -6434,6 +6434,35 @@ P3-T1/Phase 3 remain incomplete. P2-S9 retains 14 classification and 14 ordering
 routing remains unconfigured; no ODPT reply supplied. Changes remain unstaged/uncommitted.
 
 
+#### Supported inventory and representative-workload proposal — 2026-10-05
+
+[Consumer proposal §16](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#16-supported-inventory-request-coverage-and-workload-evidence--proposed-evaluation-plan)
+adds one proposed coverage/workload matrix under existing Phase 3 provider suitability and
+P3-T1 work. It retains all 15 accepted launch lines/services, distinguishes journey realtime
+capability from schedule-routing readiness, and maps required dated inventory, occurrences,
+calendar/time quality, directional allowances, continuity, revisions and truthful outcomes to
+existing named synthetic tests or explicit gaps. Passed-position review is not real local/express
+routing validation. Earlier lifecycle/composition/presentation gaps are superseded by their
+published completion entries; no repeat consumer implementation is proposed.
+
+Invented functional/stress fixtures, source-derived structure and justified representative
+workloads are separate evidence classes. Later volume/density/depth/repetition/tie/output and
+update measurements must carry scope and provenance; no Tokyo-scale values or production budgets
+are invented. The bounded algorithm investigation is complete for now; append remains opt-in
+and reference defaults remain unchanged. No further kernel optimization or benchmark is proposed.
+
+Recommended smallest follow-up is documentation-only design of a source-neutral request-
+qualification evidence manifest, with invented complete/missing examples, exact scope/revision
+bindings and invalidation conditions. It would make completeness evidence reviewable without
+opening evidence references, implementing an importer or granting real access. Production
+solver/ownership, horizon/resource policy and adoption remain Proposed/unresolved; no new product
+decision is needed for matrix construction. Source qualification, applicable rights, delivery and
+separately authorized real review remain gates. P3-T1/Phase 3 stay incomplete; P2-S9 retains 14
+classification and 14 ordering gaps. No ODPT reply supplied; live/default routing unconfigured.
+
+Documentation-only: no code, tests/builds, benchmarks, private access or provider contact.
+
+
 
 ## Goal
 
