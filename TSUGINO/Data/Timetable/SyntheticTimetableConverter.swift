@@ -52,6 +52,18 @@ nonisolated enum SyntheticTimetableConverter {
         }
     }
 
+    /// Reuses the exact DEC-085 bounded-input findings without conversion or reinterpretation.
+    /// This may report invalid syntax as well as resource limits; callers preserve the outcome.
+    static func preflightFailure(_ packet: SyntheticTimetablePacket) -> SyntheticTimetableFailure? {
+        var findings = Findings()
+        guard !bounded(packet, findings: &findings) else { return nil }
+        switch findings.outcome {
+        case .invalid(let failure), .unsupported(let failure), .insufficientEvidence(let failure):
+            return failure
+        default: preconditionFailure("Bounded validation failure must carry findings")
+        }
+    }
+
     static func convert(_ packet: SyntheticTimetablePacket) -> SyntheticTimetableOutcome {
         var findings = Findings()
         // Counts are checked without traversing untrusted collections. Text reads use prefixes.

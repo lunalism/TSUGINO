@@ -6492,6 +6492,79 @@ reference defaults and unconfigured live routing remain; no ODPT reply supplied.
 Documentation only; no code, tests/builds/benchmarks, private access or provider contact.
 
 
+
+#### Bounded timetable batch-assembly design — 2026-10-05
+
+[Producer proposal §10](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#10-bounded-in-memory-batch-assembly--proposed-choices-b1b3)
+proposes one caller-enumerated invented in-memory batch, reusing the implemented DEC-085
+converter and exact occurrence bindings. No date expansion, source discovery or new qualification
+authority. B1 recommends retaining unsupported/insufficient slots while rejecting invalid packets
+and structural contradictions. B2 proposes duplicate rejection, deterministic atomic construction
+and an eight-slot experimental envelope with unchanged per-packet bounds. B3 proposes fresh-view
+replacement with immutable historical retention, without automatic fallback or publication.
+All B1–B3 remain Proposed; this task establishes no owner approval or implementation. Packet preflight
+failures retain original converter diagnostics, including invalid/resource combinations.
+Association coherence does not certify cross-packet calendar/zone definition consistency;
+known conflicts remain unresolved source/view qualification failures, not usable source truth.
+
+Declared complete inventory is an artificial-world assertion, not proof of usable facts or
+request coverage. Unknown required slots/connections still prevent direct-only success;
+existing search/admission and cutoff semantics stay unchanged. Existing single-packet conversion,
+calendar/time/identity behavior is not reopened. The proposed later slice is a DEBUG-only
+assembler and focused tests after approval, not a file importer, persistence/cache service or
+production bridge. All 15 launch services remain preserved; P3-T1/Phase 3 remain incomplete;
+P2-S9 retains 14 classification and 14 ordering gaps. The owner reports no ODPT reply has
+arrived; none is supplied here. Append stays
+opt-in; reference defaults and live routing remain unconfigured.
+
+Documentation-only design; no code, tests/builds/benchmarks, private access or provider contact.
+
+
+
+#### Bounded timetable batch assembler implementation — 2026-10-05
+
+The owner accepted Producer §10 B1/B3 and authorized B2 as the reviewed technical experiment;
+its eight-slot ceiling is an experimental safeguard, not production coverage or resource policy.
+Earlier Proposed design wording above is historical. A DEBUG-only assembler now retains immutable
+original bindings/outcomes in declaration order, rejects duplicate or incoherent envelopes and
+invalid packets atomically, and preserves complete/unknown declarations without asserting usable
+coverage. A minimal converter helper reuses exact existing preflight diagnostics; no single-packet
+semantics/limits changed. No parser, registry, persistence, source profile or production bridge.
+
+Fresh-view replacement is caller-owned as designed: a test rejects a disclosed same-view change
+before assembly and preserves the old immutable value after fresh-view construction. Independent
+assembly calls cannot detect undisclosed view reuse; no global history or automatic publication is
+claimed. Unknown-transfer boundary checks do not establish a new batch-to-search integration;
+existing integration suites retain the actual unavailable/no-fallback evidence. Calendar/zone
+semantic agreement across packets is not established by matching revision tokens.
+
+Validation (one run; included subsets are not summed):
+
+- `/private/tmp/tsugino-batch-r2.xcresult`: **76 functions / 122 cases passed**, zero failures
+  or skips, explicit iPhone 17 / iOS 26.5 Simulator. Includes assembler **13/26**, converter
+  **26/39**, timetable values **16/21**, ride context **10/14**, existing timetable-routing
+  integration **7/16**, and optimal integration **4/6**. Counts cross-checked against the
+  structured result tree; interleaved console output was not used to invent extra functions.
+  This final run supersedes the earlier run after a short-date regression was added: envelope
+  bounds reject only excessive date length, preserving underlength-date converter diagnostics.
+  Earlier overlapping counts are not added.
+- Debug test action built app/extension dependencies. Standard Release app/extension build
+  passed (`/private/tmp/tsugino-batch-release-final.log`); eight no-DEBUG declaration probes and
+  Release app/assembler/converter object-symbol checks passed. Builds are newly executed,
+  not reused evidence. Existing unrelated asset-catalog/Domain isolation/AppIntents warnings
+  remain outside this slice. No physical-device interaction or benchmark.
+
+Separate non-author implementation review approved the corrected source, tests, validation
+and documentation with no material findings remaining. Scope/privacy and whitespace checks
+passed; the short-date correction and final counts supersede earlier review fingerprints.
+
+All 15 launch services remain preserved. Append remains opt-in; reference defaults and live
+routing remain unconfigured. P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and
+14 ordering gaps. The owner reports no ODPT reply; none was supplied or accessed. No real import,
+private data, provider contact, cache/history, UI or production adoption. Leave the five-file
+implementation/documentation slice unstaged and uncommitted for publication review.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

@@ -635,3 +635,238 @@ for §9.6, returning existing Domain facts. No changes to completed Domain value
 searchers or app wiring are expected. Review the exact input/output and boundary tests
 independently before calling that slice complete. Real profiles/import remain separate;
 P3-T1 stays partially complete and P2-S9 retains all fourteen classification/order gaps.
+
+## 10. Bounded in-memory batch assembly — Proposed choices B1–B3
+
+**Scoped acceptance — 2026-10-05:** the owner approves B1 and B3 and authorizes B2 as
+reviewed technical experimentation, including its eight-slot safeguard, duplicate rejection,
+ordering and exact preflight diagnostics. This is not a production coverage/resource policy.
+Bounded DEBUG implementation is authorized; completion evidence is recorded separately below
+and in ROADMAP. Historical Proposed wording records the reviewed design, not pending B1/B3
+approval. No provider profile, publication service or real import is approved.
+
+2026-10-05. Documentation only. DEC-085's single-packet implementation is complete;
+this section proposes the next, separately approvable invented-only composition boundary.
+It does not amend calendar/time/identity semantics or authorize implementation. DEC-078,
+DEC-080 coverage/admission and DEC-086 outcomes remain authoritative. Consumer §§16–17
+remain an evidence review index, not a new source of qualification authority.
+
+### 10.1 Smallest input/output and identity
+
+Propose one synchronous DEBUG-only operation `assemble(envelope, packets)` returning
+an immutable constructed batch or a fixed batch-level failure. Names here describe the
+contract, not new Domain types or a serialized format. No date expansion, source discovery,
+file access, parser, clock, async worker, persistence, publication service or search call.
+
+| Input / output | Proposed contract |
+| --- | --- |
+| Envelope | One existing `TimetableViewID`, one `SyntheticTimetableRevision` tuple, and a caller-ordered list of expected `TimetableOccurrenceAddress` values. These are the exact enumerated slots of this batch, not a search horizon or all supported product services |
+| Inventory declaration | Explicit `stipulatedComplete` or `unknown` coverage of the caller-enumerated dated inventory, associated with the envelope's view/revision. This is an invented-world assertion, not evidence authentication. No claim of complete occurrence intervals, connections or request coverage follows; those remain separate existing search inputs |
+| Packets | Exactly one existing `SyntheticTimetablePacket` for every declared address; no extra packets. Each retains its supplied exact binding, manifest, evidence and outcome semantics. Dates are supplied labels, not generated. Reject missing declared packets rather than manufacturing inactive/unavailable values |
+| Constructed batch | Envelope plus immutable ordered slot records, each preserving its original packet binding and exact converter outcome; no manually rebuilt facts. Retain original expected-address order, independent of packet input order. No automatic filtering, sorting by time or winner selection |
+| Batch-level failure | Fixed reason and optional tagged location (declaration index or packet input index); no partially constructed batch, route result, raw token/path or thrown source diagnostic. For an invalid converter outcome retain that existing typed failure internally with its slot association; expose no successful slot payloads |
+
+Slot identity is the existing `(viewID, TripID, serviceDate)` address. Full snapshot matching
+uses `TimetableOccurrenceBinding.matches`, not Trip's ID-only equality. Within a batch,
+all dates of one Trip must reference the same full snapshot; date changes alone do not
+permit snapshot variation. A comparison-only binding using the current address and the
+representative Trip permits reuse of `matches` across dates; it must never replace a stored
+binding or relabel facts. No snapshot equality/Hashable/Codable is added.
+
+The immutable envelope identifies a batch's scope and provenance association. Do not add
+a durable batch ID or compare batches by view ID alone. Two constructions with identical
+inputs are separate immutable values, with no registry or global uniqueness claim. Exact
+address and envelope coherence is local proof only; revision tokens cannot authenticate a
+source. Explicit unknown inventory may be represented but cannot close search coverage.
+Here “revision coherence” means only the listed envelope association and full-snapshot checks,
+not cross-packet equality of calendar/zone interpretations. Per-service calendars may legitimately
+differ; the assembler adds no shared-definition resolver or calendar-equivalence algorithm.
+Known conflicting interpretations must remain explicit unresolved source/view qualification
+failures, never hidden by batch construction or advertised as a coherent usable source generation.
+A constructed batch does not discharge that obligation. Detecting such conflicts automatically
+would need a separately specified shared-definition/key contract; it is outside this minimal slice.
+
+### 10.2 Acceptance options and recommended B1
+
+| Option | Behavior | Consequence |
+| --- | --- | --- |
+| Reject any unavailable required slot | After envelope validation, unsupported/insufficientEvidence/invalid abort the whole batch | Simple all-or-nothing usable-input gate, but discards a coherent collection's explicit unavailable-slot distinctions. Even success is not proof of usable endpoints, interval coverage or connections |
+| **Retain explicit unavailable slots (recommended)** | Preserve success, inactive, unsupported and insufficientEvidence outcomes. Reject structural envelope contradictions and every converter invalid outcome; do not omit or coerce the other slots | Allows a truthful immutable inventory including holds. Search remains unavailable when a required slot is unavailable. Batch construction is not routing readiness or permission to publish |
+
+This is a conservative form of option 2: **B1 Proposed** accepts representable holds but
+not known invalid packets. Existing converter outcomes are authoritative; do not reparse
+calendars, clocks, evidence tables or chronology in the assembler, nor classify invalidity
+by its primary diagnostic reason (aggregate kind and primary reason need not coincide).
+A malformed date/clock, duplicate exception or conflicting packet evidence yielding `.invalid`
+therefore aborts construction. A source/profile outside the invented converter's support or
+missing evidence yielding `.unsupported`/`.insufficientEvidence` may remain an unavailable
+slot, preserving the entire original outcome. This does not broaden the converter profile.
+
+Cross-packet envelope mismatches are different: conflicting revision tuple, wrong view,
+undeclared/missing address, duplicate declarations/packets or inconsistent full snapshots
+prevent construction before slot conversion. No assertion of unknown service repairs an
+address contradiction. Missing calendar evidence inside a correctly associated supplied
+packet instead follows the unchanged converter outcome. `.inactive` is retained only when
+the converter proves it; absence of a packet or empty calendar is never inferred inactive.
+Successful facts may still contain missing/estimated endpoints and unknown eligibility;
+representation of success does not imply every interval is usable.
+
+An empty declared address list and empty packet list construct an empty batch, retaining
+`stipulatedComplete` versus `unknown`. Neither creates search `noResults`; the searcher
+still requires its separate profile, per-Trip interval/slot inventory and complete required
+domain. An unknown empty batch is not a complete-negative declaration. No omitted Trip or
+date becomes known absent merely because it does not occur in the input array.
+
+### 10.3 Bounded construction, duplicates and deterministic failures — Proposed B2
+
+Recommend rejecting **all duplicate addresses**, including identical packets/declarations.
+This avoids a second packet-equivalence/deduplication implementation and silent last-wins.
+A duplicate address with a different binding is also rejected, never merged. The existing
+searcher's allowance for identical duplicate normalized inventory is unchanged; this stricter
+rule applies only to this new opt-in invented assembler input.
+
+Proposed experimental envelope bound: **eight expected addresses and eight packets**, enough
+for the three-slot direct/transfer example, repeated dates and a surplus conflicting packet
+within small tests. This is not a production batch size, ride limit or new search budget.
+Each packet remains subject to every existing DEC-085 bound, including nested snapshots,
+256 visits/exceptions, 64 references, eight zone intervals and 64 KiB counted text. Thus at
+most eight accepted per-packet envelopes are processed; no limits are multiplied inside a
+packet. Expected addresses and the envelope revision use the same relevant token/date/ID
+bounds as DEC-085, with shared bound helpers reused if implementation needs them, not a
+second semantic validator. No unbounded strings or free-text diagnostics are introduced.
+Count guards precede traversal; reuse the converter’s existing structural-bound preflight
+for every packet before snapshot/evidence traversal or duplicate/coherence comparisons. A failed
+per-packet preflight aborts this batch carrying its unchanged typed converter failure and
+packet input index, not a fabricated resource reason. The existing `bounded` helper also
+detects invalid token/date/clock shapes and baseline conflicts: it is not resource-only, and
+aggregate severity may differ from its primary reason. Preserve both exactly. Envelope-only
+count/length overruns use the batch resource reason. No oversized/failed-preflight slot is
+retained; standalone converter outcomes stay unchanged. No date-range expansion or allocation proportional to a numeric date range.
+
+Recommended order for this new assembly API (not a change to converter/search precedence):
+
+1. Check top-level counts, bounded envelope/association headers and the reused per-packet
+   preflight before semantic comparison. Envelope-only overruns use a fixed resource-bound
+   failure. For packets, stop at the first failed preflight in packet input order and retain
+   its exact failure, including any mixed invalid/resource findings under existing ordering.
+   Do not truncate input. Snapshot comparisons only inspect bounded structures.
+2. Validate declaration uniqueness and view association, then packet address uniqueness,
+   exact declared/received address-set correspondence, envelope revision/view agreement,
+   and same-Trip snapshot correspondence. Reject the whole envelope on disagreement.
+3. In declaration order, call the unchanged converter once per packet, with all existing
+   nested bounds and diagnostic ordering. On the first `.invalid`, return batch failure
+   carrying that slot's unchanged failure; no later conversion is required. Otherwise retain
+   every outcome. Temporary results stay private until all slots have been processed.
+
+For multiple envelope defects, the numbered categories above have fixed precedence; within
+a category use first declaration index, or first packet input index for undeclared/duplicate
+packets. Unexpected packet order affects only those malformed-input locations, not valid output
+ordering. No severity aggregation across slots and no retry/substitution. Failed packet preflights are batch failures with their original converter diagnostics;
+unsupported semantic profiles/hours after successful preflight remain unchanged holds under B1.
+No partly usable batch is returned on an assembly failure. A successfully constructed batch with
+explicit holds is an atomic complete representation of supplied slots, not partial conversion
+success advertised as usable routing data. Caller input values and earlier batches never mutate.
+
+Downstream composition is **not implemented by this slice**: retain existing success→active,
+inactive→inactive, unsupported/insufficient→unavailable mapping, with diagnostics internal.
+No invalid-containing batch exists under B1. Continuity, original interval inventory, directional
+relations and allowances remain separately supplied and qualified by existing APIs. Unknown
+required slots/relations produce `dataUnavailable`, not omission or direct-only fallback.
+Execution cutoffs remain `searchIncomplete`, never a successful incumbent; existing cancellation,
+configuration, unsupported-request and admission failure precedence are unchanged. The assembler
+returns no `RouteSearchResult` and chooses no execution policy.
+
+### 10.4 Replacement and retained views — Proposed B3
+
+Recommend replacement by constructing a **new immutable batch for a fresh caller-supplied view
+identity** when the declared scope, content or revision association changes. Reusing a view ID
+for changed contents is not permitted by this proposed caller contract. No hidden global registry
+can enforce it: assembly validates only supplied input, and independent calls cannot detect
+undisclosed prior use. No automatic UUID allocation, freshness period or persistent lineage.
+
+The caller may switch its own reference only after successful construction and any separately
+required qualification. Assembly success alone is not an authorized production publication.
+On construction failure, the old value remains available as an unchanged historical value;
+this is not permission to serve it as a current answer. Older consumers retain their original
+view/snapshot/context; no in-place patch, index rebinding or merging old/new revision packets.
+A later search must satisfy its own scope, view validity and coverage. Rights/retention gates
+remain independent; no stale-serving policy or repository update service is designed here.
+
+### 10.5 Invented examples and deterministic acceptance cases
+
+All labels below are invented. Use one date, V1/R1, and exact two-stop intervals [0,1]:
+D A→C 08:05–08:30, X A→B 08:02–08:10, Y B→C 08:15–08:20. Calendar/profile/eligibility
+and full snapshots are stipulated coherent under DEC-085; the example does not interpret any
+real feed. Search examples additionally stipulate complete required interval/connection evidence,
+including X→Y's directional four-minute allowance and known absence of other required relations.
+The assembler does not produce or verify those separate connection inputs.
+
+| Case | Proposed assembly result | Existing downstream behavior / acceptance assertion |
+| --- | --- | --- |
+| D/X/Y success, complete declaration | Three unchanged outcomes/bindings in declaration order, even with permuted packet input | After independent complete qualification/search/admission, X→Y beats D; compare original facts/indices/date/context, not just arrival |
+| Same batch, X→Y relation unknown | Batch unchanged: connection evidence is outside assembly | `dataUnavailable` despite usable D; never remove X/Y or claim D fastest |
+| Y has missing calendar evidence | Constructed Y insufficientEvidence slot, with D/X unchanged | Required Y remains unavailable; no D-only complete result |
+| Y converter-proven inactive | Constructed inactive reason, no event facts for Y | In a separately stipulated complete search domain, D may win; inactive is distinct from the previous unknown case |
+| Empty complete versus empty unknown declaration | Empty batch preserving the declaration distinction | Neither alone establishes search noResults; no implicit slot creation |
+| Identical duplicate address; conflicting snapshot at duplicate address | Batch failure for duplicates in both cases | No deduplication, last-wins or output survivor |
+| Same Trip on two explicitly listed dates | Construct if full snapshots agree; reject conflicting snapshot with distinct date address | Preserve dated identity; no same-recurring-Trip reuse within a route is newly allowed |
+| Wrong view/revision; extra/missing packet | Envelope failure before conversion | No relabeling or partial batch; caller input unchanged |
+| Unsupported profile/hour versus invalid clock/chronology | Retain unsupported outcome; invalid aborts whole batch | Preserve converter distinctions and diagnostic precedence, no newly exact facts |
+| New R2/V2 batch while V1 retained | Construct independently with coherent R2 packets; failed replacement returns no new batch | V1 facts/bindings stay byte-for-byte semantically unchanged; no claim of current validity from retention |
+| Bounds and multiple defects | Eight valid slots allowed, nine rejected; nested per-packet limits unchanged; post-preflight first invalid in declaration order wins; failed preflights use packet input order | Verify atomicity, mixed invalid/resource preflight diagnostic preservation, exact slot association and fixed failure ordering without re-testing every calendar/clock rule |
+
+### 10.6 Owner choices and smallest later implementation
+
+| Proposed choice | Recommendation / reason | Not accepted by this document |
+| --- | --- | --- |
+| B1 Batch acceptance | Retain explicit unsupported/insufficient holds and inactive outcomes; abort on invalid or structural contradiction. Preserve uncertainty without advertising usable coverage | Whole-batch rejection on every hold is the alternative; no approval yet |
+| B2 Duplicate/failure policy | Reject even identical duplicates; deterministic preflight-first, envelope checks, then declaration-order conversion, atomic output; eight-slot experimental bound and structural-bound preflight abort | No production batching policy or modification of existing search normalization |
+| B3 Replacement | Fresh supplied view for changed batch; immutable retained old views, no automatic fallback/publication | No persistence, delivery, cache or stale-answer authorization |
+
+After explicit approval and implementation authorization, the smallest slice is one DEBUG-only
+Data/Timetable assembler with immutable local envelope/slot/result types and focused invented
+tests for §10.5. Reuse the converter, binding matcher and bounded header helpers as necessary;
+no new Domain semantics or second calendar/time parser. Only minimal helper extraction from
+existing bound checks is justified, with unchanged single-packet outcomes/limits verified.
+Test downstream mapping in test composition using existing search APIs, not a production bridge.
+Required future verification is targeted assembler plus affected converter/consumer tests and
+DEBUG/Release exclusion checks; none is run for this design task. No implementation is approved
+by this proposal. The synchronous eight-slot work is not permission for heavy main-actor use.
+
+All 15 launch lines/services remain preserved. P3-T1/Phase 3 remain incomplete; P2-S9 retains
+14 classification and 14 ordering gaps. The owner reports no ODPT reply has arrived; none has been supplied here. Append stays opt-in,
+reference remains default and live/default routing remains unconfigured. No real import,
+source access, rights waiver, production budget or adoption is established.
+
+### 10.7 Scoped implementation and verification — 2026-10-05
+
+The owner accepted B1/B3 and authorized B2's reviewed technical experiment. The DEBUG-only
+`SyntheticTimetableBatchAssembler` now implements the local envelope/declaration/slot/result
+values, eight-slot ceiling, bounded-before-comparison ordering, duplicate/set/association and
+same-Trip snapshot checks, followed by unchanged converter calls in declaration order. Success,
+inactive and non-invalid converter holds are retained unchanged. Invalid conversion or envelope
+failure returns only a typed failure with a tagged declaration/packet location, no partial batch.
+
+The only converter change exposes `preflightFailure` around its existing private `bounded`
+validation and findings; standalone conversion and its ordering/limits are unchanged. Preflight
+failures retain aggregate kind, primary reason and diagnostic location exactly, including mixed
+invalid/resource cases. Envelope headers receive bounded length checks; empty-batch construction
+does not certify profile/token semantics or source validity. Calendar/zone agreement across
+packets remains a separate qualification obligation, not inferred from matching revision tokens.
+
+B3 remains a caller contract: a controlled replacement test rejects a disclosed same-view change
+before assembly, then constructs a fresh-view value and verifies retained older facts unchanged.
+There is no cross-call view registry or assembler claim to detect undisclosed reuse. Neither
+batch construction nor retention authorizes current serving, publication or production use.
+The unknown-transfer test records the separate unresolved connection boundary only; actual
+`dataUnavailable` evidence is supplied by the existing converter/search integration suites.
+No batch-to-search bridge or new search/qualification mechanism was introduced.
+
+One final iPhone 17 / iOS 26.5 Simulator run passed **76 functions / 122 executed cases**,
+zero failures/skips; assembler **13 / 26** is an included subset, not an additional run.
+Affected converter, timetable values/context and both existing timetable-routing integration
+suites ran together. Debug app/extension dependencies built; standard Release app/extension
+build passed. Eight no-DEBUG declaration probes and Release app plus changed-object symbol
+checks confirmed exclusion, including the converter helper. Existing unrelated asset-catalog,
+Domain isolation and AppIntents warnings are not claimed fixed. No physical device was used.
+Detailed run paths and review status are recorded in ROADMAP; no benchmark or real input ran.
