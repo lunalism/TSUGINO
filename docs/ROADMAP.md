@@ -6564,6 +6564,41 @@ routing remain unconfigured. P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 c
 private data, provider contact, cache/history, UI or production adoption. Leave the five-file
 implementation/documentation slice unstaged and uncommitted for publication review.
 
+#### Timetable batch-to-routing test composition — 2026-10-05
+
+`SyntheticTimetableBatchRoutingIntegrationTests` now exercises Producer §10 outcomes through
+existing reference optimal search using only test-local composition. The invented D A→C
+08:05–08:30, X A→B 08:02–08:10 and Y B→C 08:15–08:20 domain independently stipulates dated
+inventory, original [0,1] intervals, permissions, continuity, validity and every directional
+connection/allowance. Batch construction/declarations do not prove that coverage. Successful
+facts pass unchanged; required unsupported/insufficient slots remain unavailable, proven inactive
+slots remain inactive, and failed assembly never invokes search. Qualified X→Y wins; held Y or
+an unknown required X→Y relation prevents direct-only success; proven inactive Y permits D.
+
+Consumer-boundary and canonical-context assertions preserve full snapshots, dated addresses,
+original indices, time states, eligibility and exact instants. Independently coherent V1/V2
+batches retain their own facts; V1 remains unchanged after V2 use, and V1 facts in V2's search
+view fail unavailable without rebinding. Source-token/policy correspondence is stipulated only:
+no raw calendar/zone agreement detector, generic global-unknown inventory mapping, adapter,
+production bridge or new qualification authority is introduced.
+
+Validation: `/private/tmp/tsugino-batch-routing-r2.xcresult` passed **56 functions / 94 cases**,
+zero failures/skips, on explicit iPhone 17 / iOS 26.5 Simulator. New composition **6/7**, batch
+**13/26**, converter **26/39**, existing converter-routing **7/16** and optimal integration
+**4/6** are included subsets, not additional runs. Structured result summary confirms counts.
+The Debug test action built required dependencies. Initial sandbox execution could not connect
+to CoreSimulator; it supplied no test evidence. No additional Release build was needed for this
+test-only change: application source/project settings are unchanged from published batch
+validation above; the new test file is DEBUG-guarded. No benchmark or physical-device work.
+
+Separate non-author review approved the final tests and documentation with no material findings.
+Scope/privacy and whitespace checks passed. Only this status entry and the new test file change;
+leave them unstaged/uncommitted for publication review. Existing converter/cutoff/admission
+mechanics are reused, not reimplemented. All 15 launch services remain preserved; append stays
+opt-in and reference defaults/live routing remain unconfigured. P3-T1/Phase 3 remain incomplete;
+P2-S9 retains 14 classification and 14 ordering gaps. No ODPT reply has arrived. No real import,
+private access, provider contact, persistence, caching, UI or production adoption is established.
+
 
 ## Goal
 
