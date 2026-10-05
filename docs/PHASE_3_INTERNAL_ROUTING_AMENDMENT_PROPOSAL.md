@@ -3330,8 +3330,10 @@ Recommend a **documentation-only per-call execution/isolation contract** for the
 `RouteSearching` implementation, limited to the seam between an immutable view supplier and
 the existing port. AppEnvironment can share one injected port among independent coordinators;
 DEC-087 guards publication, but does not specify production solver workspace sharing, capture
-of a replaceable view or cancellation responsiveness. Existing synthetic searchers retain
+of a replaceable view or cancellation responsiveness. The internal/optimal synthetic searchers retain
 fixed supplied views and therefore do not settle that production update/concurrency seam.
+The earlier provider-style SyntheticRouteSearcher already has a per-call loadView seam;
+§19 reuses that pattern rather than proposing another loading framework.
 
 Define a single capture point and exact retained view identity, per-invocation mutable search
 state, treatment of concurrent calls and view replacement during a call, inherited cancellation
@@ -3342,3 +3344,185 @@ after an observed abort. Reuse existing coordinator guards and canonical admissi
 implement another solver, store or qualification layer. Completion is a small reviewed contract
 and identification of any actual scheduling/observable behavior choice needing approval, not
 another microbenchmark. No implementation is authorized by this recommendation.
+
+
+## 19. Per-call execution and isolation — Proposed bounded design
+
+**Scoped E2 acceptance — 2026-10-05:** the owner approves one atomic immutable-view capture
+per call, exact retention through execution, and replacements affecting subsequent captures
+without automatically cancelling, relabelling or switching existing calls. This authorizes the
+reviewed test-only composition, not production invalidation, update publication or adoption.
+Historical Proposed E2 wording and unexecuted-validation statements in §§19.1–19.5 below
+record the design stage; unresolved production choices remain Proposed. Current implementation/
+verification is recorded in §19.6 and ROADMAP.
+
+2026-10-05. DEC-086's preferred on-device location is accepted; this section does not adopt
+an engine or production scheduling/resource policy. It narrows §18.4 using current code.
+No change to RouteSearching, DEC-087 or canonical admission is proposed.
+
+### 19.1 Verified current guarantees and remaining gap
+
+| Current code/contract | Established boundary | Not established |
+| --- | --- | --- |
+| Domain `RouteSearching` | `nonisolated protocol …: Sendable`, async throwing request/result; only canonical failures or CancellationError cross the port | `async`/Sendable alone is not an off-main execution guarantee or proof of cancellation responsiveness |
+| `RouteSearchCoordinator` | MainActor owner creates one retained `Task` per accepted invocation; explicit cancellation/disposal, weak owner across port await and identity/state publication guard; AppEnvironment can share one port among independent coordinators | This is an explicitly owned unstructured Task, not an automatically lifetime-scoped child. It does not choose a Data executor or wait for arbitrary ignored cancellation to finish |
+| Internal/optimal synthetic searchers | Nonisolated Sendable conformers, explicit `@concurrent search`, immutable supplied configuration/view, locally created engine, preparation/session, selection, claims and accounting; no detached worker | They have fixed views, not a replaceable internal-view supplier. DEBUG evidence does not establish production scheduling or resource feasibility |
+| Earlier `SyntheticRouteSearcher` | `@concurrent search` awaits one `@Sendable loadView`, retains that value, validates it and checks cancellation around awaits; working output is local | Its provider-style view/envelope types are not the internal timetable view; do not interchange them or create duplicate admission |
+| Internal engine `step`, catch/finalize | Cancellation checks before charges, around checkpoint suspension, before pending failure and final return; cutoffs discard partial result; per-call work/metrics | Charges count existing work, not latency. Checkpoints do not force a suspension, guarantee fairness, or interrupt arbitrary synchronous work |
+
+Inspected project settings enable approachable concurrency and default MainActor isolation for
+the app target, with `SWIFT_VERSION = 5.0`. Explicit nonisolated value types and `@concurrent`
+entry points matter; neither a bare async function nor a Task created in a MainActor owner
+justifies off-main CPU work. This is code/settings inspection, not a new runtime/build proof.
+Internal view, configuration and prepared graph values are Sendable; facts/bindings are immutable.
+PreparedOptimalSession/handles remain private and call-bound. Sendable closures may still access
+shared actors: Sendable is not a claim that their effects or cancellation state are independent.
+
+### 19.2 Recommended capture and per-call ownership
+
+**Proposed capture rule (E2):** after entry cancellation and applicable configuration/profile
+preflight, await one read of the supplied current immutable internal view. The capture point
+is the supplier's non-suspending read of its current reference, not request submission, worker
+creation or the start of an await. A read linearized before replacement obtains V1; one after
+replacement obtains V2. No stronger ordering by caller start time is promised. Check cancellation
+again on resumption before qualification/discovery. Never poll/reload the current view during
+this call or relabel its bindings. A later retry is a fresh invocation and captures afresh.
+
+The supplied view must satisfy existing qualification, validity and policy correspondence for
+this request; capture is not approval. Keep the configured profile/policies immutable for the
+port lifetime in the smallest experiment. A supplier read returns one whole view, not separately
+read inventory/calendar/connection pieces. A changed compatible view has a fresh identity;
+incompatible policies/revisions fail existing qualification, without automatic substitution.
+Changing port configuration is outside this slice. Missing/unusable required view is unavailable,
+not an empty inventory; invalid configuration keeps its earlier accepted precedence.
+
+**Proposed replacement rule (part of E2):** replacement changes what later captures obtain;
+it does not mutate or automatically cancel an earlier captured call. The earlier call can
+complete against V1 if its existing qualification and validity obligations remain satisfied.
+It does not claim V1 is still the supplier's current view. DEC-087 still rejects superseded or
+cancelled publication. This is not permission to serve known-invalid/revoked data: mandatory
+invalidation/rights-revocation handling needs its own evidenced policy before real deployment.
+No stale fallback, TTL, publication service or automatic refresh is designed here.
+
+Each invocation exclusively owns its mutable discovery frontier, used-Trip state, selected set,
+prepared-state associations, admission/omission accumulators, diagnostics and work counters.
+Share only immutable input/configuration values; do not share mutable kernels or a cancellation
+handle across calls. Preserve one uninterrupted applicable allowance per invocation; neither
+capture nor suspension resets charges. Do not promote E1/synthetic ceilings to production budgets.
+A supplier actor may serialize the tiny reference read; it must not host the whole search loop.
+No global search lock, actor-wide solver serialization or concurrency cap is selected.
+
+### 19.3 Minimal execution mechanism and cancellation
+
+| Mechanism | Task/lifetime tradeoff | Recommendation |
+| --- | --- | --- |
+| Direct awaited `@concurrent` Data entry with local state | Uses the caller's task/cancellation context; no second worker handle; may await a supplier actor briefly, then execute non-MainActor compute | Reuse the current internal-search pattern. No dedicated thread, queue capacity or fairness guarantee follows |
+| Put all search work on one actor | Protects shared mutable state but unnecessarily serializes synchronous search stretches; reentrancy still needs per-call state | No requirement for shared mutable solver state has been shown; do not introduce global serialization |
+| Spawn Task/Task.detached inside the port | Adds another lifetime, cancellation forwarding, joining and error/publication boundary; detached work does not supply automatic caller cancellation ownership | Unnecessary for this experiment; no orphan/background search task |
+
+Application continues to own its existing worker Task. A direct port caller owns its own task.
+Cancelling A marks only A; Data observes it cooperatively, discards its pending result and exits
+without cancelling B or the supplier. Disposing a coordinator does not dispose a shared port or
+other owners. Captured values release when the invocation unwinds; ignored cancellation can
+retain them longer, so publication guards are necessary but not proof of resource reclamation.
+No callback-trace parity or numeric latency is promised.
+
+Reuse checks before work, around view acquisition and all suspension points, at bounded
+qualification/normalization/discovery/selection/reconstruction/admission work boundaries, and
+before return or throwing a pending non-cancellation failure. Observed cancellation wins there;
+a cancellation arriving after the final check has no guaranteed observation, and the coordinator
+still guards publication. Preserve accepted configuration→view→endpoints→intent→coverage order;
+cutoff is searchIncomplete absent an earlier established failure, with no lower-priority probing
+or partial success. Whole-domain evidence, all equal optima and selected rejection accounting
+are unchanged. Do not wrap arbitrary provider errors into new public failure categories.
+
+Any injected test acquisition/checkpoint suspension must be cancellation-aware and resume its
+continuation exactly once on release or cancellation, including cancellation-before-registration.
+No sleeps or timeout-dependent correctness oracle. Checkpoint work must be bounded; where future
+algorithms call long synchronous/non-cancellable libraries, explicit bounded partitioning or a
+separately reviewed cancellation mechanism is needed before responsiveness can be claimed.
+
+### 19.4 Smallest implementation experiment and acceptance
+
+Recommend a **test-only controlled capture composition**, not a production view publisher:
+a test-local nonisolated Sendable RouteSearching conformer with an explicit `@concurrent` entry,
+a cancellation-aware actor fixture holding one existing SyntheticInternalView, and direct
+awaited delegation to a fresh unchanged SyntheticOptimalRouteSearcher per call. Reuse existing
+finite invented fixtures, canonical result checks and stage barriers, with reference selection.
+The actor's replacement method is a test control only, not an app update API. Reuse
+`RoutingTestGate` with a separate instance per suspended invocation (it has one waiting
+continuation); do not share that gate between A and B. Its short cancellation-handler Task
+only hops to the gate actor to resume a waiter, not to run or own search. Reuse the
+`RoutingViewStore` pattern with the internal view type, not its provider-view payload.
+Always use valid
+fixed configuration in this experiment; do not duplicate the engine's private preflight validator.
+A production capture seam preserving configuration-before-view failure precedence remains a
+separate integration requirement; this test shim is not an adopted port implementation.
+
+| Deterministic scenario | Required assertion |
+| --- | --- |
+| A and B overlap on one port | Suspend A after capture; B reaches its own barrier/completes without A's release. Counters, prepared handles and canonical contexts are call-local; no sleep-based timing assertion |
+| Cancel A while suspended | Cancellation-aware barrier releases A with CancellationError and no candidate payload; B completes unchanged. Cancellation before capture invokes no supplier read; after capture performs no discovery once observed |
+| Replace V1 with V2 while A is suspended after capture | A retains V1; B started after confirmed replacement captures V2; neither contains mixed addresses/snapshots/indices. Reverse capture order obeys capture linearization, not submission order |
+| Failure isolation | A encounters an existing unavailable-input failure or cutoff; B remains successful. Cancel A before releasing a pending-failure barrier: observed cancellation wins; no survivor/partial result after abort |
+| Retention and supplier read counts | Exactly one read for each non-pre-cancelled invocation reaching acquisition; no reload after update. Retained V1 facts remain unchanged after both calls; existing qualification rejects a mismatched view |
+| Execution boundary | Review compiled annotations and Sendable diagnostics in the later test build; deterministic main-actor coordination remains usable while A is suspended. Do not mistake a suspended-call test for proof of CPU fairness or physical-device responsiveness |
+
+Reuse existing coordinator cancellation/publication/retry tests rather than redesigning that
+owner. Existing converter/batch and engine coverage/chronology/limits tests remain authoritative;
+this experiment tests capture/isolation composition only. No real source or resource measurement.
+Compiler validation must confirm all transferred view/config/result values and closure captures
+are Sendable under the repository's actual default isolation. Keep fixture state actor-isolated;
+no unchecked Sendable, main-actor-bound payload or mutable pointer may cross to computation.
+No current value-type blocker was found, but no production view representation/executor has
+been compiled or verified by this documentation task.
+
+### 19.5 Decision and scope boundary
+
+E2's precise capture/retained-call replacement rule is **Proposed**, recommended for owner
+approval before the experiment; the preferred device location and existing immutable-value
+rules do not alone settle when replacement affects an invocation. No DEC identifier is added
+for technical task/executor plumbing. Local per-call state, direct await and actor test barriers
+are technical recommendations reusing accepted contracts, not additional product votes.
+Production concurrency policy, any mandatory revocation behavior, algorithm/adoption and
+resource settings are not selected. Acquisition/update publication, storage/cache policy and
+rights remain separate. All 15 services stay preserved; append opt-in, reference default and
+live routing unconfigured. P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and
+14 ordering gaps. No ODPT reply has arrived.
+
+
+### 19.6 E2 test-only implementation and verification — 2026-10-05
+
+`SyntheticRouteCaptureIsolationTests` implements only the authorized composition. A test-local
+actor atomically reads/replaces one immutable internal view; a nonisolated Sendable port's
+explicit @concurrent entry captures once and directly awaits a fresh reference optimal searcher.
+The supplier never executes the search. Valid fixed configuration is stipulated; production
+configuration-before-capture integration and mandatory invalidation/revocation remain unresolved.
+No production supplier, publication API, global lock, detached search worker or new work unit.
+
+Controlled gates prove that V1 survives replacement, the next capture gets V2, and exact dated
+bindings/full snapshots/original indices and canonical timetable contexts remain associated.
+B completes while A is paused after selection; a one-interval fixture gives each call its own
+existing allowance equal to the baseline charge count, without callback-trace equality claims.
+Pre-entry cancellation reads nothing; cancelling A after capture prevents discovery and leaves
+suspended B unaffected. Required-input failure and admission-checkpoint abort are isolated;
+observed cancellation wins, with no partial payload. The new cutoff case is a checkpoint-induced
+searchIncomplete; existing handoff tests supply numerical-budget cutoff coverage. Every owned
+worker is cancelled/joined on completion/error exits; each suspended invocation uses its own
+single-waiter cancellation-aware gate. No sleeps, timing thresholds or physical-device claims.
+
+Final explicit iPhone 17 / iOS 26.5 Simulator run: **48 functions / 103 executed cases passed**,
+zero failures/skips, including capture **6/8**, internal engine **19/44**, optimal handoff
+**9/13**, coordinator **9/28** and composition **5/10**. Subsets are not additional runs.
+Debug test action built required dependencies; @concurrent/Sendable code compiled under existing
+settings. No Release rebuild was needed: app source/build settings are unchanged from published
+batch validation at 513b96c, and all new code is in one DEBUG-guarded test file. This is not a
+new Release build or responsiveness/resource proof. The initial build's test-only actor-await
+assertion was corrected; the next run exposed an overstrong callback-order assertion. The final
+single-interval/count-only correction supersedes both attempts; earlier counts are not added.
+
+Separate non-author review approved final test/document fingerprints with no material findings;
+scope/privacy/reference and whitespace checks passed. Source behavior, E1 safeguards, reference
+selection and nil live/default routing remain unchanged. No new real qualification, data access,
+rights, production supplier/adoption or milestone acceptance follows. All 15 services remain;
+P3-T1/Phase 3 and S9's 14 classification/14 ordering gaps remain incomplete. No ODPT reply.

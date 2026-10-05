@@ -6620,6 +6620,61 @@ provider contact, storage, UI or adoption. Separate non-author review found no m
 scope/reference/privacy and whitespace checks passed. Unresolved details remain Proposed.
 
 
+#### Per-call routing execution/isolation design — 2026-10-05
+
+Historical design-only record; scoped E2 acceptance and test-only completion are recorded below.
+
+Consumer §19 distinguishes existing `@concurrent`/Sendable per-call engines, provider-style
+loadView capture and DEC-087 task/publication ownership from the missing replaceable-view
+internal-search composition. Recommended mechanism: direct awaited off-main Data execution,
+local mutable state and a tiny isolated immutable-view read, with no additional worker or global
+serialization. The owner accepted E2 on 2026-10-05: one atomic capture retained throughout
+the call, replacements affecting subsequent captures without switching/cancelling earlier calls.
+This does not accept production invalidation/publication/adoption. Existing cancellation
+precedence and truthful cutoffs remain. Bounded implementation evidence is recorded below.
+
+Smallest next experiment is test-only: a cancellation-aware controlled supplier/barrier and
+reference optimal-search delegation for overlapping callers, cancellation/failure isolation
+and V1/V2 retention. No production preflight/capture API, update publisher, storage policy,
+algorithm or resource budget is implemented or selected. Scope/Sendable limitations and later
+compiler checks are explicit in §19; suspended-call tests cannot prove CPU fairness or latency.
+All 15 services remain; append opt-in/reference default/live unconfigured. P3-T1/Phase 3 and
+S9's 14 classification/14 ordering gaps remain incomplete. No ODPT reply, data access or tests/
+builds/benchmarks in this documentation task. Separate non-author review approved the final
+design with no material findings; scope/reference/privacy and whitespace checks passed.
+
+
+#### E2 capture/isolation test composition — 2026-10-05
+
+The owner accepted atomic per-call immutable-view capture and retention, with replacement
+applying only to later captures; no automatic cancellation/rebinding/switch of older calls.
+`SyntheticRouteCaptureIsolationTests` now verifies that boundary using a test-local actor,
+explicit @concurrent port and direct awaited unchanged reference optimal searcher. Independent
+calls retain exact dated snapshots/indices/contexts and charge accounting; one-call cancellation,
+required-input failure and admission-checkpoint cutoff cannot corrupt another or return partial
+success. Pre-cancelled entry reads no view; every controlled worker is cancelled/joined and
+single-waiter gates are per invocation. No production supplier or execution policy is implemented.
+
+Final `/private/tmp/tsugino-capture-r3.xcresult`: **48 functions / 103 cases passed**, zero failures/
+skips, explicit iPhone 17 / iOS 26.5 Simulator. Included subsets: new capture **6/8**, internal
+routing **19/44**, optimal handoff **9/13**, coordinator **9/28**, composition **5/10**. Debug
+required dependencies built. No additional Release build: application source/project settings
+are unchanged from published batch validation (513b96c); the new test file is DEBUG-only.
+Initial build failed on a test actor-await assertion; the next run exposed an overstrong
+callback-trace assertion. The final deterministic one-interval fixture checks charge counts
+instead, without promising trace parity. Superseded run counts are not added. Existing handoff
+suites retain numerical-cutoff coverage; the new abort test exercises the existing checkpoint
+failure path. No benchmark, latency/fairness guarantee or physical-device evidence is claimed.
+
+Independent non-author review approved corrected final test/docs with no material findings.
+Scope/privacy/references and whitespace passed. Only the test file plus the three reviewed
+architecture/proposal/roadmap documents change, unstaged/uncommitted for publication review.
+Production preflight/capture integration, invalidation/rights and adoption remain separate.
+All 15 services stay preserved; append opt-in, reference default, live routing unconfigured;
+P3-T1/Phase 3 incomplete; S9 retains 14 classification/14 ordering gaps. No ODPT reply, real data,
+provider contact, persistence/cache, UI or production adoption.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

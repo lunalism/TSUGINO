@@ -1218,6 +1218,22 @@ cancellation responsiveness, workload/device and enablement gates. S9 evidence m
 later before applicable real-data consumption/acceptance; its 14 classification and 14 ordering
 gaps are unchanged. No server-routing alternative is selected as an equal-priority direction.
 
+**Per-call design (Proposed):** [Consumer §19](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#19-per-call-execution-and-isolation--proposed-bounded-design)
+reuses explicit `@concurrent` Data entry points, Sendable immutable views and per-invocation
+mutable state in the caller's task. RouteSearching's async signature alone is not an off-main
+guarantee under current MainActor/approachable-concurrency settings. E2 proposes one atomic
+supplier read after applicable preflight; replacement affects later captures while an earlier
+call retains its exact view, subject to existing validity/qualification. The owner accepted
+this scoped E2 rule on 2026-10-05; detailed production integration remains Proposed.
+No production supplier, update publisher, cache, detached worker or global serialization is
+introduced. Existing Application cancellation/publication guards remain unchanged; cancellation
+responsiveness and production executor/resource policy still require evidence. §19 recommends
+a test-local capture/isolation experiment against the unchanged reference searcher.
+`SyntheticRouteCaptureIsolationTests` now supplies that bounded composition only: an atomic
+actor read, direct awaited @concurrent execution and independently owned/joined controlled
+calls. Supplier replacement is test control, not production publication. No app source or
+live configuration changed; validation/review evidence is recorded in ROADMAP.
+
 ---
 
 ## 11. Train Selection Architecture
