@@ -3078,3 +3078,171 @@ inventory prerequisite without requiring private data; later real qualification 
 
 P3-T1/Phase 3 remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps.
 Live/default routing remains unconfigured. No new semantic decision record is necessary.
+
+## 17. Request-qualification evidence manifest — Proposed review design
+
+2026-10-05. Documentation-only follow-up to §16. This is a source-neutral **review index
+of existing obligations**, not a new Domain model, validator, source profile, file format,
+registry or authority. No loader, evidence reader, production configuration or runtime
+`qualified` flag is proposed. DEC-076/078/080/081/085/086 govern the facts and outcomes;
+DEC-087 and §14 continue to govern lifecycle and user-facing presentation.
+
+### 17.1 Existing authority and minimal record structure
+
+Reuse `InternalSearchProfileDefinition` and `InternalSearchScope` for declared supported
+sets, exact request/departure bound, policy references and finite lower/upper bounds. Their
+constructors establish local structure, not policy resolution or completeness. Reuse the
+existing timetable view, `TimetableOccurrenceAddress`, occurrence binding and exact Trip
+snapshot/original indices for correspondence. Do not mint replacement identities, equate
+IDs with full snapshot equality, or merge dates by recurring TripID.
+
+`SyntheticInternalInventory` currently distinguishes unknown (`nil`) from stipulated complete
+negative (`[]`) interval/slot inventory; `SyntheticInternalActivation` distinguishes active,
+inactive and unavailable. `SyntheticInternalConnectionKey` is directional, with present,
+absent or unknown state; present allowances retain their component/total semantics. These
+are mappings for the review, not permission to treat artificial assertions as real evidence.
+DEC-085's reference table already binds assertion kinds to source/profile revisions, run,
+original index range and event/eligibility roles. Reference resolution there is in-memory
+fixture consistency, not authenticated provenance. The proposed manifest cites these existing
+records rather than replacing their facts or implementing a second qualification algorithm.
+
+| Review section | Minimal recorded content | Existing authority / meaning |
+| --- | --- | --- |
+| Request-domain binding | Exact request and scope definition; view identity and validity; full profile definition plus service-date and connection policy references; source/profile/mapping revisions supporting that view | `InternalSearchScope`/profile and pinned view; matching a policy token alone does not resolve it. No production duration, ride cap or freshness default is selected here |
+| Required-domain derivation | Reference to the reviewed inventory enumeration and its scope; included Trip snapshots, required original b<a intervals, service-date slots, and the applicable calendar/extended-hour rule that closes date enumeration; explicit known negatives and dependencies | DEC-080 coverage and existing engine qualification. Account for required intervals before date/eligibility exclusions; no inventory inferred from discovered winners. Record why no required Trip/date/interval is omitted, not just a count or “complete” flag |
+| Obligation ledger | One unambiguous obligation identity within this review, its target reference and kind, required applicability, semantic assertion, supporting evidence references, examination record, dependency references and unresolved reason | Kinds are existing §16 obligations: inventory/calendar, S9 order/classification/mapping, event time/quality/eligibility, continuity, directional relation/allowance and revision coherence. Local row identifiers are not canonical product IDs |
+| Examination record | Which referenced revision and assertion was actually examined, by which accountable review role/record, method and applicable scope, finding and limitations; distinguish fixture stipulation from source examination | No claim of examination from presence of an identifier. A reference may be recorded but unopened; actual future examination needs separate access authorization. Review time is historical context, not an invented expiry period |
+| Separate rights/delivery ledger | References to applicable permission decisions, permitted purpose/audience/delivery, unresolved gates and changes requiring rights review | Technical evidence does not grant acquisition, publication, translations, bundling or production use. An unresolved rights gate cannot be converted to “no service” |
+
+Use opaque references in this design and public reports, never private paths, provider keys,
+occurrence contents or credentials. A reference identifies an assertion-bearing artifact/review
+and its exact revision and applicability; identifiers/hashes alone establish neither authenticity
+nor meaning. Do not dereference anything as part of manifest construction. Real content, if later
+authorized, belongs in its approved private boundary; no new persistence/export is authorized.
+Duplicate or contradictory references cannot be resolved by first match. Use the existing
+contract's uniqueness/correspondence checks where available; otherwise record an unresolved
+review issue rather than inventing a new runtime diagnostic or failure precedence.
+
+### 17.2 Semantic assertion is separate from examination status
+
+The ledger keeps two axes, using descriptive review terms, **not new runtime enums**:
+
+- Assertion: existing active/inactive/unavailable, exact/missing/estimated, allowed/prohibited/
+  unknown, affirmed/unknown/contradictory continuity, or present/absent/unknown connection.
+  An examined statement of uncertainty is still unknown required evidence. An evidenced absence
+  is a known negative, not missing evidence. Missing unused counterparts remain permitted where
+  the accepted timetable contract permits them; not every optional field must become exact.
+- Examination: reference only/unexamined; examined and supports this scoped assertion; examined
+  but insufficient or conflicting; previously supported but invalidated. Record actual method
+  and dependency scope, not a self-certified status toggle. For invented examples label all
+  supporting evidence as fixture stipulation, never source-verified.
+
+A review conclusion of **required technical evidence accounted for** needs both a substantiated
+required-domain enumeration and examined support for each required assertion, including known
+negatives, with no unresolved required dependencies. Every field being populated, every listed
+row being reviewed, matching hashes, or a nonempty route does not prove that unlisted obligations
+are absent. Coverage derivation must explain closure against the applicable source inventory and
+policies; if that cannot be shown, the ledger remains incomplete. A review index does not itself
+perform that proof or validate facts. Production review/authentication tooling remains undesigned.
+
+After evidence review, existing Data qualification still checks normalized inventory, matching
+snapshots/revisions, activation, interval closure, endpoint eligibility/time quality, continuity
+and all required directional relations under resolved policies, including slower/disconnected
+branches. Genuine inapplicability/exclusions need their existing justification; no new requirement
+to parse inactive event bodies is introduced. Canonical preparation/claims/admission remain the
+only route to canonical candidates. Evidence closure is not exploration completeness, optimum
+proof, admission success or product acceptance.
+
+Unknown required evidence retains `dataUnavailable`; inability to complete execution or a resource
+cutoff retains `searchIncomplete` with no partial success. Proven empty qualified exploration can
+produce scoped `noResults`; it is not implied by an empty manifest. Selected mixed rejection stays
+`searchIncomplete`, total selected rejection stays `noUsableAlternatives` with existing accounting.
+Cancellation, configuration/unsupported-request checks and failure precedence remain unchanged;
+this ledger does not override those earlier checks or map rights failures to a new search error.
+No internal review references, omissions or raw findings become user-facing copy. Preserve canonical
+payloads internally and use the existing coordinator/presentation mapping unchanged.
+
+### 17.3 Invented complete and missing-evidence examples
+
+All tokens, times and evidence below are invented; no artifact is opened or source verified.
+This is a paper example compatible with existing concepts, not an implemented fixture/profile.
+Use request A→C, depart-not-before 2030-04-12 08:00 UTC, invented scope through 09:00 UTC,
+at most two rides, stations {A,B,C}, line {L}, Trips {D,X,Y}, pinned view V1. These numerical
+bounds describe only this example, not proposed production settings. A stipulated fixed-UTC
+calendar/time profile covers the entire example window, with one execution per Trip/date;
+its examined-in-example inventory states exactly these three services can contribute and no
+prior/next-date extended-hour execution overlaps. Calendar range includes this date, its weekday
+is enabled, and the complete exception list is empty. That stipulation is the date-closure
+premise, not an inference from three packets.
+
+| Existing target | Invented facts and supporting review premise |
+| --- | --- |
+| D/date, snapshot D1, interval [0,1] | A@0 dep 08:05 → C@1 arr 08:30; exact times and allowed ridden endpoints |
+| X/date, snapshot X1, interval [0,1] | A@0 dep 08:02 → B@1 arr 08:10; exact times and allowed ridden endpoints |
+| Y/date, snapshot Y1, interval [0,1] | B@0 dep 08:15 → C@1 arr 08:20; exact times and allowed ridden endpoints |
+| All three inventories | Only these two-stop snapshots/slots/intervals in this invented domain; S9-style passenger/order/movement correspondence and same-run interval continuity stipulated; endpoint counterparts explicitly missing where unused; coherent V1/source S1/profile P1/mapping M1 and validity covering the request |
+| X/date@1 → Y/date@0 | Present same-station directional relation, affirmative evidence; component allowance alighting 1 minute + interchange 2 + boarding 1 = 4 minutes; reverse relation not inferred |
+| Remaining required directional pairs | The existing qualification relation domain is fully enumerated; every other required distinct-Trip ride pair is explicitly absent in this invented world, with a negative assertion for each. No same-Trip reuse exception is introduced |
+
+**Complete technical example:** opaque references E-inventory, E-calendar, E-positions,
+E-times, E-permissions, E-continuity and E-connections name scoped invented assertions with
+matching dependencies. Examination entries explicitly say “stipulated invented example,” and
+close all required-domain rows, including the negative relation rows. On successful complete
+search and admission, X→Y arrives 08:20 and beats D's 08:30 despite one train change. This
+conditional outcome follows accepted semantics; the manifest does not execute it. Production
+rights/delivery status is separately **not established**; it cannot authorize real use.
+
+**Missing required connection example:** keep D fully usable, but E-connections for X@1→Y@0
+is only a reference to unexamined content (or examination concludes its applicability unknown).
+Its runtime relation remains unknown; no allowance is guessed. Other populated fields cannot
+close that obligation. Required coverage fails as `dataUnavailable`, not D-only success,
+`noResults` or an omission of X→Y. If X→Y were instead evidenced absent, that would be a
+known negative, with D eligible to win after complete search/admission. If all evidence is
+accounted for but execution aborts, the outcome is `searchIncomplete`, never an incumbent result.
+
+### 17.4 Dependency invalidation and separation of gates
+
+| Change | Qualification claim that must be reconsidered |
+| --- | --- |
+| Request/scope, departure bound, service dates or policy definition | Re-derive required inventory/date/interval/relation closure; a narrowed sample cannot establish launch readiness. Prior findings may remain evidence only for their original applicability |
+| Calendar range, weekday/exception rules or execution correspondence | Recheck activation and overlapping service dates; inactive and absent claims may no longer hold |
+| Snapshot/order/classification/mapping or original-index correspondence | Invalidate dependent occurrence bindings, eligibility, continuity, connections and contexts; never relabel old indices or silently replace retained snapshots |
+| Zone/day anchor, event values/quality, permissions or chronology | Recheck affected facts, required endpoints, feasible intervals and connections, then search result proof; estimated/missing cannot inherit exact qualification |
+| Directional relation, allowance components/total or through continuity | Recheck dependent feasibility/train-change claims and all affected optimum/tie proof; no symmetric or same-train assumption survives without support |
+| Source/profile/mapping/view revision, validity, evidence correction/retraction | Reconcile explicit dependency correspondence before reuse. Same identifier or unchanged count is insufficient; a revision difference is not automatically semantic equality |
+| Rights, purpose/audience or delivery terms | Reassess authorization independently. Technical facts may remain true while use/delivery is blocked; if the source/evidence itself is withdrawn or corrected, reopen technical dependencies too |
+
+Invalidation withdraws reuse of the affected qualification claim; it does not mutate historical
+Journey/Trip snapshots or erase past review evidence. Unaffected evidence may be reused only with
+an explicit unchanged-applicability check; no automatic incremental-revalidation system is designed
+here. No TTL, cache, retention period, update daemon or permission waiver is proposed.
+
+### 17.5 Follow-up and decision boundary
+
+No new behavioral choice is needed for this review-index design. Its organization and descriptive
+review statuses remain Proposed technical design; accepted scope, identity, objective, lifecycle,
+copy and failure rules are unchanged. Production solver/ownership, resolved horizon/resource policy,
+rights/delivery and adoption remain separately unresolved. All 15 launch lines/services remain intact.
+
+**Smallest useful follow-up is evidence review, not another synthetic helper.** Existing
+qualification tests already distinguish complete inventory, unknown transfers and revision
+mismatch; this documentation creates no new runtime behavior needing duplicate integration tests.
+The tracked ROADMAP records the owner's report of sending the interpretation inquiry on
+October 3, 2026 (P3-T1 invented conversion/input slice and Phase 3 progress map). This dates
+the reported inquiry, not a reply; it is not independently examined correspondence. No reply
+is supplied or examined in this record. If an applicable reply is later supplied, propose
+review of that reply concerning
+resource `35b68908-4558-47ae-bfa5-867e58544a1a`, recorded feed version `20260921`, plus only
+the expressly identified applicable specification/profile sections needed to interpret it.
+Purpose: establish which stop_times inclusion, stop/pass/permission and stop_sequence ordering
+assertions it supports, for which revision, with exceptions and unresolved applicability recorded
+in this review index. This is a proposed named-document scope, not authorization to open a reply,
+follow its links, contact anyone or reread the archive/candidate. If no reply is available, an
+explicitly identified official conformance/conversion document with the same applicability role
+could be proposed instead; none is invented here. No ODPT reply has been supplied. Actual per-
+occurrence corroboration and any later S9 acceptance remain separately scoped after interpretation
+review. Implementation of real qualification must wait for concrete source requirements; no
+parser, authentication mechanism or production budget can be justified by this index alone.
+
+P3-T1/Phase 3 remain incomplete. P2-S9 retains 14 classification and 14 ordering gaps. Append
+remains opt-in, reference stays default, live routing unconfigured. No private data was inspected.

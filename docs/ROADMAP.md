@@ -6464,6 +6464,34 @@ Documentation-only: no code, tests/builds, benchmarks, private access or provide
 
 
 
+
+#### Request-qualification evidence manifest design — 2026-10-05
+
+[Consumer proposal §17](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#17-request-qualification-evidence-manifest--proposed-review-design)
+proposes a source-neutral review index over existing profile/scope, inventory, timetable binding,
+connection and admission obligations. It is not a new qualification authority, schema/parser,
+source reader or runtime approved flag. Declarations, examined support, unresolved obligations
+and rights/delivery permission are separate; populated references cannot prove domain closure.
+Invented complete and unknown-transfer examples preserve usable-direct-plus-unknown evidence
+as dataUnavailable. Evidence closure never proves exploration completion or canonical admission.
+Dependency invalidation covers scope, calendar, occurrence order, quality, permissions, allowance,
+continuity and revisions without mutating retained snapshots or inventing freshness periods.
+
+No new product behavior is proposed; technical organization remains Proposed. Existing tests
+already exercise the illustrative qualification outcomes; no duplicate helper is recommended.
+The existing P3-T1 design and progress map record the owner reporting an inquiry sent on
+October 3, 2026; that date is not a reply date or independently examined correspondence.
+No reply has been supplied or examined in this record. The smallest follow-up is separately
+scoped review of an applicable interpretation reply if supplied, for the named public
+resource/revision, or a specifically identified applicable official profile. No links or
+candidate are reopened here. All 15 launch lines/services,
+accepted identity/objectives/lifecycle/copy and rights gates remain unchanged. P3-T1/Phase 3
+remain incomplete; P2-S9 retains 14 classification and 14 ordering gaps. Append stays opt-in,
+reference defaults and unconfigured live routing remain; no ODPT reply supplied.
+
+Documentation only; no code, tests/builds/benchmarks, private access or provider contact.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
