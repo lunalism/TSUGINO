@@ -6880,6 +6880,46 @@ with no material findings. Scope/privacy/reference and whitespace checks passed.
 builds, provider contact, data acquisition or production adoption; leave changes unstaged/uncommitted.
 
 
+#### Approved early route-search status/action view — 2026-10-05
+
+The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
+7/8 screens and Phase 11 hardening are not started or completed. `RouteSearchStatusView` accepts
+only the existing presentation, AppLanguage and action callback. It renders approved status and
+supplementary feedback text, a searching spinner and exactly the supplied actions in order.
+Buttons forward original descriptors unchanged; the host still owns lifecycle/guards. System
+controls, multiline body text and vertical buttons accommodate large text without scaling it down.
+Central language resolution remains Japanese/Korean/otherwise English; no language selector.
+
+AppShell, AppEnvironment, coordinator, mapper/copy and routing defaults remain unchanged. No
+route cards, endpoint entry, navigation, search call, history, caching or data delivery. DEBUG
+previews and test attachments are explicitly named fixtures; no invented timetable is presented
+as real service. The component needs a future host for actual feature-flow integration.
+
+Validation on explicit iPhone 17 / iOS 26.5 Simulator: final view suite **4 functions / 4 cases
+passed**. Separately, unchanged mapper/copy suites **8 functions / 54 cases passed** in the earlier
+combined run; overlapping/superseded view executions are not added. Debug dependencies and a
+standard Release app/extension build passed. Earlier render-helper captures had unsupported
+spinner rendering and fitted-height/safe-area cropping; these were superseded by final UIKit-hosted
+captures, not accepted as visual evidence. No application behavior changed to accommodate them.
+
+Normal and largest Dynamic Type renders cover Japanese, Korean, English and French-tag English
+fallback; fallback pixels match English for the tested unconfigured state. Final light-mode
+393×1200 content-inspection captures show multiline status/feedback and system buttons; representative
+Japanese searching/scoped-empty, Korean feedback/incomplete and English unavailable/cancelled
+images were directly inspected. This canvas does not prove fit in an iPhone viewport: future hosts
+must provide scrolling when needed. Native Text/Button labels and redundant-spinner accessibility
+hiding were reviewed. Actual VoiceOver/Accessibility Inspector operation, touch hit-testing,
+physical-device, dark-mode and narrower-width layout checks were not performed. Action tests invoke
+the concrete button handler and verify unchanged descriptors/identities; they do not simulate taps.
+
+Separate non-author independent review approved the final implementation, tests, representative
+render captures and documentation with no material findings. Scope/privacy and whitespace checks
+passed for only the new view, focused tests and DESIGN/ROADMAP. Pending ODPT follow-up remains unanswered per owner;
+no correspondence/feed access. All 15 launch services remain preserved; live routing unconfigured,
+reference default and append opt-in. P3-T1/Phase 3 remain incomplete; S9 retains 14 classification
+and 14 ordering gaps. Leave changes unstaged/uncommitted for publication review.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.

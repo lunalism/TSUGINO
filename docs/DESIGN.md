@@ -539,6 +539,18 @@ The pure mapper, separate draft-feedback value and centralized copy table now ex
 validation recorded in ROADMAP. Historical Proposed wording below is preserved; no P1/P2
 approval remains pending. No screen, FeatureModel, navigation or route-card rendering is added.
 
+**Owner-approved early visual slice — 2026-10-05:** the owner authorizes a narrow exception
+for `RouteSearchStatusView`, a reusable SwiftUI status/feedback/indicator/action component.
+It receives the existing presentation, centrally resolved AppLanguage and an action callback.
+System body text wraps at Dynamic Type sizes; vertically stacked system buttons forward exact
+supplied descriptors, including attempt identities. The spinner accompanies the existing searching
+text and is hidden from accessibility to avoid a duplicate unlabeled element. The host retains
+responsibility for guarded action execution, effective language resolution and scrollable placement
+when needed. No app-specific language selector, new copy, coordinator ownership, data access or
+search task is introduced. AppShell is unchanged; explicitly named DEBUG previews/test renders
+are demonstrations, not available transit service. This does not start/complete broader Phase 7/8
+UI work or Phase 11 hardening. Validation and unperformed accessibility checks are in ROADMAP.
+
 [Consumer proposal §14](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#14-provider-neutral-route-search-presentation-contract)
 drafts the minimal state/action contract and project-owned Japanese/Korean/English status
 copy for the published DEC-087 coordinator/composition. It preserves canonical payloads and
