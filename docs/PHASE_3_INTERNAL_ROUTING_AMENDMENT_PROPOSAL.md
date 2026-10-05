@@ -799,6 +799,11 @@ implementation review approved local values only. All retained gates and launch/
 
 ## 10. Production objective and execution policy — Proposed DEC-086
 
+**R6 direction update — 2026-10-05:** DEC-086 now records the owner's preference for
+on-device route calculation. §18 governs this narrow direction and its Proposed execution
+boundary; historical unresolved-R6 wording below does not reopen computation location.
+No algorithm, detailed ownership, resource settings, data rights or live adoption are accepted.
+
 **Scoped acceptance — 2026-10-04:** the owner accepts arrival then changes, evidenced
 through counting, all distinct equal optima, identity ordering solely for reproducibility,
 selection before frozen handoff, admitted-candidate preservation, optimum/tie proof,
@@ -3246,3 +3251,94 @@ parser, authentication mechanism or production budget can be justified by this i
 
 P3-T1/Phase 3 remain incomplete. P2-S9 retains 14 classification and 14 ordering gaps. Append
 remains opt-in, reference stays default, live routing unconfigured. No private data was inspected.
+
+
+## 18. On-device route calculation — preferred direction, Proposed execution boundary
+
+2026-10-05. DEC-086 records the owner's durable direction to prioritize route calculation
+on the iPhone. This section proposes the smallest architecture around existing contracts,
+not a new solver, qualification system or enablement decision. Server routing is not an
+equal-priority alternative; reconsideration needs concrete evidence and separate approval.
+Synthetic experiments remain bounded evidence only, including the opt-in append variant.
+DEC-077's ODPT-first evaluation priority and paused commercial evaluation remain in force;
+DEC-004 and PRODUCT §9 external-provider preference are historical/provisional strategy,
+not authority to override the owner's current direction. RULES 1–2 privacy-by-non-collection
+and local-only convenience boundaries still apply: acquisition does not authorize unnecessary
+identity, request/history or movement-data collection/upload. No new telemetry or history store.
+
+### 18.1 Separate responsibilities and gates
+
+| Concern | Recommended boundary | What remains unestablished |
+| --- | --- | --- |
+| Route computation | Data-owned on-device implementation behind existing `RouteSearching`; consume one qualified immutable view for the request, perform accepted earliest-arrival/fewer-changes selection with all distinct equal optima, then existing canonical admission | Production algorithm, resource safeguards, scheduling and feasibility. An invented complete view is not a real qualified inventory |
+| Static/timetable acquisition | Data client/DTO/normalization boundaries supply canonical snapshots and dated timetable facts under accepted producer contracts; qualify the complete required domain before it is used | Authorized source, delivery mechanism, permitted on-device retention/bundling and updates. No network client, parser, storage or publisher is selected |
+| Realtime acquisition | Keep provider capabilities, acquisition/refresh ownership and freshness separate from schedule search; use the existing centralized realtime architecture and applicable later-phase scope | On-device schedule calculation does not supply realtime evidence or guarantee offline operation. No new polling or routing/realtime integration is approved |
+| Technical qualification | Existing view/snapshot/date/index, inventory, calendar/time-quality, permissions, directional allowance and through-continuity obligations remain authoritative; §17 is only their evidence review index | A populated index, identifier match or constructed batch does not establish evidence closure, completed search or optimality |
+| Rights/delivery authorization | Review source/purpose/audience/acquisition/retention/translation/bundling/update/deletion permissions independently of correctness | ODPT Q3/Q4 and item-5 bundling/deletion gates remain unresolved where recorded. Computation location grants no permission and does not authorize private access |
+
+This preserves all 15 accepted launch services. Realtime capability tiers are not evidence
+of schedule-routing readiness. Missing required evidence remains `dataUnavailable`, including
+when a usable direct route exists; incomplete work remains `searchIncomplete`, without partial
+success. Rights restrictions are enablement gates, not evidence of no service. Canonical
+admission, rejection accounting and accepted scoped results remain unchanged.
+
+### 18.2 Composition, lifetime and replacement
+
+Recommend supplying the on-device solver with a qualified immutable request view, rather
+than allowing Features or the solver to fetch/interpret arbitrary sources. Data owns source
+normalization and view qualification; App is the composition root, Application owns request
+lifetime. This assigns responsibilities, not a new `QualifiedView` approval flag or runtime
+API. Production representation and the point at which a caller captures the view still
+need a narrow execution design; reuse existing references instead of duplicating authority.
+
+After applicable qualification, rights and adoption gates are satisfied, explicitly inject
+the adopted port into AppEnvironment. Its existing factory supplies independent coordinators
+using the environment Clock. Preserve DEC-087 validation, now/explicit-time capture, identity
+guards, replacement, cancellation, disposal and matching retry. Canonical results feed the
+existing pure presentation unchanged. No Journey or train selection occurs automatically;
+clearing route answers never clears recent-station history. Live/default remains nil in both
+Debug and Release until separately authorized enablement; no fallback or successful-empty
+substitute is introduced.
+
+A replacement must be separately constructed and qualified under a fresh coherent view when
+contents/scope/revision change, subject independently to applicable rights. In-flight consumers
+retain their exact immutable old view/bindings: never patch or relabel it, or combine revisions.
+Retention alone is not permission to serve old data as current. Each search must satisfy its
+own validity/scope and qualification; a failed replacement does not authorize stale fallback.
+The supplier's atomic handoff/current-view API, invalidation handling and update trigger remain
+Proposed, with no persistence, publication service, freshness period or background-refresh policy
+selected. Existing old/new batch tests prove only invented correspondence and rejection.
+
+### 18.3 Unresolved choices and evidence
+
+| Remaining detail (Proposed) | Evidence/design needed before implementation or adoption |
+| --- | --- |
+| Production algorithm and safeguards | Accepted identity/tie/completion proof plus §16 representative whole-pipeline workload evidence; no synthetic limit is a production budget |
+| Execution ownership/isolation | Specify per-call mutable workspace versus shared immutable data, view capture, concurrent callers, task inheritance and cancellation checkpoints; heavy work stays off MainActor, with responsiveness measured later rather than promised |
+| Delivery, permitted storage and updates | Applicable rights and source-specific revision/calendar/time/occurrence contracts; identify permitted delivery, retention/bundling, invalidation and update mechanism without inferring terms from silence |
+| Resource and device feasibility | Representative dated-ride volume, branching, ties/output size and total time/memory, followed by explicitly authorized physical-iPhone resource/cancellation evaluation; Simulator microbenchmarks do not close this gate |
+| Production enablement | Explicit reviewed algorithm/configuration and lawful qualified input adoption, resolved horizon/resource policy, required acceptance evidence and authorized App injection. This task enables nothing |
+
+Passenger-stop/order interpretation can be resolved later before applicable real consumption
+and acceptance; it need not block source-neutral execution design. No ODPT reply has arrived.
+P2-S9 still has 14 classification and 14 ordering gaps, and P3-T1/Phase 3 remain incomplete.
+No numerical targets, offline promise, licensing conclusion or launch/performance guarantee.
+
+### 18.4 Smallest next source-neutral task
+
+Recommend a **documentation-only per-call execution/isolation contract** for the future local
+`RouteSearching` implementation, limited to the seam between an immutable view supplier and
+the existing port. AppEnvironment can share one injected port among independent coordinators;
+DEC-087 guards publication, but does not specify production solver workspace sharing, capture
+of a replaceable view or cancellation responsiveness. Existing synthetic searchers retain
+fixed supplied views and therefore do not settle that production update/concurrency seam.
+
+Define a single capture point and exact retained view identity, per-invocation mutable search
+state, treatment of concurrent calls and view replacement during a call, inherited cancellation
+and bounded checkpoint obligations without choosing numerical budgets or an executor yet.
+Use invented A/B concurrent calls and V1→V2 replacement to specify deterministic later fake-backed
+checks: no mixed bindings, cancelling A cannot cancel B, no detached orphan work, and no result
+after an observed abort. Reuse existing coordinator guards and canonical admission; do not
+implement another solver, store or qualification layer. Completion is a small reviewed contract
+and identification of any actual scheduling/observable behavior choice needing approval, not
+another microbenchmark. No implementation is authorized by this recommendation.

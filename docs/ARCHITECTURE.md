@@ -1198,6 +1198,28 @@ or successful-empty search stands in for absent routing. No feature/UI wiring is
 
 ---
 
+### On-device routing direction — 2026-10-05
+
+DEC-086 records the owner's preference to calculate routes on the iPhone. The focused
+[Consumer §18 proposal](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#18-on-device-route-calculation--preferred-direction-proposed-execution-boundary)
+places a future on-device solver behind RouteSearching with qualified immutable request views.
+Data owns acquisition/normalization/qualification; App explicitly composes an adopted port;
+Application retains existing request/cancellation/disposal ownership. Detailed execution and
+view-supplier mechanics remain Proposed. Neither current DEBUG engines nor this direction
+establish production adoption or resource feasibility. AppEnvironment live/default remains
+unconfigured; coordinator and presentation behavior do not change.
+
+Static acquisition, permitted storage/bundling/updates and realtime acquisition are separate
+from computation location. Technical evidence does not grant rights/delivery authorization.
+On-device calculation implies neither offline availability nor no network dependency. Retained
+views remain immutable; changed data requires coherent replacement and separate qualification,
+not mixed revisions or automatic stale fallback. See §18 for unresolved delivery, scheduling,
+cancellation responsiveness, workload/device and enablement gates. S9 evidence may be resolved
+later before applicable real-data consumption/acceptance; its 14 classification and 14 ordering
+gaps are unchanged. No server-routing alternative is selected as an equal-priority direction.
+
+---
+
 ## 11. Train Selection Architecture
 
 A search candidate is neither explicit user train selection nor an active Journey.

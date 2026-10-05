@@ -8883,9 +8883,36 @@ silently widen the invented profile to satisfy those needs.
 
 # DEC-086 — Production Route-Search Objective and Execution Policy Target
 
-**Status:** Accepted in bounded part — route selection/completion; ownership, algorithm and adoption deferred\
+**Status:** Accepted in bounded part — route selection/completion and on-device preference; detailed ownership, algorithm and adoption deferred\
 **Date:** 2026-10-04 Asia/Seoul\
 **Related:** DEC-004/047/058/076–081/085; Phase 3, P3-T1, P2-S9
+
+## Scoped owner direction — 2026-10-05 Asia/Seoul
+
+Prioritize route calculation on the iPhone. This is the preferred architecture direction
+within R6, not production solver selection, proven resource feasibility or production
+enablement. It does not accept all of R6. Detailed execution ownership/scheduling,
+algorithm, resource safeguards, delivery/storage/update mechanisms and adoption remain
+Proposed. A server-routing alternative is not an equal-priority product choice; any later
+fallback proposal must identify concrete evidence requiring reconsideration and obtain
+separate approval. No fallback is selected here.
+
+Actual passenger-stop/order evidence may be resolved later, before applicable real-data
+consumption and acceptance. This permits source-neutral design progress, not bypass of
+S9 or authorization to consume unqualified occurrences. All 14 classification and 14
+ordering gaps remain. Technical qualification and rights/delivery authorization are
+independent gates. On-device computation promises neither offline availability nor absence
+of network dependencies, ODPT permissions, launch readiness or performance guarantees.
+
+[Consumer §18](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#18-on-device-route-calculation--preferred-direction-proposed-execution-boundary)
+contains the focused architecture proposal. Its unresolved implementation details remain
+Proposed. Earlier statements below that all R6 ownership/deployment choices are open
+record the historical state; this overlay resolves only the preferred computation location.
+Existing objectives, identity, canonical admission, coordinator and presentation are unchanged.
+DEC-077's accepted ODPT-first evaluation priority and paused commercial evaluation remain.
+DEC-004 stays Provisional historical rationale, not an adopted external-engine requirement;
+earlier PRODUCT §9 provider-preference wording does not override this scoped direction.
+This records priority only and grants neither ODPT-only sufficiency nor delivery rights.
 
 ## Scoped owner acceptance — 2026-10-04 Asia/Seoul
 

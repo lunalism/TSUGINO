@@ -6600,6 +6600,26 @@ P2-S9 retains 14 classification and 14 ordering gaps. No ODPT reply has arrived.
 private access, provider contact, persistence, caching, UI or production adoption is established.
 
 
+#### On-device calculation direction and architecture proposal — 2026-10-05
+
+The owner directs prioritizing route calculation on iPhone. DEC-086 records this scoped R6
+preference; Consumer §18 and ARCHITECTURE separate local computation from static acquisition,
+permitted storage/updates, realtime access and independent technical/rights gates. This does
+not resolve the production algorithm, execution ownership/scheduling, resource safeguards,
+delivery or adoption. No offline/network-independence, licensing or performance claim follows.
+Real passenger-stop/order evidence may follow later before applicable real consumption and
+acceptance; S9's 14 classification and 14 ordering gaps remain. No ODPT reply has arrived.
+
+Recommended next source-neutral work is a narrow per-call execution/isolation design for a
+future on-device port: immutable view capture/replacement, shared-port concurrent callers,
+per-call workspace and cancellation obligations, using existing contracts without a new
+qualification layer. It is not implementation, another kernel benchmark or a production solver
+choice. All 15 services remain preserved; append stays opt-in/reference default, live routing
+unconfigured, P3-T1/Phase 3 incomplete. Documentation only; no tests/builds, private access,
+provider contact, storage, UI or adoption. Separate non-author review found no material findings;
+scope/reference/privacy and whitespace checks passed. Unresolved details remain Proposed.
+
+
 ## Goal
 
 Integrate a replaceable route-search provider without leaking provider models into the product domain.
