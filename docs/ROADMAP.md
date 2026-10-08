@@ -7963,6 +7963,120 @@ and unchanged main/origin-main at `e8a463d51f14b3cb1027960c63244b694579a71b`.
 Exact staged-file verification remains required before the separately authorized commit
 and normal Phase 3 branch push; no merge or force push is authorized.
 
+#### Final published-verifier real revalidation — 2026-10-08
+
+The owner reports **exactly one** authorized real revalidation using the final published
+`applicability.py` bytes, SHA-256
+`c4cdd69fe475eff76d8ae9f469b68ae0e8be6db1b795fa777fab55bb3234054b`.
+The real archive was accessed; the atomic revalidation grant is **consumed**, with no retry
+authorized or needed. This is owner-reported evidence, not a real execution by this audit.
+The earlier pre-correction run above remains historical evidence.
+
+All sanitized aggregate observations match that earlier result: candidate found; exact key
+uniqueness `unique`; one exact trip-row match; 14 occurrences; route and service associations
+present; zero matching frequency rows with `matchedProfile`; zero flexible indicators with
+`matchedProfile`; reasons `[]`; applicability **`eligible`**. The final published-verifier
+caveat is **closed**; candidate source-profile applicability is **satisfied under the current
+published verifier**. No private label, source value, path or transcript is retained here.
+
+Current candidate evidence: classification **0 gaps**; source order **resolved**; station
+crosswalk **14 verified / 0 held**; `gtfs.trip_id` source profile **Accepted**; applicability
+**satisfied**; final published-verifier real revalidation **eligible**. Recurring canonical
+Trip correspondence remains **unresolved**; allocation and registration **not performed**;
+movement, endpoint dispositions, immutable snapshot and final S9 acceptance **unresolved**.
+P2-S9 and P3-T1 remain **incomplete**, Phase 3 **In Progress**, live/default routing
+**unconfigured**. Applicability success does not approve identity or any remaining gate.
+
+#### Repository-only real Trip correspondence-baseline audit — 2026-10-08
+
+**Primary verdict: `FIRST_REAL_TRIP_ALLOCATION_PATH`.** The accepted project baseline/history
+contains no real Trip-capable canonical checkpoint or prior accepted Trip correspondence.
+This conclusion uses positive schema/acceptance records and implementation boundaries,
+not the absence of private artifacts from Git. No private provider, registry, history,
+evidence or environment artifact was opened; no correspondence, allocation, registration
+or conversion was performed.
+
+Authority reviewed: DEC-060/068/073/082/083/084, ARCHITECTURE §§39–41,
+[P2-S9 real readiness](P2_S9_REAL_READINESS.md), and the retained acceptance/checkpoint records
+in this ROADMAP. DEC-060 recurring-run identity remains unchanged; source-profile eligibility
+and identical structure alone do not establish canonical identity. Full repository enumeration
+found **352 files**, matching the tracked inventory. Searches across that complete inventory
+covered `gtfs.trip_id`, `trp`, schema 4, Trip provider references and real registration,
+allocation/correspondence, including implementation, tests and documentation.
+
+| Apparent capability | Classification and actual boundary |
+|---|---|
+| `MintedIdentifier`, `ProviderReference`, `MappingRegistry`, `ReviewedRevision` | Shared real registry capability for station/line/operator only. Ordinary schema 2; explicit DEC-073 reader 2/3. No Trip kind or Trip namespace. |
+| StaticDataIntake `IdentifierMinting`, `ProvisionalRegistry`, `StationRegistry`, `RevisionReconciliation` | Owner-only real offline tooling for those same kinds. Reviewed attachments, retained references and provisional minting do not extend to Trips. Ordinary absence reactivation is not the DEC-083 Trip continuity workflow. |
+| RailwayStorage `IdentityTransition`, `RailwayArtifactBuilder`, derived runtime storage | Owner-only real offline tooling / shared storage for accepted non-Trip registry inputs. DEC-073 exact checkpoint/history and atomic publication do not admit Trip participants; SQLite is not a provider-reference or correspondence authority. |
+| TripNomination applicability and StaticDataIntake station-crosswalk tools | Owner-only real offline evidence tooling, not canonical Trip registry capability; the crosswalk resolves StationIDs through the unchanged shared registry. |
+| `SyntheticTripRegistrationCodec`, `Schema`, `S9Codec`, `Closure` | DEBUG/synthetic-only representation, deterministic digest and dependency/input adaptation (A), not real approval or registration. |
+| `SyntheticTripRegistrationHistory`, `SyntheticTripLegacyHistory` | DEBUG/synthetic-only supplied-memory history/checkpoint and legacy comparison validation (B); no conversion application or real publisher. |
+| `SyntheticTripRegistrationAdmission`, `Reconstruction`, `Snapshots` | DEBUG/synthetic-only C1/C2 admission/replay and atomic in-memory candidate bytes with supplied invented IDs and S9 packets; no real allocator, CLI, filesystem loader/writer or execution authority. |
+| Domain `TripID`/Trip/`TimetableOccurrenceAddress`, mapping/registration test fixtures | Representation/test fixtures only for this identity-baseline question. Domain value validity and invented schema-4 seeds do not establish real registry ownership. |
+| Accepted DEC-083/084 and corresponding architecture/roadmap/proposal text | Documentation/design authority for identity and schema semantics; no real implementation or executed registration is conferred by acceptance. |
+
+**Accepted Phase-2 baseline:** the DEC-074 local provisional package records registry
+**revision 6**, SHA-256
+`9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b`.
+The preceding exact dependency-rebinding checkpoint positively records **schema 2 / revision 6**.
+Its kinds are exactly station `stn`, line `lin`, operator `opr`. Its namespaces are exactly
+`gtfs.agency_id`, `gtfs.route_id`, `gtfs.stop_id`, `gtfs.stop_code`, `odpt.operator`,
+`odpt.railway.id`, `odpt.railway.sameAs`, `odpt.railway.lineCode`.
+Closed enums and strict decoding exclude both `trp` and `gtfs.trip_id`; revision 6 cannot
+structurally store any active, absent, retired or competing canonical Trip binding. DEC-073
+schema 3/history retains these same kind/namespace restrictions. Legacy attaching-review
+authority (`attachedBy`, optional in old records) and retained non-Trip history are not Trip
+attachment authority. The accepted external name/network/review/runtime histories remain
+recognized; none is an accepted Trip identity baseline. Revision 6 is an accepted historical
+pin, not a fresh certification of private-file availability, currentness or complete closure.
+
+**Schema 4:** Accepted representation semantics and implemented DEBUG synthetic A/B/C1/C2
+exist. Real offline and production/shared Trip registry implementations do not. No accepted
+real schema-2/3 → 4 conversion authorization/execution, emitted real schema-4 checkpoint,
+Trip identity history or candidate correspondence is recorded. ARCHITECTURE §39 and DEC-084's
+scope/compatibility and conversion boundaries explicitly preserve that distinction. No current
+non-synthetic path combines Trip entities/references, permanent Trip attachment history,
+identified prior real checkpoint consumption, real allocation/attachment and atomic next
+registry/history emission. Existing non-Trip machinery supplies only some of those mechanics.
+
+**Correspondence implications and ordering:** there is no existing accepted canonical Trip
+target or competitor **in this accepted baseline/history**. That structural result proves
+neither semantic distinctness from every other GTFS row nor absence of future correspondence
+conflicts. Affirmative distinct-recurring-run reasoning and exact owner approval remain
+required; ambiguous correspondence holds. No existing-target attachment is presently available
+against the accepted project baseline.
+
+[DEC-083 §B](DECISIONS.md#dec-083--bounded-recurring-trip-registration-before-authoritative-p2-s9-output)
+explicitly permits a correspondence record retaining a **proposed TripID or explicit new-run
+request**. Therefore a private distinct-new-run correspondence request can be prepared and
+owner-approved before minting or implementing real registration tooling. That approval is
+not a runnable registry delta or authorization to execute allocation/registration. DEC-084's
+synthetic target-byte approval mechanics do not remove DEC-083's earlier request option.
+The readiness document's ordering still requires separately authorized, verified real tooling
+and any exact-baseline legacy conversion **before authorizing an actual allocation/registration
+application**. Preserve the existing lineage, revalidate the exact current approved checkpoint
+and complete retained history, and require later exact owner execution approval; no side registry,
+invented real target, automatic mint or production promotion is allowed.
+
+**Smallest next task: A — private correspondence-request tooling/workflow**, not real
+registration tooling first. Its bounded owner-only record must retain the Accepted source
+profile identity/version and exact scoped Unicode-scalar source key privately; applicability
+evidence; S9 classification and crosswalk references; explicit distinct-new-run request with
+affirmative reasoning; exact proposed prior lineage/schema/revision/hash and structural
+binding/competitor result; evidence/mapping versions, hashes and locators; unique review ID,
+owner reviewer/authority, approval timestamp and deterministic approved-content digest; and
+unresolved movement, endpoint and snapshot prerequisites. Private access/currentness checks
+require separately bounded authorization. Missing evidence holds the request; this audit
+neither prepares nor approves actual correspondence and does not implement that next task.
+
+Verification: complete ROADMAP diff/privacy review, heading/link checks, historical-content
+byte-preservation and `git diff --check` passed. Separate non-author review **approved** the
+overlay and baseline/ordering verdict with **no material findings**. Preflight matched expected
+repository/branch, HEAD/upstream/live remote `6f7111a8ff2b5d0acd2dead6e82a84aaee7c7463`
+(0/0), clean worktree/index and unchanged local/remote main. Only this ROADMAP is modified,
+left **unstaged**. No private artifacts, tests/builds, staging, commit, push or next-task work.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
