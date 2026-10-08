@@ -8275,6 +8275,224 @@ review **approved all nine metadata-compatibility criteria with no material find
 including the mapping-authority interpretation. No tests, builds or device work were run.
 Publication is limited to this ROADMAP under the owner's exact one-file authorization.
 
+#### Approved real correspondence checkpoint and provisional registration boundary audit — 2026-10-08
+
+**Scope:** Phase 3 / retained P2-S9; sanitized owner-reported correspondence checkpoint and
+repository-only registration design. Only this ROADMAP changes, unstaged. No implementation,
+private artifact access, ID allocation, registry conversion/mutation, movement/endpoint review,
+snapshot acceptance, tests, builds, device work or publication is authorized by this task.
+Preflight verified origin `https://github.com/lunalism/TSUGINO.git`, branch
+`phase/03-route-search`, HEAD/upstream/live branch
+`693c4de3002c8ad9f8fdc68803551912953a8706`, divergence **0/0**, clean index/worktree/untracked
+state, and local/tracked/live main `e8a463d51f14b3cb1027960c63244b694579a71b` before editing.
+
+**Candidate recurring correspondence is now owner-approved as an explicit distinct-new-run request.**
+The first real private proposal was created; the owner explicitly approved the exact proposal,
+and its materialized approved representation was verified. Mode is `distinctNewRun`.
+The following safe metadata is owner-supplied; this audit did not reopen its private payload:
+
+| Approved correspondence metadata | Exact value |
+|---|---|
+| `approvedAt` | `2026-10-08T09:45:12Z` |
+| Proposal SHA-256 | `a3e205a1a82d9db050cef86cea9ce661c25daf8786b5b641c6740741cb3c2094` |
+| Approved-content SHA-256 | `538313c8e2608aba802562cf5dc5f73718a6add4052be463b49ba9ec5c0e6cdf` |
+| Complete private approved-record SHA-256 | `6f15b2e634b132ca36d4490b8e64a50e9776317514c015c2f4fc16cbb8d6bc04` |
+| Representation verification | `approvedRepresentationValid` |
+
+This is accepted correspondence authority for the first-real-Trip allocation path. It is not
+a canonical Trip, a registration record, an allocated ID, a converted checkpoint or an approval
+of future target registry bytes. The preceding metadata-preparation overlay remains historical;
+this overlay supersedes its pending-correspondence status only.
+
+**Current truth:** classification **0 gaps**; source order resolved; crosswalk **14 verified /
+0 held**; source profile Accepted; candidate applicability satisfied/eligible; recurring
+correspondence owner-approved distinct-new-run request. Canonical TripID **not allocated**;
+real Trip registration **not performed**. Movement, endpoint dispositions, immutable S9
+snapshot acceptance, real registration tooling checkpoint, P3-T1 real import and production
+registry adoption remain unresolved. P2-S9 remains incomplete; Phase 3 In Progress;
+live/default routing unconfigured. No real TripID is created by this task; invented `trp`
+fixture identifiers already in the repository are not evidence of real allocation.
+
+**Authority and corrected operation sequence.** Re-read Accepted DEC-068, DEC-073, DEC-082,
+DEC-083, DEC-084, ARCHITECTURE §§39–41, [P2-S9 real readiness](P2_S9_REAL_READINESS.md), current
+ROADMAP and the real/synthetic implementation inventory. DEC-083 §C and DEC-084 §§A–B/D
+require **two separately reviewed checkpoints**, not the proposed combined twelve-item
+conversion/allocation operation:
+
+1. **Conversion only:** validate the exact original predecessor and complete retained history;
+   approve an exact conversion request; advance schema 2→4 and revision by one, preserving
+   every entity/reference field and all original history. Publish one atomic conversion
+   checkpoint. No mint, Trip entity, source attachment or snapshot selection occurs here.
+2. **First registration only:** against that exact current converted checkpoint, validate the
+   original approved distinct-new-run correspondence and complete dependency closure; prepare
+   exactly one fresh Trip target and exact registration delta under separate authorization;
+   obtain owner approval binding that request's `expectedPrevious` and `targetRegistryBytes`;
+   atomically register one active Trip with one exact private source key, permanent introducing
+   authority and immutable registration/history boundary. Verify/replay the result.
+
+All twelve proposed obligations are needed across these two operations; item 4 belongs only
+to conversion, and items 5–9 only to registration. Each preserves all existing non-Trip
+identities/references and emits its own checkpoint. If the identified revision-6 predecessor
+is still current with no intervening boundary, conversion would produce revision 7 and first
+registration revision 8; these are conditional arithmetic, not newly verified private state.
+The original correspondence's schema-2 baseline binding stays immutable: retain an explicit
+validated conversion chain to the registration predecessor, never silently retarget its approval.
+Future operation/request/review/record IDs must be separately bound and unused; the original
+correspondence request ID cannot authorize a changed operation payload.
+
+**Minting contract.** DEC-068/083 require kind `trip`, prefix `trp`, underscore, and a
+16-character lowercase Crockford Base32 body encoding **80 random bits** (20 ASCII characters
+total), using alphabet `0123456789abcdefghjkmnpqrstvwxyz`, most-significant five-bit group first.
+Reject uppercase/substitute letters; no extra separators or check character. Use Swift
+`SystemRandomNumberGenerator`, backed by the OS CSPRNG; never seed it.
+Deterministic RNG injection is test-build-only, with no production injection entry point.
+Compare the body against **all retained allocation history across every kind**, including
+active and retired entities; a cross-kind equal body collides. Permit at most **eight draws**;
+eight collisions fail without a target checkpoint. No provider-derived, timetable-derived,
+deterministic hash-derived or sequential TripID. Draw only after eligibility/history checks
+in a future authorized target-preparation step; retain the exact prepared target for review.
+Apply, verification and unchanged replay never draw again. A prepared label becomes canonical
+only through the accepted registry checkpoint; failed preparation must not trigger automatic
+redraw on rerun. Current `IdentifierMinter` has the correct mechanics but a closed non-Trip
+kind type, so it cannot be called unchanged for Trip allocation. Use an isolated bounded
+Trip-capable implementation preserving these rules; do not broaden shared enums/intake.
+
+**Conversion and private-history prerequisites.** The known schema-2 revision-6 registry
+digest identifies exact predecessor bytes; it alone proves neither currentness nor history
+completeness. Before real execution, separately bind exact retained original registry bytes,
+lineage/schema/revision/hash/current-checkpoint authority, and the complete required historical
+dependency inventory with bytes/digests: allocation and review IDs, attachment/status
+authorities, prior registry boundaries and any known legacy sidecar. An explicitly approved
+complete baseline/root must account for retained history; absence from Git is not evidence
+of absence. Schema 2 does not inherently require DEC-073's schema-3 transition sidecar.
+Bind its actual `none`/`present` state; do not fabricate an empty history or accept a known
+inconsistent sidecar. Validate present history under its original contract. External retained
+authority needed by that closure remains required; a derived SQLite artifact cannot replace it.
+
+Validate original schema 2 through its original reader/rules, preserve its original bytes and
+digests, then produce a schema-4 representation with only schema/revision changed. Preserve
+IDs, status/successors, localized fields, exact scalar values, source provenance, first/last
+sightings and optional legacy `attachedBy` including its absence. Never invent old approvals,
+reinterpret identities, delete history, use a synthetic seed exception, create a side registry
+or overwrite a predecessor. Generic conversion/history tooling and invented tests can be
+specified now; these private bindings are mandatory before real execution, not a reason to
+invent a new policy or open artifacts during this audit.
+
+**Future private correspondence validation.** Require the three exact digests above, expected
+owner authority and request ID from the accepted metadata binding, exact source/profile/input
+identity and private key, and original predecessor lineage/schema/revision/hash. Hash complete
+approved-record bytes, validate the published correspondence codec/digest domains and owner
+approval, compare every bound field scalar-exactly, then validate the retained conversion chain
+and current registration request approval. Missing or conflicting bindings cannot allocate.
+Digest consistency verifies a local assertion; it does not cryptographically authenticate an
+owner or publisher. Report only aggregate outcomes/digests; never log the source key/payload.
+The correspondence v1 source object does not supply every GTFS `SourceReference` field:
+registration also needs exact input hash, member name/hash, table, field and provider key from
+separately bound retained provenance. GTFS provenance forbids ODPT's `recordIndex`.
+Do not infer member hashes from profile/mapping digests or reopen the archive automatically.
+
+Retain the complete original approved correspondence bytes/digests as a permanent dependency
+of the introducing operation. The new reference's non-null `attachedBy` identifies the
+introducing owner operation approval's `reviewID`, not the registration `recordID`; the
+registration record links its allocation request and correspondence evidence. This preserves
+both semantic correspondence authority and exact target-delta approval without conflating them.
+
+**Owner-only output and atomicity design.** Each future operation emits an immutable external
+bundle with `registry.json`, `history.json` and `checkpoint.json`, plus complete authority bytes
+either retained in history or as digest-bound dependencies in that bundle. A conversion
+boundary retains exact original predecessor/target bytes and approved conversion request;
+registration appends its exact request, owner approval, record and correspondence dependency.
+History preserves every preceding boundary byte-for-byte and validates the complete closure.
+Checkpoint fields bind lineage/schema/revision/registry SHA/history SHA. Compute target history
+SHA after appending the boundary, avoiding a self-referential approval hash cycle.
+
+Registry plus validated retained authority/history is the identity authority; the verified
+manifest pins/selects that complete committed checkpoint, rather than substituting for its
+history. Receipts, counts, selected-state projections and runtime SQLite are derived; no SQLite
+output is required for this identity tool. All real bytes remain outside Git, directories
+owner-only `0700`, files `0600`, with strict version, size, path, ownership, non-symlink and
+exact-byte hash checks. Real versioned offline wire tags/codecs must be explicit; accepted
+synthetic tags/mode or invented seed admissions must never become real input by relabeling.
+
+Validate before publication; stage the complete bundle on the same filesystem, read back and
+verify all bytes, fsync files/directory, then publish by exclusive atomic directory rename or
+equivalent. Never commit a registry/history pair through independent file replacements.
+Collision exhaustion, stale predecessor, correspondence mismatch or incomplete history yields
+no accepted target. Write failure leaves no accepted partial pair; staging is not a checkpoint.
+Preserve predecessor bundles, reject concurrent/stale publication, and test failure boundaries
+without claiming untested power-loss guarantees. DEC-073's atomic package principle is reusable.
+
+Exact unchanged request/payload/approval/dependencies against the retained current target is
+`unchangedReplay`: return the identical checkpoint, no new random draw, revision or history
+append. Reusing an ID with changed bytes/authority rejects. Replay against a later current
+checkpoint is stale, not permission to rebase or select a latest file. A prepared target and
+its review plan must survive retries without minting again; no accepted checkpoint means no
+accepted registration, regardless of stray staged bytes.
+
+**Identity versus S9.** DEC-083 §D and DEC-084 §B explicitly allow identity-only registration
+with no selected snapshot (`snapshotArtifactID` absent). Later `initialSelection` is a separate
+approved `reviseSnapshot` request against the then-current checkpoint, with full S9 evidence.
+Unresolved movement and origin/destination dispositions do not independently block identity
+allocation/source-key registration once applicable correspondence and registration authority
+are established. They continue to block final S9 acceptance. Preserve DEC-082's distinction
+between proven boundaries and recorded unknown external extent/false coverage; never infer
+continuation or claim completed endpoints from identity registration. Neither this audit nor
+correspondence approval closes any of the six retained downstream prerequisites.
+
+**Repository-wide implementation inventory:** all **354** tracked repository files matched
+the complete hidden-file-aware working-tree inventory. Read the real components and all eight
+`SyntheticTripRegistration*` modules plus their legacy-history helper. No real Trip allocator,
+schema-4 offline publisher or real registration workflow was found.
+
+| Component | Reuse classification and limit |
+|---|---|
+| `TSUGINO/Data/Mapping/MintedIdentifier.swift` | Conceptually reusable strict prefix/body validation; closed kinds reject Trip, so not unchanged for Trip. |
+| `Tools/StaticDataIntake/Sources/IdentifierMinting.swift` | Conceptually reusable 80-bit CSPRNG/eight-draw/all-body mechanics; requires isolated Trip-capable type. `IdentifierAssigner`'s automatic existing-reference handling is incompatible with Trip continuity. |
+| `TSUGINO/Data/Mapping/MappingRegistry.swift` | Reusable unchanged as the original schema-2 validator/legacy encoder; cannot read/write schema 4. Preserve original bytes separately. |
+| `TSUGINO/Data/Mapping/ProviderReference.swift` | Exact key/provenance validation conceptually reusable; closed namespace/kind admission requires isolated Trip extension, preserving optional legacy authority. |
+| `Tools/StaticDataIntake/Sources/RevisionReconciliation.swift` | Automatic absent-reference reactivation is incompatible with DEC-083 Trip continuity; do not route Trip through it. |
+| `Tools/RailwayStorage/Sources/IdentityTransition.swift` | Conceptually reusable exact-boundary/history/atomic publication design; non-Trip schema-3 authorization/applier is incompatible unchanged. |
+| `Tools/RailwayStorage/Sources/RailwayArtifactBuilder.swift` | Derived station/line/operator SQLite builder; incompatible as a Trip registry/history writer, unnecessary for this slice. |
+| `TSUGINO/Data/Review/SyntheticTripRegistration*.swift` | DEBUG-only supplied-memory codecs/history/admission/reconstruction, no real minter/writer; synthetic-only, not directly reusable as real authority. Strict encoding/delta/replay and invented tests are design specimens. |
+
+**Primary verdict: `REAL_TRIP_REGISTRATION_TOOLING_SLICE_READY` — design readiness only.**
+Accepted contracts determine the sequence; no additional identity policy decision is needed.
+The smallest next implementation is an isolated **Swift conversion/history-only offline tool**
+under `Tools/TripRegistration/Sources/`, with invented tests under `Tools/TripRegistration/Tests/`.
+Do not combine first conversion with minting or registration. Do not implement it in this task.
+
+- **Inputs:** explicit owner-bound legacy baseline/currentness and complete history/dependency
+  inventory; original schema-2 bytes; exact conversion request/owner approval with supplied IDs,
+  time, expected predecessor and target bytes; explicit output bundle path. No discovery.
+- **Outputs:** the verified conversion-only schema-4 registry/history/checkpoint bundle above,
+  or bounded hold/reject with no accepted output; deterministic verify/replay summary.
+- **Reuse:** unchanged original schema-2 validation and applicable exact-value/hash primitives;
+  dedicated schema-4/history codec and closure checker; DEC-073 atomic package technique.
+  Keep shared closed enums, app/runtime composition and DEBUG code unchanged.
+- **Invented tests:** exact field/legacy-byte preservation, present/absent legacy authority,
+  complete versus missing/conflicting history, strict malformed/unknown/duplicate/version/hash
+  handling, changed/stale predecessor and request ID reuse, conversion-with-business-delta
+  rejection, no RNG use, canonical round trips, unchanged replay, symlink/mode/path rejection,
+  concurrent publication and injected failures before/at publication with no accepted partial
+  bundle. These tests are planned, not run here.
+
+A later independently authorized **first-registration-only** slice adds the private
+correspondence/provenance adapter, isolated bounded Trip minter, one-entity/one-reference delta,
+exact target request approval, permanent authority/history and the same atomic publisher/replay.
+Its invented fixtures must exercise deterministic test-only RNG, cross-kind/retired collisions,
+eight-draw exhaustion, exact correspondence/dependency/approval mismatches, duplicate-key and
+no-selected-snapshot registration, and replay without redraw. No automatic attach/return,
+transition, snapshot selection or runtime import belongs in either first slice. Neither slice
+may access real registry/evidence or execute real conversion/allocation without a later explicit
+grant and complete private binding; implementation must receive independent review first.
+
+Verification: complete diff/privacy review, exact safe digest/time/status comparison against
+the owner's supplied request, 354-file repository inventory, unique heading/public reference
+checks, historical-byte preservation and `git diff --check` passed. Separate non-author review
+**approved all eight requested criteria with no material findings**. Only ROADMAP is changed,
+unstaged; no private payload was accessed or added, no real TripID was created and no registry
+was accessed or mutated. No tests, builds, device work, staging, commit or push were performed.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
