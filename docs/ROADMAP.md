@@ -8493,6 +8493,89 @@ checks, historical-byte preservation and `git diff --check` passed. Separate non
 unstaged; no private payload was accessed or added, no real TripID was created and no registry
 was accessed or mutated. No tests, builds, device work, staging, commit or push were performed.
 
+#### First-real-Trip checkpoint 1 tooling implementation — 2026-10-08
+
+The owner authorized implementation, invented-fixture verification and independent review
+of the first conversion checkpoint only, from clean published
+`1f3733a0c722c17b7e81280862871ce6fb98dff2`. Preflight matched repository, phase branch,
+HEAD/upstream/live branch, zero divergence and clean tree/index/untracked state; local/tracked/
+live main stayed `e8a463d51f14b3cb1027960c63244b694579a71b`. This overlay records implementation
+progress; the preceding design checkpoint and its historical verification remain unchanged.
+
+`Tools/TripRegistration/` now owns an isolated schema-4 codec, strict ordinary schema-2
+predecessor admission, deterministic conversion request/approval, retained baseline/history,
+checkpoint and manifest, exact replay and private atomic publisher. Shared Mapping enums,
+ordinary readers, app/runtime targets and DEBUG synthetic tooling are unchanged. Selected
+unchanged Mapping validators are compiled explicitly into the standalone tool. The only
+conversion registry delta is schema `2 -> 4`, checked revision `N -> N+1`; all legacy entities,
+references, statuses, successors, authority, provenance, original names and optional attachment
+values are preserved. Original predecessor bytes remain retained unchanged. Schema 3 rejects.
+
+The tool-owned schema-4 representation can validate future Trip syntax, but conversion rejects
+every Trip entity and `gtfs.trip_id` reference. There is no minter, registration operation,
+correspondence adapter, source-key attachment, snapshot selection, SQLite generation or runtime
+import. The second first-Trip mint/registration checkpoint remains unimplemented.
+
+A narrowly scoped `.gitignore` entry excludes this standalone tool's `.build/` binaries
+and module caches from the review/publication inventory; no other build policy changes.
+
+The owner-reviewed baseline binds original immutable authority bytes, exact active/retired
+identity coverage, original allocation/review tokens and dependency digests. Inventory handles
+do not replace original business IDs; old approvals are not translated or re-authored. Missing
+required closure/approval holds; known malformed or conflicting supplied content rejects.
+Completeness is an explicit owner assertion plus checked closure, not person authentication
+or discovery of undisclosed history. No real baseline is fabricated by the CLI. Initial H0
+and one immutable conversion boundary are supported; later history cannot be silently omitted.
+Separate conversion approval binds the exact complete request and its predecessor/target.
+
+The authoritative bundle has `registry.json`, `history.json`, `manifest.json`; the manifest
+binds exact predecessor/target, full history, request, approval and boundary digests. Exact replay
+retains the same revision/boundary/bytes and requires the existing output identity. Owner current
+pins are explicit; no global current pointer or cross-output-path fork exclusion is claimed.
+External owner-only paths, descriptor-relative no-symlink traversal, mode/ownership checks,
+bounded reads, staged fsync/readback and exclusive same-parent atomic rename protect publication.
+Same-path races have one winner. Pre-commit failures leave no accepted partial bundle; a
+post-commit parent-fsync failure may leave the complete bundle with uncertain durability and
+requires exact verification before recovery. Diagnostics contain only fixed statuses/categories
+and digests. Explicit resource limits and the full wire/CLI contract are in the tool README.
+
+Final standalone build and invented tests passed: **8 functions / 142 cases**, including
+CLI end-to-end conversion/verification, exact replay, same-path concurrency and injected
+publication failures. Counts describe one complete final run, not summed overlapping runs.
+Separate non-author review independently rebuilt and passed the same **8 / 142** suite and
+**approved all 12 requested criteria with no unresolved material findings**. Its six safety
+answers confirm no successful identity mutation, no conversion-created Trip state, no accepted
+incomplete history, no replay revision/boundary increment, no accepted partial publication and
+no widened runtime reader. The post-commit durability caveat above remains explicit. Final
+12-file scope/privacy/inventory audit, `.build` ignore checks, exact preservation of historical
+ROADMAP bytes and `git diff --check` passed. No production/shared source changed, so no app,
+extension, existing Mapping regression or device build/test was required or run. Checkpoint 1
+tooling is ready for source publication; it closes no real execution gate.
+
+At the implementation handoff this scope remained unstaged and uncommitted for owner inspection;
+that implementation grant did not authorize staging, commit or push. No real/private registry,
+history, GTFS, correspondence or provider artifact was accessed. No real conversion occurred;
+no TripID was minted and no Trip registered.
+Existing correspondence approval remains separate; no retained S9 blocker or production gate
+is closed by these invented fixtures. After separately authorized source publication, the next
+gate is exact private baseline/history/current-checkpoint binding and explicit conversion
+request preparation, owner approval and real execution authorization under DEC-083/084.
+Source publication alone grants none of those operations and does not authorize checkpoint 2.
+
+The owner subsequently authorized the final accumulated audit, staging, a new commit and a
+normal push of exactly these **12 files**: the five standalone implementation files, two
+invented-fixture test files, two scripts, tool README, this ROADMAP overlay and the narrow
+`.gitignore` entry. Fetched/live phase and main refs matched the expected baseline before
+publication. Source/test/script fingerprints match the independently approved version, so
+the standalone build and **8 functions / 142 cases** evidence are reused without another run.
+Documentation clarifications do not alter tooling behavior or broaden authority. Complete
+private schema-2 baseline/history/current-checkpoint binding remains required before any
+real conversion-request preparation or execution. **P2-S9 remains incomplete; P3-T1 remains
+incomplete; Phase 3 remains In Progress.** Checkpoint 2 remains unimplemented. This publication
+grant does not authorize private binding, preparation, approval, conversion or registration;
+the exact next gate is to bind the complete private schema-2 baseline/history/current
+checkpoint for a separately authorized real conversion-request workflow.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase

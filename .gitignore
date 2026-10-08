@@ -7,3 +7,6 @@ DerivedData/
 
 # Static data intake tool build output (DEC-066)
 Tools/StaticDataIntake/.build/
+
+# Standalone Trip registry conversion tool build output
+Tools/TripRegistration/.build/
