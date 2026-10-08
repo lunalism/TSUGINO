@@ -7811,8 +7811,62 @@ for subsequent exact owner approval. If time interpretation is necessary, hold f
 separate authorization. No such review or allocation is authorized/performed here;
 consumed grants remain consumed and no availability of private evidence is presumed.
 
-Only ROADMAP changes. No private artifact/key/registry/calendar, bridge, provider contact,
-Trip allocation/registration, tests/builds, device or publication operation is involved.
+#### Synthetic candidate-applicability verifier — 2026-10-08
+
+The preceding attempt stopped at `PUBLIC_FIELD_SEMANTICS_REQUIRED` before editing or
+accessing private material. The authoritative public GTFS field semantics supplied for this
+continuation resolved that stop. The owner separately authorized implementation of a **synthetic-only** verifier for the
+accepted profile above. It assesses an explicitly supplied nominated label against invented
+archives only. `Tools/TripNomination/applicability.py` reads the candidate trip row, exact
+same-revision key uniqueness, route/service associations, its 14 stop-time occurrences,
+matching frequency rows, continuous pickup/drop-off route defaults and stop-time overrides,
+pickup/drop-off modes, Flex windows/location references and applicable booking-rule
+references. Results contain only counts, statuses and fixed typed reasons; outcomes are
+`eligible`, `excluded` or `held`. No actual retained archive, source/member hash or private
+identifier was opened or embedded in this implementation.
+
+The independent review found and this continuation corrected header-position-dependent
+trip-key counting, missing ordinary `stop_id` validation, and incomplete booking-rule
+conditional checks. It also verified the route-wide scope of the continuous-default/window
+restriction; that check now relates stop-time windows to the route of each trip without
+opening service/calendar tables. The booking fields are exactly
+`pickup_booking_rule_id` / `drop_off_booking_rule_id` referencing
+`booking_rules.booking_rule_id`; `prior_notice_service_id` is allowed only with booking
+type 2 and remains opaque. The structural interpretation follows the official [GTFS routes](https://gtfs.org/documentation/schedule/reference/#routestxt),
+[stop_times](https://gtfs.org/documentation/schedule/reference/#stop_timestxt),
+[booking_rules](https://gtfs.org/documentation/schedule/reference/#booking_rulestxt),
+[location_groups](https://gtfs.org/documentation/schedule/reference/#location_groupstxt) and
+[GeoJSON locations](https://gtfs.org/documentation/schedule/reference/#locationsgeojson)
+reference: continuous-service enums/default inheritance and stop-time overrides; passenger
+pickup/drop-off enums; mutually exclusive stop/Flex location references; paired pickup/drop-off
+windows incompatible with arrival/departure times; route-level continuous-mode restriction
+when windows are used; booking type structural requirements; and referenced Flex IDs. These
+checks are deliberately limited to candidate applicability and relevant structures. They do
+not interpret service calendars/dates or establish a general GTFS validity claim.
+
+`Tools/TripNomination/test_applicability.py` generates invented ZIP/CSV/GeoJSON records and
+checks ordinary eligibility, valid profile exclusions, malformed/unresolved holds, exact
+scalar key behavior, candidate uniqueness and association, occurrence count/order, frequency
+cases, stop-time overrides, terminal-interval handling, Flex/window combinations, booking
+references, privacy-safe aggregates, archive identity, path safety and CLI terminal gating.
+Focused verification passed **98/98** applicability tests with `python3 -B -W error`,
+including execution of the invented-archive CLI in a controlling PTY; no warnings. The full
+TripNomination suite passed **217/217** tests (98 new applicability, 119 pre-existing reader,
+session, occurrence, review-session and bridge tests), zero failures/errors/skips and no
+unexpected warnings. The independent non-author re-review verified the header-driven key count,
+stop/Flex location requirements, booking-rule conditional fields, route-wide window restriction,
+time syntax, privacy boundary and phase scope; it approved publication within the documented
+bounded scope with no material remaining findings. This makes the tooling ready for a separately
+authorized one-use real candidate applicability review only; it grants no real-input execution itself.
+No real-data access, candidate-specific profile assertion,
+calendar interpretation, correspondence review, canonical TripID, allocation, registration,
+snapshot acceptance or S9 acceptance occurred. P2-S9/P3-T1 remain incomplete and Phase 3
+remains In Progress. The changes are unstaged/uncommitted; no publication operation is part
+of this task.
+
+This implementation changes only the TripNomination verifier/tests, its README and this
+ROADMAP overlay. No private artifact/key/registry/calendar, bridge, provider contact, Trip
+allocation/registration, app build, device or publication operation is involved.
 Canonical crosswalk remains **14 verified / 0 held**, classification **0 gaps**, source
 order resolved; P2-S9 and P3-T1 remain **incomplete**, Phase 3 **In Progress**, live/default
 routing **unconfigured**. All prior evidence and accumulated implementation are preserved
@@ -7827,6 +7881,87 @@ candidate key was added. `git diff --check` passed. Separate non-author review r
 the complete accumulated ROADMAP and both tool-README diffs in bounded chunks and
 approved the official-evidence/DEC-060/083/profile/acceptance boundary with no material
 findings after the historical README-status clarification. No tests/builds were run.
+
+#### Retained candidate real applicability checkpoint — 2026-10-08
+
+The owner reports executing the reviewed applicability verifier **exactly once** under the
+separately authorized atomic real-input grant. The real archive was accessed; that one-use
+grant is **consumed**. This checkpoint records only the supplied sanitized aggregate result;
+no further archive or private-artifact access is authorized or performed by this publication task.
+
+| Applicability check | Owner-reported result |
+|---|---|
+| Candidate found | Yes |
+| Exact source-key uniqueness | Established (`unique`) |
+| Exact `trips.txt` row matches | 1 |
+| Source occurrences | 14 |
+| Route / service associations | Both present |
+| Matching frequency rows | 0 |
+| Frequency applicability | `matchedProfile` |
+| Flex indicator count | 0 |
+| Flexible applicability | `matchedProfile` |
+| Hold/exclusion reasons | None (`[]`) |
+| Final applicability | `eligible` |
+
+**The retained candidate satisfies the Accepted Toei 20260921 `gtfs.trip_id` source-profile applicability requirements.**
+The result establishes exact selection, one scoped trip-key row in the retained revision,
+required route/service associations, no matching frequency-based definition, no applicable
+excluded Flex/on-demand construct found by the reviewed verifier, and consistency of the
+14-occurrence dependency. It makes the candidate eligible for recurring-identity correspondence
+review under the Accepted source profile.
+
+Current P2-S9 truth: classification **0 gaps**; source order **resolved**; station crosswalk
+**14 verified / 0 held**; source profile **Accepted**; candidate applicability **eligible /
+satisfied**. Recurring canonical Trip correspondence remains **unresolved**; Trip allocation
+and registration were **not performed**. Movement, endpoints, snapshot and final S9 acceptance
+remain **unresolved**. P2-S9 and P3-T1 remain **incomplete**, Phase 3 **In Progress**, and
+live/default routing **unconfigured**.
+
+This result proves no operating calendar dates, timetable times, cross-revision continuity,
+same-canonical-Trip correspondence, distinct-new-run status, absence of competing assignments,
+canonical TripID, allocation authority, registration, snapshot acceptance or production identity.
+The next smallest gate is **candidate-specific recurring canonical correspondence /
+competing-assignment review** under DEC-083, against an identified registry/checkpoint/history
+baseline: determine any accepted binding and competitors, or the affirmative evidence for an
+explicit distinct-new-run proposal, and the exact subsequent owner-approved correspondence /
+allocation request required. That review is not performed here; timetable interpretation is
+not the next gate, and no Trip is allocated or registered.
+
+Preflight confirmed the previously approved implementation/test fingerprints unchanged;
+the earlier **98/98** applicability and **217/217** combined evidence was initially reused.
+The complete accumulated non-author publication review then withheld approval for three
+bounded defects: duplicate frequency starts with differing ends were not held, inherited
+continuous exclusions could omit their fixed reason, and malformed GeoJSON coordinates
+could be treated as valid exclusion evidence. These were corrected with four regression
+functions. The frequency primary key uses the selected trip plus exact start value, without
+timeline interpretation. GeoJSON checks validate array nesting, finite numeric positions
+and closed rings, not geometric topology or general GTFS validity. The prohibited candidate
+label was removed from the preceding unpublished record and generated synthetically in tests.
+The README now records the revised verification scope. Shared readers remain byte-identical.
+
+The owner-reported real result above belongs to the previously reviewed verifier SHA-256
+`769d2a6bf5500277c21f2152bd1917f627bc235eca0bd020135e785d8e3dfb5d`.
+No revised-verifier real run occurred or is authorized; the grant remains consumed.
+Fresh `python3 -B -W error` runs passed **102/102** applicability tests and **221/221** combined
+TripNomination tests, including invented-archive CLI/PTY coverage, with zero failures/errors/
+skips or unexpected warnings. The initial regression reproduction exposed the three defects;
+an intermediate synthetic run also exposed a repeated-fixture setup error, corrected before
+the final passing runs. No app build or device step was needed for this offline tool scope.
+
+| Final publication file | SHA-256 |
+|---|---|
+| `applicability.py` | `c4cdd69fe475eff76d8ae9f469b68ae0e8be6db1b795fa777fab55bb3234054b` |
+| `test_applicability.py` | `e1df523297a42a33747cc5593ac99cbb4caa310ad16e376348b6b14c68744986` |
+
+The exact four-file publication scope remains the verifier, tests, README and ROADMAP.
+Fresh independent non-author re-review **approved** the complete corrected four-file diff
+with **no material remaining findings**. Complete diff/privacy review and `git diff --check`
+passed; no private candidate values, paths or env contents were included. Preflight fetched
+origin and verified the expected repository/branch, baseline HEAD/upstream at
+`a38a785c9eeec602495c4588f65fb940269f0a34` (0/0), exactly four intended files, empty index
+and unchanged main/origin-main at `e8a463d51f14b3cb1027960c63244b694579a71b`.
+Exact staged-file verification remains required before the separately authorized commit
+and normal Phase 3 branch push; no merge or force push is authorized.
 
 #### Approved early route-search status/action view — 2026-10-05
 

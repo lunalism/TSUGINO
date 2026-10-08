@@ -190,8 +190,9 @@ archive descriptor and selected-only payload reads; a deliberately corrupt unsel
 must remain unread. `-W error` fails on unexpected warnings; duplicate-ZIP fixture construction
 locally suppresses only the expected writer warning.
 
-The combined final run has **54 test functions (35 unchanged reader + 19 workflow)**, zero
-failures/errors/skips and no unexpected Python warnings. Workflow assertions check exact
+The earlier workflow approval recorded **54 test functions (35 reader + 19 workflow)** for
+that historical scope; this is not the current combined suite count. The current applicability
+verifier has its own synthetic test count below. Workflow assertions check exact
 original-object/locator correspondence (independent byte-span/hash expectations), confirmation,
 invalid labels, cancellation/EOF/interruption, zero choices, validation failure without exposure,
 scalar-preserving safe display, terminal/redirection/SSH guards, terminal setting restoration
@@ -210,6 +211,59 @@ the chosen locator only while the session is open. Reuse saved evidence unless a
 requires focused synthetic verification; do not execute on real input. This implementation's
 self-review is not independent approval. Real P2-S9/P3-T1 import, registry adoption/search,
 rights/delivery and Phase 3 exit remain separate.
+
+## Synthetic candidate applicability verifier
+
+`applicability.py` implements only the accepted Toei recurring trip-key profile
+(`toei-20260921-trip-id-applicability-00`) for synthetic candidate validation. It inspects
+the explicitly nominated label, its exact `trips.txt` key/route/service associations,
+14 selected `stop_times.txt` occurrences, matching `frequencies.txt` rows, relevant
+continuous pickup/drop-off defaults and overrides, pickup/drop-off modes, pickup windows,
+Flex location references and booking-rule references using the exact `pickup_booking_rule_id` and
+`drop_off_booking_rule_id` fields and `booking_rules.booking_rule_id`. Type-specific
+prior-notice fields are checked only for structural validity; a type-2
+`prior_notice_service_id` remains opaque and no calendar is opened. It returns a sanitized
+aggregate with `eligible`, `excluded` or `held`; it never emits candidate keys or canonical Trip IDs.
+
+The check is structural and untimed. It does not open calendar/service-date members, parse
+times into a timeline, infer candidate-to-canonical correspondence, allocate/register Trips,
+or accept S9. Frequencies and valid Flex/on-demand indicators exclude a candidate from the
+accepted ordinary single-departure profile. Malformed or unresolved relevant data holds.
+
+Relevant official GTFS Schedule Reference constraints are: [routes](https://gtfs.org/documentation/schedule/reference/#routestxt)
+continuous pickup/drop-off enum and stop-time override (including the restriction when a
+route uses pickup/drop-off windows); [stop_times](https://gtfs.org/documentation/schedule/reference/#stop_timestxt)
+pickup/drop-off enum values, location-reference exclusivity, window pairs, and the rule that
+windows cannot accompany arrival/departure times; [booking_rules](https://gtfs.org/documentation/schedule/reference/#booking_rulestxt)
+booking types and required prior-notice structure; [location groups](https://gtfs.org/documentation/schedule/reference/#location_groupstxt)
+and [GeoJSON locations](https://gtfs.org/documentation/schedule/reference/#locationsgeojson)
+for referenced Flex IDs. The verifier applies only these relevant structure/enum constraints;
+it does not claim to be a general GTFS validator.
+
+The earlier approved verifier passed **98/98** tests and the **217/217** combined suite.
+Publication review corrected duplicate frequency-start keys, inherited continuous-exclusion
+reasons and malformed GeoJSON coordinate structure, and removed a prohibited literal from
+invented test labels. The revised verifier passed **102/102** applicability tests, including
+the actual CLI entry point in a controlling PTY, and **221/221** combined tests with warnings
+as errors. GeoJSON checks cover array nesting, finite numeric positions and closed rings;
+they do not establish geometric topology. See ROADMAP for independent review and the
+separately authorized owner-reported real result. Tooling readiness grants no real-input run.
+
+The in-memory API is for separately authorized, explicit candidate review only; it cannot
+authenticate owner nomination. The CLI remains behind the existing local foreground terminal
+guard. For an authorized invocation supply the exact archive identity and label explicitly:
+
+```sh
+python3 -B Tools/TripNomination/applicability.py \
+  --archive "$ARCHIVE_PATH" --expected-size "$ARCHIVE_BYTES" \
+  --expected-sha256 "$ARCHIVE_SHA256" --label "$CONFIRMED_LABEL" \
+  --expected-count 14 --profile toei-20260921-trip-id-applicability-00
+```
+
+Arguments above are placeholders, not instructions to discover or open private data. See the
+2026-10-08 ROADMAP implementation record for scope, verification and independent review status.
+No real-input run, mapping/correspondence review, allocation, registration or acceptance is
+authorized or implied by this synthetic verifier.
 
 ## Untimed occurrence extractor
 
