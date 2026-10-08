@@ -565,3 +565,136 @@ No real/private artifact was accessed for implementation or synthetic correction
 ABI 2 replaces the formerly readiness-coupled `reviewEvidenceMatched` and `memberIdentityConsistent` Booleans with independent bounded status strings: `matched`, `mismatched`, `notEvaluated`. Their names remain stable, but callers must not treat these strings as Booleans. Internally each is a numeric enum (0 notEvaluated, 1 matched, 2 mismatched); the eight-word POD layout stays bounded and the v2 symbol/version rejects old binaries and frames. Registry identity and readiness remain Booleans. Review status is evaluated only after active exact requested provenance; any evaluated failure dominates, otherwise incomplete evaluation yields notEvaluated. Member mismatch means actual usable requested member disagreement; complete consistent coverage matches, otherwise notEvaluated. No hashes, provider values or canonical IDs return from Swift. A held proposal can now report matched review evidence or matched member identity independently.
 
 Introducing attachment authority and station assignment authority are separate. The verifier preserves optional legacy authority, validates exact membership and target, and never guesses relationships between review-ID spellings. Hash-pinned approved registry/history remains the introducing-authority premise, not new authentication of opaque review IDs. A new tooling build requires a newly recomputed library hash and fresh local bindings; prior library hashes/ABI-1 callers are invalid. The previous atomic real-data grant is consumed: no retry or real acceptance follows from synthetic verification, and a new real atomic execution requires a new explicit owner grant.
+
+## Private distinct-new-run correspondence requests
+
+`correspondence_request.py` implements DEC-083's **explicit new-run request before minting**.
+It has been exercised with invented data only. Real use, including proposal creation, needs
+separate bounded owner authorization and exact private inputs. No real candidate request,
+source-key access, TripID, registry mutation or S9 acceptance resulted from implementation.
+No real owner correspondence approval has occurred; test approvals use invented fixtures.
+The [published baseline audit](../../docs/ROADMAP.md#repository-only-real-trip-correspondence-baseline-audit--2026-10-08)
+governs the first-allocation boundary. This tool does not read railway archives, registries,
+referenced evidence, URLs or directories to discover bindings; it reads only the explicit
+request/draft and context files. It has no network or subprocess dependency.
+
+### Version 1 representation
+
+The envelope has exactly `format: "tsugino.trip-correspondence-request"`, integer
+`schemaVersion: 1`, `payload`, and `approval` (JSON `null` for a proposal). Its strict payload:
+
+| Field | Required representation |
+|---|---|
+| `requestID`, `ownerAuthority`, `mode` | Owner-supplied unique request/review ID, owner authority ID, exactly `distinctNewRun`. IDs are 1–128 ASCII token characters (initial alphanumeric, then alphanumeric/`.`/`_`/`:`/`-`). Cross-request ID uniqueness remains an owner inventory obligation. |
+| `source` | Exact `sourceID`, `namespace: "gtfs.trip_id"`, `key`, `profileID`, `profileVersion`, `inputSHA256`, `publisherID`, `resourceID`, `feedRevision`. No normalization, trimming or sourceID invention per refresh. |
+| `baseline` | `lineageID`, integer `schemaVersion: 2`, integer `revision: 6`, `registrySHA256`. Exact supplied historical checkpoint binding; no inference of currentness or capability from arbitrary file contents. |
+| `mapping` | Exact `version`, `sha256`. |
+| `baselineCapability` | Exactly `noTripIdentityStateInIdentifiedBaseline`. This is the caller's binding to the accepted audit, not fresh verification of private registry/history. |
+| `evidence` | One immutable reference per required role: `sourceProfileAcceptance`, `candidateApplicability`, `passengerClassification`, `sourceOrder`, `stationCrosswalk`, `firstRealTripBaselineAudit`; optional `s9Review`. Each has exactly `role`, unique `evidenceID`, `sha256`, opaque `locator`, and exact `source`, `baseline`, `mapping` associations matching the payload. No raw rows. Locators are never opened. Associations are owner assertions about applicability, not a claim that every referenced file embeds the source key. |
+| `conclusion` | Exactly `distinctNewRunRequested: true`, `existingCanonicalTripTarget: null`, `priorCanonicalTripBinding` and `acceptedCanonicalCompetitors` both `noneStructurallyPossibleInPriorBaseline`, `externalSemanticCompetition: "notGloballyDisproved"`, `semanticDistinctnessFromAllSourceRows: false`, nonblank `affirmativeReasoning`, and `basisEvidenceIDs`. Basis IDs must exist and include source-profile acceptance and candidate applicability; baseline absence alone cannot supply the basis. Semantic reasoning still requires owner review. |
+| `unresolvedPrerequisites` | Exactly all six: `movementEvidence`, `endpointDispositions`, `immutableS9SnapshotAcceptance`, `realTripRegistrationToolingCheckpoint`, `p3T1RealImport`, `productionRegistryAdoption`. Approval cannot remove or satisfy them. |
+
+A separate explicit context document has exactly `format: "tsugino.trip-correspondence-context"`,
+integer `schemaVersion: 1`, `ownerAuthority`, `source`, `baseline`, `mapping`, `evidence`.
+Those values/inventory must match the request exactly. This provides independently supplied
+expected bindings for rejecting stale or mixed scopes. The caller must bind the context to
+accepted evidence and the exact accepted baseline audit; a self-consistent fabricated context
+is not accepted authority. Changed source/profile/input/mapping/checkpoint or evidence requires
+new context and proposal/review. No default paths, hashes or real source identifiers are built in.
+
+Only this first-allocation variant exists: unknown fields (including `tripID`), non-null
+canonical targets, existing-target mode and global no-competitor claims reject. There is no
+minter, schema-4 conversion, registry output or history application. No assertion proves
+semantic distinctness from every other source row or excludes future conflicts. Approval
+metadata is asserted by the acting owner; no person authentication or signatures are implemented.
+
+### Canonical bytes and approval domains
+
+All JSON strings must be valid Unicode scalar sequences; UTF-8 is strict, with no BOM.
+Duplicate decoded keys (including escaped equivalents), unknown fields, floats/nonfinite
+numbers, oversized integers and unsupported versions reject. Object ordering/whitespace and
+JSON escaping may differ on input. Canonical output uses Python standard-library
+`json.dumps(ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False)`,
+encoded as UTF-8, with no trailing newline. Object keys use Unicode code-point ordering;
+there is no locale dependence or Unicode normalization. Evidence is a set ordered by role;
+basis IDs and unresolved prerequisites are sets ordered by exact token. No source occurrence
+sequence exists in this format. Returned records are detached from caller-owned inputs.
+
+`proposalSHA256` is SHA-256 of the canonical object
+`{"domain":"tsugino.trip-correspondence-request/proposal/v1","format":FORMAT,"schemaVersion":1,"payload":P}`,
+where `FORMAT` is the envelope format string and `P` is the validated canonical payload.
+`approval` has exactly `authorityID`, `approvedAt`, `proposalSHA256`, `approvedContentSHA256`.
+Timestamp is a valid Gregorian UTC `YYYY-MM-DDTHH:MM:SSZ`, with no offset/fraction/leap second.
+`approvedContentSHA256` hashes the canonical object
+`{"domain":"tsugino.trip-correspondence-request/approval/v1","format":FORMAT,"schemaVersion":1,"payload":P,"ownerApproval":A}`,
+where `A` contains the first three approval fields, excluding only `approvedContentSHA256`.
+Thus every authoritative payload field, approval identity and approval time is digest-bound;
+mutations reject. Digests prove integrity, not evidence truth, owner identity or approval by
+an authenticated person. The independently supplied context is also an asserted trust input.
+
+### Explicit owner workflow
+
+Future templates only; **no real use is authorized by these examples**. The draft is the
+payload object above, privately prepared from exact approved references. Context is separately
+supplied from the accepted inventory. Never put provider keys in arguments, filenames, shell
+variables, logs or Git. Keep drafts/context/proposals/approvals in an owner-only local directory.
+
+```sh
+python3 -B Tools/TripNomination/correspondence_request.py prepare \
+  --input "$DRAFT_PATH" --context "$CONTEXT_PATH" --output "$PROPOSAL_PATH"
+python3 -B Tools/TripNomination/correspondence_request.py inspect \
+  --input "$PROPOSAL_PATH" --context "$CONTEXT_PATH"
+python3 -B Tools/TripNomination/correspondence_request.py approve \
+  --input "$PROPOSAL_PATH" --context "$CONTEXT_PATH" --output "$APPROVAL_PATH" \
+  --proposal-sha256 "$REVIEWED_PROPOSAL_SHA256" --authority "$OWNER_AUTHORITY" \
+  --approved-at "$APPROVAL_UTC" --approve-distinct-new-run
+python3 -B Tools/TripNomination/correspondence_request.py verify \
+  --input "$APPROVAL_PATH" --context "$CONTEXT_PATH"
+```
+
+`prepare` creates an unapproved proposal. `inspect` emits aggregate role/prerequisite counts,
+fixed mode/status and proposal digest only. It deliberately omits even request/profile/source
+IDs and checkpoint identities: caller-controlled metadata may equal a private source key.
+The owner must review the exact private payload and affirmative reasoning separately in an
+unrecorded local setting. Counts/digest alone cannot establish semantic approval. `approve`
+requires the full explicit flag, exact reviewed proposal digest, matching owner ID and supplied
+timestamp; it refuses existing approvals. The action means: **I approve this exact source
+identity as an explicit new recurring-run request for later canonical Trip allocation.**
+It grants neither actual allocation/registration execution nor P2-S9 final acceptance.
+`verify` requires approval and reports aggregate representation validity only. No stage treats
+structural validation as owner approval. CLI failures use fixed codes, no paths, keys, raw
+exceptions or tracebacks; exit 1 for rejection, 130 for interruption. No automatic retry.
+
+### Private I/O and verification boundary
+
+Explicit absolute paths only; empty/`.`/`..`/`.git` components, symlinks (including ancestors),
+repository paths and repository ancestry aliases reject. Descriptor-relative `O_NOFOLLOW`
+traversal pins/rechecks directory identities; final parent must be owned by the current user
+with mode `0700`. Ancestors must be current-user/root owned and not group/other writable,
+except root-owned sticky temporary ancestors. Inputs must be regular, current-owner, `0600`,
+with one hard link; FIFO/special files reject without blocking. Input state/path identity is
+rechecked. JSON is at most 256 KiB, nesting at most 32, integer lexemes at most 16 characters;
+keys at most 4,096 UTF-8 bytes, reasoning 8,192, locators 4,096, other text 1,024. All lists
+have fixed small bounds. Output is canonical private JSON: random staging name, exact `0600`,
+fsynced complete bytes, atomic no-clobber link publication and staging cleanup. Existing
+outputs are never replaced, including unchanged reruns; compare proposal digests using a new
+explicit output path. This is POSIX/macOS tooling, not a portable Windows file-security API.
+Same-user malicious mutation/capture, OS memory/swap, filesystem failure during cleanup and
+power-loss durability are outside the trust guarantee. Future real files must remain local,
+outside Git and sync/upload systems. Evidence contents/rights/currentness/history closure
+must still be separately reviewed; the tool checks reference closure only.
+
+DEC-084 contributes concepts (canonical digest domains, dependency closure, separate approval,
+checkpoint binding and immutable previous content). No DEBUG Swift code, synthetic format,
+stipulated seed, schema-4 candidate or test approval becomes real correspondence authority.
+Focused synthetic verification and TripNomination regressions use invented files only:
+
+```sh
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_correspondence_request.py' -v
+python3 -B -W error -m unittest discover -s Tools/TripNomination -p 'test_*.py' -v
+```
+
+The full regression command includes the existing crosswalk bridge's prebuilt library
+prerequisite; no app build is required. Independent review must inspect assertions and the
+real-use boundary. Real proposal creation remains separately authorized; approval, real
+registration machinery/application, movement/endpoints and snapshot acceptance stay separate.

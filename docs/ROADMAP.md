@@ -8077,6 +8077,74 @@ repository/branch, HEAD/upstream/live remote `6f7111a8ff2b5d0acd2dead6e82a84aaee
 (0/0), clean worktree/index and unchanged local/remote main. Only this ROADMAP is modified,
 left **unstaged**. No private artifacts, tests/builds, staging, commit, push or next-task work.
 
+#### Synthetic-only distinct-new-run correspondence-request workflow — 2026-10-08
+
+Scope: implement DEC-083's explicit new-run correspondence-request representation and
+validator before minting, using **invented data only**. Preflight matched repository/branch,
+HEAD/upstream/live Phase 3 `d50e9c4af115c063c6d694019643467169ce3935` (0/0), clean worktree/
+index/no untracked files and unchanged local/remote main. Only new
+`Tools/TripNomination/correspondence_request.py`, its invented tests, tool README and this
+ROADMAP change; no iOS/shared registry/Accepted-decision changes or publication.
+
+The standalone Python standard-library workflow has explicit `prepare`, aggregate-only
+`inspect`, deliberate `approve` and approval-required `verify` stages. Strict version-1
+`tsugino.trip-correspondence-request` proposals retain exact scalar source/profile/input
+scope, mapping version/hash, prior lineage/schema-2/revision-6/hash, unique review ID,
+owner authority, affirmative reasoning and digest-bound evidence-role references. An
+explicit separately supplied context pins expected scope/checkpoint/mapping/evidence;
+it asserts accepted bindings, not evidence truth, authentication or fresh private-file
+currentness. Required roles are source-profile acceptance, candidate applicability,
+passenger classification, source order, station crosswalk and first-real-Trip baseline
+audit; optional S9 review references preserve available review associations. No reference
+is opened or raw evidence embedded.
+
+First-allocation requests forbid a canonical target/TripID and existing-target mode.
+Prior canonical binding and accepted competing Trip assignments are separately typed as
+structurally impossible **in the exact identified baseline**; external/source semantic
+competition remains **not globally disproved**. Baseline absence alone cannot supply the
+reasoning basis. Movement, endpoints, immutable S9 snapshot acceptance, real registration
+tooling/checkpoint, P3-T1 real import and production adoption remain explicitly unresolved.
+
+Canonical UTF-8 JSON preserves scalar distinctions; object keys and defined sets have fixed
+ordering. Duplicate/unknown keys, invalid Unicode, malformed timestamps, mixed scopes and
+oversized input reject. Separate versioned proposal/approval digest domains bind all payload
+fields and owner authority/time; the approved digest excludes only itself. Preparation
+never approves. Approval requires an explicit action, exact reviewed proposal digest,
+matching authority and timestamp; hashes establish integrity, not person authentication.
+DEC-084 contributes concepts only; no DEBUG schema/seed/output becomes real authority.
+
+Private I/O is bounded, explicit and outside the repository: owner-only 0700 parent/0600
+regular files, descriptor-relative no-symlink traversal and identity/state rechecks,
+repository inode-alias rejection, no-clobber atomic complete output and staging cleanup.
+Normal CLI summaries/errors omit source keys and caller-controlled identities, private
+paths and raw exception details. No network, subprocess or discovery is used by the tool.
+
+Warnings-as-errors verification passed **43/43 focused test functions** and **264/264 full
+TripNomination test functions**, the latter including those same 43 plus 221 existing
+regressions; these counts are not added together. Actual CLI tests use invented owner-only
+temporary files and cover proposal/approval separation, digest mutation, exact scalars,
+scope/role closure, unresolved prerequisites, no TripID, permissions, links, path races,
+atomic failure/no-clobber and redacted output. Initial tests exposed nested-object aliasing,
+fixed by detached returned records with regression coverage. Independent review prompted
+the repository inode-alias guard and its regression. Separate non-author review **approved**
+the complete four-file scope with **no remaining material findings**, independently rerunning
+43/43 focused functions. Complete diff/privacy/reference/heading and whitespace checks passed;
+earlier ROADMAP/README content is byte-preserved. No tool implementation blocker remains for
+a separately authorized one-use real proposal creation, once exact private draft/context
+bindings, permitted input/output paths and owner access authority are supplied. That creation
+is not authorized here; later deliberate owner approval remains a separate action.
+
+No real owner correspondence approval has occurred; test approvals use invented fixtures.
+No real/private railway artifact or exact real key was accessed; **no real correspondence
+request exists yet**, no TripID was minted/registered and no registry changed. No movement,
+endpoint or snapshot claim is made. `FIRST_REAL_TRIP_ALLOCATION_PATH` remains the selected
+boundary; classification **0 gaps**, order resolved, crosswalk **14 verified / 0 held**,
+source profile Accepted and final-verifier applicability satisfied/eligible. Correspondence,
+movement/endpoints/snapshot/final S9 remain unresolved; P2-S9/P3-T1 incomplete, Phase 3
+In Progress, live/default routing unconfigured. Real proposal creation and owner approval
+require separate bounded authorization/inputs; real tooling/conversion/application remain
+later separate steps. No tests on real data, app build, device, staging, commit or push.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
