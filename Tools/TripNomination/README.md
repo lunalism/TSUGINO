@@ -465,3 +465,49 @@ nomination/extractor/workflow suite supplies unchanged parser and shared-termina
 Independent review must inspect these assertions and the actual boundary, not infer approval
 from test counts. Real same-candidate re-read, named evidence access, classification/profile
 acceptance, registration, S9 acceptance and P3-T1 consumption remain separate.
+
+## In-memory occurrence-to-crosswalk bridge
+
+`crosswalk_bridge.py` is the bounded owner workflow for the missing historical ordered-key artifact: the earlier review intentionally retained no key file. It preserves the unchanged `read_occurrences` implementation, calls it exactly once, and invokes the shared Swift verifier through standard-library `ctypes` in the same Python process. A Swift dylib is smaller than embedding Python in Swift or porting either parser; no existing in-process binding was available. No subprocess, shell, pipe, stdout IPC, network, socket, temporary key file or persisted crosswalk is used.
+
+Build both adapters from the repository root:
+
+```sh
+sh Tools/StaticDataIntake/build.sh
+sh Tools/StaticDataIntake/build-crosswalk-bridge.sh
+```
+
+The bridge requires the explicit known `.build/libtsugino-crosswalk.dylib` path and its caller-supplied expected SHA-256. It hashes the held regular-file descriptor, loads that descriptor through `/dev/fd`, verifies ABI version 2 and rechecks descriptor state. No library search or alternate load/retry occurs. The trusted build must remain unchanged during use; these checks establish local build identity, not publisher authentication or protection against a malicious same-user process modifying loaded memory.
+
+Future invocation template only, **not permission for real execution**:
+
+```sh
+python3 -B Tools/TripNomination/crosswalk_bridge.py \
+  --archive "$ARCHIVE_PATH" --expected-size "$ARCHIVE_SIZE" \
+  --expected-sha256 "$ARCHIVE_SHA256" --label "$CONFIRMED_LABEL" \
+  --expected-count 14 --expected-inversions 0 \
+  --profile toei-20260921-passenger-00 \
+  --library "$BRIDGE_LIBRARY" --library-sha256 "$BRIDGE_LIBRARY_SHA256" \
+  --registry "$REGISTRY_PATH" --registry-sha256 "$REGISTRY_SHA256" --registry-revision 6 \
+  --reviews "$REVIEWS_PATH" --reviews-sha256 "$REVIEWS_SHA256" \
+  --source "$SOURCE_ID" --input-sha256 "$ARCHIVE_SHA256" --namespace gtfs.stop_id
+```
+
+Use private paths/label locally, never keys in argv/environment. The CLI reuses the unrecorded local foreground canonical-terminal guard before library/archive access. No pipes, redirection, SSH, recording or terminal logging; the owner remains responsible for the setting. The aggregate-only result does not authenticate the owner's original confirmation. Same archive identity plus supplied original label binds the same reader candidate; the profile is an explicitly accepted source/revision premise, not inferred feed-wide GTFS semantics. The wrapper requires 14 occurrences, zero transport inversions and explicit pickup/drop-off `"0"/"0"` for every occurrence. A mismatch prevents any mapping call. It reads no raw times beyond the unchanged reader's private complete-member validation.
+
+Exact UTF-8 keys use ABI-2 length-delimited framing (1–64 entries, 1–4,096 bytes per key), preserving scalar distinctions, delimiters, order and repetitions. Mapping files use the existing read-only owner-only external path/hash guards. The same Swift core checks registry identity/revision/schema, exact active stations, archive/member provenance and exact assignment membership/target/provenance closure. Prospective consecutive indices exist privately only after complete success; no source sequence is repurposed as an index.
+
+The result contains counts, bounded diagnostic status strings and booleans only: occurrence/profile/requested/resolved/held/repeated counts, registry/evidence/member status, preserved order and readiness. No keys, canonical IDs, member hashes, pattern or locators are returned. Mutable frame/config/result buffers are cleared where owned and references discarded on failures/success. This is reference cleanup, not guaranteed secure memory erasure or prevention of OS dumps/recording. Fatal results use fixed categories; no traceback or raw native/provider error is printed. There is no automatic retry.
+
+Synthetic verification (from this directory after building the library):
+
+```sh
+python3 -B -m unittest -v test_crosswalk_bridge
+python3 -B -m unittest test_occurrences test_review_session
+```
+
+No real/private artifact was accessed for implementation or synthetic correction/tests. The owner separately exercised the first consolidated real bridge grant, reporting 0 resolved / 14 held; that one-use grant is consumed. Any further real bridge execution requires a **new explicit consolidated atomic authorization** and exact approved private artifacts/label supplied locally. No Trip creation, registration, timetable import or real acceptance is authorized by this bridge. Crosswalk remains **0 verified / 14 held**, classification 0 gaps and source order resolved for the prior owner-reviewed candidate.
+
+ABI 2 replaces the formerly readiness-coupled `reviewEvidenceMatched` and `memberIdentityConsistent` Booleans with independent bounded status strings: `matched`, `mismatched`, `notEvaluated`. Their names remain stable, but callers must not treat these strings as Booleans. Internally each is a numeric enum (0 notEvaluated, 1 matched, 2 mismatched); the eight-word POD layout stays bounded and the v2 symbol/version rejects old binaries and frames. Registry identity and readiness remain Booleans. Review status is evaluated only after active exact requested provenance; any evaluated failure dominates, otherwise incomplete evaluation yields notEvaluated. Member mismatch means actual usable requested member disagreement; complete consistent coverage matches, otherwise notEvaluated. No hashes, provider values or canonical IDs return from Swift. A held proposal can now report matched review evidence or matched member identity independently.
+
+Introducing attachment authority and station assignment authority are separate. The verifier preserves optional legacy authority, validates exact membership and target, and never guesses relationships between review-ID spellings. Hash-pinned approved registry/history remains the introducing-authority premise, not new authentication of opaque review IDs. A new tooling build requires a newly recomputed library hash and fresh local bindings; prior library hashes/ABI-1 callers are invalid. The previous atomic real-data grant is consumed: no retry or real acceptance follows from synthetic verification, and a new real atomic execution requires a new explicit owner grant.

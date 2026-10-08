@@ -6880,6 +6880,954 @@ with no material findings. Scope/privacy/reference and whitespace checks passed.
 builds, provider contact, data acquisition or production adoption; leave changes unstaged/uncommitted.
 
 
+#### ODPT follow-up interpretation evidence checkpoint — 2026-10-08
+
+**Scope and provenance:** bounded authoritative-evidence assessment of the owner's supplied
+transcription of a new technical follow-up, distinct from the October 5 inquiry/reply
+association checkpoint above. No image was directly inspected or authenticated here; attribution
+and correspondence continuity rely on the owner-supplied account and the previously recorded
+resource association. This is evidence assessment, not an authenticated source capture or profile
+application. Only this ROADMAP checkpoint changes; no correspondence metadata or restorable
+source data is recorded. The identified resource remains Toei `train-toei`, public UUID
+`35b68908-4558-47ae-bfa5-867e58544a1a`, retained `feed_version 20260921`.
+
+Authority: Accepted DEC-082 §§1.1–1.2/2/3/4/6 (coherent source/review scope, affirmative
+classification, source order versus independent crosswalk, recurring correspondence, movement/
+coverage and real acceptance); DEC-083 and DEC-084 preserve separate registration/real-use
+boundaries. P2_S9_REAL_READINESS's readiness matrix and smallest ordered path retain separate
+reviewed-profile, access, execution and acceptance actions. No Accepted decision is amended.
+
+| New answer / previously open question | Supported interpretation and limit | Disposition |
+|---|---|---|
+| Q1: retained revision applicability | The provider says the previously explained passing representation and sequence rules apply to all feed versions, including the current one. This explicitly includes 20260921 for this resource; it does not establish another feed's semantics or authenticate retained bytes. | Revision-applicability interpretation blocker resolved on the supplied evidence. |
+| Q2: stopping versus passing, restrictions | The encoding itself does not distinguish physical passing from a physical stop without passenger exchange. Separately, the provider states that in the applicable Toei timetable every actual stopping station, including origins/terminals, permits both boarding and alighting and is encoded 0/0; no boarding-only or alighting-only stops currently occur. Read with Q1 and the retained-revision question, this supports a resource/revision-specific station profile: 0/0 identifies passenger stopping; a represented 1/1 station is excluded from passenger stops and, within the stated all-actual-stops-are-0/0 timetable scope, is a passing station. This is stronger than the earlier passing ⇒ 1/1 fact alone. It is not the global GTFS implication 1/1 ⇒ physical passing. The current-operating-pattern assertion is not a guarantee for every past/future revision merely because Q1 gives all-version encoding/order applicability. | Classification interpretation supported for the stated retained scope, conditional on reviewed profile applicability and matching occurrence evidence. One-sided cases are not an evidenced variant of that applicable timetable; an actual contrary row must be held/reconciled, not forcibly classified. |
+| Q3: represented stations / omissions | Passenger-service train records include stopping and passing stations; non-passenger movements such as deadhead/out-of-service trains are absent. Together with the earlier authoritative recorded-station sequence statement and Q1, this supports completeness of represented railway-station traversal for passenger-service runs in the stated resource/revision scope and their source station order. It does not assert representation of arbitrary infrastructure points, non-station locations, non-passenger movements or other feeds. | Station-level completeness and source-order interpretation blockers supported/resolved within that scope; no blanket certification of all transformations, physical locations or individual run contents. |
+
+**DEC-082-compatible profile now supported, not applied/accepted here:** the combined evidence
+can underpin a reviewed source/revision interpretation profile; further general clarification is
+not a prerequisite merely to repeat the three answered questions. Define the profile with exact
+resource/revision and evidence references, the explicit 0/0 and 1/1 variant rules above, passenger-
+service station scope, exclusion of non-passenger movements, numeric `stop_sequence` ordering
+(with nonconsecutive values permitted), and an invalidation rule. Missing/other field variants,
+one-sided permissions, contradictions, out-of-scope records or changed operating-pattern/source
+semantics require renewed applicable evidence and hold dependent classifications. No blank-time,
+row-presence, topology or unsupported flag heuristic is authorized. Source ordering does not
+establish canonical station identity, physical line traversal or the source-to-passenger-index
+crosswalk. The provider's statement supplies station-level interpretation evidence, not proof
+that the nominated extract is complete, coherent or free of duplicate/missing ordering keys.
+
+**Owner boundary:** no new product/Domain policy or decision record is needed simply to record
+this external evidence. Before application, separately review/accept the precise source/revision
+profile and its applicability under DEC-082 §1.2 and the readiness ordered path; this task does not
+supply that owner acceptance, a recurring-key interpretation profile or real execution authority.
+In particular, preserve Q2's current-timetable scope rather than silently exporting the physical-
+stopping assertion to unrelated operators or future revisions. A contradiction with the retained
+scope reopens the affected interpretation rather than changing accepted policy to fit a row.
+
+**Occurrence obligations and unchanged counts:** all **14 classification gaps and 14 ordering/
+crosswalk gaps remain unresolved**. None of the retained occurrences was read or classified.
+A separately authorized same-candidate review must establish the complete fixed interval and
+exact retained source/member/hash/revision; inspect every occurrence's original sequence spelling/
+numeric order, repeated visits and permitted classification fields; apply the reviewed profile
+with explicit evidence/dispositions; resolve exact active canonical station/line mappings in one
+compatible view; and independently verify the full source-to-passenger-index/passed-disposition
+crosswalk. Numeric order and zero transport inversions alone do not discharge that review.
+Recurring-run correspondence/competing matches, line movement and boundaries, independent endpoint
+coverage, registration/checkpoint/owner approvals and immutable snapshot/evidence/reproduction
+acceptance remain separate DEC-082/083/084 obligations. Do not infer identity, endpoints, service
+type or timetable facts from this reply. A generic profile cannot close actual occurrence gaps.
+
+**Smallest safe next step:** owner review/acceptance of the bounded interpretation profile and
+its exact applicability, followed by a separately explicit read-only same-candidate occurrence/
+crosswalk review grant with an identified artifact allowlist and permitted outputs. Prior one-use
+access remains exhausted. No retained archive, replacement archive, private occurrence/candidate,
+mailbox or additional correspondence was accessed; no real review session, packet, registration,
+ID minting, provider contact, timetable import or routing enablement occurred. Rights/retention/
+publication/bundling remain independent. P2-S9, P3-T1 and Phase 3 remain incomplete; all 15 launch
+services remain preserved, live/default routing unconfigured, reference default and append opt-in.
+App tests/builds are intentionally not run for this documentation-only assessment. Leave the
+checkpoint uncommitted for owner review; verification and independent review are reported separately.
+
+
+#### Owner acceptance overlay — retained Toei interpretation profile — 2026-10-08
+
+**Current authority:** the owner explicitly accepts this bounded profile under Accepted
+DEC-082. This overlay supersedes only the preceding evidence checkpoint's pending-profile-
+acceptance boundary and its next-step requirement to obtain that acceptance. The external
+evidence assessment above is preserved unchanged as history: owner-supplied technical
+transcription, not direct image inspection/authentication. Profile acceptance is distinct
+from external evidence and from occurrence-specific evidence, which is still unreviewed.
+No new general GTFS policy, Domain semantics or DEC-082 amendment is introduced; no separate
+DEC file change is required for this source-profile approval within its existing framework.
+
+**Exact accepted scope:** Tokyo Metropolitan Bureau of Transportation / Toei static GTFS
+resource `35b68908-4558-47ae-bfa5-867e58544a1a`, retained `feed_version 20260921`, passenger-
+service train records and their represented station occurrences in the applicable stop-time
+records. The provider's all-version encoding/order statement is evidence, but this owner
+acceptance extends only to the retained 20260921 review scope. Other operators/resources,
+different or future revisions, non-passenger/deadhead movements and arbitrary non-station
+infrastructure points are excluded. A later scope needs its own applicability review even
+when reusing the same authoritative statement. A candidate not established as belonging to
+this passenger-service scope cannot use the profile.
+
+| Accepted profile rule | Basis, limit and required disposition |
+|---|---|
+| Explicit `pickup_type=0`, `drop_off_type=0` | Classify the represented occurrence as **Passenger stop** under DEC-082. The applicable Toei timetable's actual stopping stations, including origins/terminals, permit both boarding and alighting and are encoded 0/0. This establishes no canonical StationID, recurring identity, time validity, movement, endpoint completeness or production usability. |
+| Explicit `pickup_type=1`, `drop_off_type=1` | Classify the represented occurrence as **Passed position** only within this exact accepted profile. The encoding can in principle also describe physical stopping without passenger exchange; the provider's applicable-timetable statement excludes that actual stopping case because every actual stopping station is 0/0. This source-specific conclusion is not a generic GTFS physical-pass rule. Retain an explicit passed disposition without a canonical passenger index. |
+| `0/1`, `1/0`, missing, malformed, contradictory or otherwise incompatible values | No normal classification rule is accepted. The provider states no one-sided stopping case occurs in the applicable timetable. An encountered outside-profile variant remains **Unknown / held**, reopening applicability review; do not invent semantics or silently broaden the profile. Preserve DEC-082's applicable proposal-wide contradiction/order rejection rules. |
+| Represented station coverage | Passenger-service records include both stopping and passing stations. Non-passenger movements, including deadhead/out-of-service trains, are not represented. This supports the represented station sequence, not arbitrary track/infrastructure points, non-station locations or passenger-inaccessible trains, and does not prove the retained extract's completeness. |
+| Source order | Use numeric `stop_sequence`, not CSV transport order or lexical sorting; nonconsecutive values are permitted unless another contract is violated. Duplicate, missing, contradictory or invalid occurrence/order evidence retains DEC-082 rejection/hold behavior. This establishes source order only, not canonical mappings, canonical original indices, crosswalk correctness, infrastructure order beyond represented stations or recurring correspondence. |
+
+**Invalidation/reopening:** reopen dependent classification or ordering if authoritative
+guidance changes or is contradicted; source/resource identity changes; a source revision
+changes without separate applicability review; actual data contains an outside-profile variant;
+the candidate is outside covered passenger service; or representation violates expected
+station completeness/order. Hold/reject under the existing DEC-082 conditions and seek
+applicable evidence/review rather than silently extending this approval.
+
+**Effect and retained obligations:** the interpretation-profile approval blocker is now fully
+cleared for a separately authorized same-candidate review within the scope above. No actual
+occurrence is classified by this overlay: **14 classification gaps and 14 ordering/crosswalk
+gaps remain open**. That review must account for the complete fixed same candidate, establish
+each occurrence's profile membership, classification and numeric source order, exact active
+canonical StationID mapping for passenger stops, explicit passed dispositions and the full
+source-to-canonical crosswalk. Preserve repeated station visits and all proposal-wide hold/
+reject conditions. Recurring-run correspondence, line/movement evidence, endpoint claims,
+registration and final P2-S9 acceptance remain separately evidenced obligations; this approval
+neither supplies nor declares them satisfied. P2-S9, P3-T1 and Phase 3 remain incomplete;
+live/default routing remains unconfigured, reference default and append opt-in unchanged.
+
+**Next safe action and access boundary:** obtain a separately explicit, read-only same-candidate
+occurrence/crosswalk review authorization naming existing artifacts, permitted fields, dependency
+scope and private outputs. The prior one-use real re-read grant remains exhausted; this profile
+acceptance renews no access. No archive, occurrence, private candidate, mailbox or real review
+tool was accessed; no real evidence packet, registration/minting, timetable import or routing
+behavior change occurred. Only ROADMAP documentation changes, preserving the earlier checkpoint.
+The complete accumulated diff requires exact-diff/reference/privacy/scope and whitespace checks
+and separate non-author review. App tests/builds are unnecessary; leave the diff unstaged and
+uncommitted. Rights, delivery and production gates remain independent.
+
+
+#### Owner-reported same-candidate occurrence review — 2026-10-08
+
+**Current-state overlay and provenance:** separately authorized **owner-reported private review
+of the exact previously confirmed candidate**, operated in the required unrecorded local
+foreground terminal. Codex did not observe that terminal or independently authenticate the raw
+occurrence contents. The owner reports successful matching of the already tracked Toei DS-01
+archive identity: 779,699 bytes, SHA-256
+`dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`,
+retained `feed_version 20260921`. All fourteen same-candidate occurrences were inspected and
+accounted for; extractor transport-order inversions remained zero. The new one-use same-candidate
+re-read grant was successfully exercised and **is now consumed**. No further private read is
+permitted without new explicit owner authorization. No private source was reopened for this
+sanitized documentation task.
+
+This checkpoint follows the external-evidence assessment and bounded owner-profile approval
+above under Accepted DEC-082 §§1.2/2/6, DEC-083/084 and the P2-S9 readiness contract. Earlier
+statements of 14 classification and 14 ordering/crosswalk gaps remain historical records of
+those stages, not the current split below. No new DEC, policy, Domain or tooling change is needed.
+
+| Current bounded result | Owner-reported evidence and effect |
+|---|---|
+| Classification | All 14 occurrences were within the accepted Toei 20260921 profile and had explicit pickup/drop-off 0/0. **Passenger stop: 14; Passed position: 0; Unknown: 0; profile contradictions: 0.** No one-sided or unsupported value occurred. Under that accepted profile plus complete occurrence application, **classification gaps: 14 → 0 for this candidate only**. This is not a general GTFS rule or closure for any other candidate/resource/operator/revision. |
+| Source order | All 14 represented occurrences were accounted for with valid numeric sequence keys, no duplicate key and no missing/contradictory occurrence-order evidence. One unambiguous numeric source order was reviewed. **Source-order ambiguity/ordering obligation is resolved for this reviewed candidate**; zero transport inversions supports extraction accounting but alone would not prove it. No canonical original indices or StationID correspondence follows. |
+| Repeated visits | No repeated source station occurrence was observed in this candidate. DEC-082's general requirement to preserve repeated visits remains unchanged; other candidates may contain them. |
+| Canonical mapping/crosswalk | **Verified: 0; held: 14.** No canonical mapping artifact was accessed, no exact active canonical StationID correspondence was independently verified, and no source-to-canonical crosswalk was constructed or accepted. These are now **14 canonical mapping/crosswalk gaps**, not fourteen unresolved source-order questions. |
+
+**Remaining proposal-wide and downstream gates:** the candidate is still held for canonical
+mapping/crosswalk and is not an accepted canonical Trip. Exact active mappings in an identified
+compatible revision, complete source-to-canonical crosswalk and canonical passenger original-
+index assignments remain outstanding. Recurring-run correspondence/Trip identity, line/movement
+evidence, service origin/destination and endpoint claims, required provisional registration,
+registry/checkpoint obligations and final immutable snapshot/evidence review/acceptance remain
+separate; none is closed by stopping pattern or source order. P2-S9 remains incomplete; P3-T1
+real timetable import remains incomplete; Phase 3 remains **In Progress**. Production routing
+strategy/adoption and live/default routing remain unresolved/unconfigured; reference default and
+append opt-in are unchanged. Rights/publication/bundling gates remain independent.
+
+**Smallest next step:** identify the minimum already-approved provisional canonical mapping
+artifact and exact read-only access path/dependency scope needed for the fourteen held items,
+without accessing it in this task. No mapping path is invented and no discovery, parser/adapter,
+registry or evidence-packet work is authorized here. Any future private access requires explicit
+owner authorization. This documentation records allowed aggregate findings only, without raw
+provider identifiers, sequence lists, itineraries, locators, member/row hashes, private paths or
+terminal captures. Existing evidence/profile records are preserved unchanged. Only ROADMAP is
+updated; no source/tool changes, private inspection rerun, Swift/Python tests or app builds.
+Leave the complete accumulated diff unstaged and uncommitted for owner review; exact-diff,
+reference/privacy/scope/whitespace checks and separate non-author review cover the whole chain.
+
+
+#### Repository-only canonical mapping access assessment — 2026-10-08
+
+**Verdict: NEEDS_BOUNDED_TOOLING.** Repository contracts/code identify the authoritative
+provisional correspondence model and an accepted historical baseline, but no reviewed narrow
+real-input occurrence-to-mapping inspection interface. This is neither a missing correspondence
+model nor a new identity-policy decision. Artifact availability and exact dependency identities
+still require owner inputs; no private artifact was accessed or discovered. Classification gaps
+remain **0**, reviewed source order remains resolved, canonical mapping/crosswalk remains
+**0 verified / 14 held**. The occurrence one-use grant remains consumed.
+
+**Authority and roles:** DEC-068 §§B–E and ARCHITECTURE §39 own registry identity/reference
+rules; P2-S5/DEC-069 supplies reviewed station assignments (directly required to explain station
+bindings); DEC-070/071 supply network/name evidence, not another GTFS identity resolver;
+DEC-072/073/074/075 govern storage, transitions, provisional acceptance and retained gates.
+DEC-082 §§1.1–1.2/2/6 and DEC-083/084 preserve exact source/view/crosswalk, identity and
+real-use boundaries. The P2-S9 readiness matrix and ordered path retain separate private access,
+profile, tooling and final acceptance actions. No DEC amendment is needed.
+
+- The binding is a `ProviderReference` in `MappingRegistry`: key = exact `sourceID`,
+  `gtfs.stop_id` namespace and scalar-exact decoded value; target = canonical station-kind
+  minted identifier. `ExactValue` forbids normalization/folding. Reference active/absent/retired
+  status and entity active/retired status are distinct; only active references resolve, and
+  registry validation forbids an active reference targeting a retired entity. No successor
+  is followed. Source input/member digests and first/last sightings are provenance; the key
+  itself does not include feed revision, so the chosen registry snapshot/revision and exact
+  source applicability must be checked separately. `attachedBy` retains attaching review authority.
+- `StationGrouping` reviews operator-level member groups. P2-S5 cross-operator station
+  assignments identify the final held StationID and all member references; the station-registry
+  tool attaches those members through reviewed assignment authority. `ReviewedRevision` governs
+  attachment/retirement, not implicit rebinding. DEC-073 predecessor/history closure is required
+  if relevant transitions exist. DEC-071 Railway-title bindings are editorial evidence only.
+- SQLite is a derived runtime artifact, not the provider-reference resolver. Its seven tables
+  hold canonical models, aliases/search, entity retirement/successors and metadata. Metadata
+  pins registry revision, registry/name/network input hashes and build history, but embeds no
+  provider references, binding statuses, attachment reviews or full editorial/provider history.
+  Thus SQLite **alone cannot prove the crosswalk**. `station(id:)` requires an already known ID;
+  name search cannot establish it. Canonical membership/active-state checks may reuse a separately
+  authorized coherent runtime view after correspondence is established.
+
+**Minimum artifact roles / known identities:** the DEC-074 acceptance record retains registry
+revision 6, SHA-256 `9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b`,
+and schema-1 runtime artifact SHA-256
+`c0e38b0a4220a116cbaa9add736e66ce8fdfa58b48e550e2975de0e23fcbc151`,
+data version `p2s8-local-provisional-20261001`. These are historical pins, not freshly checked
+availability/currentness. Required: exact approved registry bytes; relevant P2-S4 grouping and
+P2-S5 assignment/attachment review evidence with identified source/member and mapping revisions;
+acceptance/provenance manifest and necessary immutable history/predecessor closure; and the exact
+same-candidate occurrence/order/profile association supplied through separately authorized private
+inputs. Review-dependency hashes are retained in the owner-only package, not fully enumerated
+here; owner must supply explicit paths and expected identities/approvals without discovery.
+The runtime artifact/metadata is a coherent membership/identity check when needed, not a substitute
+for that evidence chain. DEC-070/071 records are needed only for relevant membership/dependency
+proof, not to remap names. No individual file alone proves the complete occurrence crosswalk.
+
+**Existing interface assessment:** `MappingRegistry.decoded`/`resolve` are reusable strict
+in-memory primitives, not a reviewed private-file inspection workflow; decoding validates the
+whole supplied registry. StaticDataIntake station-registry reconciles broad two-operator inputs
+and writes outputs; station/review/name packets export provider evidence or validate broad
+source dependencies. RailwayStorage builds/publishes artifacts/transitions; its read-only
+repository validates the full canonical artifact at open and has no source-key resolver.
+TripNomination review exposes occurrences only and opens no mapping evidence. None supplies
+this narrowly scoped, read-only, evidence-bound real crosswalk interface. Prior baseline access
+and code existence grant no new real mapping access.
+
+**Smallest proposed tool contract — design/implementation not authorized here:**
+
+- Inputs: explicit owner allowlist with expected hashes/schema/revision/checkpoint and approval
+  references for the artifact roles above; exactly fourteen privately supplied ordered occurrence
+  associations/source keys, bound to the reviewed same-candidate source/profile scope. Do not
+  reconstruct keys from public aggregates; if none remain locally available, request a separately
+  authorized source-input mechanism rather than reuse the consumed occurrence grant.
+- Reuse scalar-exact registry validation/resolution; inspect selected reference fields, target
+  kind/status, source/member/input identity and review links, plus only necessary assignment,
+  history and membership dependency closure. Whole-registry validation necessarily reads unrelated
+  records internally: explicit approval of that bounded validation is required, with no unrelated
+  disclosure. Do not claim physical selective reading from a monolithic registry. If that scope
+  is disallowed, stop and separately design a provenance-verifiable projection; an arbitrary
+  extracted subset cannot certify registry uniqueness/history.
+- Proposed fixed limits for later review: exactly 14 occurrence slots (no StationID deduplication),
+  at most 32 allowlisted artifacts, 16 MiB each / 64 MiB total, 100,000 decoded records total and
+  1,024 history steps; preserve stricter existing codec limits. Exceeding any bound fails closed,
+  never auto-expands or truncates. These are proposed tooling limits, not accepted feed limits.
+- Read-only descriptors, no symlinks/discovery/network/writes/export; check expected identity
+  before decode and unchanged bytes/path identity after reads. Owner-operated unrecorded local
+  foreground terminal, no agent-captured private output; memory-only results/associations and
+  sanitized aggregate public counts. No provider/canonical pairs or itinerary enter Git/chat.
+- Missing/ambiguous/inactive references, retired entities, wrong source/input/view, unknown schema,
+  duplicates/conflicts, unavailable review/history/approval, incomplete dependency closure,
+  mutation or outside-scope inputs hold/reject under existing contracts with fixed safe errors;
+  no name matching, successor following, newer-revision substitution or partial accepted output.
+  Only after all fourteen mappings are accepted may consecutive passenger indices 0...13 be
+  assigned from resolved source order; preserve repeat occurrences in general.
+- Before real use: separately authorized implementation, invented tests for exact Unicode keys,
+  status/kind/revision/provenance/review conflicts, repeated occurrences, missing dependencies,
+  limits, mutation/symlink failures and no writes/leaks; independent non-author code/contract
+  review, then a separate explicit real-input execution grant. No tests or tool changes here.
+
+**Next step:** owner review of this bounded tooling/access specification and explicit artifact-
+role/identity inputs; no mapping access in this assessment. P2-S9/P3-T1 remain incomplete,
+Phase 3 remains In Progress and live/default routing remains unconfigured. Identity, movement,
+endpoints, registration, snapshot acceptance and production/rights/delivery gates remain separate.
+Only this ROADMAP checkpoint is added, preserving the preceding evidence chain; no private data,
+implementation, tests/builds or publication operations. Leave the accumulated diff unstaged.
+
+
+#### Bounded canonical station crosswalk tooling — synthetic implementation checkpoint (2026-10-08)
+
+The preceding `NEEDS_BOUNDED_TOOLING` assessment led to the offline
+`StaticDataIntake trip-station-crosswalk-review` implementation. This checkpoint
+covers invented synthetic inputs only. It adds no real mapping evidence and
+grants no real execution authority.
+
+The bounded interface requires explicit hash-pinned registry/review/key files,
+registry revision, source/archive/member identities, namespace and expected count
+(1–64). It reuses canonical exact-key and reviewed assignment types, checks selected
+attachment/provenance closure, retains repetitions and reports aggregates only.
+Schema-2 baselines are supported; transition-history schema-3 inputs fail closed.
+The caller-approved immutable full review file is an acceptance premise, not an
+approval inferred from a matching hash. No SQLite, GTFS, names, coordinates, times,
+network, subprocess, mapping mutation, Trip creation or review output artifact is
+part of the command. See `Tools/StaticDataIntake/README.md` for the exact contract.
+
+No real/private mapping artifact was accessed. The historical registry revision 6
+and its recorded hash, and DEC-074 package identities, are reference identities
+only; actual availability and paths remain unestablished. The previous occurrence
+one-use grant remains consumed. Real execution requires a separate explicit owner
+grant and a supported, approved baseline/evidence closure.
+
+Synthetic verification: `TEST_FILTER=crosswalk sh Tools/StaticDataIntake/test.sh`
+passed **35 cases / 0 failures** (33 new crosswalk cases plus 2 existing matching
+cases). The combined record budget includes nested review sides/members. Affected
+existing minting (8), grouping (18), revision (21), provisional registry (16) and
+station (15) cases all passed; their name-based filtered run included 3 additional
+existing matches, **81 / 0 failures**. These overlapping runs are not summed.
+`sh Tools/StaticDataIntake/build.sh` passed for the final optimized tool.
+No skips or compiler warnings were reported; temporary fixture roots were removed.
+No iOS build or device operation was required for this offline-only boundary.
+Independent non-author review approved exact bindings, selected evidence closure,
+privacy, I/O guards and scope, with no material findings remaining. Original
+decision reason/alias/provenance approval remains the immutable-file premise,
+not something this command reauthenticates. The accumulated 282-line preceding
+ROADMAP evidence chain remains intact, and changes remain uncommitted/unstaged.
+
+Classification remains **0 gaps**; source ordering remains **resolved** for the
+reviewed candidate; canonical crosswalk remains **0 verified / 14 held**. P2-S9 and
+P3-T1 remain incomplete, Phase 3 remains In Progress, and live/default routing
+remains unconfigured. Synthetic tooling readiness must not be read as acceptance
+of any of the fourteen real mappings.
+
+#### Bounded crosswalk prerequisite recovery assessment — 2026-10-08
+
+Repository preflight retained the expected phase branch/HEAD/upstream, 0/0 cached
+upstream divergence, six intended unstaged files and the preceding evidence chain.
+Only the explicitly authorized historical P2-S8 package was inspected: directory
+entries, retained manifests/inventories and their coherence hashes. No external
+reference was followed; no mapping records, source archive or SQLite payload was
+opened, and no occurrence/crosswalk command was executed.
+
+The package exists. Retained acceptance/metadata repeat the tracked registry
+revision 6/hash, accepted source archive identity and runtime data version/hash;
+checked inventory/configuration/acceptance files match their package-manifest
+entries. This is internal manifest coherence, not fresh verification of referenced
+artifact bytes or independent authentication of the package manifest.
+
+| Required role | Bounded assessment |
+|---|---|
+| Authoritative registry | `ROLE_PRESENT_BUT_INSUFFICIENT_METADATA`: expected revision/hash recorded; authoritative path is an external reference, not an available verified file within this authorized package. |
+| Approved station assignment/attachment records and review-file hash | `ROLE_PRESENT_BUT_INSUFFICIENT_METADATA`: inventory contains an external station-record reference with hash metadata; exact current CLI role/schema/approval and file bytes are unverified. |
+| Accepted source/input provenance | `ROLE_PRESENT_BUT_INSUFFICIENT_METADATA`: accepted archive identity is inventoried externally; required member provenance is not established by inspected metadata. |
+| Immutable history/dependencies | `ROLE_PRESENT_BUT_INSUFFICIENT_METADATA`: external history references are inventoried, not opened or certified as required closure. Current tool supports schema-2 baselines only; no additional history input may be invented. |
+| Exact stops.txt member hash | `ROLE_NOT_PRESENT` in the inspected retained manifest metadata; no archive was opened to derive it. |
+
+No substitute registry, adapter-test copy or SQLite resolver was used. External
+reference availability remains unknown, not disproven. Overall immediate readiness
+is **MISSING_REQUIRED_MAPPING_ARTIFACT** within this authorized root; re-identifying
+references is not permission to access their targets.
+
+Historical ordered-key verdict: **NO_HISTORICAL_ORDERED_KEY_ARTIFACT_BY_DESIGN**.
+`Tools/TripNomination/README.md` specifies a memory-only review with no file,
+worksheet, exported result or retained annotations. The owner-reported occurrence
+checkpoint establishes aggregate findings, not a retained exact fourteen-key input.
+No key-file search or reconstruction was attempted.
+
+A later synthetic-only slice therefore also needs
+**NEEDS_OCCURRENCE_TO_CROSSWALK_BRIDGE**. Prefer one process: reuse unchanged
+`read_occurrences` once with explicit same-candidate confirmation, exact archive
+identity, expected count 14 and inversions 0; recheck the accepted profile's explicit
+0/0 fields and preserve every ordered stop_id scalar and repetition. Never print
+source associations, keys, locators or canonical IDs. Do not infer Passenger status
+from generic GTFS semantics or accept count/inversions as candidate authentication.
+
+Smallest proposed cross-language boundary: an explicit, locally built in-process
+Swift library entry point, loaded by the Python owner-terminal orchestrator, sharing
+the existing crosswalk verifier and checked registry/review inputs. Pass bounded
+versioned key JSON in memory through a narrow C ABI (no subprocess, pipe or temporary
+key file); compute its hash from those same reader-produced bytes, with source/archive
+identity tied to the validated reader result. Reuse exact-key decoding, closure and
+final artifact checks; return only fixed errors/aggregate counts, with no private
+pointers/results exposed. This changes key-input provenance from an independently
+supplied file hash to the validated same-candidate reader, so requires explicit
+synthetic implementation authorization and independent review before real use.
+
+Synthetic scope: boundary/lifetime/length tests, exact Unicode/order/repeat tests,
+identity/count/inversion/profile failures, all-or-nothing closure, no writes/leaks,
+no subprocess/network and no retry after access. Preserve existing reader/verifier
+regressions. Do not port the occurrence parser, weaken the current file-based CLI,
+create persistent keys, add dependencies, infer mappings, emit Trips or expand
+later-phase work. An ephemeral key artifact is deferred because in-process reuse
+is feasible in principle; feasibility must be proven synthetically, not assumed
+ready. No bridge implementation, tests/builds or real re-read occurred here.
+
+The mapping grant remains **unconsumed**; the earlier occurrence grant remains
+consumed. Classification stays **0 gaps**, source order **resolved**, crosswalk
+**0 verified / 14 held**, P2-S9/P3-T1 incomplete, Phase 3 In Progress and live/default
+routing unconfigured. Next: separately authorize exact external mapping-role access
+and the bounded synthetic bridge slice, then review before a new explicitly scoped
+same-candidate occurrence-plus-crosswalk execution. No current grant is broadened.
+
+#### Exact manifest-referenced mapping dependency rebinding — 2026-10-08
+
+A separately authorized read-only prerequisite assessment followed **five unique
+external file references** already present in the retained historical package
+inventory/configuration. No external directory was enumerated, alternative copy
+sought, unrelated reference chain followed, archive member decompressed or real
+occurrence/crosswalk command executed. The preceding 395 added ROADMAP lines and
+six-file unstaged implementation/documentation scope remain intact.
+
+| Required role | Current bounded result |
+|---|---|
+| Mapping registry | `AVAILABLE_IDENTITY_MATCHED`: regular, owner-only, non-symlink path; bytes match the already tracked revision-6 registry hash; schema 2/revision 6 header matches. |
+| Cross-operator station review/assignment records | `AVAILABLE_IDENTITY_MATCHED`: regular, owner-only, non-symlink path; bytes match the retained inventory hash; schema 1 and expected review-file structure/input archive identity match. This is not fourteen-item closure verification. |
+| Toei source archive identity | `AVAILABLE_IDENTITY_MATCHED`: exact inventoried archive bytes match the accepted archive hash; read only for identity, with no GTFS rows parsed. |
+| stops.txt member identity | `INSUFFICIENT_ACCEPTED_METADATA` / **STOPS_MEMBER_IDENTITY_MISSING**: the exact referenced source-manifest file is a fingerprint inventory, not an accepted member-hash manifest; no required member hash was established. |
+
+The five references comprise registry, cross-operator review records, archive,
+source-manifest metadata and one initially selected metadata record. The latter
+proved to be acquisition metadata rather than station-review evidence and was
+rejected for that role; the separately inventoried cross-operator review reference
+supplied the actual review-file identity. No substitute was inferred or created.
+All five files matched their retained inventory identities. Current schema-2
+verification requires no separate immutable history-file input; no history targets
+were followed. Required assignment-member closure remains for the future verifier.
+
+Readiness verdict: **MAPPING_DEPENDENCY_METADATA_GAP**. Mapping files are available
+at their accepted references; the remaining mapping-side blocker is an accepted
+stops.txt member identity, not missing ordered keys. No archive was decompressed
+to manufacture that identity, and no registry provenance values were mined as a
+substitute accepted manifest. Future authority must explicitly identify accepted
+member metadata or authorize a bounded identity derivation; do not broaden this task.
+
+JSON parsing for minimum schema/revision/role/input checks necessarily brought
+mapping/review values into process memory, but no provider-reference pair,
+assignment member, decision or canonical ID was selected, displayed or persisted.
+No private paths, new private hashes or mapping contents enter this checkpoint.
+
+Ordered-key status remains **NO_HISTORICAL_ORDERED_KEY_ARTIFACT_BY_DESIGN**.
+The in-memory bridge remains separately scoped, unimplemented and not yet ready;
+its architecture choice is deferred until the mapping-side prerequisite is closed.
+The mapping one-use grant remains **unconsumed**; no occurrence grant was renewed.
+Classification remains **0 gaps**, source order **resolved**, crosswalk
+**0 verified / 14 held**, P2-S9/P3-T1 incomplete, Phase 3 In Progress and live/default
+routing unconfigured. No code, build/test, publication or Git-index operation occurred.
+
+#### Registry-contained member provenance correction — synthetic-only overlay (2026-10-08)
+
+The preceding **MAPPING_DEPENDENCY_METADATA_GAP** was traced to redundant external
+member-hash input in the new verifier, not absent provenance in the accepted model.
+DEC-068 §C3 and `SourceReference` already bind GTFS archive/member identity, table,
+field and exact provider key; DEC-069's typed assignment sides require consistent
+member provenance. The earlier assessments remain historical evidence, not a new
+requirement to derive a member hash from real source bytes.
+
+The synthetic verifier now removes `--stops-sha256`. It first verifies the complete
+registry hash, supported schema and expected revision, then uses contained reviewed
+local provenance. Requested active station bindings must match the supplied archive,
+GTFS form, `stops.txt`, valid member SHA-256, `stops` table, `stop_id` field and exact
+key. All provenance-valid requested occurrences must share one member identity;
+disagreement yields typed `inconsistentMemberIdentity` for every participating
+occurrence, no private canonical results or prospective indices, and no ready proposal.
+Missing/malformed provenance rejects in the existing decoder or holds with fixed
+typed outcomes. Assignment/attachment/member closure and all input guards remain.
+Member hashes are private/internal and do not enter aggregate CLI output. This is
+accepted local mapping provenance, not independent publisher authentication.
+
+No real registry, reviews, archive, member hash or mapping was accessed or derived
+for this correction. Based on the preceding bounded rebinding evidence, the
+external-member-metadata blocker is removed by the corrected contract; this does
+not freshly reauthenticate artifacts or verify any of the fourteen mappings.
+The remaining tooling prerequisite is the separately authorized synthetic
+occurrence-to-crosswalk bridge, followed by its verification/independent review and
+separately scoped real same-candidate execution. Ordered keys remain
+**NO_HISTORICAL_ORDERED_KEY_ARTIFACT_BY_DESIGN**. No bridge is implemented here.
+
+Final synthetic verification: `sh Tools/StaticDataIntake/build.sh` passed;
+`TEST_FILTER=crosswalk sh Tools/StaticDataIntake/test.sh` passed **41 / 0 failures**
+(39 focused crosswalk cases plus 2 existing matches). The unchanged name-prefix
+selection for minting/grouping/revision/provisional-registry/station regressions
+passed **82 / 0 failures**, including one overlapping crosswalk case; all 78
+intended existing suite cases passed. Overlapping runs are not summed. No warnings
+or skips were reported, and temporary fixture roots were removed. The final CLI
+works without the removed flag and rejects that flag without echoing its value.
+The initial run's two failures were a sorted-reference fixture indexing error and
+an old CLI binary exercised before the optimized build finished; both were corrected
+and the final stable run passed. Independent non-author review approved actual
+code/tests/contracts/docs with no material findings; no app/iOS build was required.
+
+The mapping grant remains **unconsumed**, classification **0 gaps**, source order
+**resolved**, crosswalk **0 verified / 14 held**, P2-S9/P3-T1 incomplete, Phase 3
+In Progress and live/default routing unconfigured. Preserve all 440 preceding
+added ROADMAP lines and leave implementation/documentation unstaged and uncommitted.
+
+#### In-memory occurrence-to-crosswalk bridge — synthetic implementation (2026-10-08)
+
+The missing historical ordered-key artifact is intentional: the prior occurrence
+review was memory-only. The authorized bridge therefore keeps keys in process
+memory and introduces no key worksheet, temporary key file or persisted crosswalk.
+The unchanged Python occurrence reader calls the shared Swift verifier through a
+narrow version-1 C ABI loaded by standard-library ctypes. Existing standalone
+file-based review remains supported as a thin adapter to that same verifier core.
+No duplicate mapping semantics, new third-party dependency, Python embedding,
+subprocess, shell/pipe/stdout IPC, network or real-data composition was introduced.
+
+The explicit ignored dylib is hash-checked and loaded through its held descriptor;
+ABI version/state mismatches reject. Bounded big-endian length-delimited UTF-8
+framing preserves order, scalar distinctions and repeats; malformed lengths, UTF-8,
+counts and trailing bytes reject. C inputs remain caller-owned valid buffers;
+only fixed statuses and eight aggregate words cross back, never canonical IDs.
+The owner wrapper reuses the terminal guard, reads the same supplied candidate
+exactly once, enforces archive identity, 14 occurrences, zero inversions and the
+explicit accepted-profile 0/0 fields before mapping. Core provenance and complete
+review closure checks are shared; no private pair or prospective index is printed.
+Cleanup discards references and clears owned mutable buffers, not secure OS-memory
+erasure. No retry or alternate artifact discovery is available.
+
+Synthetic verification: optimized standalone and ABI-library builds passed;
+`TEST_FILTER=crosswalk,bridge sh Tools/StaticDataIntake/test.sh` passed **44 / 0**
+(39 crosswalk, 3 new Swift framing, 2 existing matches), with final standalone CLI
+rerun **1 / 0**. Python actual-FFI bridge tests passed **17 / 0**; unchanged occurrence
+reader (30) and review-session (15) regressions passed **45 / 0**. The same bounded
+mapping name-prefix selection passed **82 / 0**. These overlapping runs are not
+summed; no skips or warnings were reported and fixture roots were removed. Initial
+compile closure syntax and a NUL-containing archive fixture were corrected; the
+reader's NUL rejection was preserved and explicitly tested. No iOS build was needed.
+
+Independent non-author final review inspected actual code, framing, ABI loading,
+tests/assertions, saved results and contracts, and approved with no material
+findings. It confirmed in-memory-only keys, preserved order/repeats, bounded valid-
+pointer FFI, no persistence/IPC, no canonical-ID output and separate real-use gates.
+The bridge is ready for separately authorized real execution once local inputs
+and required grants are established; this is not real mapping acceptance.
+
+No real/private artifact or candidate was accessed. The existing mapping grant
+remains **unconsumed**; the consumed occurrence grant is not renewed. Eventual real
+execution requires a **new same-candidate occurrence-read authorization**, existing
+mapping authorization or an explicitly consolidated replacement, and exact approved
+private paths/label/identities supplied locally. Synthetic success grants no real
+acceptance. Crosswalk remains **0 verified / 14 held**, classification **0 gaps**,
+source order **resolved**, P2-S9/P3-T1 incomplete, Phase 3 In Progress and live/default
+routing unconfigured. Preserve the preceding 488 added ROADMAP lines; all work
+remains unstaged/uncommitted and no binary is tracked.
+
+#### First atomic real bridge result and code-only post-mortem — 2026-10-08
+
+Scope: owner-reported aggregates, repository contracts/current implementation and
+invented synthetic reproduction only. No real private artifact was reopened for
+this checkpoint and no real execution or retry occurred. The owner reports that
+the consolidated atomic one-use occurrence-to-crosswalk grant was exercised and
+is **consumed**. There is **no retry authorization** and no new grant.
+
+The same retained 14-occurrence candidate was re-established: **14/14 Passenger
+profile matches**, source order preserved, **0 repeated occurrences**, and registry
+identity matched. Canonical crosswalk did **not** pass: **14 requested, 0 resolved,
+14 held**, review evidence matched **false**, member identity consistent **false**,
+and ready for private crosswalk **false**. No partial mappings are accepted.
+Canonical crosswalk remains **0 verified / 14 held**; classification remains
+**0 gaps**, P2-S9/P3-T1 incomplete, Phase 3 In Progress and live/default routing
+unconfigured. Prior accumulated checkpoints are retained as historical records;
+their unconsumed-grant statements precede this consumed execution.
+
+Code-only causal finding: resolved counts only fully accepted per-occurrence
+outcomes; held is requested minus resolved. Readiness requires every outcome to
+resolve. The bridge sets both evidence-match and member-consistency booleans to
+that same readiness value, rather than computing independent diagnostics. Thus
+the false member-consistency flag does **not** prove conflicting member hashes,
+and false evidence-match alone does **not** identify an evidence failure. Any held
+outcome makes all three booleans false, even when other mappings resolve. A shared
+missing assignment/dependency or requested member disagreement can hold all items.
+Artifact hash/schema/revision failures instead produce a fixed fatal category.
+
+**Primary verdict: VERIFIER_DEFECT_IDENTIFIED.** DEC-068 §C1 defines permanent
+introducing attachment authority; DEC-069 §D1 accepts reviewed station formation;
+DEC-082 §2 requires active exact canonical mapping. The accepted station producer
+creates distinct per-reference introducing review IDs, while the new verifier
+requires those IDs to equal a station-assignment review ID and every dependency
+to share that ID. This is stronger than the accepted contract. An invented run
+through the original station acceptance path produces active resolvable references
+with complete assignments which the verifier then holds as missing evidence.
+This proves a verifier compatibility defect, **not the root cause of the real run**.
+
+Invented actual-FFI reproduction also produces the reported 14-requested/0-resolved/
+14-held signature for distinct causes: producer-shaped authority IDs, missing
+closure, review-ID mismatch, wrong target, missing assignment dependency, source
+revision mismatch, inactive references and member disagreement. The same signature
+therefore cannot distinguish those causes. A valid one-sided station assignment
+needs no cross-operator `same`; two-sided assignments require the exact reviewed
+`same`. Wrong-role artifacts rejected at decoding cannot explain a normal held
+aggregate, though a structurally valid artifact lacking applicable assignments can.
+No repository-only proof establishes that the rebound real artifact has the wrong
+role or that the accepted baseline is intrinsically incompatible.
+
+Smallest next step: separately authorize a synthetic-only verifier correction that
+matches exact assignment membership/target/provenance without equating assignment
+and introducing authority IDs, preserving permanent authority and all existing
+identity, active-state, provenance, member and applicable `same` checks. Do not strip
+ID suffixes or invent attachment authority for legacy references. Legacy optional
+attachments need explicit compatibility coverage. No verifier correction is made
+here. Any eventual real diagnostic/read requires separate owner authorization;
+typed aggregate reason counts only would distinguish remaining causes without pairs.
+
+Verification: focused Swift synthetic checks **4 passed / 0 failed**, including
+the actual accepted-producer characterization, assignment dependencies, requested
+member disagreement and applicable merged-station evidence. One focused Python
+actual-FFI test passed all **8 causal subcases** plus its valid baseline. Initial
+Swift compilation hit the sandbox's default module-cache write restriction; a
+temporary module cache resolved it. No broad suite, iOS build or device step was
+run. Independent non-author review approved the checkpoint, defect proof, invented
+reproductions and verdict with **no material findings**. Only this checkpoint and
+the two invented test additions changed in this task; implementation is unchanged.
+
+#### Synthetic verifier compatibility correction and ABI 2 — 2026-10-08
+
+The owner authorized only synthetic correction/verification after the preceding
+proven compatibility defect. The unsupported equality between introducing attachment
+review IDs and station-assignment IDs is removed, including the shared-ID dependency
+requirement. Exact scalar source/member coverage selects the assignment; its target
+must equal the reference target. All active-state, archive/member/table/field and
+exact-key checks remain, with no names/codes/coordinates/topology fallback. One-sided
+assignments need no cross-operator merge; two-sided assignments require exact reviewed
+`same` and valid accepted typed decision fields. Original source-backed grouping and
+candidate acceptance remain premises of the supplied approved artifact, not evidence
+recomputed from source archives.
+
+Introducing authority remains the approved registry/history's permanent optional
+value. It is neither rewritten nor inferred from assignment IDs, and absent historical
+authority never bypasses closure. The original accepted producer regression now
+passes with distinct per-reference authority IDs. An unchanged producer replay also
+preserves optional legacy absence and verifies successfully. Malformed authority is
+schema-rejected and altered authority bytes fail the approved registry hash. A
+well-formed opaque ID cannot be independently authenticated by the assignment file
+alone; no new authority discovery, naming convention or history policy is introduced.
+
+Evidence/member diagnostics now report independent `matched`, `mismatched` or
+`notEvaluated` statuses. Evidence checks begin only after valid active requested
+provenance; evaluated closure failure is a mismatch, while skipped checks remain
+unevaluated. Any evaluated mismatch dominates; otherwise incomplete evaluation is
+notEvaluated, and complete matching checks are matched. Member mismatch specifically
+means usable requested member identities disagree; complete consistent coverage is
+matched, otherwise notEvaluated. Review closure can match while requested member
+identities disagree across separate assignments; member identity can match while
+review closure fails. Readiness still requires every occurrence resolved, with no
+partial accepted crosswalk.
+
+ABI **2** changes both frame version and review symbol, retaining bounded synchronous
+caller-owned buffers and eight POD output words. Independent diagnostic enums use
+0 notEvaluated / 1 matched / 2 mismatched; registry/ready remain Booleans. Python
+rejects ABI 1 libraries/frames and invalid enum/ready output, returning only aggregate
+counts and status strings. No keys, canonical IDs, member hashes or pairs return
+from Swift. The standalone adapter uses the same corrected core and status semantics.
+Both tool READMEs document the new contract and authority-premise limits.
+
+No real private artifact was reopened, no real mapping was resolved, and no real
+retry occurred. The previous atomic one-use grant **remains consumed**; there is no
+new grant. Synthetic acceptance does not rewrite the failed real run or prove its
+cause. Canonical crosswalk remains **0 verified / 14 held**, classification **0 gaps**,
+source order **resolved**, P2-S9/P3-T1 incomplete, Phase 3 In Progress and live/default
+routing unconfigured. A new real atomic execution remains separately owner-gated,
+with a freshly recomputed library hash and fresh bindings for the rebuilt ABI 2 tool.
+All accumulated work remains unstaged/uncommitted; historical checkpoints are intact.
+
+Verification: optimized standalone CLI and ABI 2 library builds passed. Focused
+Swift crosswalk/framing/bridge tests passed **48 / 0** (43 crosswalk, 3 framing and
+2 existing name matches), including accepted producer and legacy replay. Python
+actual-FFI tests passed **20 / 0**, including the eight causal subcases, independent
+status directions, old ABI rejection and invalid diagnostic-word rejection. The
+previous exact mapping selection passed **82 / 0**, covering affected accepted
+producer/assignment regressions. These overlapping runs are not summed. Fixture
+roots were removed; no warnings/skips, broad suite, occurrence rerun, iOS build or
+device work. An initial compile was invalidated by test edits during compilation;
+a frozen-source rerun passed. An intermediate CLI assertion used the old output
+binary; rebuilding the CLI resolved it and the final focused run passed.
+Independent non-author final review approved contracts, exact closure, authority,
+independent diagnostics/ABI, actual assertions, logs and documentation with **no
+material findings**. Drift audit: only the verifier/bridge, their three test files,
+two tool READMEs and this overlay changed in this task; no shared producer/model,
+occurrence reader, dependency, feature or publication change. Corrected tooling is
+synthetically ready for a newly authorized atomic execution; a new owner grant,
+recomputed library hash and fresh local bindings are still required. No such
+execution or binding preparation is performed here.
+
+#### Corrected ABI 2 owner-operated real crosswalk success and remaining gates — 2026-10-08
+
+Scope: sanitized evidence recording and repository-only remaining-gate audit. The
+owner reports exactly one corrected ABI 2 execution in the separately authorized
+private local environment. Codex did not observe that terminal, inspect private
+pairs or independently authenticate them. No real artifact was reopened, bridge
+rerun, registration performed or timetable imported for this documentation task.
+The new independent atomic one-use grant **is consumed**; the earlier grant remains
+consumed too. There is no retry or additional real-data authorization.
+
+| Owner-reported aggregate | Result |
+|---|---|
+| Occurrences / accepted Passenger profile matches | **14 / 14** |
+| Requested / resolved / held mappings | **14 / 14 / 0** |
+| Registry identity matched | **true** |
+| Review evidence status | **matched** |
+| Member identity status | **matched** |
+| Source order preserved / repeated occurrences | **true / 0** |
+| Ready for private crosswalk | **true** |
+
+Under the already accepted source/revision Passenger profile, complete occurrence
+review and this owner-reported corrected verification, the exact retained candidate
+now has **14 verified / 0 held** canonical mappings: **canonical mapping/crosswalk
+gaps: 14 → 0**. Classification remains **0 gaps** (14 Passenger, 0 Passed, 0 Unknown);
+source-order ambiguity remains **resolved** and is reconfirmed. This closes the
+complete private source-to-canonical correspondence for this candidate only, not
+other runs, feeds, revisions or current operation. No actual pair, ordered station
+sequence, provider/canonical value, private path, member hash, locator or transcript
+is recorded here.
+
+The private crosswalk is deterministically **constructible** with prospective
+passenger original indices **0...13** in the already reviewed source order. This
+is not a persisted crosswalk, registered/persisted canonical Trip or accepted full
+immutable Trip snapshot. Original indices identify visits even when other runs
+repeat stations; zero repetitions is an observation, not a construction prerequisite.
+
+The historical chain above remains intact: the first ABI 1 real run correctly held
+all 14 mappings; the subsequent code-only post-mortem proved verifier overconstraint
+and a compatibility defect; independent review approved the synthetic ABI 2 correction;
+a new separately authorized owner-operated execution then resolved all 14. The
+successful result does not retrospectively identify the first run's exact failure
+path or rewrite it as successful. Earlier 0-verified/14-held statements are historical,
+not the current bounded mapping status.
+
+**Candidate-specific obligation audit.** Authority: Accepted DEC-082 §§1–4/6,
+DEC-083 acceptance and §§A–D, DEC-084's later A/B/C1/C2 implementation/approval
+overlays and §§B–D; ARCHITECTURE §§39–41; the dated P2_S9_REAL_READINESS matrix and
+ordered path, read together with subsequent evidence checkpoints above. Earlier
+unimplemented/synthetic-slice-pending text does not override later approvals.
+
+| Obligation | Current disposition and exact remaining boundary |
+|---|---|
+| Fixed source identity and interpretation | Identified retained candidate/source revision and accepted resource-specific Passenger/order interpretation are already established review premises. No new authenticity, custody, currency, rights or feed-wide coverage claim is supplied by hash matching or this task. |
+| Complete occurrence classification and source order | **Satisfied in the prior separately authorized owner-reported occurrence review**, now reconfirmed: 14 Passenger occurrences, 0 classification gaps, unambiguous reviewed order and no repeated occurrence observed. Do not reopen these resolved questions. |
+| Exact canonical station correspondence | **Satisfied by this owner-operated private real review result:** all 14 active mappings, reviewed assignment closure and member consistency match in the identified station mapping baseline. Prospectively indexed private crosswalk is constructible; no persisted output or complete Trip view is implied. |
+| Recurring-run correspondence / Trip identity | **Unresolved; blocked by missing candidate-specific real evidence/access.** No accepted same-run/distinct-run correspondence, competing-assignment disposition or proposed registered target is established by the recorded evidence. Equal stops, successful mapping or a source key alone cannot supply it. |
+| Source-key authority and continuity | **Unresolved; blocked by missing applicable evidence/profile and access.** DEC-083 requires publisher/resource/feed scope, key uniqueness, recurring meaning and continuity limits. The accepted Passenger/order profile does not establish a recurring-key profile. Returning/renamed/fragment continuity requires affirmative evidence only where applicable; do not presume a returning operation. No new general identity-policy decision is shown missing. |
+| Line membership, movement and boundaries | **Unresolved candidate evidence, not a missing segment contract.** Accepted station/line foundation and station crosswalk do not prove each movement interval's active LineID, membership, traversal/boundary or compatible full view. No route-key/topology fallback or fragment stitching. Any through join needs its own applicable same-run continuity evidence. |
+| Service origin/destination and service type | **Unresolved independent boundary dispositions.** True requires affirmative endpoint evidence; false may retain explicitly unknown external extent without claiming continuation. No new decision or mandatory proof of both terminals is required merely to use that accepted lower claim. Interior completeness still holds; unsupported service type may remain empty, never inferred. |
+| Provisional Trip registration | **Accepted contract and synthetic components already satisfied; real workflow/execution not authorized or established.** DEC-083 permits only separately owner-approved checkpoint-bound initial allocation/attachment or snapshot revision. DEC-084 A/B/C1/C2 are implemented/approved for invented inputs; no generic synthetic redo is needed. No real allocator/writer, conversion or mutation permission follows. Ordinary schema-2/2–3 readers still do not register Trips. |
+| Registry/checkpoint compatibility | **Unresolved real checkpoint/history/approval evidence and real-use boundary.** Station revision matching alone proves no compatible Trip lineage, complete retained authorities/IDs, predecessor/selection or schema-4 conversion. Any required lossless conversion and registration tooling needs separate real-use design/authorization, followed by the exact owner-approved request; do not reset lineage or create a side registry. |
+| Immutable snapshot/evidence and final S9 acceptance | **Unresolved downstream assembly/review/reproduction gates.** Require coherent source/mapping/profile/review bindings, actual registered target, all applicable identity/movement/boundary proof roles, immutable full untimed snapshot/crosswalk/predecessor evidence, independent review and owner acceptance for the declared scope. The bridge emits aggregates, not those persisted artifacts. Full-content reproduction is not established by the single aggregate success. |
+
+**Next-step verdict: NEXT_TASK_BLOCKED.** The first unresolved gate is a
+**candidate-specific recurring-run identity/source-key evidence review**, not another
+crosswalk run, generic synthetic slice or real registration. Its exact missing
+prerequisite is applicable authoritative evidence for scoped key uniqueness, recurring
+meaning and continuity limits, plus candidate correspondence/competing-assignment
+support and new explicit bounded access authority for the exact existing evidence.
+The repository does not establish that this evidence is available. The completed
+mapping grant cannot be reused to inspect it; do not discover files or infer identity.
+After that prerequisite, the bounded review can accept an applicable profile and
+owner-approved same/distinct-run correspondence or explicitly hold conflicts/gaps,
+without minting, registration, timetable interpretation or publishing private values.
+No extra generic policy decision or unblocked implementation task is manufactured.
+This prompt does not perform that next review, acquire evidence or create access.
+
+P2-S9 remains **incomplete**, not acceptance-ready; P3-T1 real import remains
+**incomplete**, Phase 3 **In Progress**, and live/default routing **unconfigured**.
+Production registry adoption, rights/publication/delivery, launch-wide coverage and
+consumer revalidation remain separate. Only ROADMAP changes; historical evidence,
+implementation/tests and all other accumulated work are preserved unstaged/uncommitted.
+No app/synthetic tests or builds are run for this documentation-only task.
+
+Verification: complete accumulated diff, headings/authority references, current-state
+and privacy/non-restorability checks and `git diff --check` passed. All earlier
+ROADMAP bytes and the other eleven intended files are unchanged by this task;
+canonical literals in accumulated new files remain confined to invented tests.
+Independent non-author documentation review approved the complete accumulated
+ROADMAP/tool-README diff and next-gate verdict with **no material findings** after
+owner-report attribution and first-run causal wording were tightened. No tests/builds.
+
+#### Public GTFS recurring-key profile assessment — 2026-10-08
+
+**Verdict: SOURCE_PROFILE_SUPPORTED_FOR_OWNER_APPROVAL. Proposed / awaiting owner
+acceptance; not applied to the retained candidate.** Scope is public-document and
+repository assessment only. No private artifact/key/calendar/registry was opened,
+bridge executed, provider contacted or Trip allocated/registered. The previous
+atomic grants remain consumed. No code, DEC, tests/builds or publication changes.
+
+Authority reviewed: Accepted DEC-060 §A, DEC-082 §3, DEC-083 acceptance/§§A–D,
+DEC-084's later approved A/B/C1/C2 overlays, ARCHITECTURE §§39–41 and the readiness
+assessment together with subsequent checkpoints. No later accepted record establishes
+this exact recurring-key profile; the accepted Passenger/order profile is separate.
+Public authority: official [GTFS Schedule Reference](https://gtfs.org/documentation/schedule/reference/),
+revised April 27, 2026: [field types](https://gtfs.org/documentation/schedule/reference/#field-types),
+[dataset files](https://gtfs.org/documentation/schedule/reference/#dataset-files),
+[trips](https://gtfs.org/documentation/schedule/reference/#tripstxt),
+[calendar](https://gtfs.org/documentation/schedule/reference/#calendartxt),
+[calendar exceptions](https://gtfs.org/documentation/schedule/reference/#calendar_datestxt),
+[frequencies](https://gtfs.org/documentation/schedule/reference/#frequenciestxt) and
+[stop times](https://gtfs.org/documentation/schedule/reference/#stop_timestxt).
+Official [Schedule Best Practices](https://gtfs.org/documentation/schedule/schedule-best-practices/#dataset-publishing--general-practices)
+was also checked for publishing/identifier recommendations; recommendations do not
+establish a trip-key continuity guarantee.
+
+**Evidence assessment:** `trips.trip_id` is the primary key and a Unique ID (unique
+within its file), not a global or cross-revision identifier. GTFS defines a trip
+as two or more stops during a specific time period. `trips.service_id` references
+calendar/calendar_dates service-date sets, allowing the same trip definition on
+multiple dates without a separate trip row per date; it does not guarantee that
+any particular row operates on multiple dates. Calendar exceptions modify/add/remove
+dates. `frequencies.txt` can encode multiple departures under one trip key, including
+compressed scheduled service (`exact_times=1`); flexible/on-demand rows also need
+separate interpretation. No same-key continuity or changed-key distinctness guarantee
+across revisions was found. The following eligibility limits are therefore necessary,
+not a finding about the unopened retained feed.
+
+**Exact proposed owner profile:**
+
+- Scope: Tokyo Metropolitan Bureau of Transportation / Toei, existing DS-01 resource
+  `35b68908-4558-47ae-bfa5-867e58544a1a`, retained `feed_version 20260921`, archive
+  SHA-256 `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`,
+  member `trips.txt`, namespace `gtfs.trip_id`. These are retained repository source
+  premises, not newly authenticated evidence; a hash pins bytes, not run identity.
+- Keys are exact Unicode-scalar values under DEC-083; no trimming, normalization,
+  suffix parsing or structural-key substitution. GTFS-conformant `trip_id` uniqueness
+  identifies at most one trip record within this exact dataset revision only; actual
+  conformity/uniqueness must be established before candidate application.
+- One eligible row denotes one fixed-schedule GTFS trip definition associated by
+  `service_id` with its service-date set. Only a separately evidenced ordinary scheduled,
+  non-frequency, non-flexible/on-demand definition of one departure per service date is
+  eligible. All `frequencies.txt` variants (including `exact_times=1`), multiple-departure
+  templates and flexible/on-demand variants are excluded unless separately evidenced
+  and separately approved. Unknown eligibility holds application; this task proves none.
+- Within this revision only, an eligible exact key may supply source-semantic evidence
+  for one DEC-060 recurring scheduled-run candidate, not a dated execution or merely
+  a stopping pattern. No actual calendar dates or times are interpreted here.
+- Continuity limit: **none across feed revisions without new affirmative evidence**.
+  Same spelling across revisions does not prove the same canonical Trip; changed
+  spelling does not prove a distinct Trip. Future attachment/reuse requires new
+  affirmative correspondence/continuity evidence and review. Retain the existing
+  sourceID/key/history; this revision limit authorizes no per-revision sourceID,
+  namespace reset or bypass of held keys, returning-reference rules or reuse blocks.
+- This profile establishes source semantics only. It approves no candidate correspondence,
+  canonical target, allocation, registration, snapshot, real access or production use.
+
+**Contract fit and remaining evidence:** these bounded semantics are sufficient to
+propose an eligible within-revision recurring-run candidate under DEC-060, not to
+assign its TripID. Separate published departures remain distinct even with identical
+patterns; possible fragments/through continuity are not settled by one row. DEC-083
+requires evidenced continuity *limits*, not a promise of continuity everywhere; a
+none-across-revisions boundary is compatible, while returning attachments still require
+affirmative continuity. No new DEC or relaxed invariant is needed for this proposal.
+The original profile's recurring-run inference is supported only with the eligibility
+qualification above; it is not valid for every generic GTFS trip row.
+
+After exact owner profile acceptance, a separately authorized candidate review must
+prove source/profile applicability and eligible single-departure meaning, retain exact
+source/review/evidence versions, and establish affirmative same-run or distinct-new-run
+reasoning against competing assignments and prior bindings in an identified previous
+registry/checkpoint/hash. A first provisional allocation still needs an explicit
+owner-approved distinct-new-run allocation request and exact approved correspondence
+record (reviewer/authority, approval time/digest and relevant S9 references). No such
+checks are performed here. If proving identity needs time interpretation, hold for
+separate authorization; never infer identity from pattern, chronology or key spelling.
+Real-use tooling/checkpoint compatibility, movement/coverage/full immutable snapshot,
+independent reproduction and final S9 acceptance remain the separate gates above.
+
+**Owner-decision boundary:** accept or decline precisely this source-profile proposal;
+acceptance alone grants neither candidate application nor private access. Public semantics
+advance the evidence blocker, but profile acceptance, candidate eligibility/correspondence
+and new bounded access remain outstanding. Canonical crosswalk stays **14 verified /
+0 held**, classification **0 gaps**, source order resolved. P2-S9 and P3-T1 remain
+**incomplete**, Phase 3 **In Progress**, live/default routing **unconfigured**.
+
+Verification: full accumulated tracked diff inspected; new checkpoint privacy/state and
+reference checks plus `git diff --check` passed. All earlier ROADMAP bytes and the
+other eleven files are preserved. No private source key was added. Independent
+non-author public-source/DEC-060/083/profile review approved with no material
+findings after a section-anchor correction; it does not authenticate candidate data.
+No tests/builds or device operations; index remains empty and all work uncommitted.
+
+#### Owner acceptance overlay — retained Toei recurring-key source profile — 2026-10-08
+
+**Current authority: Accepted source profile under DEC-083.** The owner explicitly
+accepts exactly the bounded profile in the preceding reviewed assessment. This overlay
+supersedes only its Proposed/awaiting-owner-acceptance status and profile-acceptance
+blocker; that assessment remains unchanged as historical public-evidence review.
+Official GTFS semantics are the cited evidence; owner acceptance supplies profile
+authority; candidate-specific application remains **pending and unperformed**.
+This is a source-specific approval within DEC-083, matching the established ROADMAP
+profile-overlay convention; no new DEC or amendment to DEC-060/083/084 is required.
+
+**Exact accepted scope:** Tokyo Metropolitan Bureau of Transportation / Toei, existing
+DS-01 resource `35b68908-4558-47ae-bfa5-867e58544a1a`, retained `feed_version 20260921`,
+archive SHA-256 `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4`,
+GTFS member `trips.txt`, namespace `gtfs.trip_id`. The hash identifies retained bytes,
+not recurring-run identity. Another provider/resource/revision requires separate
+applicability review; no broader acceptance follows.
+
+**Accepted semantics and eligibility:** keys remain exact Unicode-scalar values;
+no trimming, normalization, case/width folding, suffix/substring interpretation or
+structural-key substitution. The primary-key/Unique-ID contract supports uniqueness
+only within the identified dataset revision. One trip row denotes one GTFS trip
+definition; `service_id` associates it with its service-date set. Only a separately
+evidenced ordinary fixed-schedule definition of **one departure per service date**
+may provide source-semantic evidence for one DEC-060 recurring scheduled-run candidate,
+not a dated execution or merely a stopping pattern. Actual conformity/uniqueness and
+candidate eligibility are not established by this acceptance.
+
+All frequency-based variants, including `frequencies.txt` with `exact_times=1`,
+multiple-departure templates, flexible/on-demand service and other variants whose
+recurring identity is not established under this bounded meaning remain excluded
+unless separately evidenced and separately approved. Unknown applicability holds;
+stop pattern, route, chronology, names and previous crosswalk success prove no eligibility.
+
+**Accepted continuity limit: no continuity across feed revisions without new affirmative
+evidence.** Same spelling proves no same canonical Trip; changed spelling proves no
+distinct Trip. No automatic attachment/reuse/replacement follows. Future revisions
+require new continuity/correspondence review. Existing sourceID/key/history, returning-
+reference and provider-key reuse protections remain intact; no per-revision sourceID
+or namespace may bypass held identity. Defining this unsupported boundary satisfies
+the profile's continuity-limit requirement without promising continuity beyond evidence.
+
+**Effect and remaining obligations:** the recurring source-profile acceptance blocker
+is now **cleared for a separately authorized candidate-applicability/correspondence
+review**. Only scope, within-revision uniqueness semantics, bounded recurring meaning,
+eligibility exclusions and continuity limits are accepted. Actual candidate profile
+membership/no-exception evidence, exact source-key conformity/uniqueness, calendar
+interpretation, same-run/distinct-new-run reasoning, prior bindings/competing assignments
+and exact owner-approved correspondence remain unproved. No canonical TripID, allocation
+authority, registration, snapshot acceptance or production identity is established.
+A first allocation still requires its explicit owner-approved allocation request;
+later DEC-083/084 real workflow/checkpoint/registration/snapshot gates remain separate.
+
+**Smallest next safe task:** separately scope and authorize a read-only review of
+candidate applicability, eligible single-departure meaning, exact scoped key conformity/
+uniqueness and recurring correspondence, with an explicit artifact/field/dependency
+allowlist, identified previous registry/checkpoint and approved private/sanitized outputs.
+Review prior bindings and competitors, retaining affirmative same/distinct-run reasoning
+for subsequent exact owner approval. If time interpretation is necessary, hold for
+separate authorization. No such review or allocation is authorized/performed here;
+consumed grants remain consumed and no availability of private evidence is presumed.
+
+Only ROADMAP changes. No private artifact/key/registry/calendar, bridge, provider contact,
+Trip allocation/registration, tests/builds, device or publication operation is involved.
+Canonical crosswalk remains **14 verified / 0 held**, classification **0 gaps**, source
+order resolved; P2-S9 and P3-T1 remain **incomplete**, Phase 3 **In Progress**, live/default
+routing **unconfigured**. All prior evidence and accumulated implementation are preserved
+unstaged/uncommitted. Earlier first-run 0-verified/14-held statements in the bridge
+README describe that historical stage; the corrected ABI 2 success checkpoint and
+this overlay govern current status. Verification and separate non-author review follow.
+
+Verification: accumulated tracked diff inspected, with byte-preservation checks for
+all earlier ROADMAP content and the other eleven files. Heading/reference, privacy,
+source-semantics/continuity/eligibility and current-state checks passed; no private
+candidate key was added. `git diff --check` passed. Separate non-author review read
+the complete accumulated ROADMAP and both tool-README diffs in bounded chunks and
+approved the official-evidence/DEC-060/083/profile/acceptance boundary with no material
+findings after the historical README-status clarification. No tests/builds were run.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase

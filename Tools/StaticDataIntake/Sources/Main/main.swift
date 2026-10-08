@@ -97,6 +97,32 @@ func parseFlags(_ allowed: Set<String>, repeatable: Set<String> = []) -> (single
     return (single, repeated)
 }
 
+if CommandLine.arguments.dropFirst().first == "trip-station-crosswalk-review" {
+    let (f, _) = parseFlags(["--registry", "--registry-sha256", "--registry-revision", "--reviews", "--reviews-sha256",
+                             "--keys", "--keys-sha256", "--source", "--input-sha256", "--namespace", "--expected-count"])
+    guard f.count == 11, f["--namespace"] == "gtfs.stop_id", let revision = Int(f["--registry-revision"]!),
+          let count = Int(f["--expected-count"]!) else { usage() }
+    do {
+        // This command must not invoke the shared git subprocess root helper.
+        guard let executable = Bundle.main.executablePath else { throw TripStationCrosswalk.Failure.unsafePath }
+        let directory = (0..<4).reduce(executable) { path, _ in (path as NSString).deletingLastPathComponent }
+        guard FileManager.default.fileExists(atPath: directory + "/.git"), let root = FileIdentity(path: directory) else {
+            throw TripStationCrosswalk.Failure.unsafePath
+        }
+        let expected = TripStationCrosswalk.Expectations(registrySHA256: f["--registry-sha256"]!, registryRevision: revision,
+            reviewsSHA256: f["--reviews-sha256"]!, keysSHA256: f["--keys-sha256"]!, sourceID: f["--source"]!,
+            inputSHA256: f["--input-sha256"]!, count: count)
+        let result = try TripStationCrosswalk.run(registryPath: f["--registry"]!, reviewsPath: f["--reviews"]!,
+                                                keysPath: f["--keys"]!, expected: expected, root: root)
+        print(result.summary, terminator: "")
+        exit(result.ready ? 0 : 1)
+    } catch let failure as TripStationCrosswalk.Failure {
+        FileHandle.standardError.write(Data("crosswalk review failed: \(failure.rawValue)\n".utf8)); exit(1)
+    } catch {
+        FileHandle.standardError.write(Data("crosswalk review failed: invalidInput\n".utf8)); exit(1)
+    }
+}
+
 if ["name-packet", "name-build"].contains(CommandLine.arguments.dropFirst().first) {
     let packet = CommandLine.arguments[1] == "name-packet"
     let (flags, _) = parseFlags(["--input", "--records", "--previous", "--selections", "--output"])
