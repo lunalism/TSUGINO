@@ -8576,6 +8576,75 @@ grant does not authorize private binding, preparation, approval, conversion or r
 the exact next gate is to bind the complete private schema-2 baseline/history/current
 checkpoint for a separately authorized real conversion-request workflow.
 
+#### Accepted revision-6 legacy transition-history binding — 2026-10-08
+
+**Verdict: `LEGACY_HISTORY_NONE_SUPPORTED_FOR_OWNER_APPROVAL`.** The owner authorizes this
+narrow Accepted metadata disposition when the repository chronology meets the stated proof
+standard and independent review passes. The cumulative Accepted checkpoint records and the
+actual DEC-073 publication contract support the following exact binding:
+
+| Bound field | Accepted value |
+|---|---|
+| Lineage | `tsugino.provisional.identity-registry` |
+| Registry schema / revision | `2` / `6` |
+| Registry SHA-256 | `9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b` |
+| `legacyHistoryState` | `none` |
+
+Here **none means no DEC-073 schema-3 identity-transition sidecar/applied boundary belongs
+to this exact accepted schema-2 revision-6 predecessor**. Other retained attachment, review,
+allocation, coordinate, editorial and derived build histories are separate and remain required
+where applicable. This is a repository-authority chronology binding, not an inference from a
+directory inventory, missing files or the registry hash alone.
+
+**Positive dated chronology.** Dates below are the records' dates; commits identify their
+immutable publication, not an invented timestamp for private artifact creation.
+
+| Date | Accepted evidence and immutable commit | Consequence for this predecessor |
+|---|---|---|
+| 2026-09-30 | P2-S5 real acceptance, `cb537d69e10049259137173b63770b568a05f3ca` | Station mint/assignment and reconciliation produced the accepted revision 6; its repeat was byte-identical with no revision increase. The ordinary registry encoder at this commit writes schema 2 only. |
+| 2026-09-30 | P2-S6 real acceptance, `ba0e717625130be7efa7320db638f81e70d6a560` | Records the full registry hash above, identical P2-S5 first/repeat registries and unchanged revision/hash throughout coordinate/network acceptance. No identity change. |
+| 2026-09-30 | Final P2-S7 real acceptance, `31732d77910cd2d96cf4858a95a50f2b2ab3a922` | Same full registry hash; all 240 prior evidence files retained unchanged. Names/search/editorial-history work did not mutate the registry. |
+| 2026-10-01 | DEC-073 Accepted design, implementation and verification publication, `30827769a4a934e85be184f22bcf51ee8a08f45d` | First publication of the schema-3 transition/history tooling follows revision 6. Decision authorizes bounded synthetic implementation only; verification explicitly says no real registry or transition was used, and implementation audit explicitly records no real transition. |
+| 2026-10-01 | DEC-074 private provisional real acceptance, `69464c1fc0b1d34610ce355e3e2efc92d8456864` | After DEC-073, real acceptance retains the same full revision-6 hash, runtime schema 1, one initial derived build revision, three byte-identical outputs and all 279 prior files unchanged. No new binding/ID or alteration of prior real evidence. |
+| 2026-10-01 | DEC-075 Phase-2 exit/preservation audit, `e8a463d51f14b3cb1027960c63244b694579a71b` | Rechecks 50 package entries and 279 preserved originals, runtime schema 1/revision 6, accepted approvals and earlier histories. Synthetic DEC-073 migration evidence remains distinct from real acceptance. |
+| 2026-10-08 | Phase-3 predecessor records, `d50e9c4af115c063c6d694019643467169ce3935` and `693c4de3002c8ad9f8fdc68803551912953a8706` | Identify this exact schema-2 revision-6 lineage/hash as the retained accepted predecessor; explicitly distinguish historical identity from fresh private availability/currentness/closure. No accepted real schema-3 successor is introduced. |
+| 2026-10-08 | Registration-boundary design `1f3733a0c722c17b7e81280862871ce6fb98dff2`; Checkpoint-1 source `063d4054c5ba9959a802ba802bd71c9474f10ba7` | Conversion and registration remain separately gated; tooling verification is invented-only, with no real conversion, registry mutation or Trip allocation. |
+
+Revision 6 therefore predates DEC-073 transition capability, and accepted later real work
+positively preserves the same predecessor after that capability was introduced. DEC-073's
+executed verification was synthetic, explicitly not a real lineage transition. The subsequent
+accepted checkpoint chain retains schema 2/runtime 1 and introduces no applied real DEC-073
+boundary or schema-3 successor for this lineage. This establishes the scoped negative history
+disposition from affirmative records; it does not authenticate arbitrary out-of-band activity
+or freshly certify a private file's availability/currentness. Future private binding must
+still match this exact owner-identified predecessor and the complete required authority.
+
+**Sidecar semantics checked against actual implementation.**
+[DEC-073 verification](../Tools/RailwayStorage/DEC073_VERIFICATION.md),
+[`IdentityTransition.validate`/`publish`](../Tools/RailwayStorage/Sources/IdentityTransition.swift),
+[`RailwayArtifactBuilder.build`](../Tools/RailwayStorage/Sources/RailwayArtifactBuilder.swift)
+and [runtime metadata validation](../TSUGINO/Data/Storage/RailwayArtifact.swift) distinguish
+transition history from ordinary build/editorial histories. An empty `History` container is
+representable and may be decoded as provisional `previousHistory` input. It is never a
+successful zero-transition output: validation must append/validate a nonempty operation
+boundary targeting schema 3 at previous revision + 1 before returning publication authority.
+Retained-history rebuild rejects an empty boundary list or transition history with schema 2;
+runtime schema 1 rejects the identity-transition input role across every build revision.
+Thus the accepted tooling neither produces nor retains a zero-transition sidecar for this
+schema-2/runtime-1 checkpoint. Every published DEC-073 sidecar contains a validated applied
+boundary. Invented test histories and measurement histories are not this real lineage's history.
+
+**Limits and next gate.** This binding does not erase or replace any original authority bytes,
+declare historical allocation IDs empty, prove complete review/attachment coverage, establish
+`historyComplete = true`, assign `baselineID`/owner-workflow metadata, approve a Checkpoint-1
+baseline payload or construct baseline/H0/current-checkpoint artifacts. It authorizes no
+conversion request, conversion, minting, registration or Checkpoint-2 implementation. P2-S9
+and P3-T1 remain incomplete; Phase 3 remains In Progress. The next safe task is a separately
+authorized complete private allocation/review/attachment/dependency-closure and baseline-
+metadata audit, consuming this narrow legacy-state binding while preserving all other history.
+This chronology audit accesses repository authority only; no private/provider artifact,
+test/build or implementation change is involved. Historical records above remain unchanged.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
