@@ -8145,6 +8145,136 @@ In Progress, live/default routing unconfigured. Real proposal creation and owner
 require separate bounded authorization/inputs; real tooling/conversion/application remain
 later separate steps. No tests on real data, app build, device, staging, commit or push.
 
+#### Owner acceptance overlay — first Trip correspondence metadata bindings — 2026-10-08
+
+Scope: Phase 3 / retained P2-S9 documentation and metadata authority only. Fetch/preflight
+matched `lunalism/TSUGINO`, branch `phase/03-route-search`, HEAD/upstream/live remote
+`c9d346400b040d0d29ccd32202611de85b545dd7` (0/0), clean worktree/index/no untracked files,
+and local/remote main `e8a463d51f14b3cb1027960c63244b694579a71b`. The owner accepts the
+exact bindings below for already Accepted evidence, following contract-compatibility
+inspection. They assign stable metadata identifiers; no railway semantics, source scope,
+Accepted DEC semantics, implementation or schema changes. Only this ROADMAP changes.
+
+**Contract compatibility:** DEC-068 retains private reviewed mapping/registry authority;
+DEC-082 keeps occurrence classification, mapping and snapshot acceptance distinct.
+DEC-083 §B requires source/profile/mapping versions and identified evidence hashes/locators,
+not publication of raw mapping pairs; §D keeps real references/reviews/provenance outside Git.
+Correspondence v1's `mapping` is an exact version/hash binding with matching owner-asserted
+context/evidence associations, not a raw mapping export or evidence-authentication reader.
+Thus the sanitized immutable mapping-authority checkpoint below is compatible for this
+pre-mint explicit new-run request. DEC-083 §D's existing provisional-lineage continuation
+and DEC-084's separate lossless conversion/history requirements remain intact. No new DEC
+is required; no real conversion, complete private-history verification or registration
+capability is asserted by assigning these labels.
+
+**Accepted source and profile metadata** (the exact real source key remains private and
+is neither read nor recorded here):
+
+| Correspondence field | Accepted exact value |
+|---|---|
+| `sourceID` | `DS-01/toei-static-gtfs` |
+| `namespace` | `gtfs.trip_id` |
+| `inputSHA256` | `dd5757062317dcf18b8eeaf8bf83f6624ecd3c9fc4fe99918981e5ec2b42d8c4` |
+| `publisherID` | `Bureau of Transportation, Tokyo Metropolitan Government` |
+| `resourceID` | `35b68908-4558-47ae-bfa5-867e58544a1a` |
+| `feedRevision` | `20260921` |
+| `profileID` | `toei-20260921-trip-id-applicability` |
+| `profileVersion` | `00` |
+
+The publisher value reuses the exact committed DS-01 `SourceList` provider representation
+in `Tools/StaticDataIntake/Sources/IntakeModel.swift`; it is internal correspondence metadata,
+not a new provider identity, endorsement or authentication. The accepted pair forms the
+existing external/tool selector `toei-20260921-trip-id-applicability-00`; `00` is explicitly
+the correspondence source-profile version token. Existing profile semantics remain exact
+scalar `gtfs.trip_id`, this resource/feed revision, within-revision uniqueness only,
+eligible ordinary fixed-schedule recurring definition, exclusion of frequency/Flex variants,
+and no cross-revision continuity without affirmative evidence.
+
+**Accepted provisional lineage and predecessor:** `lineageID =
+"tsugino.provisional.identity-registry"` names the existing provisional identity registry
+lineage containing the accepted Phase-2 **schema 2 / revision 6** baseline, registry SHA-256
+`9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b`.
+The label remains stable for any future separately authorized schema-2 → schema-4 continuation
+of that same identity history. It creates no schema-4 artifact, conversion, production
+registry-of-record or production adoption; this historical pin proves no fresh availability
+or currentness of a private checkpoint.
+
+**Accepted mapping-authority binding:** `mapping.version =
+"p2s9.toei-20260921.station-crosswalk.1"`, `mapping.sha256 =
+"6260de45f29cf9ea6eeaee8be9884c8724c79f22218ec724fad6da44d0e065e1"`.
+Its authority locator is
+`git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#corrected-abi-2-owner-operated-real-crosswalk-success-and-remaining-gates--2026-10-08`.
+This identifies the immutable sanitized Accepted authority record establishing the retained
+candidate's **14/14 station crosswalk** under the exact identified source/mapping baseline.
+The digest is the ordinary SHA-256 of the **entire committed ROADMAP file** at that commit,
+not a section digest or the hash of raw pairs. This is neither the raw source→StationID pair
+set nor a reconstructable mapping export, replacement for private reviewed registry/assignment
+evidence, publisher authentication or persisted crosswalk/full snapshot. Raw pairs remain
+unpublished and unnecessary for this correspondence document. Changed crosswalk authority
+requires a new mapping version/hash; this identity cannot be reused for another source,
+revision or candidate scope. Future S9/registration consumers retain their own full evidence
+and exact-artifact requirements.
+
+**Accepted immutable evidence inventory:** all six references identify exact committed
+`docs/ROADMAP.md` bytes at `c9d346400b040d0d29ccd32202611de85b545dd7`, ordinary file SHA-256
+`6260de45f29cf9ea6eeaee8be9884c8724c79f22218ec724fad6da44d0e065e1`.
+Each role token is its unique `evidenceID`:
+
+| Role / evidenceID | Exact immutable locator |
+|---|---|
+| `sourceProfileAcceptance` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#owner-acceptance-overlay--retained-toei-recurring-key-source-profile--2026-10-08` |
+| `candidateApplicability` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#final-published-verifier-real-revalidation--2026-10-08` |
+| `passengerClassification` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#owner-reported-same-candidate-occurrence-review--2026-10-08` |
+| `sourceOrder` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#owner-reported-same-candidate-occurrence-review--2026-10-08` |
+| `stationCrosswalk` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#corrected-abi-2-owner-operated-real-crosswalk-success-and-remaining-gates--2026-10-08` |
+| `firstRealTripBaselineAudit` | `git:c9d346400b040d0d29ccd32202611de85b545dd7:docs/ROADMAP.md#repository-only-real-trip-correspondence-baseline-audit--2026-10-08` |
+
+Each reference is accepted as applicable to exactly the source/profile object above
+(with its exact private key supplied only in a future authorized task), the identified
+baseline object and mapping object. These sanitized authorities do not independently embed
+every private field; association asserts accepted applicability, not raw evidence content.
+No optional `s9Review` is accepted for this first proposal without a later distinct immutable
+authority that materially adds required evidence. Old section wording remains historical;
+subsequent accepted evidence controls current bounded status.
+
+**Reserved workflow identifiers:** `ownerAuthority = "tsugino.owner"` and
+`requestID = "p2s9.first-real-trip.20261008.001"`. These opaque owner-workflow tokens are not
+cryptographic owner authentication. The owner asserts this requestID remains unused because
+no real correspondence request exists. No request is created by reserving it.
+
+**Accepted bounded reasoning for a future unapproved proposal**, with all six required
+role/evidenceID tokens above as `basisEvidenceIDs`:
+
+> The exact scoped recurring source identity is eligible under the Accepted Toei 20260921 source profile. Passenger classification, source order and the 14/14 canonical station crosswalk are established for the retained candidate. The identified accepted provisional schema-2 revision-6 baseline cannot contain canonical Trip identity state, so this request seeks the first canonical allocation for this recurring-run candidate. Accepted canonical Trip competitors are structurally impossible in that identified baseline, while external/source-level semantic competition is not globally disproved. Movement evidence, endpoint dispositions, immutable S9 snapshot acceptance and real registration remain unresolved; this request grants neither final S9 nor production identity.
+
+This approves only the reasoning text for future preparation, not correspondence itself or
+semantic uniqueness across all source rows. The future proposal retains exactly the six
+unresolved prerequisites: `movementEvidence`, `endpointDispositions`,
+`immutableS9SnapshotAcceptance`, `realTripRegistrationToolingCheckpoint`, `p3T1RealImport`,
+`productionRegistryAdoption`. None is closed by this overlay.
+
+The preceding metadata `*_BINDING_REQUIRED` gaps are cleared by these exact owner assignments
+and evidence associations. No private archive, key, registry, assignment or environment
+artifact was accessed; no binder, context/draft/proposal, real correspondence approval,
+TripID, registry mutation or atomic access grant is created or consumed. Classification
+remains **0 gaps**, source order resolved, crosswalk **14 verified / 0 held**, source profile
+Accepted and final-verifier applicability satisfied/eligible. Correspondence approval,
+movement/endpoints/immutable snapshot/final S9 remain unresolved; P2-S9/P3-T1 incomplete,
+Phase 3 In Progress, live/default routing unconfigured.
+
+**Next safe task:** a separately authorized fresh binding/binder-preparation audit against
+this published metadata authority and the published correspondence implementation. It must
+revalidate exact non-private bindings and private path/output safeguards before any later
+one-use preparation grant; this overlay supplies no private access or proposal-execution
+authority. Do not proceed to that task as part of this publication.
+
+Verification: complete documentation diff/privacy review, immutable c9d file SHA-256 and
+all six anchors, exact publisher/selector/baseline bindings, reference/heading checks,
+historical-content byte preservation and `git diff --check` passed. Separate non-author
+review **approved all nine metadata-compatibility criteria with no material findings**,
+including the mapping-authority interpretation. No tests, builds or device work were run.
+Publication is limited to this ROADMAP under the owner's exact one-file authorization.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
