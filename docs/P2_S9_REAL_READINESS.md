@@ -1,5 +1,68 @@
 # P2-S9 — First real untimed Trip readiness assessment
 
+## Current-status overlay — 2026-10-09 Asia/Seoul
+
+**First real canonical Trip registration: complete. P2-S9: incomplete.** This overlay records
+the supplied successful Checkpoint-2 execution report and governs current readiness. The entire
+original 2026-10-03 assessment below is preserved as historical text; its missing-tooling,
+identity/allocation and checkpoint statements describe that earlier assessment.
+
+The authoritative private lineage `tsugino.provisional.identity-registry` is now **schema 4 /
+revision 8**, with **276 active / 0 retired identities** and **717 active / 0 absent / 0 retired
+references**, including exactly **1 Trip identity** and **1 `gtfs.trip_id` reference**.
+All predecessor 275 identities and 716 references, including their existing authority fields,
+were preserved. The only accepted registry semantic delta is one active Trip and one active
+Trip-only `gtfs.trip_id` reference, with revision 7 -> 8. The original rev7 bundle is unchanged.
+See the [complete registration record and exact request/approval/registry/history/manifest pins](ROADMAP.md#first-real-canonical-trip-registration-complete--2026-10-09).
+
+The owner-approved request was applied exactly once with result `registered`, no durability
+uncertainty, no retry and no second apply. Published `verify-registration-bundle` returned
+`bundleValid`; separate non-author execution review passed **24/24**, with no unresolved
+material finding. History v2 retains the exact predecessor-v1 bytes and original conversion
+boundary, adding exactly one `registerFirstTrip` boundary: **two logical lineage boundaries**.
+The previously owner-approved `distinctNewRun` correspondence was consumed exactly once for
+this registration; its proposal, approval and original artifact remain unchanged, with the
+association immutably retained in the request/history. Historical replay is separate from a
+new allocation; no apply replay followed real publication.
+
+| Current gate for this first retained candidate | Status |
+|---|---|
+| Recurring identity/source-key correspondence | Resolved for this registration; correspondence business use retained |
+| Canonical Trip allocation | Resolved; first real Trip registered |
+| Real schema-4 current checkpoint | Resolved; private revision 8 |
+| Checkpoint-bound owner approval | Resolved for the exact applied request |
+| First real Trip registration and permanent `gtfs.trip_id` attachment | Resolved; one Trip / one reference with permanent approval-bound `attachedBy` |
+| Immutable registration/history boundary | Resolved; exact predecessor history retained in history v2 |
+
+Registration alone is not authoritative untimed Trip snapshot acceptance. The current remaining
+P2-S9 question is:
+
+> whether the retained candidate has sufficient positive movement, independent endpoint and
+> immutable snapshot evidence to construct and accept the first authoritative untimed Trip snapshot.
+
+The following gates remain unresolved:
+
+- Positive movement / line traversal evidence and through/fragments continuity where applicable.
+- Independent origin boundary disposition and destination boundary disposition; service-type
+  evidence where applicable.
+- Immutable real S9 packet/snapshot assembly and exact selected predecessor/snapshot binding.
+- Independent real S9 snapshot review and owner S9 acceptance.
+- P3-T1 real timetable import and production registry/runtime adoption.
+
+**Downstream status:** P3-T1 real import **incomplete**; production route-search adoption
+**incomplete**; app/default routing **unconfigured**; SQLite/runtime **unchanged**; Phase 3
+**In Progress**. The private revision-8 registry is not production/runtime adoption. P2-S9
+remains incomplete before real P3-T1 import and canonical passenger-stop Trip consumption.
+
+This is documentation publication only. No private TripID, provider key, mapping pair, private
+path, request payload or bundle content is inspected or published. No new product decision,
+movement/endpoint review, snapshot assembly/acceptance, timetable import or runtime change is
+performed. Reassessment of the remaining gates is a separate next task.
+
+---
+
+## Historical assessment — 2026-10-03 Asia/Seoul
+
 **Date:** 2026-10-03 Asia/Seoul\
 **Status:** Assessment and proposed access scope only; P2-S9 remains incomplete.\
 **Baseline:** `phase/03-route-search`, HEAD/upstream `31617914e5dfb8e7089af67e5279912ecedd149f`;

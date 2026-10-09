@@ -8744,6 +8744,85 @@ authorized real private binding/preparation task. Tooling implementation/test/re
 real candidate preparation, approval or execution authority. No staging, commit or push is part
 of this task.
 
+#### First real canonical Trip registration complete — 2026-10-09
+
+**First real canonical Trip registration: complete. P2-S9: incomplete.** The exact
+owner-approved Checkpoint-2 request was applied once, advancing the authoritative private
+lineage `tsugino.provisional.identity-registry` from **schema 4 / revision 7 to revision 8**.
+This dated overlay establishes current status after the conversion and tooling records above;
+their earlier unimplemented, pending-allocation and no-real-use statements remain historical.
+No new product decision or change to Accepted DEC-083/084 semantics is made.
+
+The following safe pins/counts are supplied by the completed execution report, classified
+`CHECKPOINT2_FIRST_REAL_TRIP_REGISTRATION_COMPLETE`. This documentation publication does not
+inspect private identifiers, source keys, correspondence payloads or bundle contents.
+
+| Registration binding | Exact recorded value |
+|---|---|
+| Approved registration request ID | `p2s9.checkpoint2.first-trip.20261009.001` |
+| Approved registration request SHA-256 | `77ba552eaa8584084b6cd7f6f5ae7137bdf545d90c683d874f7dcfe0ca887e10` |
+| Owner approval `approvedAt` | `2026-10-09T06:49:05Z` |
+| Registration approval review ID | `p2s9.checkpoint2.first-trip.approval.20261009.001` |
+| Registration approval SHA-256 | `c7e4ef0ca6f051d5241b85bc708c69a57d95c2c52a191980fa2ce2ead58c5024` |
+| Predecessor schema / revision | `4` / `7` |
+| Predecessor registry SHA-256 | `cf66f75c68205ccab365452773d86b7143b97f1eca6f36659ba3f8bffd45562c` |
+| Predecessor history-v1 SHA-256 | `ec63f5aa7a930c8d7941be8edc39a34ee81fd3b7b2f0e71de93bec293b0c8017` |
+| Predecessor conversion manifest SHA-256 | `3d4b1a42dba1a6ee87448eb2fb18406285cd3385ca23a71fa63b5e66567dfe9b` |
+| Authoritative private successor schema / revision | `4` / `8` |
+| Successor registry bytes | `911172` |
+| Successor registry SHA-256 | `f15d539697ab7dc8c8f0bfc7bd59b37bca0680948754d42124a9d2fec45bfb9a` |
+| Successor history schema version | `2` |
+| Successor history bytes | `25165726` |
+| Successor history SHA-256 | `1a165a1166a77555afedb488e841487572335a2cbbb336dac5261e24ba83fc6f` |
+| Registration boundary SHA-256 | `1c4fe71cff7f94e7d7fbe7b955464240442b978f40e050c5e6020d73af72837f` |
+| Registration manifest SHA-256 | `4f1683ee6a1ee678eddff9fdebd8740a67272185f50adf957cfa70d0cd6c772b` |
+
+The successor contains **276 active / 0 retired identities** and **717 active / 0 absent /
+0 retired references**, including exactly **1 Trip identity** and **1 `gtfs.trip_id` reference**.
+
+> All predecessor 275 identities and 716 references, including their existing authority fields,
+> were preserved. The only accepted registry semantic delta is one active Trip and one active
+> Trip-only `gtfs.trip_id` reference, with revision 7 -> 8.
+
+**Execution and verification.** Published `apply-registration` executed exactly **once** and
+returned `registered`, with **no durability uncertainty, no retry and no second apply**.
+The output registry was byte-identical to the approved request target. The new reference's
+permanent, non-null `attachedBy` equals `p2s9.checkpoint2.first-trip.approval.20261009.001`.
+Published `verify-registration-bundle` returned `bundleValid` with the exact registration
+manifest SHA above. Separate non-author execution review passed **24/24**, with no unresolved
+material finding. No post-publication apply replay was executed.
+
+**Immutable lineage and correspondence.** History v2 retains the exact predecessor history-v1
+bytes, preserves its original conversion boundary and adds exactly one `registerFirstTrip`
+boundary. There are exactly **two logical lineage boundaries**: schema-2 -> schema-4 conversion,
+then first Trip registration. The original revision-7 bundle remains unchanged. The previously
+owner-approved `distinctNewRun` correspondence was consumed exactly **once** as business
+authority for this registration. Its proposal, approval and original artifact remain unchanged;
+the exact association is retained immutably by the registration request/history. Exact historical
+replay semantics remain separate from a new allocation.
+
+**Current readiness.** For this first retained candidate, recurring identity/source-key
+correspondence, canonical Trip allocation, the real schema-4 current checkpoint, checkpoint-bound
+owner approval, first real Trip registration, permanent `gtfs.trip_id` attachment and immutable
+registration/history boundary are resolved. Registration alone is not authoritative untimed
+Trip snapshot acceptance. [The dated readiness overlay](P2_S9_REAL_READINESS.md#current-status-overlay--2026-10-09-asiaseoul)
+separates these resolved gates from the preserved 2026-10-03 assessment.
+
+Remaining P2-S9 gates are positive movement / line traversal evidence; through/fragments
+continuity where applicable; independent origin and destination boundary dispositions;
+service-type evidence where applicable; immutable real S9 packet/snapshot assembly; exact
+selected predecessor/snapshot binding; independent real S9 snapshot review; and owner S9
+acceptance. The current remaining question is whether the retained candidate has sufficient
+positive movement, independent endpoint and immutable snapshot evidence to construct and accept
+the first authoritative untimed Trip snapshot. This documentation task performs none of that
+reassessment or evidence access.
+
+**Downstream status unchanged:** P2-S9 **incomplete**; P3-T1 real import **incomplete**;
+production registry/runtime adoption and production route-search adoption **incomplete**;
+app/default routing **unconfigured**; SQLite/runtime **unchanged**; Phase 3 **In Progress**.
+The private revision-8 registry is not production/runtime adoption. No S9 snapshot acceptance,
+timetable import, runtime/app/routing change or private identifier/path publication occurs here.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
