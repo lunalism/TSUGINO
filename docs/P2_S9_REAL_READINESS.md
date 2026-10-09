@@ -2,6 +2,26 @@
 
 ## Current-status overlay — 2026-10-09 Asia/Seoul
 
+**S9 assembly adapter implementation:** `Tools/TripS9Assembly` now contains an isolated
+owner-only macOS adapter for `selectInitialUntimedTripSnapshot`, with strict normalized
+input, occurrence crosswalk, separate request/approval, complete dependency closure and
+immutable snapshot history/bundle. Verification reconstructs the unchanged Domain Trip
+and crosswalk from retained input. Production build and all 176 invented checks pass.
+Independent non-author review passes all 27 criteria, including an independent production
+build and full 176-check rerun. Unchanged Simulator regressions pass 230 synthetic S9,
+390 registration C2 and 188 Domain invocations (808 total; 289 test functions), with zero
+failures or skips. Privacy/diff audit passes. Source remains unstaged/uncommitted for owner
+review and publication; no real snapshot or S9 approval has been created.
+
+The owner supplies `P2_S9_MOVEMENT_ENDPOINT_EVIDENCE_READY` as the preceding task's result.
+This implementation task uses invented fixtures only and does not reopen or independently
+reaudit that real evidence. The unresolved-gate list in the preserved registration account
+below describes the registration-publication assessment. Real binding, exact unapproved
+S9 request preparation, owner digest review, approval/application and real snapshot review
+remain separate. P2-S9 remains incomplete; this task starts no P3-T1 real import or runtime
+adoption.
+See [adapter formats, limits and workflow](../Tools/TripS9Assembly/README.md).
+
 **First real canonical Trip registration: complete. P2-S9: incomplete.** This overlay records
 the supplied successful Checkpoint-2 execution report and governs current readiness. The entire
 original 2026-10-03 assessment below is preserved as historical text; its missing-tooling,

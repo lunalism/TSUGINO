@@ -1,5 +1,26 @@
 # TSUGINO — ROADMAP.md
 
+## P2-S9 assembly adapter implementation overlay — 2026-10-09
+
+Phase 3 retains P2-S9 ownership. `Tools/TripS9Assembly` implements the bounded owner-only
+macOS initial untimed snapshot assembly workflow for one already registered Trip. It
+retains exact normalized input and complete evidence bytes, reconstructs the unchanged
+Domain Trip and occurrence crosswalk, separates preparation from owner approval, and
+publishes a verified immutable S9 history/bundle with exclusive atomic private I/O.
+Production build and the complete invented suite pass (176 checks). Independent non-author
+review passes all 27 criteria, with an independent production build and full 176-check rerun.
+Unchanged Simulator regressions pass: 230 synthetic S9, 390 registration C2 and 188 Domain
+invocations (808 total; 289 test functions), with zero failures or skips. Privacy/diff audit
+passes. The adapter remains unstaged/uncommitted for owner review and publication.
+See [tool contract and limits](../Tools/TripS9Assembly/README.md) and the
+[current readiness overlay](P2_S9_REAL_READINESS.md).
+
+No real movement-review artifact, archive, mapping/network evidence, registry bundle,
+TripID or provider key is accessed in this implementation task. No real snapshot or S9
+approval is created. Registry mutation, P3-T1 import, runtime adoption, routing, SQLite and
+app/shared implementation remain outside this slice. P2-S9 and Phase 3 remain incomplete.
+Historical roadmap records below are preserved.
+
 ## 1. Purpose
 
 This document defines the implementation order for TSUGINO.
