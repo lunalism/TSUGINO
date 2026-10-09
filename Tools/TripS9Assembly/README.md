@@ -209,14 +209,14 @@ identity history; the smaller enclosing bound also applies.
 
 | Resource | Maximum |
 |---|---:|
-| Normalized input | 24 MiB |
+| Normalized input | 64 MiB |
 | Individual decoded dependency | 2 MiB |
 | Unique decoded dependency bytes | 16 MiB |
 | Trip / crosswalk | 512 KiB / 4 MiB |
-| Context / request | 1 MiB / 40 MiB |
+| Context / request | 1 MiB / 112 MiB |
 | Approval / manifest | 16 KiB each |
-| Selection state / S9 history | 48 MiB each |
-| Whole bundle | 56 MiB |
+| Selection state / S9 history | 192 MiB / 128 MiB |
+| Whole bundle | 144 MiB |
 | Occurrences / movements | 2048 / 4096 |
 | Dependency records, child pins, per-stop memberships | 256 each |
 | JSON nesting / token or source-key bytes | 64 / 256 |
@@ -227,3 +227,54 @@ The unchanged identity verifier additionally enforces its existing registry/hist
 record, inventory and nesting limits. This adapter's enclosing input bound can hold a
 smaller checkpoint than those maxima. Increasing any bound is a separately reviewed
 implementation change, not an automatic fallback for a rejected real input.
+
+
+## Resource envelope correction — 2026-10-09
+
+First real request preparation stopped before creating any private assembly input or
+request. The authoritative revision-8 checkpoint remains valid; this was an enclosing
+tool-limit defect. Reported safe sizes were 25,165,726 history bytes, 911,172 registry
+bytes and 1,029 manifest bytes. Their required base64 fields occupy 33,554,304,
+1,214,896 and 1,372 bytes respectively: 34,770,572 total, exceeding the former
+24 MiB (25,165,824-byte) input limit even before other fields.
+
+Schema 1 and exact authority retention remain unchanged. The corrected five limits
+are input 64 MiB, request 112 MiB, history 128 MiB, whole bundle 144 MiB and selection
+state 192 MiB. A 64 MiB input becomes 89,478,488 base64 bytes inside a request; the
+112 MiB request bound includes headroom for context, the empty initial selection
+state, Trip/crosswalk bytes, checkpoint and digest pins. A request retains the complete
+input, and history embeds the complete request plus approval as JSON objects, so
+128 MiB history contains a maximum accepted request with bounded headroom. The
+144 MiB bundle contains history, crosswalk, Trip and manifest. Selected-state replay
+base64-encodes history: 128 MiB becomes 178,956,972 bytes; 192 MiB state contains that
+representation plus its manifest and inventory. Each enclosing bound still applies;
+this is not a guarantee that every combination of maximum subordinate inputs fits.
+
+These are owner-only offline macOS bounds, not app/runtime memory targets. Subordinate
+dependency, count, nesting, token and artifact limits are unchanged. Oversize artifacts
+still reject before decoding. Invented regression catalogs contain distinct retained
+owner observations in valid identity history; they are not padding or unknown identity
+fields. Verification exercises full unchanged registration authority checks and nested
+request/history/bundle/selected-state reconstruction and replay. Real preparation has
+not resumed; no real input, request, snapshot or approval was created by this correction.
+The corrected tool has not yet been exercised against the real checkpoint.
+
+The author and independent non-author reviewer each rebuilt production and passed the
+complete 185-check invented suite. Independent review approved all 17 correction criteria;
+the production binary contains no synthetic sources or testing fault hooks. The large
+invented checkpoint and nested artifacts measured:
+
+| Artifact | Encoded bytes |
+|---|---:|
+| Registered identity history | 26,726,325 |
+| Normalized assembly input | 35,663,528 |
+| Snapshot request | 47,579,837 |
+| S9 history | 47,586,716 |
+| Whole bundle | 47,599,422 |
+| Selected state | 63,450,745 |
+
+All five revised oversize gates reject. Exact retained bytes, independent reconstruction,
+replay, second-selection rejection and changed-input/checkpoint/request rejection pass.
+Fresh unchanged iPhone Simulator regressions pass 230 synthetic S9, 390 registration C2
+and 188 Domain invocations (808 total across 289 test functions), with zero failures or
+skips. The correction remains unstaged/uncommitted for owner publication review.

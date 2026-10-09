@@ -1,5 +1,25 @@
 # P2-S9 — First real untimed Trip readiness assessment
 
+## Resource-envelope correction overlay — 2026-10-09 Asia/Seoul
+
+Real S9 request preparation stopped with `S9_REQUEST_PREPARATION_FAILED` before creating
+an input or request: the exact registeredBundle base64 fields alone require 34,770,572
+bytes, exceeding the published 24 MiB input limit. The authoritative revision-8 checkpoint
+is valid and remains unchanged; the defect is the tool's enclosing resource envelope.
+Schema 1, exact retained authority bytes and all semantic/subordinate limits remain unchanged.
+The correction sets input/request/state/history/bundle limits to 64/112/192/128/144 MiB.
+See [nesting rationale and bounds](../Tools/TripS9Assembly/README.md#resource-envelope-correction--2026-10-09).
+Author and independent production builds each pass, with complete 185-check invented
+suite reruns. Independent non-author review approves all 17 correction criteria. Fresh
+unchanged iPhone Simulator regressions pass 230 synthetic S9, 390 registration C2 and
+188 Domain invocations (808 total across 289 test functions), with zero failures or skips.
+Privacy and diff checks pass; the correction remains unstaged/uncommitted for owner
+publication review.
+No real/private railway artifact is accessed in this correction. Real preparation has not
+resumed, and no real S9 input/context/state/request, snapshot or approval exists. No approval
+or apply occurs. P2-S9 remains incomplete; no P3-T1 real import or runtime adoption begins.
+Earlier implementation/publication and readiness records below are preserved historically.
+
 ## Current-status overlay — 2026-10-09 Asia/Seoul
 
 **S9 assembly adapter implementation:** `Tools/TripS9Assembly` now contains an isolated

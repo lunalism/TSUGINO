@@ -6,12 +6,13 @@ enum Invented {
     static let owner = Fixtures.owner
     static let line = Fixtures.id("lin","2"), otherLine = Fixtures.id("lin","5")
     static func station(_ n: Int) -> String { "stn_" + String(format:"%016d",n) }
-    static func registration() throws -> Conversion.Bundle {
+    static func registration(large: Bool = false) throws -> Conversion.Bundle {
         let original = try RegistrationFixtures.scenario()
         let entities = (0..<14).map { CanonicalEntity(id:MintedIdentifier(station($0))!,status:.active) }
             + [line,otherLine].map { CanonicalEntity(id:MintedIdentifier($0)!,status:.active) }
         let raw = try MappingRegistry(revision:6,entities:entities,references:[]).encoded()
-        let h0 = try Codec.encode(Conversion.initialHistory(Fixtures.approvedBaseline(raw)))
+        let authorityBaseline = try Fixtures.approvedBaseline(raw)
+        let h0 = try Codec.encode(Conversion.initialHistory(large ? largeBaseline(authorityBaseline) : authorityBaseline))
         let current = try Conversion.pin(raw,h0,lineage:Fixtures.lineage)
         let cq = try Conversion.prepare(raw,history:h0,current:current,owner:owner,requestID:"invented.conversion")
         let ca = try Conversion.approval(cq,owner:owner,reviewID:"invented.conversion.review",author:"invented.author",at:Fixtures.time,reference:"invented.review")
@@ -44,8 +45,8 @@ enum Invented {
                 .replacing("movementReviewSHA256",i["movementReview"]["sha256"]),state:state)
         }
     }
-    static func fixture() throws -> Scenario {
-        let b = try registration(), h = try S9.read(b.history,Limits.history), regq = h["boundaries"].list[0]["request"]
+    static func fixture(large: Bool = false) throws -> Scenario {
+        let b = try registration(large:large), h = try S9.read(b.history,Limits.history), regq = h["boundaries"].list[0]["request"]
         let checkpoint = try Conversion.pin(b.registry,b.history,lineage:Fixtures.lineage).replacing("manifestSHA256",.string(Codec.hash(b.manifest)))
         let source = regq["context"]["correspondenceContext"]["source"]
         var records: [Wire] = []

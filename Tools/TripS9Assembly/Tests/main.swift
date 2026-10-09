@@ -255,6 +255,7 @@ func main() throws {
     }
     try bounds(s)
     try filesystem(s,request:q,approval:a,bundle:b,selected:selected)
+    try largeEnvelope()
     print("PASS invented S9 assembly tests=" + String(total))
 }
 
@@ -285,7 +286,10 @@ func bounds(_ s: Invented.Scenario) throws {
         try rejects("encoded resource gate " + name,status:"resourceLimit") { _ = try S9.read(Data(repeating:32,count:limit + 1),limit) }
     }
     try rejects("whole bundle bound",status:"resourceLimit") {
-        _ = try S9.verify(["history.json":Data(repeating:65,count:S9Limits.bundle + 1)],owner:Invented.owner,manifestSHA:Fixtures.hash)
+        // Supply the complete key set so the aggregate-size comparison is reached.
+        _ = try S9.verify(["history.json":Data(repeating:65,count:S9Limits.bundle + 1),
+                           "trip.json":Data([65]),"crosswalk.json":Data([65]),"manifest.json":Data([65])],
+                          owner:Invented.owner,manifestSHA:Fixtures.hash)
     }
 }
 

@@ -5,11 +5,11 @@ enum S9Failure: String, Error {
 }
 
 enum S9Limits {
-    static let input = 24 * 1024 * 1024, dependency = 2 * 1024 * 1024
+    static let input = 64 * 1024 * 1024, dependency = 2 * 1024 * 1024
     static let expanded = 16 * 1024 * 1024, trip = 512 * 1024, crosswalk = 4 * 1024 * 1024
-    static let context = 1024 * 1024, request = 40 * 1024 * 1024, approval = 16 * 1024
-    static let state = 48 * 1024 * 1024, history = 48 * 1024 * 1024, manifest = 16 * 1024
-    static let bundle = 56 * 1024 * 1024, occurrences = 2048, movements = 4096, dependencies = 256
+    static let context = 1024 * 1024, request = 112 * 1024 * 1024, approval = 16 * 1024
+    static let state = 192 * 1024 * 1024, history = 128 * 1024 * 1024, manifest = 16 * 1024
+    static let bundle = 144 * 1024 * 1024, occurrences = 2048, movements = 4096, dependencies = 256
     static let depth = 64, token = 256, selected = 4096
 }
 
