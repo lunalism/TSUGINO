@@ -2,6 +2,7 @@
 set -eu
 here=$(cd "$(dirname "$0")" && pwd -P)
 repo=$(cd "$here/../.." && pwd -P)
+python3 -B "$here/Tests/generate_golden.py"
 mkdir -p "$here/.build"
 sh "$here/build.sh"
 xcrun swiftc -swift-version 5 -Onone -module-cache-path "$here/.build/ModuleCache" -D TRIP_CONVERSION_TESTING -module-name TripRegistryConversionTests \

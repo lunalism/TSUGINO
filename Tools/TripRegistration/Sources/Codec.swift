@@ -40,7 +40,9 @@ enum ConversionFailure: String, Error {
     case malformedInput, unsupportedVersion, resourceLimit, identityConflict, historyConflict
     case staleCheckpoint, approvalConflict, approvalMissing, historyUnavailable, unsafePath
     case publicationConflict, publicationFailure
-    var held: Bool { self == .approvalMissing || self == .historyUnavailable }
+    case scopeConflict, correspondenceConflict, correspondenceUnavailable, referenceConflict
+    case continuityUnavailable, preparationIncomplete, preparationConflict, collisionExhausted, durabilityUncertain
+    var held: Bool { [.approvalMissing,.historyUnavailable,.correspondenceUnavailable,.continuityUnavailable,.preparationIncomplete,.durabilityUncertain].contains(self) }
 }
 
 enum Limits {

@@ -1,20 +1,18 @@
-# Trip registry conversion tooling
+# Trip registry conversion and first-registration tooling
 
-This offline, macOS-only tool implements the first DEC-084 checkpoint: strict schema-2
-to schema-4 conversion, retained authority/history validation, explicit request/approval,
-atomic private bundle publication and unchanged replay. Its verification uses invented
-fixtures only. No real/private registry, history, GTFS, correspondence or provider artifact
-was accessed during implementation. No real conversion occurred; no TripID was minted and
-no Trip was registered.
+This offline, macOS-only tool implements DEC-084 Checkpoint 1 conversion and the bounded
+Checkpoint-2 identity-only first-Trip registration workflow. Checkpoint-2 implementation and
+verification use **invented fixtures only**. No real/private registry, history, correspondence,
+GTFS, source key, mapping or provider artifact was accessed during this implementation. No real
+TripID, registration request, approval or revision 8 was created; correspondence was not consumed.
 
-The second checkpoint (first Trip mint/registration) remains unimplemented. Correspondence
-approval is separate authority and is not consumed here. Private baseline/history binding,
-owner review and explicit execution authorization remain required before any future real
-conversion. Complete private schema-2 baseline/history/current-checkpoint binding remains
-required before any real conversion-request preparation or execution. P2-S9 and P3-T1 remain
-incomplete; Phase 3 remains **In Progress**. Building, testing, inspecting or preparing a
-request grants no real execution authority. Publishing this source does not authorize private
-conversion or registration.
+The published real Checkpoint-1 completion record remains the supplied current truth: schema 4,
+revision 7, 275 active identities, 716 active references, zero Trip identities/references.
+Checkpoint-2 tooling availability does not authorize real candidate preparation, approval,
+execution or production/runtime adoption. Those steps require separate owner authorization and
+exact private bindings. P2-S9 and P3-T1 remain incomplete; Phase 3 remains **In Progress**.
+Building, testing, inspecting, preparing a request or publishing this source grants no real-use
+authority. The original conversion contract below remains unchanged.
 
 ## Build and invented verification
 
@@ -27,7 +25,7 @@ sh Tools/TripRegistration/test.sh
 
 These compile standalone binaries in the ignored `Tools/TripRegistration/.build/` directory.
 The build explicitly reuses only unchanged `MintedIdentifier.swift`, `ProviderReference.swift`
-and `MappingRegistry.swift` validators. It does not compile a minter, synthetic Trip code,
+and `MappingRegistry.swift` validators. It compiles the isolated offline Trip minter, but no synthetic Trip code,
 provider reader, SQLite builder or app target. Swift 5 mode, Foundation, CryptoKit and Darwin
 are used; no third-party dependency is added. Module caches stay inside `.build/`.
 
@@ -170,8 +168,12 @@ checkpoint must be explicitly supplied. This interface description is not a real
 Successful output contains only a fixed status and digest. Failures contain fixed categories:
 `malformedInput`, `unsupportedVersion`, `resourceLimit`, `identityConflict`, `historyConflict`,
 `staleCheckpoint`, `approvalConflict`, `approvalMissing`, `historyUnavailable`, `unsafePath`,
-`publicationConflict`, `publicationFailure`. Exit 0 means success, 3 means held
-(`approvalMissing`/`historyUnavailable`), 2 means rejection. No raw IDs, names, provider keys,
+`publicationConflict`, `publicationFailure`. Registration additionally uses `scopeConflict`,
+`correspondenceConflict`, `correspondenceUnavailable`, `referenceConflict`,
+`continuityUnavailable`, `preparationIncomplete`, `preparationConflict`, `collisionExhausted`,
+`durabilityUncertain`. Exit 0 means success, 3 means held (`approvalMissing`, `historyUnavailable`,
+`correspondenceUnavailable`, `continuityUnavailable`, `preparationIncomplete`,
+`durabilityUncertain`), 2 means rejection. No raw IDs, names, provider keys,
 paths, input JSON or stack traces are printed.
 
 ## Bundle, replay and private I/O
@@ -220,3 +222,200 @@ bundle before any later replay/recovery. The tool never deletes a committed bund
 Identifier coverage arrays may contain up to the entity limit; original-name arrays are bounded
 at 4,096 per reference. Overflow fails closed. These conservative slice limits do not establish
 production scalability. No app build, runtime import or physical-device validation is implied.
+
+## Checkpoint-2 exact-target registration contract
+
+This slice admits exactly one `registerFirstTrip` after the validated Checkpoint-1 conversion.
+It checks the complete supplied approved baseline, unchanged v1 conversion history and exact
+conversion manifest. The correspondence's original schema-2 revision-6 baseline is checked
+through that chain; its approval is never retargeted to revision 7. The independently supplied
+registration context asserts accepted scoped authority and completeness. These inputs provide
+integrity and owner assertions, not provider authentication, person authentication or proof
+that omitted external history does not exist. Opaque retained evidence bytes are hashed and
+retained; the tool does not reinterpret their contents as identifiers or new approvals.
+
+Preparation validates eligibility, complete dependency closure, profile/applicability, history,
+source-key conflicts, all fresh authority tokens and worst-case sizes **before** claiming a
+workspace and before drawing randomness. It then exclusively creates an owner-private durable
+workspace, writes/fsyncs the claim and operational location receipt, fsyncs the workspace and
+its parent, draws, builds exact target bytes, and atomically retains the unapproved request.
+Preparation changes no registry. The candidate is an unallocated proposed label until an exact
+later registration approval is applied and the resulting bundle is published.
+
+A completed workspace returns the exact retained request/candidate without redraw. An
+interrupted, failed or exhausted workspace holds for deliberate recovery/new business
+authorization outside this slice; it is never automatically replaced. `claim.json`,
+`location.json` and `request.json` are owner-only receipt/request files; incomplete writes may
+leave `request.stage`. Do not delete/reuse a failed workspace as an automatic retry strategy.
+After uncertain completion/publication, verify the exact retained request/bundle before recovery.
+
+Authoritative workflow-location semantics contain opaque operation/workspace/output tokens, never private
+path strings. A separate operational receipt binds parent device/inode and leaf names. Reusing
+the retained workspace with another actual destination or changed tokens rejects. Apply also
+checks this receipt and the exact retained request. There is no filesystem-wide operation
+registry: choosing a new workspace with falsely reused tokens, supplying omitted history or
+forking independent owner pins cannot be globally excluded. Currentness and workflow-location
+binding remain explicit owner responsibilities; there is no discovery or automatic latest pointer.
+
+The isolated production minter calls macOS `arc4random_buf` for exactly ten bytes per draw.
+Those 80 bits encode as sixteen five-bit groups, most significant first, using
+`0123456789abcdefghjkmnpqrstvwxyz`, with prefix `trp_`. Source keys, hashes, timestamps,
+station sequences and timetable data are never minter inputs. The collision inventory is the
+union of all active/retired kinds in the validated baseline and retained previous/target
+registries. Bodies collide across kinds; at most eight draws are permitted. Exhaustion retains
+an incomplete workspace and accepts nothing. Deterministic injection entry points exist only
+under `TRIP_CONVERSION_TESTING`; there is no production CLI seed, injection or failure flag.
+
+The exact source key is compared as scoped source ID/namespace/value UTF-8 scalars, without
+normalization or trimming. A bound active key rejects another allocation; wrong-kind or retired
+bindings reject; unsupported absent/returning continuity holds. No returning-reference workflow
+is implemented. Only one active Trip entity and one active `gtfs.trip_id` reference are added;
+schema stays 4, revision increases by exactly one. All existing canonical record encodings
+remain identical. The reference has exact GTFS input/member SHA-256 provenance for `trips.txt`,
+table `trips`, field `trip_id`, exact provider key, no ODPT index and empty `originalNames`.
+Its permanent non-null `attachedBy` is the request's prebound future approval review ID.
+
+There is no retirement, successor, withdrawal, rebind, second key, timetable, snapshot acceptance,
+S9 completion or runtime import. The six original downstream prerequisites remain unresolved.
+
+## Registration wire formats
+
+All new registration formats are strict canonical compact JSON; registry bytes use the existing
+pretty style. Unknown/missing fields, duplicate decoded keys, null optionals, noninteger numeric
+syntax, unsupported versions and malformed values reject. Embedded original correspondence and
+predecessor-v1 bytes preserve their exact original representation and SHA-256.
+
+**Registration context**, format `tsugino.trip-registry-registration-context`, schema 1:
+
+- `ownerAuthority`, full `expectedPrevious` checkpoint, `predecessorManifestSHA256`;
+- `workflow`: seven distinct fresh tokens `requestID`, `recordID`, `allocationID`,
+  `approvalReviewID`, `operationID`, `workspaceID`, `outputID`;
+- `correspondenceContext`: exact published Python v1 context (owner, source/profile/input,
+  original baseline, mapping/version/digest, six required evidence roles and optional `s9Review`);
+- `correspondence`: `requestID`, `proposalSHA256`, `approvedContentSHA256`, `recordSHA256`;
+- `profileAcceptance`: `profileID`, `version`, `disposition: accepted`;
+- `applicability`: `evidenceID`, `sha256`, `disposition: eligible`;
+- exact `provenance` (`inputSHA256`, `member: {name, sha256}`, `table`, `field`, `providerKey`),
+  `provenanceEvidenceID`, ordered `dependencyDigests`, `scope: identityOnlyOneTripOneReference`.
+
+**Dependencies** are an ordered array of `{id, sha256, dependencyDigests, bytes?}`. Context pins
+must cover exactly the reachable evidence/mapping/provenance closure. Every byte record must
+exist, match its digest, stay bounded and form an acyclic graph. Missing records/bytes hold;
+known mismatches reject. Quoted retained historical handles must retain the same bytes/digest
+and dependency pins. Fresh evidence/dependency handles cannot repurpose historical business,
+review, allocation, baseline or canonical IDs. Existing correspondence business identity may be
+quoted only through its exact original retained record handle or explicit allocation/review
+coverage and identical full correspondence bytes/digest. A correspondence/dependency ID alias
+also requires identical complete bytes/digest. Opaque records are never mined for identity.
+Workflow tokens cannot reuse complete historical authority or supplied evidence/dependency IDs.
+
+**Registration request**, format `tsugino.trip-registry-registration-request`, schema 1,
+contains exactly `operation: registerFirstTrip`, `requestID`, `lineageID`, `ownerAuthority`,
+`expectedPrevious`, full `context`, `proposedTripID`, `targetRegistryBytes`,
+`targetRegistrySHA256`, the one exact `reference`, complete original `correspondenceBytes`,
+`dependencies`, and `preparation`. Preparation accounting has
+`algorithm: osCSPRNG80Crockford-v1`, `drawCount` (1–8), `heldBodyInventorySHA256`.
+Accounting binds the inventory/attempt count but is not cryptographic proof of random generation.
+Application reconstructs the permitted target from the exact predecessor and compares full bytes.
+
+**Correspondence adapter** consumes only the published approved
+`tsugino.trip-correspondence-request` v1 `distinctNewRun` contract. It reproduces Python canonical
+Unicode/escaping/order and distinct proposal/approved-content digest domains. Complete original
+record SHA-256 is a third separate pin. Original prior-binding/competitor dispositions, reasoning,
+profile/evidence and unresolved prerequisites are preserved. Correspondence approval authorizes
+no registry mutation. `Tests/generate_golden.py` independently checks five committed invented
+Swift constants against the unchanged published Python codec, including scalar-distinct Unicode,
+controls, slash, supplementary-plane and separator characters; tests do not regenerate constants.
+
+**Registration approval** reuses `tsugino.trip-registry-approval` schema 1 with exact request
+format/ID/canonical digest, author, owner reviewer/role, explicit UTC time and approval reference.
+Its review ID must equal the prebound intended review ID. Correspondence approval, allocation ID,
+request ID and registration-record ID cannot substitute for permanent attachment authority.
+Approval CLI validates representation; apply independently validates complete eligibility/history.
+
+**History v2** retains the history format `tsugino.trip-registry-history` with `schemaVersion: 2`,
+`lineageID`, entire exact `predecessorHistoryBytes`, `predecessorHistorySHA256`, and exactly one
+new `boundaries` element. The predecessor is validated by the unchanged history-v1 logic and
+must contain exactly one conversion whose latest registry is the registration predecessor.
+Nested v2, arbitrary schema-4 seeds, rewritten/dropped history and second registration boundaries
+reject. There are exactly two logical boundaries: retained conversion plus first registration.
+
+The registration boundary has exactly `operation: registerFirstTrip`, `previousRegistryBytes`,
+`targetRegistryBytes`, `previousHistorySHA256`, full `request`, `requestSHA256`, full `approval`,
+`approvalSHA256`. Proposed identity, permanent authority, source key and preparation accounting
+are derived from the validated retained request/target, not duplicated authority fields.
+
+**Registration manifest**, format `tsugino.trip-registry-registration-bundle`, schema 1,
+contains `operation`, `lineageID`, full `predecessor` and `target` checkpoints,
+`predecessorManifestSHA256`, `requestSHA256`, `approvalSHA256`, `boundarySHA256`.
+The target history digest is computed after encoding v2. Authoritative file names remain
+`registry.json`, `history.json`, `manifest.json`; there is no SQLite output.
+
+## Registration commands and replay
+
+The existing binary name and all conversion commands above remain supported. Each flag is
+required exactly once. Registration commands require `--owner` and explicit pinned private
+files; there are no real defaults. This interface is a tooling description, not a run grant.
+
+Registration **context flags** are `--registry`, `--history`, `--checkpoint`, `--context`,
+`--correspondence`, `--dependencies`, each with its matching `--NAME-sha256` flag. Here
+`--checkpoint` is the complete exact predecessor conversion manifest, or resulting registration
+manifest for exact apply replay. `--context` is the independent registration context.
+**Location flags** are `--workspace`, `--operation-id`, `--workspace-id`, `--output-id`, `--output`.
+`--workspace`/`--output` are explicit owner-private absolute directory paths; the three ID flags
+must match context tokens. `--output` is the intended bundle destination, including during prepare.
+**Request flags** are `--request`, `--request-sha256`.
+
+| Command | Required flags beyond `--owner` | Behavior |
+| --- | --- | --- |
+| `prepare-registration` | Context + location flags | Durable preparation or exact completed-preparation replay; `approved=false`, safe request digest |
+| `inspect-registration` | Context + request flags | Complete predecessor/request eligibility check; `approved=false`; no RNG |
+| `approve-registration` | Request flags + `--review-id`, `--author`, `--approved-at`, `--approval-reference`, `--output` | Exact separate approval file; no RNG |
+| `apply-registration` | Context + location + request flags + `--approval`, `--approval-sha256` | RNG-free checked first application/atomic bundle or exact existing replay |
+| `verify-registration-bundle` | `--bundle`, `--manifest-sha256` | Complete registry/v2/manifest verification; no RNG |
+
+The prepare result is retained at the supplied workspace's `request.json`. Later approval uses
+that exact pinned file; apply requires the unchanged durable workspace/location receipts too.
+Inspect is a predecessor eligibility check, not an approval or a current-registration replay
+command. For apply replay, supply the resulting registry/history/manifest plus the original
+context, request, dependencies, correspondence, approval and exact locations. Verification of
+that complete closure returns identical bytes/revision/history with no RNG, append, increment,
+new identity or alternate output copy. Altered request/approval/dependencies and later checkpoints
+reject. A fresh allocation attempt reusing consumed correspondence identity **or** approved-content
+digest rejects through validated v2 history. Exact historical replay is allowed and does not
+edit/delete correspondence.
+
+Registration uses the same descriptor-relative no-symlink private I/O and exclusive atomic
+publication as conversion. Ancestors must be root/current-user-owned and not group/other writable,
+except root-owned sticky shared ancestors; immediate parents/workspaces/bundles are owner `0700`,
+regular single-link files `0600`. Repository paths/aliases and `.git` traversal reject. Complete
+staging is fsynced/read back before exclusive rename. Precommit failure accepts nothing;
+post-rename parent-fsync failure holds `durabilityUncertain` with a possibly complete bundle.
+Verify that exact bundle and use exact retained replay for recovery; never automatically redraw.
+Conversion retains its original failure behavior. Diagnostics contain fixed statuses and safe
+SHA-256 only; caller-controlled secrets/paths/exceptions never print.
+
+Registration additionally bounds correspondence/context at **256 KiB** (Python correspondence
+depth **32**, integer lexemes **16** characters), unique decoded retained dependency bytes at
+**64 MiB**, and mint draws at **8**. Other table limits above apply unchanged. Worst-case request,
+v2 history and bundle sizes include base64 expansion and maximum approval overhead before RNG;
+actual encodings are checked again. No valid history is truncated to satisfy limits.
+
+The complete invented suite covers all 22 requested base cases, strict malformed inputs, Unicode,
+exact byte preservation, closure, replay, interrupted/exhausted preparation, operational destination
+conflicts, no-RNG gates, production-hook exclusion, publication races/failures and uncertain-durability
+verification. An invented predecessor above **10 MiB** validates within the v2 64 MiB envelope.
+Historical inventory testing includes a reduced current projection missing a retired historical
+ID; that projection is explicitly not an admitted checkpoint, and a separate eligibility test
+rejects deleting historical IDs. This preserves conversion's exact-record contract while testing
+that mint collision protection uses history rather than a reduced projection alone.
+
+Implementation verification (2026-10-09): standalone build passed; one final complete run passed
+**18 functions / 359 cases, zero failures/skips/warnings**, including unchanged Checkpoint-1
+**8 functions / 142 cases**. Python golden checks passed separately within that same script.
+Separate non-author implementation review passed all **20 requested criteria**, with no
+unresolved material findings. The reviewer independently rebuilt the standalone production tool
+and reran the complete suite: **18 functions / 359 cases, zero failures/skips/warnings**,
+plus the published-Python five-constant golden check. These are separate complete runs, not
+cumulative totals. The final implementation remains unstaged/uncommitted for owner review;
+source publication and every real/private preparation/approval/execution step remain separately gated.

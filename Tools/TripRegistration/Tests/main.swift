@@ -332,7 +332,7 @@ func cli() throws {
     try check("CLI missing approval held") { _ = try call(["apply"] + common + requestArgs + ["--approval",dir + "/missing","--approval-sha256",Fixtures.hash,"--output",dir + "/missing-approval-output"],status:3) }
     try check("CLI predecessor unchanged") { try require(Data(contentsOf:URL(fileURLWithPath:dir + "/registry")) == s.registry) }
 }
-let suites: [(String,() throws -> Void)] = [("conversion",happy),("codecs",codecs),("history",histories),("requests",requests),("replay",replays),("publication",publication),("bounds",bounds),("CLI",cli)]
+let suites: [(String,() throws -> Void)] = [("conversion",happy),("codecs",codecs),("history",histories),("requests",requests),("replay",replays),("publication",publication),("bounds",bounds),("CLI",cli)] + registrationSuites + [("registration CLI",registrationCLI)]
 do {
     for (name,run) in suites { try run(); print("PASS " + name) }
     print("PASS \(suites.count) functions / \(cases) cases; invented fixtures only")

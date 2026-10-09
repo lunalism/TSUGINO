@@ -5,6 +5,7 @@ import Darwin
 func run() throws {
     let args = Array(CommandLine.arguments.dropFirst())
     guard let command = args.first else { throw ConversionFailure.malformedInput }
+    if RegistrationCLI.commands.contains(command) { try RegistrationCLI.run(args); return }
     var options: [String:String] = [:]
     guard (args.count - 1) % 2 == 0 else { throw ConversionFailure.malformedInput }
     for i in stride(from:1,to:args.count,by:2) {

@@ -11,7 +11,7 @@ enum PrivateIO {
     static func parent(_ path: String) throws -> Parent {
         guard path.hasPrefix("/"), !path.hasSuffix("/"), !path.contains("\0") else { throw ConversionFailure.unsafePath }
         let parts = path.split(separator:"/",omittingEmptySubsequences:false).dropFirst().map(String.init)
-        guard !parts.isEmpty, parts.allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." && $0.utf8.count <= 255 }) else { throw ConversionFailure.unsafePath }
+        guard !parts.isEmpty, parts.allSatisfy({ !$0.isEmpty && $0 != "." && $0 != ".." && $0 != ".git" && $0.utf8.count <= 255 }) else { throw ConversionFailure.unsafePath }
         let repo = URL(fileURLWithPath:#filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent().path
         guard path != repo, !path.hasPrefix(repo + "/") else { throw ConversionFailure.unsafePath }
         var repository = stat()
@@ -24,6 +24,8 @@ enum PrivateIO {
             guard fd >= 0 else { throw ConversionFailure.unsafePath }
             var ancestor = stat()
             guard fstat(fd,&ancestor) == 0 else { close(fd); throw ConversionFailure.unsafePath }
+            guard (ancestor.st_uid == 0 || ancestor.st_uid == getuid()),
+                  ancestor.st_mode & 0o022 == 0 || (ancestor.st_uid == 0 && ancestor.st_mode & S_ISVTX != 0) else { close(fd); throw ConversionFailure.unsafePath }
             if ancestor.st_dev == repository.st_dev && ancestor.st_ino == repository.st_ino { close(fd); throw ConversionFailure.unsafePath }
         }
         var s = stat()
@@ -56,7 +58,7 @@ enum PrivateIO {
         let b = try readAt(p.fd,p.leaf,limit:limit)
         guard Codec.hash(b) == sha256 else { throw ConversionFailure.historyConflict }; return b
     }
-    private static func writeAt(_ dir: Int32, _ name: String, _ bytes: Data) throws {
+    static func writeAt(_ dir: Int32, _ name: String, _ bytes: Data) throws {
         let fd = openat(dir,name,O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0o600)
         guard fd >= 0 else { throw ConversionFailure.publicationFailure }; defer { close(fd) }
         guard fchmod(fd,0o600) == 0 else { throw ConversionFailure.publicationFailure }
@@ -86,14 +88,14 @@ enum PrivateIO {
         let p = try parent(path); defer { p.closeFD() }
         return try readBundleAt(p.fd,p.leaf,owner:owner,manifestSHA:manifestSHA)
     }
-    private static func readBundleAt(_ parent: Int32, _ name: String, owner: String, manifestSHA: String) throws -> Conversion.Bundle {
+    static func readBundleAt(_ parent: Int32, _ name: String, owner: String, manifestSHA: String, registration: Bool = false) throws -> Conversion.Bundle {
         let dir = openat(parent,name,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC)
         guard dir >= 0 else { throw ConversionFailure.unsafePath }; defer { close(dir) }
         var s = stat()
         guard fstat(dir,&s) == 0, s.st_uid == getuid(), s.st_mode & 0o7777 == 0o700 else { throw ConversionFailure.unsafePath }
         let r = try readAt(dir,"registry.json",limit:Limits.registry), h = try readAt(dir,"history.json",limit:Limits.history), m = try readAt(dir,"manifest.json",limit:Limits.request)
         guard Codec.hash(m) == manifestSHA else { throw ConversionFailure.historyConflict }
-        return try Conversion.verify(r,h,m,owner:owner)
+        return try registration ? Registration.verify(r,h,m,owner:owner) : Conversion.verify(r,h,m,owner:owner)
     }
     static func publish(_ bundle: Conversion.Bundle, to path: String, owner: String) throws {
         try publishInternal(bundle,to:path,owner:owner,failAt:nil)
@@ -103,11 +105,12 @@ enum PrivateIO {
         try publishInternal(bundle,to:path,owner:owner,failAt:failAt)
     }
     #endif
-    private static func publishInternal(_ bundle: Conversion.Bundle, to path: String, owner: String, failAt: String?) throws {
-        _ = try Conversion.verify(bundle.registry,bundle.history,bundle.manifest,owner:owner)
+    static func publishInternal(_ bundle: Conversion.Bundle, to path: String, owner: String, failAt: String?, registration: Bool = false) throws {
+        if registration { _ = try Registration.verify(bundle.registry,bundle.history,bundle.manifest,owner:owner) }
+        else { _ = try Conversion.verify(bundle.registry,bundle.history,bundle.manifest,owner:owner) }
         let p = try parent(path); defer { p.closeFD() }
         if bundle.replay {
-            let old = try readBundleAt(p.fd,p.leaf,owner:owner,manifestSHA:Codec.hash(bundle.manifest))
+            let old = try readBundleAt(p.fd,p.leaf,owner:owner,manifestSHA:Codec.hash(bundle.manifest),registration:registration)
             guard old.files == bundle.files else { throw ConversionFailure.publicationConflict }; return
         }
         var existing = stat()
@@ -134,6 +137,7 @@ enum PrivateIO {
             throw errno == EEXIST ? ConversionFailure.publicationConflict : ConversionFailure.publicationFailure
         }
         committed = true
-        guard fsync(p.fd) == 0 else { throw ConversionFailure.publicationFailure }
+        if registration && failAt == "parentFsync" { throw ConversionFailure.durabilityUncertain }
+        guard fsync(p.fd) == 0 else { throw registration ? ConversionFailure.durabilityUncertain : ConversionFailure.publicationFailure }
     }
 }

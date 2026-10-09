@@ -8700,6 +8700,50 @@ The next separate major task is to **design and separately authorize the first-r
 Checkpoint-2 mint/registration workflow against the exact verified schema-4 revision-7 current
 checkpoint**. This documentation publication neither designs nor authorizes that workflow.
 
+#### Checkpoint-2 tooling implementation overlay — 2026-10-09
+
+This overlay supersedes only the earlier **tooling-unimplemented** status above. The bounded
+`Tools/TripRegistration` first-Trip tooling now implements the accepted refined Model B using
+**invented fixtures only**: complete eligibility/history/dependency/resource validation, durable
+exclusive preparation before OS CSPRNG, exact unapproved target/request retention, separate exact
+owner approval, and RNG-free application/replay. The isolated tool adds strict registration
+request/context v1, exact predecessor-preserving history v2 and a distinct registration bundle
+manifest. No accepted DEC/product semantics or app/shared/runtime source was changed.
+
+The original conversion implementation/history-v1 rules remain in force. Registration is limited
+to exactly one active Trip and one exact `gtfs.trip_id` reference, permanent prebound approval
+review-ID `attachedBy`, checked revision increment and preservation of every existing record.
+Correspondence proposal/approved-content/original-record digest domains remain distinct; successful
+history binds one business use while allowing exact historical replay. Explicit owner checkpoint
+and workspace/output bindings do not provide universal cross-path fork exclusion.
+
+Verification: final standalone build passed. The final complete invented suite passed
+**18 functions / 359 cases, 0 failures, 0 skips, 0 warnings**, including the unchanged
+**8 functions / 142 conversion cases** (subsets, not cumulative runs). Separate non-author
+implementation review passed **all 20 requested criteria**, with no unresolved material findings.
+The reviewer independently rebuilt the standalone production tool and reran the complete invented
+suite: **18 functions / 359 cases, 0 failures, 0 skips, 0 warnings**, plus the published-Python
+five-constant golden check. The two complete runs are reported separately, never added together.
+The suite includes
+independently Python-generated correspondence goldens, interrupted/exhausted preparation,
+no-redraw replay, atomic publication/recovery, diagnostics privacy and a predecessor history
+above 10 MiB within the 64 MiB v2 envelope.
+
+**No real use occurred.** No real/private correspondence, source key, registry/history, archive,
+mapping or provider artifact was accessed. No real TripID/request/approval was created,
+correspondence was not consumed and no real registry mutation/revision 8 exists. The supplied
+published Checkpoint-1 state remains schema 4 / revision 7, **275 active identities / 716 active
+references / zero Trip identities / zero `gtfs.trip_id` references**; it was not reopened here.
+P2-S9/P3-T1 remain incomplete, Phase 3 remains In Progress, and live/default routing remains
+unconfigured. Movement, endpoints, immutable S9 snapshot acceptance, import and production
+adoption remain separately gated.
+
+Next safe action after successful independent implementation review: owner review of tooling and
+publication scope. Source publication must be separately authorized, followed by a separately
+authorized real private binding/preparation task. Tooling implementation/test/review grants no
+real candidate preparation, approval or execution authority. No staging, commit or push is part
+of this task.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
