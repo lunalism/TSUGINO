@@ -870,3 +870,35 @@ build passed. Eight no-DEBUG declaration probes and Release app plus changed-obj
 checks confirmed exclusion, including the converter helper. Existing unrelated asset-catalog,
 Domain isolation and AppIntents warnings are not claimed fixed. No physical device was used.
 Detailed run paths and review status are recorded in ROADMAP; no benchmark or real input ran.
+
+
+## 11. Owner profile acceptance and bounded import-adapter implementation — 2026-10-09
+
+The current owner acceptance in [ROADMAP](ROADMAP.md#owner-accepted-first-toei-calendartime-evidence-profile--2026-10-09)
+binds profile `p3t1.toei-20260921.calendar-time-profile.1`, review
+`p3t1.toei-20260921.calendar-time-review.20261009.001`, exact review SHA-256
+`c45370a1e69d6c08d1ed4c7bfd601af728a7fb804ca121eb1a8234798a5e29c9`
+and owner timestamp `2026-10-09T14:03:35Z`. This is evidence acceptance for the
+exact retained source/candidate, not real import execution or runtime adoption.
+Historical proposals and narrower synthetic acceptance records above are preserved.
+
+The separately authorized `Tools/TimetableImport` implementation uses invented
+fixtures only. It implements normalized reviewed input, exact external S9/profile
+verification, one explicit date, actual Domain facts, deterministic private encoding,
+separate preparation/profile approval/import approval/application, complete bounded
+import state/history and immutable exclusive publication/replay. No accepted product
+semantics or app/shared source is changed. Source parsing is a later separately
+authorized binding step; the adapter cannot open a GTFS archive. The real source-profile
+review file and real railway artifacts are not accessed in this implementation task.
+No real approval/input/request/facts/bundle is created. See
+[tool contract](../Tools/TimetableImport/README.md) and ROADMAP verification status.
+
+Final standalone production build and complete invented suite passed **186 cases**.
+Separate non-author review approved **29/29** criteria with zero unresolved findings,
+independently rebuilt production and reran the same **186 cases PASS**. Unchanged
+Domain/converter/batch/routing semantic regressions passed **82 tests in seven suites**;
+unchanged S9 regressions passed **185 cases**. Counts are separate verification groups;
+independent repetitions are not added. Privacy/whitespace/isolation audits passed.
+The bounded adapter is independently approved and left unstaged for publication review;
+P3-T1 real import, real profile-approval materialization and runtime adoption remain
+unperformed and separately authorized. No new product decision is required.

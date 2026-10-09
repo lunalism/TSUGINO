@@ -1528,6 +1528,74 @@ expansion support and scheduled guidance remain incomplete.**
 
 # Phase 3 — Route Search Provider Integration
 
+
+## Owner-accepted first Toei calendar/time evidence profile — 2026-10-09
+
+The owner explicitly accepts the exact retained Toei GTFS 20260921 calendar/time
+evidence profile for the already accepted first P2-S9 Trip snapshot only:
+
+| Approval binding | Exact safe metadata |
+|---|---|
+| Profile ID | `p3t1.toei-20260921.calendar-time-profile.1` |
+| Review ID | `p3t1.toei-20260921.calendar-time-review.20261009.001` |
+| Review SHA-256 | `c45370a1e69d6c08d1ed4c7bfd601af728a7fb804ca121eb1a8234798a5e29c9` |
+| Owner approvedAt | `2026-10-09T14:03:35Z` |
+
+Acceptance establishes the scoped weekly calendar/completeness and unique exceptions,
+14 original-index time/eligibility bindings, exact qualification of 28 events,
+one execution per service date, pinned explicit fixed-offset provenance/unique
+inversion and compatible chronology. It does not grant real import execution,
+shipping profile authority, runtime installation, launch coverage or Phase 3 exit.
+Historical source-profile-required wording below records earlier gates; this dated
+owner acceptance resolves that evidence gate only for the exact retained candidate.
+
+The separately authorized bounded implementation is `Tools/TimetableImport`: an
+owner-only macOS normalized-input adapter using invented fixtures only. It reuses
+unchanged Domain values and published S9 verification, keeps S9/profile authority
+external by exact digests, separates profile approval from exact import-request
+approval, and supports one Trip/one explicit service date. No GTFS parsing/source
+acquisition, real/private artifact access, real approval materialization, real
+normalized input, real request, real timetable facts or runtime adoption occurs in
+this implementation task. DEC-078/085 product semantics are unchanged;
+`NO_NEW_PRODUCT_DECISION_REQUIRED`. See the tool README for wire formats, bounds,
+private publication, state, replay and verification instructions.
+
+Root verification: standalone production build **PASS**; complete new-tool invented
+suite **186 cases PASS**; unchanged timetable values/ride contexts/conversion/batch
+and three timetable-to-routing integration suites **82 Swift Testing tests / 7 suites
+PASS** on an explicit iPhone 17 / iOS 26.5 Simulator. These are disjoint verification
+groups; superseded setup attempts are excluded. Production symbol inspection found
+no synthetic timetable types or test fault hooks. Tracked/new-file whitespace and
+privacy audits pass. The unchanged published S9 production verifier and complete
+invented S9 suite passed **185 cases**, including its large external-history envelope.
+The timetable input/request/bundle retain only external S9 pins, not nested S9 history.
+Separate non-author independent review **APPROVED 29/29 criteria, zero unresolved
+material findings**. The reviewer independently rebuilt production and reran the complete
+final **186-case invented suite: PASS**; this rerun confirms the same cases and is not
+added to the root count. Review tightened non-string/null zone kinds and bounded bundle
+directory enumeration; persistent regression cases cover both and exact resource limits.
+The final production binary SHA-256 is
+`dfd6addfc12c2ce8b324db8744d60b1401b5f80a120e6a63839bcbca0237efab`.
+No real/private railway artifact was accessed by author or reviewer. No physical-device
+step or full app Release build was required for this offline tool; app/shared production
+and existing tool source remain unchanged. `git diff --check`, per-new-file whitespace,
+privacy and scope audits pass. Implementation remains unstaged/uncommitted for owner
+publication review; published Phase-3 HEAD remains
+`389ca38494996fdc31770f8d064f5649db7e5334` and main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`.
+
+**`P3_T1_REAL_IMPORT_ADAPTER_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.** This verdict
+establishes tooling only, not real approval/input/request/facts/bundle materialization.
+The next safe action is owner review and publication of this implementation. After
+publication, separately materialize the granted profile approval, bind exact accepted
+S9/source rows for one explicit date, prepare exactly one unapproved real import request,
+independently verify target facts and stop for owner digest approval. Do not approve or
+apply a real import in this implementation/publication task.
+P3-T1 remains partial and Phase 3 In Progress; broader P2-S9 closure, validated real
+import, production registry/data delivery, route-search adoption and Journey remain
+separate gates. The existing DEBUG synthetic implementation remains reference/test
+code and is not compiled into the standalone production adapter.
+
 ## Planning Assessment — 2026-10-01 (Proposed Sequence Only)
 
 **Authorization and baseline.** This session starts Phase 3 planning, not
