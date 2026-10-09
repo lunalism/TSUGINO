@@ -8645,6 +8645,61 @@ metadata audit, consuming this narrow legacy-state binding while preserving all 
 This chronology audit accesses repository authority only; no private/provider artifact,
 test/build or implementation change is involved. Historical records above remain unchanged.
 
+#### Checkpoint 1 real schema-4 conversion complete — 2026-10-09
+
+**Checkpoint 1 real schema-4 conversion: complete.** The separately owner-approved real
+conversion executed exactly once against the validated schema-2 revision-6 current context.
+The accepted lineage now has a verified **private current schema-4 revision-7 successor**.
+Complete retained history contains the approved baseline and exactly **one conversion boundary**.
+This dated execution overlay establishes the new current status; earlier tooling, pending
+binding and no-real-conversion statements retain their historical meaning when written.
+No new decision or change to Accepted DEC-083/084 semantics is introduced.
+
+The following integrity/status pins are supplied by the completed execution report. This
+documentation task does not reopen private provider payloads or publish private artifact paths.
+
+| Conversion binding | Exact recorded value |
+|---|---|
+| Lineage | `tsugino.provisional.identity-registry` |
+| Predecessor schema / revision | `2` / `6` |
+| Original predecessor registry SHA-256 | `9fda4419d192739c147d2cee2290b07f547e76a99c71a949fc4fe0322be8364b` |
+| Original H0 SHA-256 | `244d11925786d75eaa9b47c010d1961cb9fc4d7de9e483ab960de4a6c5c4d0fb` |
+| Approved conversion request ID | `p2s9.checkpoint1.schema2to4.20261009.001` |
+| Approved conversion request SHA-256 | `de0db752ace11907b503d155c912a3ec022887e42771d3271978fe81e991baff` |
+| Conversion approval review ID | `p2s9.checkpoint1.schema2to4.approval.20261009.001` |
+| Conversion approval `approvedAt` | `2026-10-09T04:18:00Z` |
+| Conversion approval SHA-256 | `c7ce26c6240f8a2f34da6d773e8a250c3a5a0c608c42d124e88bb69cf375ad64` |
+| Private current successor schema / revision | `4` / `7` |
+| Successor registry SHA-256 | `cf66f75c68205ccab365452773d86b7143b97f1eca6f36659ba3f8bffd45562c` |
+| Successor history SHA-256 | `ec63f5aa7a930c8d7941be8edc39a34ee81fd3b7b2f0e71de93bec293b0c8017` |
+| Conversion manifest SHA-256 | `3d4b1a42dba1a6ee87448eb2fb18406285cd3385ca23a71fa63b5e66567dfe9b` |
+| Conversion boundary SHA-256 | `29e050edc35ff72793d415f06c40b1cce12e9c8087135d00756869ca7d519cee` |
+
+**Verified execution facts.** Published `apply` ran exactly **once** and returned `converted`.
+Publication completed normally, with **no durability error and no retry**. Published
+`verify-bundle` passed with the exact manifest digest above. Separate non-author independent
+review passed **all 21 requested execution criteria**, with no unresolved material findings.
+The original schema-2 registry, baseline, H0, checkpoint and request artifacts remained unchanged.
+
+The resulting private registry contains **275 active / 0 retired identities** and
+**716 active / 0 absent / 0 retired references**, including **0 Trip identities** and
+**0 `gtfs.trip_id` references**. All existing identity/reference semantic fields were preserved;
+the conversion delta is only schema **2 -> 4** and revision **6 -> 7**. This conversion supplies
+no provider equivalence or new source evidence.
+
+**Remaining gates.** Checkpoint 1 alone is complete. **P2-S9 and P3-T1 remain incomplete;
+Phase 3 remains In Progress; live/default routing remains unconfigured.** Real Trip
+allocation/registration, movement evidence, endpoint dispositions, immutable S9 snapshot
+acceptance, P3-T1 real import and production registry adoption remain unresolved. App/runtime
+schema-4 consumption was not introduced; SQLite and routing state were not changed.
+
+The existing accepted, owner-approved **distinct-new-run correspondence** remains unchanged
+and was **not consumed by Checkpoint 1**. It remains future Checkpoint-2 authority/input.
+**Checkpoint 2 has not begun; its real Trip mint/registration tooling remains unimplemented.**
+The next separate major task is to **design and separately authorize the first-real-Trip
+Checkpoint-2 mint/registration workflow against the exact verified schema-4 revision-7 current
+checkpoint**. This documentation publication neither designs nor authorizes that workflow.
+
 #### Approved early route-search status/action view — 2026-10-05
 
 The owner authorizes this narrow exception to Phase 3's contracts/copy boundary; broader Phase
