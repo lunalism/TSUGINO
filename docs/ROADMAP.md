@@ -1,5 +1,67 @@
 # TSUGINO — ROADMAP.md
 
+## First real S9 snapshot selected; P3-T1 readiness overlay — 2026-10-09
+
+**First real authoritative untimed Trip snapshot selection: complete.** Execution verdict:
+`FIRST_REAL_P2_S9_SNAPSHOT_SELECTION_COMPLETE`. This governing overlay records supplied
+owner execution/review facts; earlier dated pending-gate, stopped-preparation, uncommitted
+publication and next-step records below are preserved as history. Their unresolved identity,
+classification, ordering, mapping, movement and snapshot statements no longer apply to this
+exact accepted candidate. This documentation-only audit opens no private or timetable source.
+
+Request `p2s9.first-snapshot.request.20261009.001` and approval
+`p2s9.first-snapshot.approval.20261009.001` (`approvedAt` `2026-10-09T12:57:48Z`) selected
+one immutable untimed snapshot. The [complete selection pins, sizes and readiness audit](P2_S9_REAL_READINESS.md#first-real-authoritative-untimed-trip-snapshot-selection-complete--2026-10-09)
+records exact request/approval/Trip/crosswalk/history/manifest/dependency-root SHA-256 values.
+Trip/crosswalk/history/manifest sizes: **551 / 11,416 / 54,005,988 / 1,067 bytes**.
+Dependency closure: **8 records / 7 direct roots / 8 context pins / 1,808,356 unique decoded bytes**.
+
+Accepted structure: **14 Passenger stops / 0 Passed / original indices 0...13**, one full
+represented single-Line segment, continuity `notApplicable`; origin and destination each
+`unknownExtent`, coverage **false/false**, service unknown with `serviceTypeSegments = []`.
+Recurring identity, real registration, source correspondence, classification/order,
+**14/14 Station correspondence**, **13/13 movement**, line construction, continuity,
+independent endpoint dispositions, unknown service type, immutable crosswalk/snapshot,
+owner approval and bundle verification are resolved for this candidate.
+
+Exactly **one** `approve-snapshot` and **one** `apply-snapshot`; result `snapshotSelected`,
+no durability uncertainty, retry or second apply. Bundle files are exactly `trip.json`,
+`crosswalk.json`, `history.json`, `manifest.json`. Published verifier `bundleValid unchangedReplay`
+is read-only verification, not a second apply. Separate non-author execution review **25/25**,
+no unresolved finding; revision-8 identity registry/history/manifest unchanged.
+
+**`FIRST_REAL_P2_S9_CANDIDATE_ACCEPTED`** is the narrow scope conclusion under Accepted
+DEC-074/075/078/082/083/084. Repository authority does not define this single pilot as the
+whole required real S9 scope, nor prescribe an additional Trip/run count. Broader S9 closure
+requires explicit declared-scope reconciliation and acceptance accounting; no slice-wide or
+launch-wide/full-feed completion is claimed. This does not impose full-feed acceptance on a
+bounded timetable pilot for this accepted Trip. P3-T1 real import stays **incomplete**;
+Phase 3 stays **In Progress**, with all launch scope preserved.
+
+**`P3_T1_S9_HANDOFF_READY_FOR_THIS_TRIP`**: registered canonical Trip, exact immutable
+snapshot/crosswalk, source/checkpoint/artifact and evidence/profile/mapping/view bindings
+plus downstream revalidation obligations now supply this Trip's structural prerequisite.
+Accepted DEC-078 producer semantics and DEC-085 DEBUG invented converter already implement
+dated/snapshot/index bindings, activation/exception precedence, civil-day extended hours,
+explicit offset rules, gap/fold rejection, qualified times and typed outcomes. Published
+synthetic converter-to-all-distinct/optimal/batch routing integrations do not qualify Toei.
+
+**Exactly one next classification: `P3_T1_SOURCE_PROFILE_EVIDENCE_REQUIRED_NEXT`.** Accepted
+stop/pass/order and recurring-key profiles do not accept retained Toei calendar/time semantics.
+Remaining real prerequisites are exact authorized source/member/revision bindings; a reviewed
+service/calendar/exception/extended-hour profile; zone/offset provenance; exact time-row-to-S9
+associations and applicable eligibility; one-execution-per-service-date evidence; then reviewed
+real tooling, retained dependency closure, immutable import output/history and independent
+real acceptance. **`NO_NEW_PRODUCT_DECISION_REQUIRED`** for the next evidence assessment
+under DEC-078/085. No real adapter/import execution is started or source compatibility assumed.
+Production registry, app delivery, route-engine adoption, Phase 5 consumption and public
+rights/bundling remain separate gates; applicable local-use authorization still applies.
+
+The exact next safe action is to scope an owner-only calendar/time interpretation evidence
+review for this accepted Trip, with exact owner input bindings and narrow access/output
+boundaries for separate authorization. That action has not begun. Only ROADMAP and the
+readiness assessment change; historical records are retained verbatim.
+
 ## P2-S9 resource-envelope correction overlay — 2026-10-09
 
 Real S9 request preparation stopped with `S9_REQUEST_PREPARATION_FAILED` before creating

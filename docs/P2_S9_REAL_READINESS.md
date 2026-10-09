@@ -1,5 +1,153 @@
 # P2-S9 — First real untimed Trip readiness assessment
 
+## First real authoritative untimed Trip snapshot selection: complete — 2026-10-09
+
+**Current governing overlay:** `FIRST_REAL_P2_S9_SNAPSHOT_SELECTION_COMPLETE` for the
+exact first retained candidate. This records the owner's supplied successful execution
+and independent review; this documentation audit does not reopen private artifacts or
+independently rerun that execution. All earlier overlays, unresolved-gate lists and
+next-step instructions below are historical assessments at their recorded stages.
+Their pending registration, classification, ordering, movement and snapshot statements
+are superseded for this candidate by this overlay. They are not current blockers for it.
+
+### Exact selection record
+
+| Supplied artifact / authority | Bytes | SHA-256 |
+|---|---:|---|
+| Request `p2s9.first-snapshot.request.20261009.001` | — | `4beba37ad5d5593a10c3a824d848c381052c0986e132955818663bfcffdb188d` |
+| Approval `p2s9.first-snapshot.approval.20261009.001` | — | `fc47ccd9e1d948c4fd4236b03e2456cc22680fb7e71a3e8afc2235727f9bfdc3` |
+| Trip | 551 | `2281b2d49d199edbdcfcf179515ac2c40195f638400c2d81cfd981f4b11a4b12` |
+| Occurrence crosswalk | 11,416 | `54c1992850914f157d04cd0eea22222bdd6a82009497b21b3d44cb4bef29b7aa` |
+| S9 history | 54,005,988 | `3c831b1dfda249e5d7c268e46855dcd48fffa2fdc8179381e2f2a9d52d70563f` |
+| S9 manifest | 1,067 | `acc0b8abfe0b90fa3ffaafe69039d6471a5a7f41c11298ae24abe33e0f9ca7e8` |
+| Dependency root | — | `dc7e5d4094e6edaa2da3b7e69ca1f15ab28b6f30574cf7e54cdf57d4f4dc23c5` |
+
+Owner approval `approvedAt`: `2026-10-09T12:57:48Z`. Dependency closure: **8 records,
+7 direct roots, 8 context pins, 1,808,356 unique decoded bytes**.
+
+Accepted aggregate structure: **14 Passenger stops, 0 Passed, original indices 0...13**;
+**one full represented single-Line segment**. Continuity is `notApplicable`. Origin and
+destination each retain `unknownExtent`, with `includesServiceOrigin = false` and
+`includesServiceDestination = false`. Neither flag claims proved external continuation.
+Service type remains unknown, `serviceTypeSegments = []`. No complete-service, current
+operation, dated eligibility or full-feed coverage follows from the represented interval.
+
+`approve-snapshot` was invoked **exactly once**; `apply-snapshot` executed **exactly once**
+and returned ordinary `snapshotSelected`, with no durability uncertainty, retry or second
+apply. The published bundle contains exactly `trip.json`, `crosswalk.json`, `history.json`
+and `manifest.json`. Published verification returned `bundleValid unchangedReplay`:
+**read-only verification, not another apply**. Independent non-author execution review
+passed **25/25**, with no unresolved finding. Revision-8 identity registry/history/manifest
+remain unchanged. These execution facts are supplied results, not new actions by this audit.
+
+### Resolved candidate gates and scope conclusion
+
+For this exact candidate, recurring Trip identity, real registration, source correspondence,
+Passenger classification, source order, **14/14 Station correspondence**, **13/13 movement**,
+Line-segment construction, continuity applicability, independent endpoint dispositions,
+service-type unknown state, immutable occurrence-to-original-index crosswalk, immutable
+S9 snapshot selection, owner approval and bundle verification are **resolved**.
+
+**Classification: `FIRST_REAL_P2_S9_CANDIDATE_ACCEPTED`.** Accepted DEC-074/075 retain
+S9's structural deliverable and consumer prerequisite; DEC-078 separates dated facts;
+DEC-082 §§1/2/4/6 requires fixed scope, complete represented occurrences and acceptance
+of every required scoped run; DEC-083/084 distinguish registration, snapshot selection and
+production adoption. Neither those decisions nor the current roadmap declares acceptance
+of this single pilot sufficient to close the whole retained P2-S9 slice. The historical
+ordered path below also explicitly distinguishes a first accepted pilot from whole-S9
+completion. No explicit additional Trip/run count was found, so this audit invents none.
+
+**Broader P2-S9 slice closure is not established.** Its declared required real scope and
+scope-wide acceptance accounting remain to be explicitly reconciled before declaring the
+whole slice complete. This is not a requirement to import the whole launch feed before a
+bounded timetable pilot for this accepted Trip. Launch-wide/full-feed Trip and timetable
+coverage is unproved; Phase 3 remains **In Progress**, P3-T1 real import **incomplete**.
+
+### Repository-only P3-T1 foundation audit
+
+Authorities: Accepted [DEC-074/075](DECISIONS.md#dec-074--local-baseline-milestone-requires-real-sqlite-acceptance-and-retains-explicit-follow-ups),
+[DEC-078](DECISIONS.md#dec-078--separate-dated-timetable-facts-from-recurring-trip-identity-and-routing-policy),
+[DEC-085](DECISIONS.md#dec-085--bounded-invented-timetable-conversion-profile-and-input-contract),
+[producer contract §§2–4/9/10](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md), and the roadmap's
+2026-10-04 converter/routing and 2026-10-05 batch integration records. Later acceptance
+and implementation overlays govern historical Proposed/unimplemented wording.
+
+| Foundation already accepted / implemented | Verified repository boundary |
+|---|---|
+| Recurring Trip versus dated execution | Immutable Domain occurrence address/binding/facts retain view, service date, full exact Trip snapshot and every original passenger index. Trip identity remains recurring; one execution per Trip/date requires reviewed source proof. |
+| Calendar activation and exceptions | DEBUG invented converter implements complete weekly or exception-only calendars, service-date coverage, unique exception override, duplicate/conflict rejection and activation-first precedence. Conclusively inactive dates skip event validation; unknown activation is unavailable. |
+| Extended hours and civil dates | DEC-085 accepts an invented civil-day-offset profile; rollover preserves the original service date while resolving the event's civil tuple. This is not acceptance of GTFS elapsed-anchor or retained Toei time interpretation. |
+| Explicit zone conversion | Invented fixed offsets or bounded revisioned transition tables, unique inverse conversion, coverage checks and distinct gap/fold rejection; no device timezone or implicit OS timezone database. |
+| Time quality, eligibility and outcomes | Exact/missing/estimated remain distinct; exact-event chronology spans gaps; no interpolation. Tri-state boarding/alighting remains explicit. Data outcomes are success, inactive, unsupported, insufficientEvidence and invalid, with bounded diagnostics and atomic failure. |
+| Converter-to-routing composition | Published test-only integration passes actual converter facts unchanged to all-distinct search, then optimal selection/admission; batch-to-routing tests preserve inactive/unavailable outcomes and immutable views. Inventory, connections, permissions and source/profile agreement are stipulated in invented fixtures. |
+
+Repository source confirms `SyntheticTimetableInput`, `SyntheticTimetableCivilTime`,
+`SyntheticTimetableConverter` and `SyntheticTimetableBatchAssembler` remain DEBUG-only,
+in-memory and invented. No real owner-only timetable import/output-history adapter is
+established by them or the existing untimed intake/registration/S9 tools. Existing synthetic
+verification is reused as recorded evidence; this documentation task runs no tests/builds.
+Synthetic acceptance proves neither real feed compatibility nor complete search coverage.
+
+### S9 structural handoff
+
+**`P3_T1_S9_HANDOFF_READY_FOR_THIS_TRIP`.** The supplied accepted bundle now supplies the
+registered canonical Trip, immutable exact Trip snapshot and occurrence-to-original-index
+crosswalk. Its source/checkpoint/artifact, source/profile/mapping/review views and evidence
+bindings are retained with complete dependency closure. This satisfies the previously missing
+canonical structural prerequisite for this Trip under DEC-074/075/078 and DEC-082 §§2/3.3/6,
+DEC-083/084; it is not real timetable acceptance or authorization to consume times.
+
+The downstream revalidation obligations remain `datedTimetableFacts`,
+`originalIndexAssociations`, `rideContexts`, `continuityEligibility` and `dataViewBindings`.
+T1 must bind its own immutable view to this exact accepted snapshot/crosswalk and qualified
+source revisions. An unchanged recurring identity or station alone cannot reuse indices.
+A changed snapshot, source, profile, mapping or evidence applicability reopens affected
+claims; old immutable outputs and any later Journey snapshots must remain unchanged.
+
+### Remaining real-import prerequisites
+
+The accepted S4 identity/provenance and local provisional baseline foundation are already
+recorded (DEC-074/075); this candidate's S9 structural gates above are discharged. The
+following timetable-specific evidence/output work is **not established** by this audit:
+
+| Remaining prerequisite | Narrow evidence or tooling still needed |
+|---|---|
+| Exact authorized input and revision | Owner-nominated existing timetable/calendar inputs, exact archive/member hashes and applicable revisions, permitted read/derivative/retention scope and applicable local-use rights. An earlier S9 access grant does not authorize opening calendar/time content. No alternative-source discovery is implied. |
+| Retained Toei timetable/calendar profile | Authoritative applicable `service_id` meaning, calendar/calendar_dates coverage, activation and exception precedence, service-date labels, exact versus missing/estimated fields and GTFS extended-hour anchoring. Accepted stop/pass/order and recurring-key profiles resolve their S9 roles, not these timetable semantics. |
+| Zone and offset provenance | Explicit source zone and supported conversion rule, authoritative offset/table revision and coverage, uniqueness/gap/fold handling. The invented civil-day/fixed-offset model cannot be silently applied to this feed. |
+| Exact occurrence/time-row association | Revision-bound time rows associated with every original occurrence in the accepted S9 crosswalk, preserving repeated visits and the full snapshot. Retain qualification and boarding/alighting evidence where needed; S9 stop classification and endpoint flags alone are not dated operational eligibility. Existing scoped 0/0 evidence may be reused only after checking applicability to T1's view/date. |
+| One execution per service date | Evidence for the exact recurring-run/service-calendar join within the proposed date scope; prior recurring identity alone does not establish multiplicity. Unsupported multiple/ambiguous executions hold output pending appropriate design. |
+| Reproducible real production and acceptance | Reviewed real adapter design/implementation, complete retained dependency/provenance closure, immutable versioned import output/history, unchanged-input replay checks, independent real review and scoped owner acceptance. No real importer or output exists merely because synthetic conversion passes. |
+
+Production registry adoption, real app/runtime artifact delivery, route-engine adoption,
+Phase 5 JourneyEngine consumption and public licensing/publication/bundling remain separate
+gates under DEC-074/075/078. Applicable **local-use** authority remains required for the
+pilot; public distribution gates are not automatically private-import blockers. No runtime
+wiring, shipping data, production promotion or Phase 3 exit is claimed.
+
+### Exactly one smallest next task — not begun
+
+**`P3_T1_SOURCE_PROFILE_EVIDENCE_REQUIRED_NEXT`.** Retained Toei calendar/time interpretation
+is not yet accepted in repository authority. Before selecting a real adapter or assuming
+converter reuse, separately scope an owner-only timetable/calendar evidence assessment for
+this exact accepted Trip: nominate exact retained inputs and authoritative interpretation
+records, define narrow access and private output boundaries, and review source/member/revision
+applicability, service/calendar semantics, extended-hour anchoring, zone provenance, occurrence
+associations, eligibility and one-execution-per-date evidence. Missing evidence must be
+reported; this task grants no source access, acquisition or provider contact and begins none.
+
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for that evidence/profile assessment under Accepted
+DEC-078/085. Railway facts require evidence, not an owner preference. A demonstrated need
+for unsupported time anchoring, zone disambiguation or multiple executions would require a
+precisely scoped compatibility/design review before implementation; none is established here.
+The next safe action is to prepare that bounded evidence-review scope and exact owner input
+bindings for separate authorization, not to run a real importer.
+
+This audit changes only this document and ROADMAP, retains historical text verbatim, and
+publishes safe pins/sizes/counts/workflow IDs and gate conclusions. No actual canonical IDs,
+provider run keys, occurrence locators, mapping pairs, station sequences, time values or
+private paths are added. No private/timetable source or S9/registry artifact was opened.
+
 ## Resource-envelope correction overlay — 2026-10-09 Asia/Seoul
 
 Real S9 request preparation stopped with `S9_REQUEST_PREPARATION_FAILED` before creating
