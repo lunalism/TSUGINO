@@ -3,6 +3,14 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Governing Boundary-A implementation update (2026-10-10):** the separately authorized
+invented-only production values and immutable assessment are implemented in
+`Data/Routing/QualifiedConnectionEvidence.swift`, with focused invented tests in
+`QualifiedConnectionEvidenceTests.swift`. [§21.11](#2111-invented-only-boundary-a-implementation--2026-10-10)
+records exact scope, measured safeguards and verification status. Earlier A-next/audit-only
+wording describes the published design stage; no real qualification, train-gap feasibility,
+search/solver or runtime adoption follows. Implementation remains unstaged/uncommitted.
+
 **Governing post-publication Boundary-A audit (2026-10-10):** request-closure values
 were published at `3359f1ca197a07e0e18b8d40751450a8a1608390` with the exact reviewed
 six-file bytes. [§21](#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)
@@ -4171,3 +4179,169 @@ no real railway identifiers, private paths, artifact hashes, occurrence times or
 Exact next safe action, **not begun**:
 
 > Separately authorize the smallest invented-only production Data qualified connection/transfer evidence values and immutable request-closure assessment defined in §21, with focused tests and evidence-backed finite construction safeguards. Preserve the original closure's requiredness, exact compatibility, known-negative/unknown distinctions and fail-closed holds. Do not access real/private data, evaluate train-gap feasibility, invoke a solver/search or wire runtime behavior in that task.
+
+### 21.11 Invented-only Boundary-A implementation — 2026-10-10
+
+The owner separately authorized §21's bounded Data slice at published baseline
+`2ee3bdfdf4da7a221bcf637114d62dadeaf8426b`. §21.9's classification and not-begun next
+action above describe the preceding audit. Production source:
+`TSUGINO/Data/Routing/QualifiedConnectionEvidence.swift`; focused invented tests:
+`TSUGINOTests/QualifiedConnectionEvidenceTests.swift`. Domain, the existing B source/tests,
+synthetic behavior, AppEnvironment and all runtime code remain unchanged.
+
+#### Values, qualification and local assessment
+
+`ConnectionRelationKey` contains exactly the from/to dated occurrence addresses and original
+alighting/boarding indices, with directional Hashable equality compatible with B. Each supplied
+record retains both full expected bindings, target applicability and exact connection-review
+association. The view validates original endpoint roles before indexing, derives stations from
+snapshots, and checks explicit same-station/walking form. Every record, including unavailable
+and absent, participates in keyed recurring-Trip full-snapshot consistency across dates.
+Distinct recurring Trips are necessary for positives, never sufficient train-change evidence.
+
+The qualification envelope retains full `SearchInputClosureApplicability`, exact profile policy
+and separate connection review. Its existing applicability constructor bounds all profile/request/
+inventory/static copies. Positive payloads retain relation, genuine-change, components-once and
+endpoint-wide context references, exact from-arrival/to-departure instants, form and allowance.
+Private payload construction through checked factories requires every supplied affirmative premise.
+`ConnectionEvidencePremise` distinguishes qualified reference, unsupported, insufficient evidence
+and contradiction without a verified Bool. Any known contradiction throws a finite typed error,
+even if another premise is missing. Otherwise unsupported dominates insufficient evidence in this
+local premise summary; it is not Domain/global failure precedence. Unknown/unsupported context
+creates an explicit unavailable state, never guessed line-pair allowances or transfer truth.
+The references express stipulated qualification only; local construction authenticates no review.
+
+Positive genuine-change qualification cannot be replaced by line/operator metadata or distinct
+IDs. Known through-continuity contradiction throws `trainChangeConflict`; same-Trip positives
+reject in the view. Known omitted/double-counted component qualification throws `allowanceConflict`
+even when numerical totals match. Missing premises produce unavailable evidence rather than a
+qualified positive. No stitching, through-Trip splitting or automatic relation inference exists.
+
+`ConnectionAllowance` retains alighting/interchange/boarding plus asserted total in seconds;
+interchange's qualified partition includes all applicable walk/access requirements once.
+Construction rejects nonfinite/negative fields, nonzero TwoSum residual at either fixed-order
+addition, overflow and total mismatch. All signed zero fields retain positive zero. Affirmative
+component/relation qualification remains mandatory for zero. Arithmetic validates numbers only,
+not semantic partition or source authenticity; no implicit component or default allowance exists.
+
+Explicit qualified negative payloads retain endpoint-wide context and event-independent negative
+authority for the entire exact dated pair. Time-dependent negatives are unsupported in this slice.
+Present/absent/unavailable remain distinct. The view retains independent ordered declared keys,
+complete/unknown authority, one record per key and expanded logical accounting. Missing/extra/
+duplicate/contradictory membership rejects atomically, without deduplication or absence by omission.
+Complete-empty and unknown-empty stay distinct; neither determines B's required domain.
+
+`ResolvedSearchInputAssessment` retains the original B closure and A view unchanged. Full scope,
+request, profile, policy, view, inventory/static qualification and target authority must match;
+exact four-field key sets must be equal, regardless of record order. Every A binding compares
+deeply with B's independently expected binding, even when the required date is unloaded or the
+record is absent/unavailable. No TripID-only shortcut or silent extra evidence filtering exists.
+
+Per-target accounting follows B order. Positives require two loaded active endpoints, allowed
+roles, exact events and equal retained instants. Missing/estimated events, unknown permission,
+unloaded/inactive/unavailable slots retain explicit distinct held reasons. Known prohibited
+permission throws `endpointConflict`; changed exact event throws `applicabilityConflict`. Both
+endpoints are checked so one held endpoint cannot hide a known contradiction at the other.
+Explicit absence resolves negatively only under compatible complete negative authority; unknown
+scope keeps a negative-coverage hold. Resolution removes only that indexed connection hold.
+All other connection, occurrence/interval, unknown-domain and external dependency holds survive
+in original order. The wrapper's predicate is derived from remaining holds, never caller-set.
+This is local input accounting only, not completed search, route feasibility or adoption.
+
+#### Generated invented limits and accounting
+
+Before fixing A-specific constants, an optimized standalone Swift representation study generated
+256 / 512 / 1,024 / 2,048 / 2,560 unique directional keys. Each relation retained two independently
+generated 72-stop/71-line/71-service-segment snapshot representations, six long reference strings,
+allowance/event values and keyed reverse-order assessment lookup. It checked full representative
+array equality and charged expanded text/payload. Five iterations per size measured fastest
+586.266 / 743.843 / 1,274.633 / 3,077.254 / 3,327.090 milliseconds, including fixture creation.
+Model logical bytes were 23,065,600 / 46,131,200 / 92,262,400 / 184,524,800 / 230,656,000.
+This is a representation/construction study, not the actual production constructor, solver,
+heap profile or iPhone measurement. Only invented strings and values were used.
+
+Select 2,048 relations as the initial measured construction shape; the 2,560 stress shape is
+25% larger and supplies measured headroom without authorizing that larger production count.
+The actual production maximum fixture exercises both 72-stop full snapshots with 71 line and
+71 service segments, actual 192-byte spellings, all 2,048 positive records and assessment.
+This independently sizes A's heavier records rather than inheriting B's 23,040 target limit.
+
+| Safeguard | Bound / ownership |
+|---|---:|
+| Declared keys / records / assessment targets | 2,048 each; count preflight before nested work |
+| Retained full binding copies | At most 4,096; exactly two per record |
+| Record association reference copies | At most 12,288; at most six per positive record |
+| Endpoint-wide associations / positive event records | At most 2,048 / 4,096, fixed state fields |
+| Stops / line segments / service segments per snapshot | 72 / 71 / 71, inherited Candidate-B bound |
+| Actual retained textual spelling / static input entries | 192 UTF-8 bytes / 32, existing bounds unchanged |
+| View expanded logical payload | 215,125,456 bytes |
+| Assessment expanded logical payload | 566,451,856 bytes, includes retained B and A |
+
+The envelope charges each declared and record key separately (880 bytes each), two full bindings
+(47,456 each), two common references (208 each), positive state (64 plus four references),
+32 record overhead and qualification/application scope copies. A record's maximum is 98,016.
+View cap = 64 + qualification envelope 14,388,624 + 2,048 × 98,016. Qualification uses the existing
+full profile maximum (34,560 stations / 34,080 lines / 480 Trips), complete inventory/static
+qualification and separate applicability/review references, without implicit shared storage.
+Assessment adds B's 347,370,560 envelope, A, 64 fixed, 64 per target and 32 per possible retained
+original hold (conservative 119,522 slots from existing B dimensions). This is expanded logical
+accounting, not measured heap/COW allocation or a promised iPhone budget.
+
+Actual raw spellings of keys and both binding copies are bounded and charged before hashing or
+full snapshot equality, including canonically equivalent Unicode spellings. Existing constructed
+applicability/reference types already enforce their own bounds. Overflow-safe subtraction guards
+prevent budget wrap. Exact/+1 tests cover keys, records, assessment targets, stops/text and logical
+budget primitives; hostile excessive top-level count rejects before nested invalid snapshots.
+No truncation, partial result, new production horizon or solver-capacity policy is introduced.
+
+Expected keyed work is O(N×S + P) for view/qualification construction and
+O(I + R + N×S + P + H) for assessment: N relations, S≤72 snapshot size, P full profile members,
+I loaded inventory slots, R independently required occurrences and H existing holds. No pairwise
+record comparison, context-pair Cartesian expansion, path/route generation or weakened equality.
+
+#### Verification and handoff
+
+Author verification passed on explicit iPhone 17 Simulator (iOS 26.3.1): the new suite has
+**42 functions / 122 expanded cases**; the nine required unchanged regression suites have
+**116 functions / 240 expanded cases**. The combined run is **158 functions / 362 cases**,
+zero failures/skips/runtime warnings. Regression breakdown (functions/cases): closure 31/90,
+inventory 18/48, scope 11/18, success 13/15, ride context 10/14, routing values 16/26,
+synthetic routing 7/16, batch 6/7 and optimal 4/6. The maximum generated actual view/assessment
+test, including fixture generation and +1 checks, took 0.986 seconds on the host Simulator;
+this is no physical-device performance claim. Standard **Release app and Live Activity extension
+build passed**, including production source compilation without a DEBUG dependency. No warning
+is attributable to the new files; existing Domain Codable isolation, AppIcon asset and
+AppIntents metadata-extraction warnings remain outside this task. `git diff --check` and explicit
+new-file whitespace checks passed.
+
+Independent non-author review: **30/30 PASS, zero unresolved material findings**. The reviewer
+checked requiredness ownership, directional full bindings/derived anchors, form/genuine-change/
+through-service rules, qualification and every evidence/completeness state, exact arithmetic/zero/
+semantic partition, dated events/endpoint-wide context, immutable exact-set assessment and indexed
+hold preservation, resource evidence/boundaries/complexity and all privacy/runtime exclusions.
+Fresh independent focused Debug verification passed **42 functions / 122 expanded cases**, zero
+failures/skips/runtime warnings. Fresh standard **Release app/Live Activity extension build passed**,
+including extension embedding/validation, with no new-file diagnostic. The reviewer independently
+read the author combined result and confirmed the separate **116/240** unchanged regressions.
+The independent maximum generated whole test took 0.905 seconds on the same explicit iPhone 17
+Simulator; reruns are not added to coverage totals. Reviewed source/test bytes were unchanged.
+
+Task verdict:
+`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+This verdict covers this invented-only value/assessment slice; it accepts no real connection
+evidence, resolves no real request and establishes no production search readiness.
+
+This implementation is invented-only: no real/private
+artifact, source parser, IO/network, serialization/persistence/cache, Phase-10 guidance, candidate/
+result/search/solver, train-gap helper or runtime integration was accessed, added or invoked.
+An explicit regression uses short and long invented schedules with the same qualified allowance;
+both resolve evidence, proving that no schedule-gap feasibility comparison is owned here.
+
+All implementation/test/docs files remain unstaged/uncommitted for owner publication review;
+published HEAD/upstream remain `2ee3bdfdf4da7a221bcf637114d62dadeaf8426b` (0/0), main unchanged.
+Broader `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**,
+unconfigured live/default routing and unresolved horizon/resource/solver-adoption ownership remain.
+
+Exact next safe action after independent approval, **not begun**:
+
+> Owner review and publication of the independently approved qualified connection/transfer evidence values and immutable assessment. After publication, separately assess the smallest complete pre-solver input-composition step that combines a technically qualified request closure with compatible qualified connection evidence, while still excluding route enumeration and train-gap feasibility until those execution responsibilities are separately authorized.

@@ -1027,6 +1027,23 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Boundary-A implementation overlay (2026-10-10):** the separately authorized invented-only
+`Data/Routing/QualifiedConnectionEvidence.swift` now supplies immutable directional evidence
+values, bounded independent complete/unknown views and `ResolvedSearchInputAssessment` retaining
+the published closure unchanged. Full bindings/snapshot-derived anchors, genuine-change/form
+evidence, exact component/total allowance, dated endpoint association and expressly qualified
+endpoint-wide context are retained; tokens authenticate no review. Explicit negative and unavailable
+states stay distinct. Exact target sets and full scope/profile/static/inventory compatibility are
+checked for every state. Only specifically resolved connection holds are removed; all other holds
+survive. Known contradictory premises fail atomically, while unknown evidence remains held.
+No Domain/closure/synthetic change, train-gap helper, IO/persistence, solver, runtime or Phase-10
+guidance is included. [Consumer §21.11](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#2111-invented-only-boundary-a-implementation--2026-10-10)
+records generated invented limits, passing focused/regression/Release verification and independent
+30/30 approval with fresh focused/Release reruns. Publication remains pending. Task verdict:
+`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+Earlier A-next/audit-only wording below is historical. Live/default routing remains unconfigured;
+broader P3-T1/Phase 3 and production horizon/resource/adoption gates remain incomplete.
+
 **Current post-publication connection-boundary audit (2026-10-10):** request-closure values
 were published at `3359f1ca197a07e0e18b8d40751450a8a1608390` with the exact reviewed bytes.
 Older publication-pending/B-next statements below record prior tasks. [Consumer §21](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)

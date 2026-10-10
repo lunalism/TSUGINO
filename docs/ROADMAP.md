@@ -1,5 +1,44 @@
 # TSUGINO — ROADMAP.md
 
+## Qualified connection evidence values implementation — 2026-10-10
+
+The owner separately authorized the published consumer §21 design's invented-only Data slice.
+`TSUGINO/Data/Routing/QualifiedConnectionEvidence.swift` and focused invented
+`TSUGINOTests/QualifiedConnectionEvidenceTests.swift` implement exact directional evidence and
+an immutable assessment over unchanged B. [Consumer §21.11](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#2111-invented-only-boundary-a-implementation--2026-10-10)
+records full semantics, generated measurement and conservative copy-by-copy accounting.
+Earlier A-next/audit-only statements describe the previous published design stage.
+
+The view has explicit present/qualified absent/unavailable states, independent complete/unknown
+scope and full snapshot-derived anchors. Positives require affirmative genuine change, qualified
+all-component allowance, exact occurrence times and endpoint-wide context. Same-station equality,
+distinct TripIDs and arithmetic do not authenticate evidence. Zero requires affirmative premises.
+Known contradictory through/component/context inputs reject; missing/unsupported premises remain
+unavailable. Exact-set assessment removes only positively/negatively resolved target holds and
+preserves all other B holds/requiredness unchanged. No absence by omission or train-gap comparison.
+
+Generated invented representation study preceded A-specific bounds: selected 2,048 relations,
+with a 25%-larger 2,560 stress shape; expanded view/assessment caps 215,125,456 / 566,451,856 bytes.
+Inherited text/snapshot/static bounds are unchanged. These are technical construction safeguards,
+not product horizon, heap guarantees or solver capacity. Author Debug verification passed new
+42 functions / 122 expanded cases plus unchanged regressions 116/240; combined 158/362, zero
+failures/skips/runtime warnings. Standard Release app/Live Activity extension build passed.
+Independent non-author review **30/30 PASS**, zero material findings; fresh focused rerun 42/122
+and fresh Release app/extension build passed, with no new-file warnings. Exact verification and
+existing unrelated warnings are recorded in consumer §21.11. Task verdict:
+`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+Implementation remains unstaged/uncommitted; no staging/commit/push.
+Published HEAD stays `2ee3bdfdf4da7a221bcf637114d62dadeaf8426b`, main unchanged.
+
+No real/private evidence, train-gap feasibility, route/search/solver/runtime, persistence/IO or
+Phase-10 guidance is included. Domain/closure/synthetic behavior remains unchanged. Broader
+`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**, live/default
+unconfigured routing and unresolved production horizon/resource/adoption ownership remain.
+
+Exact next safe action after independent approval, **not begun**:
+
+> Owner review and publication of the independently approved qualified connection/transfer evidence values and immutable assessment. After publication, separately assess the smallest complete pre-solver input-composition step that combines a technically qualified request closure with compatible qualified connection evidence, while still excluding route enumeration and train-gap feasibility until those execution responsibilities are separately authorized.
+
 ## Qualified connection evidence boundary audit — 2026-10-10
 
 The exact reviewed request-closure values were published at

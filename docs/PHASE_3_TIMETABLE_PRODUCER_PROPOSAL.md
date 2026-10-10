@@ -3,6 +3,19 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing invented-only Boundary-A implementation — 2026-10-10
+
+The separately authorized qualified connection evidence values and immutable B assessment are
+implemented; [consumer §21.11](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#2111-invented-only-boundary-a-implementation--2026-10-10)
+records exact scope, measured construction safeguards, passing author focused/regression and
+Release checks, independent 30/30 approval and fresh focused/Release reruns. Task verdict:
+`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+Earlier A-next/audit-only wording is historical. Producer and B values remain unchanged;
+occurrence validity does not authenticate directional relation, allowance or train-change truth.
+No real connection acceptance, train-gap feasibility, search/solver/runtime or broader completion
+follows. Implementation is unstaged/uncommitted for owner publication review. P3-T1 remains
+scope-incomplete, Phase 3 In Progress and live/default routing unconfigured.
+
 ## Governing published closure and Boundary-A audit — 2026-10-10
 
 Request-closure values were published at `3359f1ca197a07e0e18b8d40751450a8a1608390`;
