@@ -236,6 +236,7 @@ func main() throws {
     try test("independent unknown permission cannot carry affirmative evidence") {
         try status(row(i,"visits",0,"boarding",.object(["value":.string("unknown"),"evidence":.string("invented.allowed")])),"invalid")
     }
+    try occurrenceLocatorTests()
     try filesystem(i,q,a,b,imported,e)
     print("PASS TimetableImport invented suite: \(total) non-overlapping cases")
 }

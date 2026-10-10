@@ -1,5 +1,51 @@
 # TSUGINO — ROADMAP.md
 
+## P3-T1 occurrence-locator bound correction — 2026-10-10
+
+The original owner-only import adapter was published at
+`d2b052cd2a49f2ab044cc7db9112747e555ab718`. The owner reports first real normalized
+binding succeeded, then request preparation stopped with
+`P3_T1_REAL_IMPORT_RESOURCE_LIMIT` before creating any request/facts/bundle.
+P3-T1 imposed an unintended downstream resource restriction on an already accepted
+S9 authority value: generic converter ASCII tokens were limited to 64 bytes, and
+the same helper incorrectly checked opaque S9 occurrence locators. S9 accepts up
+to 256 bytes; the supplied safe aggregate for accepted real locators is 172–176 bytes.
+This is a downstream resource-contract defect, with no timetable semantic change.
+
+The bounded correction introduces a dedicated 256-byte occurrence-locator limit,
+preserving printable ASCII syntax and exact crosswalk byte equality. Generic
+converter tokens remain 64 bytes. All other envelope/count/dependency/ID limits
+and the 64 KiB total counted-text ceiling remain unchanged; locators count normally.
+Dedicated invented fixtures cover full S9-to-Domain conversion at 64/65/176/255/256,
+257 rejection, a one-byte same-length binding mismatch, generic 64/65 boundaries,
+syntax rejection and exact/overflow aggregate accounting. The normal short fixture,
+S9 implementation, Domain and app/runtime sources remain unchanged.
+
+This task accesses no real/private railway artifact and creates no real request,
+facts or bundle. The prior attempt's retained profile approval, normalized input
+and initial state are next-task context only; the one-use source archive grant was
+consumed. Real preparation remains stopped pending correction publication. After
+publication, separately revalidate exact retained hashes/security and independently
+review reuse of those artifacts, without reopening the GTFS archive. No resume,
+owner import approval, apply, runtime adoption or Phase 3 completion occurs here.
+Historical implementation/preparation records below remain unchanged.
+
+Correction verification: author production build and complete **206-case invented
+suite PASS**. Separate non-author review approves **15/15 criteria**, no material
+findings, with independent production rebuild and complete **206-case PASS** rerun;
+counts are reported separately, not added. The unchanged timetable suites pass
+**82 tests / seven suites**, zero failures/skips, on an explicit iPhone 17 / iOS 26.5
+Simulator. The complete unchanged S9 suite passes **185 cases**, including its large
+invented retained-history envelope. Production symbol/source isolation,
+privacy, resource-contract and whitespace audits pass. No physical device is used.
+The seven-file correction remains unstaged/uncommitted for owner publication review;
+HEAD/upstream stay `d2b052cd2a49f2ab044cc7db9112747e555ab718` and main stays
+`e8a463d51f14b3cb1027960c63244b694579a71b`. P3-T1 remains partial and Phase 3
+In Progress; no real import or runtime adoption follows from tooling verification.
+
+**`P3_T1_OCCURRENCE_LOCATOR_BOUND_CORRECTION_IMPLEMENTED_AND_APPROVED`.** This is
+tooling correction approval only; real preparation remains stopped pending publication.
+
 ## First real S9 snapshot selected; P3-T1 readiness overlay — 2026-10-09
 
 **First real authoritative untimed Trip snapshot selection: complete.** Execution verdict:

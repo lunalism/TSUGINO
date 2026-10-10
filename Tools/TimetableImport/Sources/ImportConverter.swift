@@ -354,6 +354,7 @@ nonisolated enum ImportConverter {
             }
         }
         func token(_ value: String?) { if let value { text(value, limit: 64, ascii: true) } }
+        func occurrenceLocator(_ value: String) { text(value, limit: ImportLimits.occurrenceLocator, ascii: true) }
         func revision(_ value: ImportRevision) {
             token(value.source); token(value.profile); token(value.zone); token(value.mapping)
         }
@@ -393,7 +394,7 @@ nonisolated enum ImportConverter {
             for e in calendar.exceptions { text(e.service, limit: 256); date(e.date) }
         }
         for visit in packet.visits {
-            token(visit.occurrence); token(visit.mappingRevision)
+            occurrenceLocator(visit.occurrence); token(visit.mappingRevision)
             event(visit.arrival); event(visit.departure)
             token(visit.boarding?.evidence); token(visit.alighting?.evidence)
         }

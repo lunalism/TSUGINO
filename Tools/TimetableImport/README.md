@@ -198,6 +198,7 @@ and absent from production. Same-path races have one exclusive winner.
 | Visits / exceptions / evidence / zone intervals | 256 / 256 / 64 / 8 |
 | Tool JSON nesting | 32 |
 | Wire token or scalar-exact source key / converter ASCII token / Domain ID | 256 / 64 / 128 UTF-8 bytes |
+| Exact S9 occurrence locator | 256 UTF-8 bytes |
 | Converter counted text | 64 KiB |
 
 These conservative single-Trip limits permit explicit evidence and base64 expansion
@@ -206,3 +207,49 @@ its history is verified, never copied into timetable authority. Bounds are selec
 from public contract/representation needs, not private real payload measurements.
 No truncation, retries, date enumeration, batches, source parsing, networking,
 runtime installation, routing, Journey or realtime integration is implemented.
+
+## Occurrence-locator bound correction — 2026-10-10
+
+P3-T1 imposed an unintended downstream resource restriction on an already accepted
+S9 authority value. The published converter applied its generic 64-byte ASCII-token
+limit to `visit.occurrence`, although the authoritative S9 crosswalk permits opaque
+locators up to 256 UTF-8 bytes. The owner reports successful first real normalized
+binding followed by `P3_T1_REAL_IMPORT_RESOURCE_LIMIT` before request creation;
+accepted locator lengths were 172–176 bytes. No real request/facts/bundle was created.
+This correction uses only that supplied aggregate and invented fixtures, without
+accessing any retained real/private railway artifact.
+
+`ImportLimits.occurrenceLocator = 256` now bounds only occurrence locators, using
+nonempty printable ASCII bytes 33...126 and exact crosswalk byte equality. The wire
+adapter classifies an overlong occurrence as a resource limit before the shared
+token syntax check; converter preflight uses a dedicated locator helper. Generic
+converter tokens remain 64 bytes, and Domain IDs, wire/source keys and every other
+resource limit remain unchanged. No trimming, normalization, rewriting or index
+substitution occurs. Locators still contribute every byte to the 64 KiB counted-text
+ceiling; at most 256 visits contribute at most 65,536 locator bytes before other
+bounded fields, so aggregate overflow remains fail-closed and all traversal is finite.
+DEC-078/085 calendar, time, eligibility, chronology and authority semantics are unchanged.
+
+Dedicated invented verified S9 fixtures exercise 64/65/176/255/256-byte locators
+through normalized input and actual Domain facts construction. The unchanged S9
+producer rejects 257 bytes; a 257-byte normalized copy and direct converter preflight
+both reject as resource limit. Same-length one-byte mutation fails occurrence binding.
+Separate tests retain generic evidence/mapping token boundaries, invalid locator syntax,
+and exact 64 KiB / one-byte-over aggregate accounting. The ordinary short fixture is unchanged.
+
+Real preparation remains stopped pending correction publication. The prior attempt
+retained profile approval, normalized input and initial state, but no request; its
+one-use archive grant was consumed. After publication, a separately authorized task
+must revalidate exact hashes/security and independently review those retained artifacts
+for reuse. Do not reopen the archive. This correction does not resume real preparation.
+
+Correction verification: author production build and complete invented suite **206 cases
+PASS**; separate non-author review **15/15 criteria approved**, no material findings,
+with independent production rebuild and complete **206-case PASS** rerun. The two
+suite runs are separate repetitions, not summed. Both production builds have SHA-256
+`5a245585da764b5afc9801230868466ec693f5dbcb32d884a257b34ff199dbd2`.
+Unchanged timetable regressions pass **82 tests / seven suites**, zero failures/skips,
+on an explicit iPhone 17 / iOS 26.5 Simulator. The complete unchanged S9 suite
+passes **185 cases**, including its large invented retained-history envelope.
+Production isolation, privacy and whitespace audits pass. The correction remains
+unstaged/uncommitted; no staging, commit, push or physical-device step occurs.

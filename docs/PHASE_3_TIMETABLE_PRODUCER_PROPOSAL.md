@@ -902,3 +902,38 @@ independent repetitions are not added. Privacy/whitespace/isolation audits passe
 The bounded adapter is independently approved and left unstaged for publication review;
 P3-T1 real import, real profile-approval materialization and runtime adoption remain
 unperformed and separately authorized. No new product decision is required.
+
+## 12. Occurrence-locator bound correction — 2026-10-10
+
+The adapter in §11 was subsequently published at
+`d2b052cd2a49f2ab044cc7db9112747e555ab718`. Per owner-supplied execution context,
+first real normalized binding succeeded, but preparation stopped before creating
+a request/facts/bundle because generic 64-byte converter token validation also
+checked S9 occurrence locators. S9 permits 256 bytes; the accepted real locator
+lengths are reported only as the safe 172–176-byte aggregate. P3-T1 imposed an
+unintended downstream resource restriction on an already accepted S9 authority value.
+
+The correction distinguishes the exact opaque occurrence-locator limit (256 bytes)
+from generic converter tokens (64 bytes), retaining printable ASCII syntax, exact
+crosswalk byte association, all other bounds and the 64 KiB counted-text ceiling.
+It changes no DEC-078/085 timetable or source/profile/import authority semantics.
+Dedicated invented S9 fixtures and boundary/binding/aggregate tests supplement the
+unchanged ordinary fixture. See [tool correction](../Tools/TimetableImport/README.md#occurrence-locator-bound-correction--2026-10-10)
+and the current ROADMAP overlay for verification and review status.
+
+This task opens no real/private railway artifact and performs no real preparation.
+The prior attempt retained profile approval, normalized input and initial state;
+its one-use source archive grant was consumed. Real preparation remains stopped
+pending correction publication. A separately authorized next task must revalidate
+and independently review those exact retained artifacts for reuse, without reopening
+the archive. No real request, facts or bundle exists from the blocked attempt or this
+correction. Historical §11 status remains a record of its implementation stage.
+
+Author production build and complete **206-case invented suite PASS**; independent
+non-author review approves **15/15 criteria** with no material findings and separately
+rebuilds production/reruns the complete **206 cases PASS**. Counts are not summed.
+Unchanged timetable regressions pass **82 tests / seven suites** on the explicit
+iPhone 17 / iOS 26.5 Simulator, with zero failures/skips. The complete unchanged S9
+suite passes **185 cases**, including its large invented retained-history envelope.
+Privacy/isolation/whitespace audits pass; seven scoped files remain unstaged/uncommitted
+for owner publication review. Real preparation stays stopped and Phase 3 stays In Progress.

@@ -7,6 +7,7 @@ enum ImportLimits {
     static let state = 12 * 1024 * 1024, history = 8 * 1024 * 1024, manifest = 16 * 1024
     static let bundle = 9 * 1024 * 1024, dependencies = 64, dependency = 32 * 1024
     static let expanded = 1024 * 1024, depth = 32
+    static let occurrenceLocator = 256 // Exact opaque locator from the verified S9 crosswalk.
 }
 
 enum ImportAuthority {
@@ -133,7 +134,12 @@ enum ImportAuthority {
         for row in i["visits"].list {
             try Codec.fields(row,["originalIndex","occurrence","mappingRevision"],["arrival","departure","boarding","alighting"])
             let n = try integer(row["originalIndex"])
-            try Codec.token(row["mappingRevision"]); try Codec.token(row["occurrence"])
+            try Codec.token(row["mappingRevision"])
+            // Preserve resource-limit classification before the shared wire token syntax check.
+            guard row["occurrence"].text.utf8.prefix(ImportLimits.occurrenceLocator + 1).count <= ImportLimits.occurrenceLocator else {
+                throw ConversionFailure.resourceLimit
+            }
+            try Codec.token(row["occurrence"])
             let expectedOccurrence = n >= 0 && n < Int64(passengers.count) ? passengers[Int(n)]["locator"].text : nil
             visits.append(.init(index:n,occurrence:row["occurrence"].text,mappingRevision:row["mappingRevision"].text,expectedOccurrence:expectedOccurrence,
                 arrival:try event(row,"arrival"),departure:try event(row,"departure"),boarding:try permission(row,"boarding"),alighting:try permission(row,"alighting")))
