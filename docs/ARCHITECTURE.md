@@ -1027,6 +1027,46 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Governing final-input boundary audit (2026-10-10):** qualified connection evidence and
+immutable assessment were published at `6f826fe175ce9ec4d0f5fa5c8293c17223e96667`.
+Earlier publication-pending/A-next statements below are historical. Production input values
+are inventory → independently required B closure plus independently qualified A evidence →
+`ResolvedSearchInputAssessment`. Technical qualification means implemented local holds are
+resolved under supplied authority, not ride endpoint usability, exact gap feasibility,
+runtime endpoint/policy preflight or completed optimal search.
+
+[Consumer §22](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#22-final-immutable-pre-solver-input-boundary-audit--2026-10-10)
+recommends the smallest next immutable Data/Routing `PreparedInternalSearchInput`: retain the
+whole technically qualified assessment and supplied scope; traverse only required positive active
+intervals, check eligibility/exact events/inclusive bounds, and reuse `TrainCandidate` plus
+`TimetableRideContext`. Keep known inactive/absent/scoped exclusions in provenance/accounting,
+never mistake omitted tokens for unknown input. Preparation refuses unresolved required evidence.
+Project each required connection once to feasible/infeasible/qualified-absent accounting under
+the exact endpoint key/form/allowance/context, with optional ride incidence indexes; no Cartesian
+ride-pair expansion or inferred requiredness. Single production-local exact TwoSum-based threshold
+comparison handles residual signs/overflow; no competing predicate in each solver algorithm.
+Published A remains evidence-only; none of this preparation is implemented by this audit.
+
+Bind only the fixed Accepted DEC-086 arrival/change/all-equal-optima/completion definition/version.
+§10.2's concrete itinerary-key/comparator remains Proposed and must be settled/reviewed in later
+solver design; input preparation needs no winner ordering. Connection/time interpretation is
+materialized upstream, but DEC-080 V2 immutable definition resolution and real-runtime provenance
+remain required; opaque tokens authenticate nothing. Keep operational work/memory/cutoff/checkpoint
+configuration per invocation outside evidence/input truth. Application selects runtime profile/
+configuration and owns lifetime/publication suppression under DEC-087. A later production component
+behind `RouteSearching` owns enumeration, optimization, sound pruning, cutoff and canonical
+reconstruction/admission/finalization, with Domain constructors authoritative and UI uninvolved.
+These are architecture recommendations, not wholesale R6 acceptance or algorithm/runtime selection.
+
+Prefer route-level `RouteRailProposal`/walking/candidate construction only for complete selected
+itineraries later. Prepared direct rides/empty arrays prove no optimum/noResults; execution proof
+remains solver-only. Classification **`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_NEXT`**;
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for this invented value slice;
+**`NUMERIC_PRE_SOLVER_INPUT_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`**. No source/test change,
+private artifact, gap implementation, solver, runtime wiring or Phase-10 guidance in this audit.
+Broader P3-T1/Phase 3 remains incomplete, live/default routing unconfigured. Verification/review
+and exact not-begun next action are recorded in §22.8.
+
 **Boundary-A implementation overlay (2026-10-10):** the separately authorized invented-only
 `Data/Routing/QualifiedConnectionEvidence.swift` now supplies immutable directional evidence
 values, bounded independent complete/unknown views and `ResolvedSearchInputAssessment` retaining

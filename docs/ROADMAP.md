@@ -1,5 +1,48 @@
 # TSUGINO — ROADMAP.md
 
+## Published connection evidence; final immutable input audit — 2026-10-10
+
+The independently approved qualified connection evidence and immutable assessment were published
+at `6f826fe175ce9ec4d0f5fa5c8293c17223e96667` (`feat: add qualified connection evidence`).
+Earlier publication-pending/unstaged statements record their implementation stage. Current
+production input chain: inventory → B request closure plus independent A connection evidence →
+`ResolvedSearchInputAssessment`. A/B still own evidence/accounting only; no real request-scoped
+resolved assessment or production solver exists.
+
+The documentation-only [consumer §22 audit](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#22-final-immutable-pre-solver-input-boundary-audit--2026-10-10)
+selects **`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_NEXT`**, not solver implementation. Recommend
+one immutable Data preparation value retaining the full technically qualified assessment/scope,
+materializing usable required active intervals through existing TrainCandidate/TimetableRideContext,
+retaining known-negative/excluded provenance, projecting exact connection gap feasibility once
+per required key, and binding only Accepted DEC-086 objective/completion definition/version.
+Unknown required use evidence refuses preparation. Exact endpoint permissions/time quality and
+scope membership remain checks after B/A technical qualification; no all-pairs requiredness.
+
+Single preparation owns feasibility; solver later owns paths/optimization/pruning/cutoff and
+canonical final admission/completion. Per-invocation operational budgets stay outside evidence
+truth; Application selects runtime profile/configuration and owns lifecycle/publication suppression.
+Connection/time semantics are materialized upstream, but real immutable policy resolution and
+canonical runtime endpoint/configuration preflight remain gates. §10.2's detailed itinerary identity/
+tie comparator stays Proposed for later solver design; no historical production all-distinct rule
+or new route preference is adopted. Exact supplied horizon/ride cap stays unchanged, no defaults.
+
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for the proposed value representation.
+**`NUMERIC_PRE_SOLVER_INPUT_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`**: structural ceilings can
+derive from bounded B/A dimensions, but new token/projection/provenance payload caps require generated
+invented construction evidence. No solver work limits or iPhone performance promises are selected.
+Prefer invented prepared-input values before a separately authorized bounded real pilot.
+Input qualification never produces noResults, optimum or execution completion, including empty
+usable arrays or an existing direct ride. Future invented matrix is in §22.7.
+
+No source/tests changed; no tests/builds/device work or private artifact access. Independent
+non-author review **20/20 PASS**, zero unresolved material findings; the local prohibited-first
+ride-use sequencing was clarified. Scope/privacy audit and working `git diff --check` passed;
+reviewed-byte/cached scope and whitespace checks remain publication requirements.
+Broader `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**,
+live/default routing unconfigured and production coverage/resource/adoption gates remain unchanged.
+Exact next safe action in consumer §22.8 is separate authorization of that invented input-only slice;
+it is **not begun**. No gap helper, enumeration, solver/results or runtime wiring is implemented here.
+
 ## Qualified connection evidence values implementation — 2026-10-10
 
 The owner separately authorized the published consumer §21 design's invented-only Data slice.

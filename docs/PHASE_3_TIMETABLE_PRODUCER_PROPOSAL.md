@@ -3,6 +3,24 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing published connection and final-input handoff — 2026-10-10
+
+Qualified connection evidence and immutable assessment were published at
+`6f826fe175ce9ec4d0f5fa5c8293c17223e96667`; earlier publication-pending statements are history.
+[Consumer §22](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#22-final-immutable-pre-solver-input-boundary-audit--2026-10-10)
+audits the next immutable preparation boundary only: **`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_NEXT`**,
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`**. Inventory/producer and B/A source remain unchanged.
+Positive interval declarations are qualified movement evidence, not automatic endpoint eligibility,
+exact event/scope usability or connection gap feasibility. Future preparation reuses existing ride
+constructors, keeps whole assessment provenance and exact supplied scope, evaluates connection
+feasibility once and binds Accepted objective semantics. It does not move request requiredness,
+connections or solver execution into the producer. Real policy resolution/source authentication
+remains separate. Invented values precede any separately authorized real preparation pilot.
+No private artifact or receipt is reopened, no code/tests/builds/device work is performed, and
+no real closure/search/runtime readiness follows. §22 records independent documentation review
+**20/20 PASS**, zero unresolved findings, and the exact not-begun next action. P3-T1 remains scope-incomplete, Phase 3 In Progress,
+live/default routing unconfigured.
+
 ## Governing invented-only Boundary-A implementation — 2026-10-10
 
 The separately authorized qualified connection evidence values and immutable B assessment are

@@ -3,6 +3,16 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Governing post-publication final-input audit (2026-10-10):** qualified connection
+evidence and immutable assessment were published at
+`6f826fe175ce9ec4d0f5fa5c8293c17223e96667`. Earlier publication-pending statements
+record their implementation stage. [§22](#22-final-immutable-pre-solver-input-boundary-audit--2026-10-10)
+recommends one invented-only `PreparedInternalSearchInput` slice for ride materialization,
+exact connection feasibility and Accepted objective binding. Classification:
+`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_NEXT`; `NO_NEW_PRODUCT_DECISION_REQUIRED`.
+This is documentation/design only; no prepared value, gap helper, solver or real qualification
+is implemented. Detailed runtime ownership/adoption and §10.2's Proposed comparator are not accepted.
+
 **Governing Boundary-A implementation update (2026-10-10):** the separately authorized
 invented-only production values and immutable assessment are implemented in
 `Data/Routing/QualifiedConnectionEvidence.swift`, with focused invented tests in
@@ -4345,3 +4355,289 @@ unconfigured live/default routing and unresolved horizon/resource/solver-adoptio
 Exact next safe action after independent approval, **not begun**:
 
 > Owner review and publication of the independently approved qualified connection/transfer evidence values and immutable assessment. After publication, separately assess the smallest complete pre-solver input-composition step that combines a technically qualified request closure with compatible qualified connection evidence, while still excluding route enumeration and train-gap feasibility until those execution responsibilities are separately authorized.
+
+## 22. Final immutable pre-solver input boundary audit — 2026-10-10
+
+### 22.1 Published truth, authority and remaining gap
+
+Publication `6f826fe175ce9ec4d0f5fa5c8293c17223e96667` contains the exact independently
+approved six-file evidence/assessment implementation. Current production values are:
+
+`TimetableOccurrenceInventoryView` → `RequestScopedSearchInputClosure` (B) plus
+independent `QualifiedConnectionEvidenceView` (A) → `ResolvedSearchInputAssessment`.
+Neither A's declaration nor loaded inventory membership defines B's required targets.
+The source's actual allowance type is `ConnectionAllowance`; a qualified allowance name in
+planning notation does not identify another production declaration.
+
+Current Accepted selectors remain §20.1: DEC-076 except DEC-079's bounded internal
+supersession; DEC-078 §§2–4/O1–O6; DEC-079 §§2–5/C1–C6; DEC-080 §9.9 V1–V7 for
+P1–P4/P6 only; DEC-081 S1–S6 synthetic-only; DEC-086's scoped objective/completion and
+on-iPhone preference; DEC-087's Application lifecycle/retry. Historical production
+all-distinct P5 and unselected R6 details are not adopted. This audit recommends technical
+composition under those constraints; it does not amend an Accepted decision or implement it.
+
+`assessment.isTechnicallyQualified == true` means no original B hold remains after exact
+A/B accounting: required occurrences/intervals and directional connections are locally
+accounted for, including qualified negatives, and implemented compatibility checks passed.
+It authenticates neither supplied review nor real requiredness/completeness. B's active
+interval `.present` records qualified interval membership; it does **not** validate that
+ride's endpoint eligibility, exact time quality or inclusive scope bounds. A's positive
+endpoint checks cover connection endpoints only, not every required ride endpoint.
+
+| Remaining responsibility | Proposed owner / truth still required |
+|---|---|
+| Evidence/input closure | Retained B/A assessment, under independently qualified declarations; never derived from routes |
+| Operational ride projection | Final pure preparation validates required positive active interval usability and constructs existing ride values |
+| Connection temporal feasibility | Same preparation evaluates every required positive relation once with exact events and allowance |
+| Objective/completion binding | Immutable fixed Accepted DEC-086 definition/version attached to prepared input |
+| Execution configuration | Later solver invocation supplies explicit work/memory/cutoff/checkpoint policy; Application selects runtime profile/configuration |
+| Enumeration/completion | Future solver proves optimum and all equal optima, reconstructs/admit winners and finalizes results |
+
+Current values also contain no canonical endpoint status/network entity view or adopted runtime
+configuration. DEC-076 current-existence/retirement/support checks, DEC-079 preflight and
+DEC-080 immutable policy resolution still need the authorized coherent runtime environment.
+Pure invented preparation can be implemented under stipulated qualified premises without
+claiming those real runtime gates discharged. Technical input readiness is not authorization
+to enumerate real data or adoption of a production solver.
+
+### 22.2 Ride materialization and explicit exclusions
+
+Recommend one immutable `PreparedTimetableRide` per **positively usable B-required active
+interval**, identified by exact occurrence address and original boarding/alighting indices.
+Traverse B's declarations/accounting in retained order; no all-index-pairs enumeration or
+additional intervals inferred from Trip shape. Use indexed inventory lookup and full binding
+association. Require affirmative qualified whole-interval correspondence/continuity from the
+retained positive interval authority; the reference alone authenticates no real review.
+
+Reuse `TrainCandidate(trip:boardingIndex:alightingIndex:)` and
+`TimetableRideContext(train:facts:)`. The token retains those actual immutable values;
+context already retains full binding/address/snapshot and original indices. Derive anchors,
+movement-bearing line sequence and exact departure/arrival through them rather than retain
+independently relabelable copies. Retain exact scope/assessment association in the enclosing
+input, with an exact ride key for lookups. `TimetableRideContext` checks full snapshot/time
+association and chronology, but does not check eligibility or scope; preparation must do so.
+
+| Required interval state/use | Preparation treatment |
+|---|---|
+| Inactive occurrence | No token; retain original known-negative provenance |
+| Interval absent under complete authority | No token; retain exact negative interval accounting |
+| Positive active interval, known prohibited boarding/alighting | Known endpoint-use exclusion, no token; not missing evidence |
+| Positive active interval, allowed endpoints and exact events outside supplied [L,U] | Known scoped exclusion, no token; no adaptive horizon |
+| Remaining potentially usable positive interval, unknown permission or missing/estimated required event | Refuse whole preparation, no partial usable subset; required evidence is unavailable |
+| Positive active interval, allowed/exact in-scope endpoints and compatible canonical constructors | Retain one exact token |
+| Inconsistent association, contradictory chronology/continuity or constructor failure | Refuse preparation as a typed local consistency failure; never silently drop a defect |
+
+Known prohibited boarding **or** alighting conclusively excludes that interval before requiring
+unused event values or another unknown permission. For remaining potentially usable intervals,
+require both permissions allowed, then both exact constructible events, then inclusive scope
+membership. Unknown permission or missing/estimated event at that stage refuses preparation;
+one known out-of-scope timestamp cannot hide another unknown endpoint. This local projection
+sequencing follows the existing eligibility reference, not new global failure precedence.
+No excluded interval becomes an extra negative source assertion. Retain original assessment
+plus finite per-required-interval preparation accounting so absence from token arrays is never
+interpreted as unknown or newly inferred interval absence. The existing B/A values are unchanged.
+
+One evidenced spanning Trip produces one ride token for each supplied usable interval, including
+multi-Line/through service. A line/operator boundary within the ride adds zero train changes.
+A complete itinerary later counts genuine transitions across distinct rides, rail rides minus
+one; existing duplicate recurring TripID restrictions still apply even across dates. Do not
+merge fragments, deduplicate tokens by stations/times or select a train/Journey.
+
+### 22.3 Single connection feasibility owner and arithmetic
+
+Select **Option A: final pure pre-solver preparation owns feasibility projection**. Option B
+would repeat the predicate in each expansion/algorithm; Option C adds a separate public value
+boundary without independent truth needed here. Keep a small production-local pure arithmetic
+helper, not another stage, and evaluate each exact B-required positive relation once.
+This is a future separately authorized responsibility; published A/assessment remains evidence-only.
+
+The relation key has endpoint addresses/indices, not whole incoming/outgoing ride intervals.
+Retain one ordered/keyed prepared relation per B target, with `.feasible` or `.infeasible` for
+qualified positives and `.absentUnderCompleteAuthority` for qualified negatives. Positive
+payload retains the original form/allowance/events/context association through the assessment;
+store checked associations rather than caller-authored replacements. Endpoint-wide qualification
+permits reuse across supported incident intervals; it never manufactures those intervals.
+Optional endpoint-to-ride incidence indexes may group existing tokens, but do not materialize
+a Cartesian product of ride pairs or adopt synthetic all-potential-pair requiredness.
+
+The solver may traverse only a feasible relation between two existing incident ride tokens with
+matching exact endpoint keys, plus its normal path constraints. Known absence and known
+infeasibility supply no usable edge. A required relation may have no usable incident token;
+retain its accounting without inventing a ride or dropping the target. Unavailable/held
+assessment cannot enter this stage. Positive-but-too-short is **infeasible**, never absent,
+unsupported or insufficient evidence. `infeasibleConnection` remains a later candidate-admission
+rejection if an unexpected contradictory handed-off proposal reaches that boundary, not a public
+preparation failure or a search result.
+
+Normative feasibility: exact finite represented arrival `a`, departure `d`, and finite
+nonnegative qualified total `t`; permit iff **d ≥ the exact mathematical sum a+t**. Equality
+is permitted. No time conversion, display rounding, epsilon, saturation or subtract-and-round
+alternative. Use absolute elapsed seconds from existing exact instants; never parse day labels.
+
+Future arithmetic design: one production-local TwoSum primitive may serve two separately named
+policies. Allowance component addition requires zero residual and exact asserted total, as today.
+Feasibility must **not** reject a nonzero residual as missing/invalid evidence: retain rounded
+sum `s` and exact residual `e` representing a+t. For finite `s`, d<s is infeasible, d>s feasible,
+and d==s feasible iff e≤0. Thus equality with a rounded-down threshold fails, while equality
+with a rounded-up threshold passes. Positive overflow is known infeasible for every finite d;
+handle it before residual operations. Unexpected nonfinite residual/intermediate under otherwise
+valid finite inputs is a typed arithmetic consistency failure, never guessed feasibility.
+This corrects representation error rather than rounding the decision. Reuse no DEBUG helper;
+any minimal future extraction must preserve existing allowance behavior/tests exactly.
+
+### 22.4 Final immutable input and objective binding
+
+Recommend one production Data/Routing `PreparedInternalSearchInput`, immutable/nonisolated/
+Sendable, constructed atomically only from a technically qualified assessment and the fixed
+supported objective definition. No caller-set readiness/completion Bool or partial/degraded
+preparation. Retain the **whole original assessment**, exact supplied scope (prefer a derived
+projection), ordered/keyed usable ride tokens, per-required-interval preparation accounting,
+all required prepared relation accounting and immutable objective definition/version.
+The assessment retains all negative/requiredness/static/view/profile/policy provenance; do not
+copy selected fields into a second closure or optimize it away based on COW assumptions.
+Its size and any additional actual retained copies must be measured/accounted before implementation.
+
+`InternalRouteObjectiveDefinition` is conceptual notation for a closed supported version/shape:
+exact final arrival then genuine train changes, all identity-distinct equal optima, deterministic
+identity ordering solely for reproducibility, optimum/all-tie proof before success, no first-found/
+first-K, cutoff before proof/completion → searchIncomplete, unknown required evidence →
+dataUnavailable, select before frozen handoffs and preserve every admitted winner. Defensive
+mixed-winner rejection remains searchIncomplete; all rejected remains the existing unscoped
+noUsableAlternatives accounting. Binding specifies obligations, not an execution certificate.
+Validate full definition plus version/reference; identity-only equality or mutable latest lookup
+must not authorize reuse. A changed definition/reference prevents prepared-input reuse. No fare,
+departure, comfort, walking-distance or other preference is introduced.
+
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for this representation of already Accepted DEC-086.
+The exact itinerary-key representation and UUID/unsigned-UTF8/index/form/shorter-prefix comparator
+in **§10.2 remain explicitly Proposed**, including its detailed dedup/order mechanics. Existing
+DEBUG implementations are reference oracles, not production acceptance of that comparator.
+Bind the Accepted requirement `reproducibilityOnly`, not an unapproved concrete comparator.
+Input preparation creates no itinerary keys or compares winners, so this does not block its
+invented value slice. Later solver design must explicitly settle/review exact identity/equality/
+dedup/order mechanics before execution, preserving every distinct equal optimum. A change to
+which optima survive or any extra user preference would require owner decision; none is selected.
+
+The input contains no paths, frontier, discovered candidates, winners, results, result accounting,
+execution certificate, cache or mutable runtime state. It is independent of Dijkstra/A*/DFS or
+another algorithm. Refer to successful construction as **prepared input qualification**, and
+future completed optimum/tie proof as **execution completion**; never a bare pre-solver `complete`.
+
+### 22.5 Materialized policies, execution configuration and admission
+
+| Policy/reference | Consumption recommendation and remaining obligation |
+|---|---|
+| Connection policy | Exact relation/form/components/total and endpoint-wide applicability are materialized in A under this reference; preparation uses them, solver need not reinterpret raw policy definitions |
+| Service-date interpretation | Producer/inventory already supply exact absolute events and dated membership; preparation/solver do not reconvert clocks or enumerate/parse day labels |
+| Objective policy | Current profile lacks it; final input newly binds the fixed Accepted operational definition/version above |
+
+This avoids duplicate policy interpretation, **not** DEC-080 V2 resolution. Before actual runtime
+use, definitions must still resolve immutably in the retained view, with Data retaining evidence
+and the relevant typed constraint descriptions available to the future Application consumer for
+search/consumption/revalidation. Pure values and opaque references authenticate none of that.
+Qualified immutable upstream materialization supplies the stipulated operational semantics here;
+real resolution/authentication/lifetime configuration remains an adoption gate. Objective is the
+only newly represented operational policy needed by this slice, not the only remaining runtime gate.
+
+Require `assessment.isTechnicallyQualified` including zero dependency holds; no degraded fallback.
+Reuse supplied full `InternalSearchScope` unchanged, inclusive [L,U], maximumElapsedDuration and
+maximumRailRides. Select no production default, narrower launch domain or adjusted horizon.
+Launch profile/default selection can remain unresolved without blocking pure invented values.
+
+Keep work/memory/cutoff/checkpoint configuration **outside evidence/prepared input**, explicitly
+supplied per future solver invocation through immutable execution configuration. Application
+selects the runtime profile/configuration and owns task lifetime, cancellation/publication guards
+and retry intent under DEC-087. The Data solver observes cancellation/checkpoints and owns one
+request's work accounting across preparation, optimization, tie collection, admission/finalization;
+no reset hides preparation cost. This audit selects no numbers, scheduling actor or concrete solver.
+
+Proposed layering: Data qualifies inputs/prepares rides and exact relation feasibility; a future
+production component behind `RouteSearching` performs request-local enumeration/optimization,
+sound pruning, cutoff accounting and canonical reconstruction/admission/finalization. Domain keeps
+canonical invariants; Application keeps lifecycle; UI has no route computation. These are bounded
+architecture recommendations, not acceptance of all DEC-086 R6 or live AppEnvironment wiring.
+
+Prefer **not** constructing `RouteRailProposal` per token. Once a complete itinerary has been
+proved selected, reconstruct matched proposals with retained `TrainCandidate`+`TimetableRideContext`,
+directional `WalkingTransfer` only for walking form, then `RouteCandidate` and scoped success
+through existing production constructors/admission. Same-station change needs no walking leg.
+No Phase-10 path/gate/car/door guidance or user-facing walking-time claim follows from allowance.
+Exploration may use compact derived associations but cannot bypass the canonical final validators
+for full bindings/indices, chronology, candidate structure, scope and duplicate TripIDs. Connection
+feasibility has the single preparation predicate; final admission checks/reuses that qualified
+association, not a competing gap formula.
+
+Prepared input readiness is independent of algorithm choice. Later solver correctness must prove
+all relevant feasible paths considered or soundly bounded, no better route left, every equal optimum
+retained, safe pruning/dedup, cycles/repeated stations, used-Trip constraints and honest cutoff.
+Zero usable rides or zero feasible connections is valid prepared state, **never noResults**.
+Only completed scoped execution with complete qualified inputs and zero handoffs may emit noResults.
+A prepared direct ride establishes no optimality; all supported feasible transfer alternatives
+remain part of future proof. No constructor or readiness predicate certifies execution completion.
+
+### 22.6 Safeguards, real pilot and selected next slice
+
+Structurally, prepared tokens cannot exceed B's required intervals (existing total ceiling
+92,160), relation accounting cannot exceed A/assessment targets (2,048), and occurrence/interval
+ledgers and incidence entries derive from their existing bounded declarations. These are upper
+envelopes, **not** selected practical preparation capacity or solver work limits. Fixed objective
+shape/version and inherited bounded references need finite accounting; retaining the whole
+assessment plus train/context snapshot copies/projections requires new expanded logical accounting.
+Top-level counts, actual text and nested payload must be bounded before hashing/deep work;
+overflow/limit failure must be atomic without truncation or partial preparation.
+
+**`NUMERIC_PRE_SOLVER_INPUT_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`**. Measure generated invented
+ride/relation/ledger/objective/provenance workloads before choosing new numeric payload/count caps;
+derive bounds only where structural reasoning is sufficient. Do not copy synthetic work limits,
+assume shared snapshots are free or treat B/A maxima as an iPhone memory promise. Resource safeguards
+are technical implementation choices, not new product decisions or production horizon defaults.
+
+Prior real milestones establish one real Trip, dated facts, direct canonical admission and
+occurrence inventory only. B/A closure/evidence/assessment has invented-only production values;
+there is no real request-scoped resolved assessment. Prefer invented prepared-input implementation
+first, then a separately authorized bounded real direct/no-connection pilot with independently
+complete-empty connection authority, or a separately evidenced connection pilot as applicable.
+Neither pilot nor source discovery is authorized here. Runtime rights/delivery/configuration and
+real coverage remain separate; this audit reopens no artifact or private receipt.
+
+Primary next-task classification: **`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_NEXT`**.
+Alternative separate gap/objective slices are unnecessary because one pure composition owns both
+projections without another independent evidence boundary. Production solver design is later;
+no new product semantic decision blocks this invented input-only slice. Type names/file layout
+are routine technical choices. No prepared-input implementation is included in this audit.
+
+### 22.7 Future invented verification matrix — not executed
+
+| Area | Required future verification |
+|---|---|
+| Readiness/provenance | Technically qualified assessment required; any hold rejects; original assessment/scope/full compatibility retained; dependency hold cannot bypass preparation |
+| Ride positives/negatives | Active exact allowed interval → token; inactive/complete-absent → no token with provenance; prohibited endpoint excludes before unused unknown events/permission; remaining unknown permission/missing/estimated required events reject; exact outside-scope pair is a known exclusion |
+| Canonical reuse | Exact TrainCandidate and TimetableRideContext preserved; full snapshot/address association; repeated original indices; through multi-Line interval remains one ride; no fragment stitching |
+| Connections | Same-station/walking preserved; exact positive allowance/context retained; qualified absence has no usable edge; known infeasible differs from absent/unavailable; no reverse inference or ride-pair Cartesian expansion |
+| Arithmetic | Gap equal/greater/smaller than allowance; positive overflow; rounded-down/up equality residual signs, nonzero residual and zero allowance; exact represented decisions without tolerance or time conversion; production helper only |
+| Objective | Exact Accepted DEC-086 version/full definition, changed definition/reference rejects reuse; no Proposed §10.2 comparator silently adopted or extra preference |
+| Result exclusions | Zero tokens/edges creates no noResults; direct token creates no optimum/result; no paths, enumeration, RouteSearchResult or winners; no route-level constructors during preparation, only selected ride-level constructors |
+| Resources/isolation | Generated maximum work and exact/+1 chosen bounds, hostile count/text/payload/overflow preflight, copy-by-copy logical accounting; production compilation/nonisolated Sendable; no runtime/IO/persistence/DEBUG dependency/Phase-10 guidance |
+
+### 22.8 Audit verification and handoff
+
+Documentation only: source/tests unchanged, no tests/builds/device work required or run. No private
+GTFS/S9/timetable/static/profile/inventory/connection artifact or receipt was accessed or quoted;
+new text contains no real railway IDs, times, private paths or new artifact identities.
+Independent non-author review: **20/20 PASS, zero unresolved material findings**. It verified
+the current chain/technical-qualified boundary, ride materialization and negative/unknown handling,
+singular exact feasibility owner/arithmetic, Accepted objective versus Proposed identity mechanics,
+through counting, immutable policy-resolution caveats, supplied scope, separate operational budget,
+input versus execution completion, solver-only noResults/optimality, algorithm neutrality and
+canonical final admission. A local sequencing clarification now excludes known prohibited rides
+before requiring unused unknown endpoint data; it establishes no new global failure precedence.
+Privacy/scope audit and working `git diff --check` passed. Final reviewed-byte and cached scope/
+whitespace checks are required before the authorized publication. Only this consumer proposal,
+ARCHITECTURE, ROADMAP and the producer proposal's current-handoff overlay change.
+Publication authorization covers only reviewed docs, one normal phase-branch commit; no main merge.
+Broader `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**,
+live/default routing unconfigured and production evidence/resource/adoption gates remain unchanged.
+
+Exact next safe action, **not begun**:
+
+> Separately authorize the smallest invented-only production Data `PreparedInternalSearchInput` slice defined in §22: require a technically qualified `ResolvedSearchInputAssessment`, materialize exact usable required ride tokens through existing `TrainCandidate` and `TimetableRideContext`, retain known-negative/excluded accounting and full assessment provenance, project each required positive connection's exact gap feasibility once, bind only Accepted DEC-086 objective/completion semantics, and establish evidence-backed finite construction safeguards with invented tests. Exclude route enumeration, solver/results, runtime adoption, real/private data and Phase-10 guidance; leave detailed itinerary identity/comparator mechanics to later solver design.
