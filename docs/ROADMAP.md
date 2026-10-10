@@ -1,5 +1,81 @@
 # TSUGINO — ROADMAP.md
 
+## First real P3-T1 dated occurrence import complete; routing handoff — 2026-10-10
+
+**`FIRST_REAL_P3_T1_DATED_OCCURRENCE_IMPORT_COMPLETE`.** This governing overlay
+records the owner's supplied execution and independent-review results, without
+accessing private timetable artifacts again. The occurrence-locator correction was
+published at `6bbb99bf963769e4ebc5d8563d562962f461944f`. Earlier stopped-preparation,
+unpublished-tool and pending-import statements below remain historical records;
+they no longer describe this exact completed pilot. Accepted semantic decisions
+and broader coverage/runtime gates remain unchanged.
+
+Service date: **`2026-03-16`**. Request ID:
+`p3t1.first-real-import.request.20261010.001`. Owner approval review ID:
+`p3t1.first-real-import.approval.20261010.001`, approvedAt `2026-10-10T01:34:51Z`.
+
+| Supplied artifact | Bytes | SHA-256 |
+|---|---:|---|
+| Import request | 76481 | `77fb98c726c3fd4d3ef810ffecf091d84292407abc5536e6b982131995f87da1` |
+| Owner import approval | 450 | `6e876719aff1a9a2a7d79110573f0bca226b5aab668aad3f0a58d43e8de03a24` |
+| Published occurrence facts | 3145 | `4e8c2d93845c0dd86ccb1e26b05384c420c4a6cbaab583241569c637294d1936` |
+| Import history | 77086 | `54a6f8f0e528bbdb33cd8323417eb9e2ab5f5eed1e9e7c953e70261435beee70` |
+| Import manifest | 1251 | `4a6c7d68b0604a36b15fd8da6d4388fe6230fb4ed748b091f222e221b88f9098` |
+
+Dependency-root SHA-256:
+`1fe9505914ea696dd4daaef8663112c7215a0c09874167c0d4da2b0ddde54aa4`;
+**38 records / 17 direct roots / 1767 decoded bytes / 59 assertions**.
+Accepted facts: **14 visits, original indices `0...13`, 28 exact events,
+0 estimated, 0 missing, boarding allowed at 14 visits, alighting allowed at
+14 visits, 0 chronology contradictions**. Actual Domain `TimetableOccurrenceFacts`
+construction and deterministic round-trip passed in the supplied execution.
+
+`approve-import` was invoked exactly once; `apply-import` executed exactly once,
+returning `occurrenceImported` with ordinary success, no durability uncertainty,
+no retry and no second apply. The published bundle contains exactly `facts.json`,
+`history.json`, `manifest.json`. Published verification returned
+`bundleValid unchangedReplay`: that verifier was read-only, not a second apply.
+Independent execution review approved **25/25**, with no unresolved material finding.
+S9 and source-profile authority remained unchanged; the GTFS archive was not reopened
+during approval/apply. These are supplied execution facts, not newly rerun checks.
+
+The accepted result covers **one Trip / one service date / one approved profile**.
+Broader classification: **`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**.
+Current Accepted authority does not define this single pilot as full P3-T1 completion.
+The implemented owner-only import capability, this imported occurrence, launch-wide
+timetable coverage and runtime adoption are distinct. No arbitrary additional-Trip
+quota or full-feed requirement is introduced for the bounded pilot. Phase 3 remains
+In Progress; real routing/search/Journey/runtime adoption remains absent.
+
+Repository-only handoff assessment: existing production values support
+`TimetableOccurrenceFacts → TrainCandidate → TimetableRideContext →
+RouteScheduledContext.timetable → RouteRailProposal → RouteCandidate`.
+**`REAL_TIMETABLE_FACTS_CAN_REPRESENT_ONE_CANONICAL_DIRECT_RIDE`** is a type/contract
+readiness finding, not a private candidate construction or interval certification.
+The smallest justified next task is
+**`P3_T1_REAL_FACTS_TO_DIRECT_ROUTE_ADMISSION_BRIDGE_NEXT`** (Candidate A), with
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for composition of already Accepted values.
+Candidate B's production inventory adapter and Candidate C's production solver are
+broader tasks; neither is a prerequisite to that one explicit direct-ride harness.
+
+For a future separately authorized harness, explicit original indices `0` and `13`
+stay within the represented snapshot and retain unknown service-endpoint extent
+(coverage false/false). `TrainCandidate` also requires distinct endpoint stations;
+that cannot be certified from the supplied safe aggregate. Future private verification
+must check it and fail closed, without selecting another interval automatically.
+Exact facts and allowed endpoints fit the context's data shape in principle; provenance,
+activation, eligibility and relevant S9 movement/continuity authority remain external
+admission obligations. No graph search, fastest/all-alternatives claim or runtime wiring
+follows. Detailed constructor, test-reuse and solver-prerequisite audit:
+[producer §§13–14](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#13-first-real-dated-occurrence-import--2026-10-10).
+
+Next safe action, **not begun here**: obtain separate owner authorization for the
+bounded private Candidate-A harness against the exact pinned S9/import authorities
+and an explicit owner-supplied original-index interval; verify those authorities and
+compose one candidate through existing production constructors, failing closed on
+any mismatch. This documentation/audit task accesses no private timetable artifact,
+constructs no real route candidate and performs no search/runtime action.
+
 ## P3-T1 occurrence-locator bound correction — 2026-10-10
 
 The original owner-only import adapter was published at

@@ -3,6 +3,18 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing implementation/import status — 2026-10-10
+
+The first real dated occurrence import is complete for **one Trip / one service date /
+one approved profile**: `FIRST_REAL_P3_T1_DATED_OCCURRENCE_IMPORT_COMPLETE`.
+Broader P3-T1 remains `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`;
+launch-wide coverage and runtime/search adoption are not established. [§13](#13-first-real-dated-occurrence-import--2026-10-10)
+records supplied safe execution evidence; [§14](#14-repository-only-routing-handoff-assessment--2026-10-10)
+assesses the next bounded handoff using repository contracts only. Older dated
+pending-import/publication and implementation-stage statements below are preserved
+as history, not current status for this pilot. Accepted semantic boundaries remain
+in force. No private artifacts were accessed for this update.
+
 ## Current acceptance and implementation boundary — 2026-10-01 Asia/Seoul
 
 Accepted DEC-078: Producer §§2–4 and O1–O6 are accepted; only pure values/local validation are implemented.
@@ -937,3 +949,188 @@ iPhone 17 / iOS 26.5 Simulator, with zero failures/skips. The complete unchanged
 suite passes **185 cases**, including its large invented retained-history envelope.
 Privacy/isolation/whitespace audits pass; seven scoped files remain unstaged/uncommitted
 for owner publication review. Real preparation stays stopped and Phase 3 stays In Progress.
+
+## 13. First real dated occurrence import — 2026-10-10
+
+**`FIRST_REAL_P3_T1_DATED_OCCURRENCE_IMPORT_COMPLETE`.** This records the owner's
+supplied execution results; it is not a new private-artifact verification or import.
+The correction in §12 was published at `6bbb99bf963769e4ebc5d8563d562962f461944f`.
+Service date: **`2026-03-16`**. Request ID:
+`p3t1.first-real-import.request.20261010.001`. Owner approval review ID:
+`p3t1.first-real-import.approval.20261010.001`, approvedAt `2026-10-10T01:34:51Z`.
+
+| Supplied artifact | Bytes | SHA-256 |
+|---|---:|---|
+| Import request | 76481 | `77fb98c726c3fd4d3ef810ffecf091d84292407abc5536e6b982131995f87da1` |
+| Owner import approval | 450 | `6e876719aff1a9a2a7d79110573f0bca226b5aab668aad3f0a58d43e8de03a24` |
+| Published occurrence facts | 3145 | `4e8c2d93845c0dd86ccb1e26b05384c420c4a6cbaab583241569c637294d1936` |
+| Import history | 77086 | `54a6f8f0e528bbdb33cd8323417eb9e2ab5f5eed1e9e7c953e70261435beee70` |
+| Import manifest | 1251 | `4a6c7d68b0604a36b15fd8da6d4388fe6230fb4ed748b091f222e221b88f9098` |
+
+Dependency-root SHA-256:
+`1fe9505914ea696dd4daaef8663112c7215a0c09874167c0d4da2b0ddde54aa4`;
+**38 records / 17 direct roots / 1767 decoded bytes / 59 assertions**.
+Facts contain **14 visits at original indices `0...13`; 28 exact events;
+0 estimated / 0 missing; boarding allowed at 14 visits; alighting allowed at
+14 visits; 0 chronology contradictions**. Actual Domain `TimetableOccurrenceFacts`
+construction and deterministic round-trip passed.
+
+`approve-import` was invoked exactly once and `apply-import` executed exactly once:
+`occurrenceImported`, ordinary success, no durability uncertainty, no retry, no second
+apply. The published bundle contains exactly `facts.json`, `history.json`,
+`manifest.json`. The published verifier returned `bundleValid unchangedReplay`;
+verification was read-only and did not apply again. Independent execution review:
+**25/25 approved**, no unresolved material finding. S9 and source-profile authority
+remained unchanged; the GTFS archive was not reopened during approval/apply.
+
+This accepts one dated occurrence under one approved profile, not all P3-T1 scope.
+Accepted authority does not identify this pilot as the full required P3-T1 delivery:
+**`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**. The implemented import
+capability, this successful import, launch-wide timetable coverage and runtime adoption
+are separate statuses. No new numerical pilot quota or full-feed requirement follows.
+No actual routing candidate/search/Journey/runtime adoption has occurred. Phase 3
+remains In Progress. Only hashes, sizes, counts, workflow IDs and status are recorded;
+private railway IDs, locators, timetable clocks, Unix seconds and itineraries are absent.
+
+## 14. Repository-only routing handoff assessment — 2026-10-10
+
+Scope: assess the smallest bridge from the exact §13 facts into existing production
+values. No private timetable artifact, archive, extracted source or prior private
+execution record is accessed; no import tool/bundle is run; no real candidate is
+constructed. This is not implementation or permission to perform the next task.
+
+### 14.1 Existing production constructor path
+
+`TimetableOccurrenceFacts → TrainCandidate → TimetableRideContext →
+RouteScheduledContext.timetable → RouteRailProposal → RouteCandidate`
+
+This is composition, not conversion of facts into a new Trip: the verified accepted
+Trip snapshot is supplied to `TrainCandidate`, and facts and train meet at the context.
+
+| Existing production value | Enforced invariant and boundary |
+|---|---|
+| [`TimetableOccurrenceFacts`](../TSUGINO/Domain/Timetable/TimetableOccurrenceFacts.swift) | Exactly one ordered visit per snapshot stop, matching binding and original index; exact-event subsequence is chronological, including across estimated/missing gaps. Retains event quality and eligibility; does not authenticate source/activation. |
+| [`TrainCandidate`](../TSUGINO/Domain/Routing/TrainCandidate.swift) | `0 <= boardingIndex < alightingIndex < stopCount`; distinct endpoint StationIDs. Retains the full Trip and original indices; derives anchors and only the ridden movement-bearing line projection. Local structure, not dated-operation or evidence proof. |
+| [`TimetableRideContext`](../TSUGINO/Domain/Routing/TimetableRideContext.swift) | Exact facts/train snapshot association; exact departure at boarding, exact arrival at alighting, departure <= arrival. Retains the dated occurrence binding, original indices and endpoints; `matches(train)` requires those same indices and full snapshot. |
+| [`RouteScheduledContext`](../TSUGINO/Domain/Routing/RouteScheduledContext.swift) | `.timetable(context)` retains timetable origin/binding with shared Date projections; it does not relabel facts as provider context or grant mixed-source search permission. |
+| [`RouteRailProposal`](../TSUGINO/Domain/Routing/RouteRailProposal.swift) | A timetable context requires `.matched(train)` and `context.matches(train)`; unresolved travel cannot carry it. Does not authenticate producer output. |
+| [`RouteCandidate`](../TSUGINO/Domain/Routing/RouteCandidate.swift) | Nonempty rail-first/last legs; adjacent endpoint continuity; no adjacent walks; no repeated matched TripID, even on different dates. Scheduled contexts remain chronological across retained rail contexts, without resetting across walks or absent contexts. Local structure, not search completeness or connection evidence. |
+
+[`TimetableOccurrenceBinding.matches`](../TSUGINO/Domain/Timetable/TimetableOccurrenceBinding.swift)
+compares the exact address and TripID, ordered stops, line segments, coverage and
+service-type segments. Trip equality alone compares identity and is insufficient.
+`TrainCandidate` has no independent date/view: context matching retains its address,
+but does not independently authenticate date/view coherence, activation or eligibility.
+In particular, `TimetableRideContext` does **not** enforce allowed boarding/alighting.
+Those remain Data/private-harness admission obligations under verified authorities.
+
+The supplied complete exact/allowed visits fit the constructor's data shape in
+principle. **`REAL_TIMETABLE_FACTS_CAN_REPRESENT_ONE_CANONICAL_DIRECT_RIDE`** is
+representational readiness using existing Domain types, not a completed private
+composition, certification of indices `0`/`13`, or a route-search proof.
+
+### 14.2 RouteScheduleAdmission ownership
+
+[`RouteScheduleAdmission`](../TSUGINO/Data/Routing/RouteScheduleAdmission.swift)
+validates already-qualified generic/provider Date endpoints and creates
+`ProviderScheduledContext` values. It checks finite instants, request lower bounds
+and chronology across all known endpoints before handling missing endpoint pairs;
+missing pairs are accepted only with the explicit departure-intent assertion.
+It also checks cancellation. It neither interprets calendars nor authenticates sources.
+
+Its Date checks are partially analogous; this helper is **not part of the facts →
+TimetableRideContext path**. Do not force timetable facts through its provider-context
+API or add a competing chronology validator. Candidate A needs no search request or
+search-result wrapper. If a separately scoped variant accepts a request, request-relative
+lower-bound admission remains an explicit consumer obligation; current context/candidate
+constructors alone do not enforce it.
+
+### 14.3 DEBUG solver ownership and test reuse
+
+[`SyntheticInternalRouteSearcher`](../TSUGINO/Data/Routing/SyntheticInternalRouteSearcher.swift),
+[`SyntheticInternalRouteEngine`](../TSUGINO/Data/Routing/SyntheticInternalRouteEngine.swift)
+and [`SyntheticInternalRouteInput`](../TSUGINO/Data/Routing/SyntheticInternalRouteInput.swift)
+are `#if DEBUG`. Their qualification, discovery, enumeration, admission orchestration
+and finalization are not a real production solver owner. Admission calls into production
+`TrainCandidate`, `TimetableRideContext`, `RouteRailProposal` and `RouteCandidate` are
+reusable contracts; promoting the whole DEBUG admission/engine is not required for A.
+
+| Repository regression evidence | Reusable contract | Synthetic premises that cannot authenticate real data |
+|---|---|---|
+| [`TimetableRideContextTests`](../TSUGINOTests/TimetableRideContextTests.swift) | Full snapshot association despite ID-only Trip equality, original/repeated indices, dated address, exact endpoint quality, partial coverage preservation, matched attachment, chronology and duplicate-Trip rejection. Explicit unknown/prohibited permission cases show context construction alone is not eligibility admission. | Invented facts do not establish real activation, source authority or allowed endpoints. |
+| [`SyntheticTimetableRoutingIntegrationTests`](../TSUGINOTests/SyntheticTimetableRoutingIntegrationTests.swift) | Converted facts preserved unchanged; snapshot/date/indices, qualified exact endpoints, timetable context origin and request chronology where applicable; explicit inactive/unavailable outcomes. | Stipulated complete dated universe/interval inventory, active stations/lines, policy references and affirmed continuity. |
+| [`SyntheticTimetableOptimalRoutingIntegrationTests`](../TSUGINOTests/SyntheticTimetableOptimalRoutingIntegrationTests.swift) | Exact facts/bindings and endpoints preserved through candidate composition; eligibility/quality and held input prevent unsupported success; fixture optimal/tie behavior. | Complete alternatives, invented directional connectivity, transfer allowances, finite horizon and exhaustive enumeration. |
+| [`SyntheticTimetableBatchRoutingIntegrationTests`](../TSUGINOTests/SyntheticTimetableBatchRoutingIntegrationTests.swift) | Batch slots retain exact facts; coherent view/binding association and failure/inactive/unknown-connection distinctions remain explicit. | Stipulated batch/interval completeness, station/line states, policy references, continuity and total connection allowances. |
+
+The prior successful synthetic tests establish these contracts, not a newly run test
+result or real inventory assertion. Complete universe, active station declarations,
+invented connectivity/policy references and synthetic allowances must not cross into A
+as asserted real evidence. No production real occurrence-inventory supplier or internal
+enumerating solver owner is established by this audit.
+
+### 14.4 Smallest justified next slice
+
+| Candidate | Scope and assessment |
+|---|---|
+| A — owner-only private direct-ride admission harness | Verify exact pinned S9/import bundles and retained approved profile/provenance; reconstruct the actual accepted Trip/facts; take explicit owner-supplied original indices; compose existing production values and verify exact preservation for one single-leg candidate. Smallest useful slice; no new inventory type required first. |
+| B — production imported-facts inventory adapter | Own coherent view, occurrence availability and exact facts associations for a future consumer. Useful broader reusable Data boundary, but not needed to compose one verified occurrence and explicit interval. No solver by itself. |
+| C — production internal route solver | Requires real inventory/evidence, production ownership and complete search policy implementation; one occurrence does not supply these prerequisites. Not justified as the next slice. |
+
+Selected primary next task: **`P3_T1_REAL_FACTS_TO_DIRECT_ROUTE_ADMISSION_BRIDGE_NEXT`**.
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`**: bounded A merely composes already Accepted
+DEC-078/079 values and implemented routing contracts, without choosing search/solver
+policy. Tool/file placement alone needs no new product decision. Implementation and
+private access still require separate owner authorization; this assessment grants neither.
+
+### 14.5 Explicit interval and fail-closed admission
+
+An owner-supplied boarding index `0` and alighting index `13` would span the entire
+represented 14-visit range without slicing/reindexing the Trip. Accepted S9 coverage
+is false/false: unknown service origin/destination remain unknown, even for this full
+represented traversal. The imported facts supply exact departure/arrival and allowed
+boarding/alighting at these indices in principle.
+
+`TrainCandidate` also requires distinct endpoint StationIDs. Nonadjacent repeated
+stations are permitted in Trip, so the safe aggregate cannot certify that `0` and `13`
+differ. A future authorized harness must verify this and every existing constructor;
+failure must produce no candidate and must not automatically choose a replacement
+interval. A different interval would require explicit owner supply. No additional
+interval-selection algorithm is needed for a valid explicit interval.
+
+Before composition, A must privately revalidate exact authorities and snapshot/binding
+association, dated active occurrence/provenance, selected allowed endpoints and relevant
+affirmative S9 movement/continuity evidence. Constructors supply local chronology and
+association checks, not those external facts. Output must retain full Trip, dated
+binding, original indices, exact endpoints and timetable origin; no synthetic evidence
+may fill a missing authority. No graph/search/ranking/completeness claim is needed.
+
+### 14.6 Claim boundary and remaining solver prerequisites
+
+If separately authorized and successful, A would prove one accepted Trip snapshot,
+one dated active occurrence, exact ridden endpoints/context, one canonical matched
+proposal and one structurally valid direct `RouteCandidate`. It would not prove fastest
+arrival, all alternatives, transfer feasibility, equal-optimum completeness, network-wide
+coverage, search-horizon completeness, production solver resource behavior or launch-wide
+routing. It must not emit `RouteSearchResult`/`InternalSearchSuccess` or claim `noResults`.
+DEC-086's earliest-arrival then fewer-train-changes objective, all distinct equal optima
+and evidenced through-service treatment remain Accepted, but are not exercised by A.
+
+A real solver still needs a complete dated occurrence inventory for its search scope,
+station/line availability, explicit interval inventory, continuity and directional
+connection/transfer evidence with allowances, coherent source/view/profile authority,
+a finite supported horizon, complete enumeration/optimality/all-ties proof, and justified
+production resource/cancellation policy with a production owner. These scope-wide
+requirements block a full solver, not composition of one explicitly evidenced direct
+ride. A still fails closed if its own exact authority, activation, eligibility,
+snapshot, continuity, interval or time requirements cannot be verified.
+
+### 14.7 Exact next safe action — not begun
+
+Obtain separate owner authorization for the bounded private Candidate-A harness,
+bound to the exact pinned S9/import authorities and an explicit owner-supplied
+original-index interval. Then verify those authorities, reconstruct the accepted
+Trip/facts, compose one single-leg candidate through the existing production constructors
+and verify exact preservation, failing closed on any mismatch. Keep private IDs/times
+out of repository output. No archive reopening, general inventory adapter, solver,
+search result, AppEnvironment/UI/Journey/runtime wiring is part of that bounded proposal.
+This task performs only the documentation/audit and does not begin that action.
