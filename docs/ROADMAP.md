@@ -1,5 +1,66 @@
 # TSUGINO — ROADMAP.md
 
+## First real Candidate-B inventory pilot complete; request closure next — 2026-10-10
+
+**`FIRST_REAL_P3_T1_OCCURRENCE_INVENTORY_PILOT_COMPLETE`** records the supplied owner
+execution and **27/27 PASS** independent review, with no unresolved findings. This
+documentation task does not reopen any private authority or rerun the pilot. Execution
+used published commit `0c9b06741b8f1ce8ebce428e943b9c55d78d9a50`, service date
+`2026-03-16`, view UUID `3e8a2c14-1f90-4d85-9af1-0f5e7c22a641` and only interval
+`0...13`. Receipt: **1959 bytes**, SHA-256
+`be25f8f4ff1097ff373d4d7a2c3f00451814971098e4eb3acd053a4f83779c3c`.
+The implementation-stage unstaged/publication-pending and next-pilot wording below
+is historical; the values were published before this separately authorized real pilot.
+
+Both published verifiers returned **`bundleValid unchangedReplay`** read-only. The exact
+accepted DEC-074 provisional static compatibility authority is **217088 bytes**,
+SHA-256 `c0e38b0a4220a116cbaa9add736e66ce8fdfa58b48e550e2975de0e23fcbc151`,
+schema **1**, data version **`p2s8-local-provisional-20261001`**, registry revision **6**.
+**14 stations /
+1 active represented line** and applicable station/line memberships passed. Exact S9
+Trip/facts binding passed: **14 visits / 28 exact events / 0 estimated / 0 missing /
+14 boarding allowed / 14 alighting allowed / 0 chronology contradictions**.
+
+Actual production `TimetableOccurrenceInventoryView` construction passed with **1 declared
+address / 1 slot / 1 Trip snapshot / 1 service date / 1 active / 0 inactive / 0 unavailable /
+1 explicit interval `0...13`**. **15466 bytes** is production
+logical accounting, not measured heap usage. Occurrence **`declaredComplete`** means only
+that the owner-authorized one-address pilot declaration was supplied exactly and completely;
+it establishes no complete Trip/date/timetable/search-relevant/alternative/network universe.
+Interval completeness remains **`unknown`**: only `0...13` was positively authorized and
+verified; no other subinterval was inferred absent. Details: [producer §18](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#18-first-real-production-occurrence-inventory-pilot--2026-10-10).
+
+This proves lossless compatibility across one accepted real `RailwayArtifactRevision`,
+S9 Trip, `TimetableOccurrenceBinding`, `TimetableOccurrenceFacts` and production inventory.
+It proves neither search-input closure, transfer feasibility, connection inventory, solver
+completeness, fastest/all-tied routes nor runtime adoption/delivery. Broader status remains
+**`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**; Phase 3 **In Progress**;
+live/default routing remains unconfigured.
+
+Repository-contract audit selects **`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_NEXT`**:
+**Boundary B then Boundary A**, followed by separately qualified solver-input composition.
+DEC-079/080 require sufficient request-relative input coverage before internal success or
+`noResults`; DEC-086 additionally requires completed optimum/all-equal-optima proof. A valid
+occurrence inventory and valid directional connection records each describe supplied evidence;
+neither determines all required evidence for a request. B can expose unresolved exact connection
+requirements without defining A's walking/interchange/allowance payload. Unknown required
+evidence must block qualification, including when a direct ride exists. A direct candidate's
+existence does not prove no faster valid transfer alternative was omitted.
+
+[Consumer §20](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#20-post-inventory-pre-solver-boundary-audit--2026-10-10)
+records accepted-versus-Proposed authority, A/B comparison, §17 manifest reuse and the smallest
+invented-only immutable Data slice over the existing request, explicit finite scope, static
+revision, inventory and independently substantiated membership/dependency declarations.
+This is local consistency over supplied qualified authority, not a self-authenticating closure
+flag or completed search. Production horizon duration, ride/resource policy, solver/adoption
+and delivery remain unresolved; no number or synthetic requiredness policy is promoted.
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** for this technical boundary under Accepted search truth.
+
+Exact next safe action, **not begun**: separately authorize the smallest invented-only
+production Data request-scoped search-input closure values and focused tests described in
+consumer §20.5, retaining an explicit unresolved connection-evidence seam and fail-closed
+qualification. Do not implement connection payloads, solver, real access or runtime wiring.
+
 ## Candidate-B immutable occurrence inventory values — 2026-10-10
 
 The owner-authorized invented-only Candidate-B implementation now lives in

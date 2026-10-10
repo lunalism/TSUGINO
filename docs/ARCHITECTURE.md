@@ -1104,7 +1104,14 @@ and unknown-empty are distinct and never route results. Static network state is 
 connection/transfer authority, requests/horizons/search/optimality, IO/persistence and
 AppEnvironment/runtime adoption remain separate. Domain and DEBUG references are unchanged.
 Invented numeric study, construction bounds and verification are recorded in
-`PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md` §17. No real inventory acceptance follows.
+`PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md` §17. The separately authorized first real pilot
+subsequently passed at published commit `0c9b06741b8f1ce8ebce428e943b9c55d78d9a50`:
+one accepted static revision, exact S9 Trip and dated occurrence, one interval `0...13`;
+occurrence completeness is limited to the one-address pilot declaration and interval
+completeness remains unknown (producer §18). This is bounded compatibility evidence,
+not search-input closure or runtime adoption. Consumer §20 recommends a future pure Data
+request-scoped closure boundary with explicit unresolved connection-evidence obligations;
+neither that boundary nor connection payloads are implemented by the documentation audit.
 
 The bounded DEC-079 context slice adds `TimetableRideContext` constructed from a
 TrainCandidate and locally valid TimetableOccurrenceFacts. It retains the exact

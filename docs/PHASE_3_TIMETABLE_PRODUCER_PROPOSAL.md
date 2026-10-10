@@ -3,6 +3,23 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing real inventory and next-boundary status — 2026-10-10
+
+The separately authorized first real production Candidate-B inventory pilot completed:
+**`FIRST_REAL_P3_T1_OCCURRENCE_INVENTORY_PILOT_COMPLETE`**, independent review **27/27 PASS**,
+no unresolved findings. [§18](#18-first-real-production-occurrence-inventory-pilot--2026-10-10)
+records supplied safe execution facts without private artifact access. The values were
+published at `0c9b06741b8f1ce8ebce428e943b9c55d78d9a50` before the pilot; earlier
+unstaged/publication-pending and next-Candidate-B/pilot statements below are historical.
+Broader status remains **`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**;
+Phase 3 **In Progress**. No search-input closure, solver or runtime adoption follows.
+
+Next-task classification: **`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_NEXT`**; B then A.
+The [consumer §20 audit](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#20-post-inventory-pre-solver-boundary-audit--2026-10-10)
+recommends invented-only request-relative Data closure values with unresolved connection
+requirements before a separate qualified connection payload boundary. This is a technical
+recommendation under Accepted truth, not implementation or a production horizon/adoption choice.
+
 ## Governing Candidate-B implementation status — 2026-10-10
 
 The separately authorized invented-only production Data values and focused tests are
@@ -1674,3 +1691,53 @@ approved Candidate-B production inventory values. After publication, separately 
 and authorize one bounded real inventory pilot using the already accepted S9/timetable
 authorities, without search or solver execution. Do not begin real inventory construction
 in the implementation/publication task.**
+
+## 18. First real production occurrence inventory pilot — 2026-10-10
+
+This records the supplied owner execution and independent-review result; no private S9,
+timetable, profile, static, harness or receipt artifact is opened by this documentation task.
+Execution used repository commit **`0c9b06741b8f1ce8ebce428e943b9c55d78d9a50`**,
+service date **`2026-03-16`**, view UUID **`3e8a2c14-1f90-4d85-9af1-0f5e7c22a641`**
+and exactly authorized original-index interval **`0...13`**.
+
+| Supplied execution evidence | Result |
+|---|---|
+| Execution verdict | `FIRST_REAL_P3_T1_OCCURRENCE_INVENTORY_PILOT_COMPLETE` |
+| Execution receipt | **1959 bytes**, SHA-256 `be25f8f4ff1097ff373d4d7a2c3f00451814971098e4eb3acd053a4f83779c3c` |
+| Independent non-author review | **27/27 PASS**, no unresolved findings |
+| Published S9 / timetable verifiers | Both **`bundleValid unchangedReplay`**, read-only; accepted pins matched |
+| Accepted DEC-074 provisional static artifact | **217088 bytes**, SHA-256 `c0e38b0a4220a116cbaa9add736e66ce8fdfa58b48e550e2975de0e23fcbc151` |
+| Accepted static metadata | Schema **1**, data version **`p2s8-local-provisional-20261001`**, registry revision **6** |
+| Static compatibility | **14 stations / 1 active represented line** checked; applicable station/line membership PASS |
+| Exact dated facts / S9 binding | PASS; **14 visits**, indices **`0...13`**, **28 exact / 0 estimated / 0 missing**, boarding allowed **14**, alighting allowed **14**, chronology contradictions **0** |
+| Actual production inventory initializer | PASS; **1 declared address / 1 slot / 1 unique Trip snapshot / 1 service date** |
+| Slot states | **1 active / 0 inactive / 0 unavailable** |
+| Explicit interval | Exactly **1 interval `0...13`**, positively authorized and verified |
+| Occurrence / interval completeness | **`declaredComplete` / `unknown`**, respectively |
+| Logical payload | **15466 bytes**, below the construction bound; production logical accounting, **not measured heap usage** |
+
+Occurrence `declaredComplete` means only **the owner-authorized one-address pilot declaration
+was supplied exactly and completely**. It does not establish all occurrences for the Trip,
+all dates, all timetable records, search-relevant occurrences, alternatives, network or route-search
+completeness. Interval coverage remained `unknown` because only `0...13` was positively authorized
+and verified; no other subinterval was inferred absent. A valid interval declaration does not
+itself establish exhaustive usable interval coverage for any future request.
+
+The milestone establishes that **one accepted real static revision, one accepted real S9 Trip
+and one accepted real dated timetable occurrence can be associated losslessly through the
+published production `TimetableOccurrenceInventoryView` together with one explicitly verified
+ride interval**. It demonstrates compatibility of `RailwayArtifactRevision`,
+`TimetableOccurrenceBinding`, `TimetableOccurrenceFacts` and the inventory boundary. Static
+authority remains the accepted local provisional baseline, not production data delivery.
+
+This documentation task accesses no private railway artifact or GTFS/source rows and constructs
+no inventory, candidate, search result, searcher/solver or transfer model. It implements no
+runtime/Journey/UI or app persistence action. Private identifiers, source keys, locators, clocks,
+Unix seconds, qualification tokens and private artifact paths are excluded from this record;
+the receipt identity and results above are supplied facts, not a fresh receipt inspection.
+
+It establishes **no search-input closure, connection inventory, transfer feasibility, completed
+solver/optimum/all-tie proof, production route-search adoption or runtime delivery**.
+**`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`** remains current; Phase 3 remains
+**In Progress**. Next: the separately authorized invented-only request-closure slice in consumer
+§20.5, not another real pilot or implementation within this documentation task.

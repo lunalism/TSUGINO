@@ -7,6 +7,16 @@
 acceptance of route-selection/completion rules. Unresolved ownership, algorithm,
 configuration and adoption choices remain Proposed; no production engine is adopted.
 
+**Governing post-inventory audit (2026-10-10):** the separately authorized first real
+production Candidate-B inventory pilot completed with **27/27 PASS** independent review.
+[Producer §18](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#18-first-real-production-occurrence-inventory-pilot--2026-10-10)
+records supplied safe evidence. [§20](#20-post-inventory-pre-solver-boundary-audit--2026-10-10)
+selects **`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_NEXT`**, B before qualified connection
+payloads A. This is documentation/audit only, with no private access or implementation.
+Earlier unresolved-S9/import and next-evidence-review wording describes its historical stage;
+bounded real acceptance does not imply launch-wide coverage. Broader P3-T1 remains
+**`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**, Phase 3 **In Progress**.
+
 **DEC-080 is accepted only for §9.9 V1–V7 (P1–P4/P6), dated 2026-10-02 Asia/Seoul. P5 and all non-selected policies remain Proposed. Slice A is implemented and approved; slice B local scoped-success values are implemented and independently approved. Production runtime obligations remain unimplemented; the DEC-081 update below records the separate synthetic path.**
 
 **DEC-081 update (2026-10-02 Asia/Seoul):** S1–S6 now accept a finite synthetic-only
@@ -3567,3 +3577,169 @@ Final validation and Release exclusion evidence are recorded in ROADMAP. No Appl
 production supplier, update publisher, acquisition/error mapping, invalidation/storage/cache or
 adoption. All 15 services stay preserved; append opt-in/reference default/live unconfigured;
 P3-T1/Phase 3 remain incomplete; S9 retains 14 classification/14 ordering gaps. No ODPT reply.
+
+## 20. Post-inventory pre-solver boundary audit — 2026-10-10
+
+Documentation-only assessment using current repository contracts and the owner's supplied
+first real Candidate-B pilot report. No private railway artifact, harness or receipt was
+accessed; no pilot, candidate/search/solver or connection implementation is run or added.
+[Producer §18](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#18-first-real-production-occurrence-inventory-pilot--2026-10-10)
+records **`FIRST_REAL_P3_T1_OCCURRENCE_INVENTORY_PILOT_COMPLETE`** at published commit
+`0c9b06741b8f1ce8ebce428e943b9c55d78d9a50`: one accepted static revision/Trip/dated
+occurrence and only interval `0...13`, lossless association, **27/27 PASS**, no unresolved
+findings. Receipt **1959 bytes**, SHA-256
+`be25f8f4ff1097ff373d4d7a2c3f00451814971098e4eb3acd053a4f83779c3c`.
+Occurrence `declaredComplete` covers only the exact one-address pilot declaration;
+interval completeness remains `unknown`. Neither is sufficient request coverage.
+
+### 20.1 Current Accepted authority versus historical proposals
+
+| Authority | Current applicable contract / limit |
+|---|---|
+| DEC-076 | Accepted canonical request/proposals, one coherent Data view, identity/evidence duties and Application lifetime separation. DEC-079 partially supersedes only the internal timetable consumer; external meanings and Trip/Journey invariants remain |
+| DEC-078 | Accepted producer semantics, exact dated binding/full snapshot/original indices, activation/time quality/eligibility distinctions. Producer validity is request-independent; a valid occurrence does not certify request closure |
+| DEC-079 | Accepted consumer §§2–5/C1–C6, conditional on DEC-078: exact timetable context, evidenced movements/connections, request-specific coverage before enumeration, scoped success and honest unscoped failures. Local values and synthetic execution do not discharge real production evidence obligations |
+| DEC-080 | Only §9.9 V1–V7 for P1–P4/P6 accepted: local full profile/scope and scoped-success values, separate coverage/completion duties. P5, non-selected policies and production parameters/resolvers remain deferred; §9 is not accepted wholesale |
+| DEC-081 | S1–S6 accepted for synthetic-only use. Invented complete universes, all-potential-pair requiredness and all-distinct execution are not production closure policy or authentication |
+| DEC-085 | C1–C4 accepted for bounded invented conversion. Its revision/assertion concepts inform technical association; synthetic source interpretation is not real applicability authority |
+| DEC-086 | Scoped acceptance selects earliest arrival, then fewer train changes, all identity-distinct equal optima, identity ordering only for reproducibility, complete optimum/tie proof and honest failures. On-iPhone computation is preferred; detailed solver/ownership/resource/adoption choices remain unresolved |
+| DEC-087 | Accepted current-request lifecycle/retry rules remain Application-owned; request qualification neither publishes results nor adds automatic retries, caching or Journey state |
+
+The contract outline is explicitly **historical proposal**, not independently adopted authority.
+This document's §17 is a **Proposed documentation-only review index**, not an accepted production
+manifest/type/format. Older pending-acceptance, unresolved-S9/import and all-distinct-production
+wording must be read through current acceptance overlays and the bounded real milestone records.
+This audit accepts no unselected historical proposal and amends no decision.
+
+### 20.2 Missing proof and A-versus-B responsibilities
+
+Every production internal success, including scoped `noResults`, needs **sufficient relevant
+input coverage for the exact supported request scope**, followed by completed computation and
+canonical admission. DEC-086 additionally requires proof that no better feasible itinerary exists
+and every distinct equal optimum survives. Evidence closure is a prerequisite, not completed
+exploration, pruning correctness, optimum/tie proof or successful admission. Unknown required
+evidence remains `dataUnavailable`; interrupted computation/resource cutoff remains
+`searchIncomplete`, with no partial success. Observed cancellation and existing preflight
+precedence remain unchanged; all rejected remains unscoped `noUsableAlternatives`.
+
+| Boundary | Owns | Cannot establish by itself |
+|---|---|---|
+| **A — Qualified connection/transfer evidence** | Independently qualified directional train-change relations: same-station applicability or distinct-station walking form; exact anchors and from/to line or ride applicability; present/absent/unknown; justified alight/interchange/walk/board components and exact nonnegative total; compatible view/static revision, evidence references and invalidation | Which relations a particular request requires; occurrence/date/interval closure; complete search input or optimum. Station equality, topology, proximity or an ordered time gap cannot create a connection/zero allowance; direction is never inferred in reverse |
+| **B — Request-scoped inventory closure/search-input qualification** | Bind exact `RouteSearchRequest`, supplied supported finite scope/horizon, static authority and actual occurrence inventory to independently substantiated required Trip/date/address/interval membership, connection requirements/references, unresolved holds and compatibility/completeness/invalidation state | Connection payload/allowance truth, source authenticity from a token, route enumeration, result production or execution/optimality proof |
+
+Candidate B proves **what occurrence data is present**. The next boundary must establish whether
+that data set is sufficient for a **specific supported search request** under supplied qualified
+closure authority. Connection evidence is one independently qualified dependency of that closure,
+not a substitute for closure itself. Neither occurrence nor connection inventories identify all
+required service dates, Trips, intervals and relations merely by listing their loaded members.
+In particular, matching revisions/counts and a populated or empty ledger cannot prove that
+unlisted obligations are absent. Required-domain derivation must be independent of discovered
+routes/winners and explain date overlap, exclusions and unseen in-scope coverage.
+
+Retain **evidenced absence**, **conclusive inactivity**, **unavailable/unknown**, **unsupported**,
+**not loaded** and **outside the explicitly supported scope** as different facts/holds. A missing
+loaded record is not an absent relation or inactive service; an out-of-scope claim needs the
+declared supported scope rather than post-hoc cropping. Unknown required intervals remain holds
+even when one supplied interval is usable. Known negatives contribute closure only with exact
+qualified applicability. No required source defect may be hidden as an ordinary omitted route.
+
+**Direct requests are no escape hatch:** a direct candidate's existence is not direct-route
+optimality. A future solver may return it as optimum only after accounting for every possibly
+better or equally optimal alternative within the supported scope, including valid transfers.
+The one-address pilot supplies no such scope/closure proof and justifies no reduced launch profile.
+
+### 20.3 Ordering and the connection dependency seam
+
+Select **`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_NEXT`**: **B then A**, then separately reviewed
+complete solver-input composition/execution. B can meaningfully retain exact required connection
+obligations as **unresolved**, blocking qualification, without knowing walking or allowance
+payload semantics. A subsequently supplies independently qualified compatible relation evidence.
+This makes missing evidence visible before supplying one evidence category and minimizes invented
+connection semantics. A first would leave requiredness unstated; wholly independent implementation
+would still need B's request-relative obligations to establish readiness. No new product decision
+or semantic blocker prevents this bounded B-first slice.
+
+B retains an exact relation target/applicability reference, compatible authority/view reference,
+requirement and resolution/hold status; **A alone owns connection form, components and total**.
+Do not copy connection payloads into B. An opaque reference or asserted `resolved` bit cannot
+discharge a requirement: later resolution must be checked against compatible qualified connection
+authority. Until that boundary exists, the initial B-only slice keeps required connection evidence
+unresolved. It cannot convert missing A into evidenced absence or zero required connections.
+Any empty required-relation set needs independently justified finite-scope closure; it never follows
+from one direct occurrence, an empty loaded map or an arbitrary caller completeness flag.
+
+### 20.4 Reuse of §17 and unresolved policy
+
+Reuse §17's request/view/full-snapshot binding, independently derived required-domain ledger,
+semantic assertion versus examination status, known-negative versus unknown distinction,
+exact dependency applicability and invalidation. Keep its human/source examination and rights/
+delivery ledger separate. New pure production values should be a **narrow typed technical
+projection** over the actual `TimetableOccurrenceInventoryView`, not a second occurrence
+inventory or a wholesale implementation of the documentation manifest. Replace synthetic
+inventory references at this seam with the existing production inventory; retain full snapshot
+and original-index association and the separate address/interval completeness distinctions.
+The review index remains useful for substantiating external closure authority; local constructors
+cannot authenticate that authority, dereference files or turn examined-but-unknown into qualified.
+
+The old §17 next-source-review and fourteen-gap statements describe that dated stage; later
+bounded S9/import/pilot records govern those exact milestones. They do not close broader source,
+connection, launch or delivery evidence. The minimum technical value does not implement source
+review/authentication tooling or promote DEC-081 fixture enumeration into production requiredness.
+
+A finite supported horizon is necessary as **explicit supplied scope**, but selecting its numeric
+production duration is **not necessary for this type design**. Reuse existing accepted local
+`InternalSearchProfileDefinition`/`InternalSearchScope` structure, including the full profile,
+exact request/view and finite inclusive bounds, plus exact compatible scope/horizon/policy
+references. A bare opaque horizon label cannot replace that structure or resolve its policy.
+Invented fixtures supply their own explicit parameters; this audit chooses no minute/hour/day
+duration, ride cap, production network reduction, resource number or adoption default.
+Production horizon/resource/adoption policy and detailed solver ownership remain unresolved under
+DEC-080 deferrals/DEC-086 R6. Technical construction safeguards need separate implementation
+evidence; they are not solver capacity or product search policy.
+
+### 20.5 Smallest next invented-only production slice — not implemented
+
+Recommend one pure immutable **Data/Routing** request-closure value and finite subordinate
+declaration/requirement/hold values, consuming existing Domain request/profile/scope and Data
+inventory/static revision types. Exact Swift names, file split and construction limits are
+implementation choices, not product decisions. The separately authorized slice should:
+
+1. Retain the exact existing `RouteSearchRequest`, supplied finite supported scope/full profile,
+   matching view/policy references, exact `RailwayArtifactRevision` and actual
+   `TimetableOccurrenceInventoryView`; reject mixed views/revisions/full snapshots or request bounds.
+2. Retain independently supplied, substantiated finite required-domain/date/address/original-index
+   interval declarations with exact closure/dependency applicability references. Check actual
+   inventory membership, matching binding/facts and required coverage; do not derive requiredness
+   by scanning loaded slots, parsing opaque service dates, enumerating paths or selecting winners.
+3. Represent bounded technical **qualified / incomplete / unavailable** outcomes or equivalent
+   typed holds. Structural contradictions fail atomically. Missing/unknown required occurrences,
+   interval coverage or dependencies block qualification; inactive/absent exclusions require their
+   own qualified support. No caller-set success flag, empty declaration or local validity alone
+   authenticates completeness. Even qualified technical input is not search completion/adoption.
+4. Retain exact **required/unresolved connection** targets and compatible authority requirements
+   without connection payloads. The initial slice fails closed for every unresolved required
+   connection. Later compatible A authority may resolve it under a separately reviewed seam;
+   no fabricated resolved reference, allowance or unimplemented connection view is accepted now.
+5. Preserve exact dependencies and invalidation applicability for request/scope/profile, static
+   revision, inventory/full snapshots, source/time/eligibility/interval authority and future
+   connections. Changed applicability prevents reuse; retained immutable values are not mutated.
+   No cache/TTL/update publisher, loader, registry or persistent format is introduced.
+6. Use invented tests for positive stipulated closure, request/view/static/snapshot conflicts,
+   missing/extra/duplicate membership, date/interval unknown versus qualified negatives, explicit
+   unresolved connection holds even with usable direct data, no empty-list shortcut, invalidation,
+   overflow/finite construction safeguards and preservation. A positive invented closure premise
+   is not real-source authentication; any connection-free premise must independently close its
+   required relation domain and cannot select a new production direct-only search policy.
+
+No source interpreter, real access/pilot, connection payload, numeric production horizon choice,
+candidate/path generation, search result, searcher/solver, ranking, persistence, AppEnvironment,
+Application lifecycle, Journey or UI implementation belongs to that slice. No new Domain failure
+or product behavior is needed. **`NO_NEW_PRODUCT_DECISION_REQUIRED`** for these source-neutral
+technical values enforcing already Accepted truth. A newly required requiredness/exclusion rule,
+launch reduction, degraded-success mode or production policy choice must be surfaced separately.
+
+Broader status remains **`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**, Phase 3
+**In Progress**, live/default routing unconfigured. Exact next safe action, **not begun**:
+separately authorize the smallest invented-only production Data request-scoped search-input
+closure values and focused tests above, with explicit unresolved connection-evidence obligations
+and fail-closed qualification; no connection payloads, solver, real access or runtime wiring.
