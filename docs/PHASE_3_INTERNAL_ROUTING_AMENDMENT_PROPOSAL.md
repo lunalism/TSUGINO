@@ -3,6 +3,16 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+
+**Governing invented-only production solver implementation (2026-10-10):** the owner
+separately authorized the consumer §24 implementation from published contract checkpoint
+`05ea2cf463e3b88f14e81a7fc5055cff5c06e678`. [§25](#25-invented-only-production-prepared-input-solver-implementation)
+records the iterative exhaustive DFS proof, invocation safeguards, independent test-only
+oracle and verification. Earlier algorithm/limits-awaiting and solver-next statements are
+historical. No Accepted objective, upstream truth or DEBUG synthetic contract changes.
+This is an uncommitted implementation slice; real input, runtime adoption and deployment
+suitability remain separate gates. P3-T1 stays incomplete, Phase 3 In Progress.
+
 **Governing production execution-contract audit (2026-10-10):** the exact independently
 approved prepared-input bytes were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`
 (`feat: add prepared internal search input`). Earlier unstaged/publication-pending and
@@ -5221,3 +5231,275 @@ no unrelated or executable changes. The primary classification is
 Final reviewed-byte/cached whitespace and exact docs-only staged scope, plus parent/ref/clean/main
 checks remain publication gates. Authorized commit: `docs: define production solver execution contract`;
 exactly one commit, normal push to origin/phase/03-route-search, no force or main merge.
+
+## 25. Invented-only production prepared-input solver implementation
+
+### 25.1 Scope lock and algorithm/cost audit (recorded before implementation)
+
+Phase 3 remains In Progress; P3-T1 remains incomplete. This slice adds only a
+request-local Data consumer of immutable P, independent invented test oracle and
+verification. No runtime adoption, private input, acquisition, Journey/UI, physical
+device, DEBUG synthetic contract, staging or publication is authorized here.
+
+Selected algorithm: iterative depth-first exhaustive enumeration. A frame holds
+its next ride ordinal; the current path holds unique retained ride ordinals. Each
+extension scans P.rides, starts at the requested origin, uses only exact feasible
+prepared directional relations, and excludes recurring TripID repetition and
+length above min(profile.maximumRailRides, P.rides.count). Destination prefixes
+are evaluated but remain extendable. There is no objective/dominance/station-visit
+pruning, no first-destination/direct/K shortcut, no memo or Cartesian edge graph.
+The universe is finite: for R rides and length bound L, at most sum(R^k, k=1...L)
+sequences (this bound is never computed or allocated). Induction on frames proves
+each feasible sequence is visited. Exhausting every root/frame proves zero or the
+exact minimum final Date and then changes; all distinct complete tied identities
+are retained. Unique retained ride ordinals implement existing key equality only
+because P's constructor rejects duplicate keys; no cross-input identity reuse.
+
+Operational cost is intentionally conservative. Work is bounded at every scan,
+key lookup/equality, tie copy/dedup, comparison, reconstruction and canonical
+validation. Foundation hashing/string equality and bounded snapshot constructors
+receive conservative bulk charges, not claims of CPU-instruction or heap counts.
+Use linear exact connection-key scans and one feasible-outgoing-endpoint flag per ride; no hash cost is hidden. A false flag soundly proves no extension exists. The DFS frontier is linear in L. Winner storage
+can be exponential, so separate winner/key/retained-slot/logical-payload guards
+refuse before growth. Logical allocation credits are cumulative for the entire
+invocation, including obsolete incumbents, sorting scratch, legs and terminal
+copies; releasing memory never refunds the meter. P's inherited logical payload
+is charged once as retained input; generated copies are charged conservatively.
+Variable-count products use overflow-reporting preflight; counter additions use subtraction guards. Small header/key and inherited-shape sums are bounded below Int overflow before use. A bounded
+checkpoint precedes each loop operation/bulk canonical operation, checks task
+cancellation, and checks again before pending failures and every terminal return.
+A cutoff at any stage is searchIncomplete with no prefix output.
+
+Ordering uses a metered insertion sort (bounded by configured winner/work caps),
+retained UUID tuple bytes, unsigned UTF-8 trip/date spelling, numeric original
+indices and strict sequence-prefix order. This avoids an uninterruptible opaque
+sort callback. Frozen winners are then reconstructed and admitted via existing
+canonical constructors. The same meter survives all stages. Explicit @concurrent
+entry provides generic-executor execution under actual MainActor-default Swift
+settings; state is invocation-local, with no detached tasks. Test-only fault and
+checkpoint seams must be excluded from Release and cannot replace production
+selection/proof. Numeric safeguards and executed evidence are recorded below
+after invented boundary/stress/oracle verification; they are not deployment caps.
+
+### 25.2 Implementation and accounting schema
+
+Production file: `TSUGINO/Data/Routing/InternalRouteSolver.swift`. Public-to-module
+entry is `InternalRouteSolver.solve(_:configuration:) async throws`, explicitly
+`@concurrent`, not a RouteSearching conformance or live registration. Invalid
+configuration returns configurationUnavailable; observed incompatible objective or broken
+retained relation-record association returns dataUnavailable. No upstream clock,
+permission, gap, allowance or requiredness is recomputed. The configuration binds
+the exact closed objective definition/reference supplied with P.
+
+The frontier is two ordinal arrays (current path and next-child frames). Unique
+retained ordinals preserve Swift key equality. Each node is a unique ordinal
+sequence by induction: one root scan and each next-child ordinal is visited once;
+thus duplicate complete identities cannot be generated from intact P. A metered
+full-array equality check additionally guards winner collection; duplicates never
+become omissions. False outgoing flags exclude only prefixes with no feasible
+relation from their exact endpoint. No objective pruning or generic dominance.
+
+For R rides, C relations, L path bound, E explored prefixes, W live optimal ties,
+B key bytes and S snapshot/profile validation work, worst abstract costs include
+R*C outgoing scans; E*R*(C+L) expansion scans; complete-tie comparisons/copies up
+to E*W*L; W²*L*B insertion ordering; and W*(L*S+L²) reconstruction/admission.
+These are bounds, not expected timetable size or performance promises. No R*C
+edge structure is materialized. Retained structures include P, R comparator keys
+and outgoing flags, linear frontier, current/abandoned winner credits, claim and
+edge scratch, legs, candidates/omissions and final result scope/batch copies.
+
+Logical schema charges arrays by their declared elements/value payload, including
+nested snapshot copies regardless of COW sharing; dynamic allocator capacity,
+Foundation internal scratch and the meter's fixed four-counter/check arrays are
+not measured heap bytes. Nonrefundable credits can exceed peak logical retention.
+Comparator scratch charges actual key byte values three times plus headers before
+copying; each complete identity charges keys and ordinals; snapshotCost reserves
+4,096 credits per stop+1 for bounded native string/snapshot operations and value
+copies. Profile membership receives a conservative worst collection-scan charge;
+canonical duplicate-Trip validation receives L² credit. A second whole-P byte
+credit overestimates final retained scope/profile copies; output snapshot copies
+are charged again. No assumption of free COW or a reset after exhaustive proof.
+
+Configuration ceilings for the **invented evaluation envelope**, allowing only
+positive lower per-call limits, are 100,000,000 work credits, 1,000,000 cumulative
+retained slots, 256 simultaneously retained winner identities, 16,384 cumulative
+winner-key credits and 268,435,456 logical bytes. They are independent operational
+safeguards, not a new product horizon/ride preference. Refusal occurs before any
+counter update/growth if a charge exceeds the remaining allowance; products use
+overflow-reporting multiplication. Negative/zero/above-ceiling configurations fail
+configurationUnavailable. An overflowed internal charge fails searchIncomplete.
+There is no memo allocation; no unguarded memo dimension is implied.
+
+Checkpoints precede every search scan, relation equality, tie comparison/copy,
+ordering byte/shift, admission loop and finalization charge. Native canonical
+constructors are bounded bulk operations bracketed by cancellation checks, not
+per-instruction cancellable calls; the terminal scoped constructor spans at most
+the validated winner/key/payload envelope. No wall-time cancellation-latency bound
+is claimed. All failures cross a final Task.checkCancellation guard; observed
+cancellation wins over configuration/data/cutoff/rejection and before return.
+No detached task, shared mutable state or wall-time proof exists.
+
+DEBUG-only checkpoints/copy-claim mutation/shared-record-index corruption and
+comparator adapter exercise otherwise unreachable defensive failures. They do
+not provide production callers with completion/winner claims, and are absent
+from Release. Corruption changes actual copied token/key/context/chronology/
+transition/accounting fields, rather than asking the solver to return a chosen
+reason. The classifier reuses P, applies canonical priority, then uses existing
+RouteRailProposal, WalkingTransfer, RouteCandidate and scoped result constructors.
+
+### 25.3 Invented verification and safeguard evidence
+
+Final author and independent verification passed. The independent oracle is
+only in the test target, recursively scans all rides/relations, materializes all
+complete paths and only then separately selects minimum arrival/change and orders
+identities. It shares neither DFS frames, incumbents, pruning nor winner selection
+with production. Its limit is 16 invented rides; it is not a deployment fallback.
+
+
+Generated shapes use artificial IDs, opaque invented day labels, elapsed instants
+and zero-pattern UUIDs only. Observed final invocation credits (not heap/RSS):
+
+| Invented complete shape | Winners | Work | Cumulative slots | Winner keys | Logical bytes |
+|---|---:|---:|---:|---:|---:|
+| Two direct ties / exact whole-call boundary | 2 | 165,952 | 61 | 2 | 99,902 |
+| 32 direct ties, reverse discovery order | 32 | 3,603,771 | 5,176 | 32 | 1,765,220 |
+| 128 direct ties, reverse discovery order | 128 | 27,193,434 | 75,976 | 128 | 10,516,484 |
+| 256 direct ties, reverse discovery order | 256 | 88,479,312 | 299,400 | 256 | 30,299,012 |
+| Two layers, width three, oracle parity | 9 | 2,446,195 | 395 | 18 | 789,608 |
+| Three layers, width three, oracle parity | 27 | 17,180,614 | 1,535 | 81 | 3,312,125 |
+| Four layers, width three, oracle parity | 81 | 95,791,173 | 6,185 | 324 | 12,908,616 |
+
+All four-layer winners completed; no cutoff is inferred from its near-ceiling work.
+The 100M ceiling admits the observed 95.79M branching shape with finite headroom;
+256 winner ceiling admits the complete measured direct tied set, while actual 257
+same-objective identities refuse with searchIncomplete before ordering. Slot/key/
+payload ceilings are deliberately conservative independent secondary guards above
+the observed 299,400 slots/324 keys/30,299,012 bytes. They were validated at exact
+ceiling and +1 using the real meter, not actual whole-invocation maximum shapes.
+The slot ceiling is about 3.34× the observed direct-tie slots; 16,384 key
+credits deliberately permit substantially more identity elements than the observed
+324 while independently bounding growth. 256 MiB allows roughly twice the
+inherited 96,000,000-byte P ceiling plus generated-copy headroom; it does not
+assert that a maximum P can pass the independent 100M work guard. They do not
+establish support for every combination of those ceilings. The small
+whole-call observation was rerun with each exact used limit, then one less credit
+(actual demand = limit+1); exact succeeds and each +1 demand refuses atomically.
+Negative/zero/Int.max configuration dimensions and multiplication overflow refuse.
+Real work ceilings set from deterministic stage snapshots force refusal during
+indexing, exploration, tie collection, ordering, admission, finalization and terminal
+entry; DEBUG injected cutoffs separately verify containment. Cancellation barriers
+cover every stage, before invalid configuration, pending cutoff and final return;
+overlapping calls retain independent state and actual hooks execute off-main.
+No elapsed-time threshold determines correctness or completion.
+
+Final 26-function / 55-case solver matrix includes minimum arrival then genuine
+changes, direct/transfer alternatives, best-last, all tied branches, no departure
+preference, dated recurring ID prohibition, zero-duration station revisit/cap,
+no inferred/reversed/absent/infeasible edge, directional walk/sameStation canonical
+legs, original repeated-visit numeric indices and through service, retained
+Unicode-equivalent ID/date distinctions, storage/evidence permutations, UUID/
+unsigned-UTF8/numeric/prefix comparator branches, all seven local rejection reasons
+and priority, shared objective/projection failures, all-rejected contiguous
+omissions, mixed incomplete/no slower replacement, raw-error containment,
+exact/+1/overflow meters and independent exhaustive parity. Equality-bound loss is
+excluded by exhaustive traversal with no objective bound; duplicate identities are
+structurally impossible in unique-ordinal DFS and independently checked by oracle
+identity dedup/parity plus defensive full-array winner equality. Equal keys cannot
+coexist in P; the DEBUG comparator adapter explicitly resolves equal key claims to
+one retained representative rather than inventing byte-distinct identity.
+
+Exact author commands (cwd `/Volumes/Data/dev/TSUGINO`; no physical destination):
+
+```sh
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-solver-dd build-for-testing
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-solver-dd -resultBundlePath /private/tmp/tsugino-solver-first.xcresult -only-testing:TSUGINOTests/InternalRouteSolverTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-solver-dd -resultBundlePath /private/tmp/tsugino-solver-regression.xcresult -only-testing:TSUGINOTests/InternalRouteSolverTests -only-testing:TSUGINOTests/PreparedInternalSearchInputTests -only-testing:TSUGINOTests/InternalSearchScopeTests -only-testing:TSUGINOTests/InternalSearchSuccessTests -only-testing:TSUGINOTests/RouteAdmissionTests -only-testing:TSUGINOTests/RoutingValueTests -only-testing:TSUGINOTests/TimetableRideContextTests -only-testing:TSUGINOTests/QualifiedConnectionEvidenceTests -only-testing:TSUGINOTests/RequestScopedSearchInputClosureTests -only-testing:TSUGINOTests/TimetableOccurrenceInventoryTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-solver-dd -resultBundlePath /private/tmp/tsugino-solver-final-focused.xcresult -only-testing:TSUGINOTests/InternalRouteSolverTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-solver-author-release-dd build
+```
+
+The initial build-for-testing failed at Swift compilation because a method returned
+a nested private Admission type; corrected its visibility before the first passing
+test run. The first focused iteration passed **18 functions / 43 cases**. Combined regressions passed **218
+functions / 478 cases**, including an intermediate solver test binary of 24/53;
+nine unchanged regression suites account for **194/425**. The final frozen source/
+tests were separately rerun: author **26/55 PASS**, independent **26/55 PASS**, zero
+failures/skips/runtime warnings. Do not describe the intermediate combined run as
+having executed the final two added test functions. Final standard Release app and
+embedded TSUGINOLiveActivity extension compilation passed for both authorship and
+independent builds. Existing unrelated asset/Codable isolation diagnostics remain;
+no new solver-source/test diagnostic is present in final runs. Release source and
+symbol inspection confirms DEBUG hooks/comparator adapter and test-only oracle
+are absent from the production executable.
+
+Author logs: `/private/tmp/tsugino-solver-compile.log`, `...-first.log`,
+`...-regression.log`, `...-final-focused.log`,
+`/private/tmp/tsugino-solver-author-release.log`; corresponding xcresults above.
+Final extracted stdout is under `/private/tmp/tsugino-solver-final-diagnostics`.
+The optional xcresult console-log view was unavailable; diagnostic export supplied
+resource observations successfully. Temporary logs/results are local evidence,
+not durable committed artifacts; the table/commands/review here persist the result.
+
+### 25.4 Independent review, drift audit and handoff
+
+Independent non-author Codex agent `production_solver_independent_review` read the
+owner request/current authority and final implementation. It did not author/edit
+source, tests or documents; it used a separate simulator and DerivedData for fresh
+verification. This is a separate agent in the same Codex environment, not a blinded
+external/vendor review. Source SHA-256:
+`f8670cac25baf9a98238fdcbcf2900668ddc10907efe3818e1cdfa0c565c6627`;
+test SHA-256:
+`b51cb430b152e4832bc67e5e757eaeb9831728ada04a2c1395252e6bc98317b4`.
+
+Review covered algorithm/finite universe/full-root and destination-extension proof,
+all ties/key equality/retained order, feasibility/cap/recurring identity, metered
+native/scratch/output copies and config bounds, cancellation and actual isolation,
+canonical admission priorities/shared faults/all outcomes, independent oracle and
+matrix evidence, Release exclusion and scope/Git discipline. Material incremental
+findings on comparator scratch value copies, final scope/output copies, membership/
+canonical duplicate checks and bounded terminal cancellation were resolved in the
+final bytes. No unresolved material implementation finding remains. Final independent verdict:
+**36/36 criteria PASS**, including final eight-file documentation/Git drift audit.
+The reviewer independently parsed author result bundles and observed identical
+final resource figures. Exact independent commands (same repository cwd):
+
+```sh
+xcodebuild test -project TSUGINO.xcodeproj -scheme TSUGINO -destination 'platform=iOS Simulator,id=BACE309E-6EE1-44B4-9826-4FFA91368F9B' -derivedDataPath /private/tmp/tsugino-solver-independent-dd -only-testing:TSUGINOTests/InternalRouteSolverTests -resultBundlePath /private/tmp/tsugino-solver-independent-focused.xcresult
+xcodebuild build -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=BACE309E-6EE1-44B4-9826-4FFA91368F9B' -derivedDataPath /private/tmp/tsugino-solver-independent-release-dd
+```
+
+Independent logs: `/private/tmp/tsugino-solver-independent-focused.log` and
+`/private/tmp/tsugino-solver-independent-release.log`; diagnostics:
+`/private/tmp/tsugino-solver-independent-diagnostics`. Fresh final focused 26/55
+and standard Release app/extension both passed. The review's 36 gates span
+scope/authority (1–4), finite search/identity/objective/proof/order (5–17),
+configuration/meter/overflow/evidence/cancellation/isolation (18–27), frozen
+canonical admission/classification/outcomes (28–32), independent oracle/matrix/
+fresh verification (33–35) and final docs/Git drift (36).
+
+A final precedence audit confirmed that compatibility itself is metered. If a
+charge is exhausted before a shared incompatibility can be observed, the call
+returns searchIncomplete without certifying compatibility. An observed shared
+fault is dataUnavailable; no unmetered fault-probing stage or fault-over-cutoff
+precedence is invented. Observed cancellation remains the explicit overriding
+precedence in §24.6.
+
+Primary classification:
+**`P3_INVENTED_PRODUCTION_PREPARED_SOLVER_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+No new product decision was required. The eight-file diff adds only one Data solver,
+three invented test/support files and consumer/producer/architecture/roadmap truth.
+Domain/upstream/preparation/DEBUG synthetic contracts, dependencies, persistence,
+UI/Journey and runtime wiring are untouched. Worktree changes are unstaged and
+uncommitted; HEAD/upstream remain `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`,
+main/origin-main `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence 0/0.
+No commit/push/merge, private input, provider acquisition or physical-device work.
+
+Remaining gates: real prepared-input qualification/pilot authority, source/legal/
+coverage completeness, versioned runtime policy resolution, measured end-to-end
+preparation+solve/cancellation/heap/performance suitability, Application lifecycle
+and RouteSearching/runtime adoption. Exhaustive enumeration is exponential and
+bounded refusal is expected outside this invented evaluation envelope. No automatic
+retry or slower replacement is supplied. P3-T1 stays scope-incomplete; Phase 3 stays
+In Progress, live/default routing unconfigured. Next safe action is review of this
+uncommitted diff and a separately authorized publication slice; no real pilot or
+runtime wiring is implied by this implementation verdict.

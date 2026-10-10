@@ -3,6 +3,21 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Invented-only production prepared-input solver — 2026-10-10
+
+The separately authorized solver slice from `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`
+is implemented in Data/Routing `InternalRouteSolver`, with immutable invocation
+configuration, exhaustive iterative DFS, complete equal-optimum identity preservation,
+retained-key reproducibility ordering and canonical scoped admission. [consumer §25](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#25-invented-only-production-prepared-input-solver-implementation)
+records the preimplementation algorithm/cost audit, uninterrupted metering schema,
+invented envelope, verification and independent review. Prior solver-next/algorithm-
+awaiting text is historical. Production input/objective and existing DEBUG contracts
+are unchanged. This change set remains unstaged/uncommitted; publication is separate.
+No real/private input, acquisition, live/default RouteSearching/AppEnvironment adoption,
+Journey/UI, physical-device or Phase-10 work. P3-T1 stays incomplete and Phase 3
+**In Progress**; live/default routing stays unconfigured. Invented evidence does not
+establish deployment suitability or end-to-end orchestration budgets.
+
 **Governing published-input / solver-contract handoff (2026-10-10):** prepared-input values
 were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`; earlier unpublished/input-next
 wording is historical. [Consumer §24](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#24-production-solver-execution-contract--2026-10-10)
