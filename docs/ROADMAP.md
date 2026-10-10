@@ -1,5 +1,34 @@
 # TSUGINO — ROADMAP.md
 
+## Published prepared input; production solver execution contract — 2026-10-10
+
+Prepared-input production values were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`
+(`feat: add prepared internal search input`), preserving all seven independently approved files.
+Earlier unstaged/publication-pending and input-next entries below are historical. This separately
+authorized documentation-only [consumer §24](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#24-production-solver-execution-contract--2026-10-10)
+defines feasible prepared-ride itineraries, finite universe without a no-cycle policy, exact
+ride-key-sequence identity/dedup and non-preferential structural tie order. Arrival then genuine
+changes remains the sole objective; every identity-distinct equal optimum survives.
+
+Algorithm-neutral exploration must prove the optimum and all ties by exhaustion or sound frontier
+bounds. Equality cannot prune ties; dominance remains deferred. Invocation safeguards are immutable
+and separate from prepared truth: one uninterrupted solver meter covers accepted-input compatibility/
+indexing through finalization; preparation retains its own construction safeguards and separate
+end-to-end measurement. No numeric solver limits or algorithm are selected. Cutoff -> searchIncomplete,
+observed cancellation -> CancellationError, no partial output. Freeze/reproducibly order all winners
+before contiguous admission indices; reuse canonical constructors. All rejected remains unscoped
+noUsableAlternatives, mixed rejection searchIncomplete, zero proved feasible universe scoped noResults.
+
+Primary **`P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT`**; **`NO_NEW_PRODUCT_DECISION_REQUIRED`**;
+**`NUMERIC_PRODUCTION_SOLVER_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`**. The next separately authorized
+invented-only task requires explicit algorithm/cost audit, production core + invocation configuration,
+independent test-only exhaustive prepared-input oracle, full tie/proof/admission matrix and Release
+compilation. It excludes real/private input/pilots, AppEnvironment/live adoption, Journey/UI and
+Phase-10. Exact not-begun next action and independent review/publication status are in §24.10–§24.11.
+No source/tests change, route enumeration, solver invocation, test/build/device work or private
+artifact access in this audit. `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3
+**In Progress**, live/default routing unconfigured and real coverage/resource/adoption gates remain.
+
 ## Invented prepared-input values implementation — 2026-10-10
 
 The owner separately authorized the input-only slice from published final-input audit

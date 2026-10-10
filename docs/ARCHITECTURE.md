@@ -1027,6 +1027,45 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Governing production solver execution contract (2026-10-10):** immutable prepared-input
+values were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`; earlier publication-pending/
+input-next statements are historical. [Consumer §24](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#24-production-solver-execution-contract--2026-10-10)
+now defines the owner-authorized documentation-only execution contract. The exact solver start is
+one PreparedInternalSearchInput; upstream eligibility/time/connection/gap truth is consumed unchanged.
+Feasible itineraries use retained rides and exact feasible directional relations, origin/destination,
+scope ride cap and no repeated recurring TripID even across dates. Station revisits remain legal;
+finite rides/relations and bounded distinct-Trip sequences make the universe finite.
+
+Identity is the ordered existing PreparedTimetableRideKey sequence; adjacent keys uniquely determine
+connections/forms in that input. Exact duplicates collapse, distinct equal optima survive. After
+complete arrival/change optimum and tie proof, order retained identities by fixed UUID bytes,
+TripID/date unsigned UTF-8 bytes and numeric indices, lexicographic/prefix-first. Preserve existing
+key equality and unique retained spelling representatives; no new ID normalization or byte-distinct
+identity. This order has no user preference; §10.2's redundant interleaved fields remain historical.
+
+Exploration stays algorithm-neutral. Pruning must exclude both better objectives and further tied
+identities; equality cannot prune ties, generic dominance is deferred. Completion is exhaustive
+accounting or sound all-frontier bounds plus complete tie accounting. One no-reset Data invocation
+meter starts at accepted immutable input, includes compatibility/indexing through admission/finalization,
+and is separate from fixed preparation safeguards. End-to-end preparation/solve measurement remains
+an orchestration/deployment duty, not a mutable prepared-input counter. Immutable invocation controls
+bound work/all retained states/memos/tied identities; numeric values await implementation evidence.
+Any pre-terminal cutoff yields searchIncomplete without partial output; observed cancellation wins.
+
+Only proved winners get contiguous handoff indices, matched RouteRailProposal, optional directional
+WalkingTransfer, RouteCandidate and scoped success through existing constructors. All admitted:
+complete ordered batch; zero proved feasible identities: scoped noResults; all rejected: unscoped
+noUsableAlternatives; mixed rejection: searchIncomplete. Shared input contradiction is dataUnavailable;
+local defensive omissions apply only to frozen winners. Slower paths/duplicates are not omissions.
+Future Data solve(P, immutable configuration) remains request-local/off-main behind RouteSearching;
+Application keeps lifetime/cancellation/retry/publication ownership. Independent small invented
+exhaustive prepared-input oracle parity is required; no DEBUG algorithm/limit is promoted.
+
+Classification: `P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT`, `NO_NEW_PRODUCT_DECISION_REQUIRED`,
+`NUMERIC_PRODUCTION_SOLVER_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`. §24.11 records final review/
+publication gates. No source/tests, algorithm, solver, enumeration, runtime wiring or private access
+in this audit. Broader P3-T1/Phase 3 stays incomplete, live/default routing unconfigured.
+
 **Governing invented prepared-input implementation (2026-10-10):** the separately authorized
 §22 slice now adds production Data/Routing `PreparedInternalSearchInput`; [consumer §23](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#23-invented-only-prepared-input-implementation--2026-10-10)
 records values, numeric evidence and verification/review. Earlier audit-only/input-next text is

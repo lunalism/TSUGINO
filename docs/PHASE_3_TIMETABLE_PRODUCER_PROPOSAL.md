@@ -3,6 +3,18 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+**Governing published-input / solver-contract handoff (2026-10-10):** prepared-input values
+were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`; earlier unpublished/input-next
+wording is historical. [Consumer §24](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#24-production-solver-execution-contract--2026-10-10)
+defines the next production execution contract starting from one immutable PreparedInternalSearchInput.
+Producer/inventory/B/A/preparation retain source-date/event/eligibility/connection/gap ownership;
+the future solver consumes that truth, never reinterprets it. Ride-sequence identity, all-equal-optima
+proof, separate no-reset invocation accounting and canonical winner admission are consumer duties.
+`P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT` / `NO_NEW_PRODUCT_DECISION_REQUIRED`; algorithm and
+numeric solver limits await later evidence. §24.11 records review/publication status. No producer,
+source/tests, solver/runtime or real/private change occurs here. P3-T1 remains scope-incomplete,
+Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing prepared-input handoff (2026-10-10):** the separately authorized invented Data
 preparation slice is implemented; [consumer §23](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#23-invented-only-prepared-input-implementation--2026-10-10)
 records exact ride/connection/objective projection, generated limits and verification/review status.

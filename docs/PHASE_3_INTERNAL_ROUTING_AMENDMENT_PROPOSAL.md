@@ -3,6 +3,19 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Governing production execution-contract audit (2026-10-10):** the exact independently
+approved prepared-input bytes were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`
+(`feat: add prepared internal search input`). Earlier unstaged/publication-pending and
+input-next statements are historical. [§24](#24-production-solver-execution-contract--2026-10-10)
+defines the next invented-only solver contract, including the minimal input-local identity,
+reproducibility-only ordering, completion/resource boundary and canonical winner admission.
+It governs the previously deferred production mechanics in §10.2 and clarifies §10.4/§22.5
+work accounting; no Accepted objective, Domain identity or synthetic contract changes.
+Classification: `P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT`; `NO_NEW_PRODUCT_DECISION_REQUIRED`.
+Numeric solver limits await implementation evidence. Review/publication status is in §24.11.
+No solver/source/test/runtime or real/private work is performed by this documentation audit.
+P3-T1 remains scope-incomplete, Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing prepared-input implementation (2026-10-10):** the owner separately authorized
 only the invented production Data slice from published §22 audit
 `7d0b37e0162ada88e720cd368a88dd9f656edb7f`. [§23](#23-invented-only-prepared-input-implementation--2026-10-10)
@@ -896,6 +909,11 @@ contract. Deterministic ordering alone is not a claim that the first tied item i
 No recommendation automatically selects a train or creates Journey state.
 
 ### 10.2 Identity and equal-optimum ordering (Proposed)
+
+**Current resolution:** §24.3–§24.4 now specifies production input-local ride-sequence
+identity and reproducibility ordering under the owner's execution-contract audit authorization.
+The redundant interleaved connection fields below are historical Proposed mechanics, not the
+selected identity. Existing DEBUG byte-key semantics remain unchanged.
 
 Retain exact dated ride identity: (view UUID, recurring TripID, service-date label,
 original boarding index, original alighting index). An itinerary key is its ordered
@@ -4535,6 +4553,12 @@ future completed optimum/tie proof as **execution completion**; never a bare pre
 
 ### 22.5 Materialized policies, execution configuration and admission
 
+**Current work-accounting clarification:** §24.6 governs the new solver entry boundary:
+preparation's fixed safeguards remain separate, while one uninterrupted solver invocation meter
+starts at accepted immutable input and includes compatibility/indexing through finalization.
+The cross-preparation-counter recommendation below is historical, not an Accepted requirement
+to mutate the published input or change DEC-081 synthetic accounting.
+
 | Policy/reference | Consumption recommendation and remaining obligation |
 |---|---|
 | Connection policy | Exact relation/form/components/total and endpoint-wide applicability are materialized in A under this reference; preparation uses them, solver need not reinterpret raw policy definitions |
@@ -4843,3 +4867,357 @@ live/default routing unconfigured and real coverage/resource/adoption gates rema
 Exact next safe action, **not begun**:
 
 > Owner review and publication of the independently approved `PreparedInternalSearchInput` production values. After publication, separately assess the production solver execution contract: exact itinerary identity/dedup/reproducibility ordering, algorithm-neutral enumeration/optimality proof obligations, invocation resource/cutoff configuration and canonical winner admission. Do not begin solver implementation or real/private routing execution in the publication task.
+
+## 24. Production solver execution contract — 2026-10-10
+
+### 24.1 Authority, publication and exact start boundary
+
+This owner-authorized documentation/architecture audit follows publication of the exact
+independently approved §23 values at `17b97ed86a2a20e950dded1a7fb95f8766257000`
+(`feat: add prepared internal search input`). Repository/branch/upstream/live match that clean
+checkpoint, divergence 0/0; local/tracked/live main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`. No source/tests change or execution is authorized here.
+
+Authority is Accepted DEC-076 as amended only for internal consumption by DEC-079, dated
+producer semantics DEC-078, DEC-080's selected V1–V7, DEC-086's arrival/change/all-equal-optima/
+completion rules and DEC-087's Application lifecycle. DEC-081 all-distinct return, synthetic
+algorithms/limits and experiment certificates remain DEBUG-only. Historical production P5
+all-distinct-return, §10.2's redundant identity fields and cross-preparation-meter recommendations
+do not override this contract. This resolves technical mechanics of existing Accepted obligations,
+not a new preference or wholesale acceptance of DEC-086 R6/deployment.
+
+One immutable `PreparedInternalSearchInput` is the solver's exact start boundary. It retains the
+whole technically qualified assessment, exact request/scope/profile/view, ordered usable rides,
+ordered negative/excluded interval ledger, required connection projections and fixed Accepted
+DEC-086 objective/version/reference. Construction qualification is not execution completion.
+Compatibility must preserve this entire input/objective association; matching a label alone or
+substituting another assessment is insufficient. Unsupported/incompatible objective/input truth
+fails dataUnavailable, not a fallback ranking. Existing upstream preflight order remains intact.
+
+The solver consumes prepared truth. It does not reinterpret service dates, source clocks,
+eligibility, Trip continuity, connection evidence, allowances or gap feasibility. Known inactive,
+absent, prohibited and outside-scope ledger entries supply no ride. Prepared relation states
+supply the sole temporal-feasibility decision. No new requiredness, input narrowing, raw policy
+parser, current-view reload or clock/calendar conversion is part of solving.
+
+### 24.2 Feasible itinerary and finite universe
+
+For this exact input P, a feasible itinerary is a **nonempty ordered sequence of retained prepared
+ride tokens** satisfying every condition below, with canonical admission predicates preserved:
+
+1. First boarding station equals P.scope.request.origin; last alighting station equals destination.
+2. Every token is from P.rides, with its exact key, TrainCandidate, dated TimetableRideContext and
+   full snapshot association. No synthetic ride, fragment stitching or unresolved travel.
+3. Ride count is at most scope.profile.maximumRailRides. No recurring TripID occurs twice, even
+   on different dates, preserving RouteCandidate/DEC-078 restrictions.
+4. Each adjacent pair derives exactly the directional ConnectionRelationKey from previous
+   address/alighting original index and next address/boarding original index. P must contain
+   that required relation in state feasible. Infeasible/qualified-absent/missing relations cannot
+   be traversed; neither reverse edges nor implicit same-station/zero-allowance edges exist.
+5. Exact retained chronology holds within every ride and across transitions, within the inclusive
+   supplied scope. Prepared feasibility already establishes the allowed inter-ride gap; do not
+   implement a second formula. Profile station/line/Trip membership and scope association remain
+   the canonical scoped-admission constraints, not new search heuristics.
+6. A through multi-Line/operator Trip stays one ride. Each transition between distinct rides is
+   a qualified genuine train change. Walking occurs only for the exact walking form; sameStation
+   adds no walking leg. No access/egress walking or Phase-10 detail is invented.
+
+Do not require acyclic station visitation. Repeated stations, permitted cycles and zero-duration
+rides/connections remain possible where existing canonical structure and all conditions hold.
+A destination-reaching prefix is a feasible complete itinerary, not permission to terminate the
+whole search; any exclusion of its extensions requires the same sound objective proof as below.
+
+Let R be finite usable rides and T their finite distinct recurring TripIDs. Sequence length is
+at most min(maximumRailRides, T), and each position has at most R choices; the mathematical sum
+of R^k over that finite range bounds the universe. Required relations are also finite. This is
+a finiteness argument, not an implementation allocation/count computation or practical runtime
+claim. No station-visited policy, algorithm or new product limit is needed to make it finite.
+
+### 24.3 Exact identity and duplicate semantics
+
+**Selected identity:** the ordered sequence of `PreparedTimetableRideKey` values, local to one
+exact P. Equality is sequence length plus pairwise existing key equality. A key retains view,
+TripID, opaque service-date identity and both original indices. It is not persistent identity,
+a Journey ID or permission to reuse a path under another input/objective.
+
+**Sufficiency proof:** P's constructor permits only one retained usable token per equal ride key.
+Each adjacent key pair uniquely derives the full directional connection key. B declares each
+required key once; A and the assessment require one compatible evidence record/projection per
+key, preserving exactly one form/allowance and endpoint snapshot association. Canonical station
+anchors/times derive from those retained rides. Thus the ordered ride keys determine every
+connection key/form, station and time within P. Adding these derived fields to identity is
+redundant; multiple physical footpaths under one qualified walking relation are not separately
+represented alternatives. A future multi-form/parallel-relation input model would require a new
+review of this proof before reuse, not silent expansion of this identity.
+
+Two feasible itineraries are duplicates **only** when their entire identity is equal. Exact
+duplicates may collapse before winner handoff and are neither omissions nor rejections. Do not
+deduplicate by station list, times, lines, objective pair, displayed route or recurring pattern.
+Different dated occurrences, original repeated-visit indices or Trip identities remain distinct
+where existing keys differ; different directional transitions follow from different sequences.
+Conflicting same-key input truth is dataUnavailable, never a deduplication opportunity.
+
+**Existing equality versus spelling:** Canonical IDs and TimetableServiceDate preserve supplied
+spelling, but their current synthesized Swift String equality includes canonical Unicode
+equivalence. Do not change that equality, normalize IDs or invent byte-distinct identities.
+Equal-key duplicate tokens cannot coexist in P. Resolve every internal key claim to its unique
+retained token before dedup/order; use that retained key's spelling, never an arbitrary redundant
+binding/context spelling. Other non-equal keys may contain canonically equivalent text spellings;
+this does not authorize changing them. Input permutation means reordering the same retained
+tokens/records, not replacing their strings or snapshots with alternate representations.
+
+### 24.4 Reproducibility-only total ordering
+
+After the full identity-distinct equal-optimal set is established, order it structurally:
+
+| Ride-key field, in order | Comparison |
+|---|---|
+| Occurrence view UUID | Its fixed 16 bytes in UUID tuple/canonical textual byte-pair order, unsigned; never host-endian memory layout |
+| Recurring TripID | Retained rawValue unsigned UTF-8 bytes, lexicographic; shorter byte prefix first |
+| Service-date label | Retained unsigned UTF-8 bytes, lexicographic; shorter byte prefix first; no date parsing |
+| Boarding original index | Numeric ascending |
+| Alighting original index | Numeric ascending |
+
+Compare itinerary sequences lexicographically by those retained ride keys. Equal identities
+compare equal; a strict sequence prefix precedes its extension. Equal objective normally forces
+equal ride counts, but this prefix rule safely makes the comparator total on all retained
+identity sequences. Do not order by array offsets, hash iteration, localized collation, formatted
+dates or departure time. Within fixed P, unique retained representatives make equality/dedup and
+the total byte/numeric order consistent; reordered storage cannot alter the tied output order.
+
+Ordering cannot alter the objective or remove a tied identity. **The first equal-optimal candidate
+after reproducibility ordering is not considered better than the others.** The solver preserves
+all of them. Showing only one in future UI requires a separate presentation/product rule.
+No fare, walking distance, comfort, reliability, early-departure or other preference is introduced.
+Identity/dedup/order operationalize Accepted distinctness/reproducibility:
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`**. This resolves the previously deferred technical mechanics
+without retroactively changing §10.2 history or the existing DEBUG algorithms.
+
+### 24.5 Objective, exploration, pruning and completion proof
+
+The sole objective pair is **(exact retained final arrival instant, ride count minus one)**,
+lexicographically minimized. Every ride transition is one genuine change; internal through-line/
+operator boundaries and a walking leg add no extra change. Use exact absolute instants and integer
+counts, never display rounding or a third score. Every identity-distinct feasible itinerary at
+the minimum pair must survive. No historical all-feasible-path production return rule is revived.
+
+No Dijkstra, A*, DFS, BFS or other production algorithm is selected. Any implementation must prove
+that every feasible itinerary able to beat or tie the incumbent was explored or soundly ruled out,
+that no better itinerary remains, and that every distinct equal optimum is retained. Discovery
+order is private. First destination/direct/fastest-so-far/tied route establishes an incumbent only.
+
+Pruning may exclude a proved infeasible state, an already-accounted exact duplicate, or a state
+proved unable to yield a better pair **or another equal-optimal identity**. An optimistic objective
+lower bound prunes against the incumbent only when strictly worse. Equality alone cannot prune
+unaccounted ties. Unknown evidence, guessed transfer time, earlier arrival alone, same station/
+time/objective, visited station, first destination or first-K are not pruning proofs.
+
+Generic dominance is **deferred**. A later rule must prove continuation equivalence/simulation
+for exact ride/date, remaining TripID availability, remaining ride-count capacity, prepared
+connections, objective bounds and identity-distinct tied prefixes. Matching station/time/score
+alone loses these facts. Correctness precedes optimization; no simple dominance rule is adopted.
+
+Execution completion has exactly two valid proof forms:
+
+- **Exhaustive:** every feasible itinerary in the fixed universe has been accounted for.
+- **Frontier/bound:** any unexplored state is soundly excluded from producing a better objective
+  or any additional equal-optimal identity; all established equal-optimal identities are accounted
+  for. Proof must cover all remaining roots/states, not just the currently convenient frontier.
+
+Either form may avoid materializing slower paths. Neither is an externally supplied completion
+Boolean/certificate or practical capacity claim. Complete optimum/tie proof is necessary but
+terminal success also requires completed ordering, canonical admission and finalization.
+Zero rides, zero feasible relations, no direct route or a dead end alone is not noResults proof.
+The solver can prove an empty universe by bounded root/constraint accounting; it must still
+complete that execution and its cancellation/resource/finalization duties.
+
+### 24.6 Invocation resources, uninterrupted work and cancellation
+
+Recommend immutable, validated per-invocation `InternalSolverExecutionConfiguration`, separate
+from P and its evidence. Dimensions to evaluate are deterministic work-unit allowance, all retained
+search-state/frontier/memo capacity, and complete equal-optimal identity/key retention capacity.
+Include indexing/auxiliary storage and admission/finalization work in the same safeguards; a
+separate reserve may be justified later but cannot reset or evade the total meter. Exact names,
+charge units/checkpoint partition and any additional bounded payload dimension require the later
+algorithm/cost audit. Use overflow-safe count/payload preflight before allocating/retaining work.
+Horizon and maximumRailRides remain semantic scope/profile constraints, never execution knobs.
+Invalid invocation configuration follows configurationUnavailable preflight; it is not noResults.
+
+**`NUMERIC_PRODUCTION_SOLVER_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`**. No numerical work/state/
+winner/checkpoint limit or timeout duration is selected. Future values require invented stress,
+independent exhaustive-oracle comparison and representative workload evidence before production
+adoption. Fixed preparation caps are not solver capacity; DEBUG constants/certificates/legacy
+trace budgets do not become production defaults. Resource configuration affects only whether
+completion can be proved, never identity/objective/preference or an implicit first-N recommendation.
+
+**Work owner:** preparation has already finished under its own fixed construction safeguards.
+One solver invocation meter starts at acceptance of immutable P and includes entry compatibility,
+indexing/normalization, exploration/bounds, exact dedup/tie collection, order, reconstruction,
+admission and finalization. No reset at a stage boundary, suspension, incumbent replacement or
+post-proof admission; repeated work is charged. Preparation does not become mutable/instrumented
+to inherit this counter. Route-search orchestration may separately measure preparation + solve
+end-to-end cost for deployment evidence; this does not erase earlier work or promise a common unit.
+
+This explicitly clarifies the broader Proposed budget wording in §10.4 and supersedes the
+cross-preparation-meter architecture recommendation in §22.5. No Accepted production rule requires
+one meter spanning an already constructed P; Accepted cutoff/completion duties remain unchanged.
+DEC-081/§19's existing synthetic one-meter behavior remains unchanged. Any future end-to-end hard
+budget needs a separately reviewed composition; it cannot be claimed by summing incompatible units.
+
+Any operational cutoff **before full terminal completion**, including after optimum proof during
+dedup/order/admission/finalization or winner-set retention, yields `RouteSearchFailure.searchIncomplete`.
+No partial/best-so-far candidate, tied subset, noResults or omission-based tie truncation escapes.
+If the complete equal-optimal set exceeds a safeguard, fail searchIncomplete, never keep first N.
+Elapsed time is not a correctness/completion oracle. A future watchdog may abort as a separately
+specified cancellation/cutoff source, with no partial success; no timer policy is adopted here.
+
+Observed cancellation throws `CancellationError`, no partial output. Check before execution,
+at bounded entry/indexing/exploration work checkpoints, during dedup/selection/order, before and
+during reconstruction/admission/finalization, across suspension boundaries and before every
+terminal result or pending non-cancellation failure. At an observed checkpoint it wins over the
+pending outcome, including cutoff. No lower-priority shared-fault probing is required. Cancellation
+after the final check may not be observed before return; Application still suppresses superseded
+responses under DEC-087. No latency/fairness or physical-device responsiveness is claimed.
+
+### 24.7 Data ownership, entry point and independent reference oracle
+
+Recommend a request-local Data solver behind a future RouteSearching composition, conceptually
+`solve(preparedInput, executionConfiguration) async throws -> RouteSearchResult`. Exact internal
+Swift names are implementation details. P/configuration are immutable; mutable state and counters
+belong exclusively to one call. No hidden global mutable kernels, automatic retry, detached orphan
+work, one-call mutation/cancellation of another or MainActor-heavy computation. Entry scheduling
+must explicitly satisfy off-main execution under current project isolation settings; async/Sendable
+alone does not prove it. Only RouteSearchFailure or CancellationError may escape; raw internal
+errors are contained without reclassifying a known operational cutoff as bad input.
+Application retains task lifetime, runtime profile/configuration selection,
+retry intent and publication guards. No port/AppEnvironment/UI/Journey wiring is authorized here.
+
+Require an **independent test-only exhaustive oracle directly over small invented P**: enumerate
+every feasible sequence under §24.2; exact-identity dedup; objective minimum; retain all tied
+identities; canonical reproducibility order. It must not share an optimized exploration/pruning
+implementation whose defect it is meant to detect. It may reuse immutable production inputs and
+canonical constructors. Keep oracle enumeration out of Release; never treat it as real evidence
+authentication. Existing DEBUG all-distinct engine/certificates are references, not an automatic
+production algorithm, identity implementation, budget or proof of parity with this new boundary.
+
+### 24.8 Winner freeze, reconstruction and defensive admission
+
+Only after complete optimum/tie proof, freeze the full identity-distinct optimal set, order it
+under §24.4 and assign contiguous handoff indices `0..<winnerCount`. Internal exploration ordinals
+never become omission indices. Slower or equal-arrival/more-change paths are objective exclusions;
+pruned states and exact duplicates are not omissions and get no handoff index.
+
+For each frozen winner, reuse every retained TrainCandidate and TimetableRideContext to construct
+matched RouteRailProposal with timetable context. Resolve each exact prepared transition:
+sameStation appends no walk and the adjacent canonical station must match; walking constructs one
+directional WalkingTransfer from previous alighting to next boarding station. Never invent access/
+egress walking or Phase-10 guidance. Construct RouteCandidate through its existing initializer;
+retain exact request/profile/view/scope association through InternalSearchSuccess. Do not bypass
+canonical constructors or duplicate upstream eligibility/gap interpretation.
+
+Each frozen winner receives exactly one admitted candidate or RouteAlternativeOmission. A correct
+solver over intact P should admit every winner. Defensive checks distinguish a local reconstruction/
+traversal defect from unusable **shared immutable input truth**:
+
+| Defect in a frozen winner over otherwise usable P | Existing primary rejection reason |
+|---|---|
+| Reconstructed origin/destination differs from request | endpointMismatch |
+| Chosen transition is absent/missing from required relations, or local form/target/walking direction is incompatible with its retained relation | unverifiedTransfer |
+| Duplicate recurring TripID, rail/walk composition or canonical structural adjacency defect | invalidStructure |
+| Copied Train/context snapshot, original index or key-to-token attachment contradicts its retained token | inconsistentTrainEvidence |
+| Local copied timetable endpoints/chronology contradict retained exact contexts | invalidScheduledContext |
+| Local endpoint use contradicts retained conclusive permission/accounting | unverifiedEligibility |
+| Winner incorrectly traverses a valid prepared infeasible relation | infeasibleConnection |
+
+Use one primary reason per rejected winner, testing applicable local categories in the existing
+RouteAlternativeRejectionReason declaration order above. Use winner order for omission indices.
+Do not probe unrelated/lower-priority shared faults to accumulate diagnostics. Missing exact data
+in P, incompatible objective/scope/view, contradictory shared snapshot or broken relation/evidence
+association/projection invalidates the call as **dataUnavailable**, rather than many local omissions.
+A path choosing no valid relation from intact P is local unverifiedTransfer; P's promised record
+itself being missing/corrupt is shared dataUnavailable. An unknown/nonexistent token claim from
+the solver is local inconsistentTrainEvidence; a corrupted retained token is shared dataUnavailable.
+These checks reuse retained truth; they do not recalculate allowances or reinterpret permission.
+
+After every frozen winner receives its outcome, finish existing canonical batch/rejection/scoped
+constructors and final cancellation/resource checks:
+
+| Completed outcome | Exact terminal semantics |
+|---|---|
+| Zero winners, proved zero feasible complete identities | `.internalSuccess(InternalSearchSuccess(scope: P.scope, outcome: .noResults))` |
+| All frozen winners admitted | Scoped InternalSearchSuccess alternatives, all candidates in frozen order, normal omissions empty |
+| All frozen winners rejected | Throw existing **unscoped** noUsableAlternatives(RouteSearchRejections), omissions contiguous from zero |
+| Both admitted and rejected frozen winners | Throw searchIncomplete; no partial success |
+
+Notation names the existing failable constructors; it does not bypass validation. No new optimal
+payload or change to RouteSearchBatch is required. Unexpected batch/scope/accounting assembly
+contradiction that prevents forming the canonical terminal value fails dataUnavailable; an actual
+operational exhaustion still means searchIncomplete. No fallback to slower paths, replacement,
+automatic retry or silent winner disappearance follows from defensive rejection.
+
+noResults requires qualified P, completed zero-feasible-itinerary proof, complete finalization,
+no cutoff/cancellation and no unknown required evidence. It is not the all-rejected outcome.
+dataUnavailable denotes missing, incompatible, contradictory or unusable input truth (including
+any known invalidation under the applicable future runtime policy, not a new freshness clock).
+searchIncomplete denotes usable input but unproved computation/completion due cutoff or mixed
+admission. Discovery timing never swaps these meanings. No bare external .noResults is emitted
+by this internal solver contract. A direct ride remains only an incumbent until no better transfer
+or additional tied identity remains; no direct-success fast path without proof.
+
+### 24.9 Future invented-only verification matrix
+
+All cases below are **required future tests**, not executed evidence from this documentation task.
+Compare production output identities/objectives/order and terminal semantics against the independent
+exhaustive oracle on small bounded invented universes, including adversarial input permutations.
+
+| Area | Required cases |
+|---|---|
+| Identity/dedup | Exact duplicate collapse; same stations/times but different dated Trip; repeated original index; different Trip; directional transition distinction; canonical-equivalent String equality with retained representative ordering; no conflict salvage |
+| Objective | Direct slower than transfer loses; direct faster wins; equal arrival fewer changes; through boundaries add zero; all distinct equal optima; first discovery not winner; best discovered last; no departure preference |
+| Order | Deterministic tied order under ride/evidence storage permutations; fixed UUID bytes/unsigned UTF-8/numeric indices; strict-prefix totality; no locale/hash/source-order dependence; no lost ties |
+| Feasibility | Canonical exact chronology; valid zero-duration rides/connections; repeated stations/cycles; finite ride budget; recurring TripID prohibited twice even across dates; no inferred/reversed/infeasible/absent edge |
+| Proof/pruning | Exhaustive parity; valid frontier proof; equality bound cannot hide ties; competing prefixes with different used Trips/budget; first destination/direct route not completion; no unsupported dominance |
+| Resources | Evidence-backed exact/+1 work/state/memo/winner/key/payload bounds; overflow preflight before allocation; partial discovery cutoff; cap on complete tied set; cutoffs in indexing, tie collection, ordering, admission and finalization; no reset or truncation |
+| Cancellation/isolation | Before entry, every bounded stage/suspension, pending cutoff/failure and terminal return; no partial output; overlapping calls independent; no detached task/MainActor work; deterministic barriers, not timeout correctness |
+| Canonical admission | Existing Train/context/RouteRailProposal/WalkingTransfer/RouteCandidate/scoped constructors; sameStation no walk; exact directional walking; each local reason mapping; shared input corruption distinct from local defect |
+| Outcomes/accounting | Completed zero universe scoped noResults; all admitted complete order/empty omissions; all rejected contiguous unscoped noUsableAlternatives; mixed searchIncomplete; slower/duplicate paths never omissions; no replacement winner |
+| Isolation/build | Invented-only fixtures; independent oracle excluded from Release; relevant regressions and standard Release app/extension on explicit iPhone Simulator; no real/private data or runtime adoption |
+
+### 24.10 Readiness, product-decision audit and next bounded task
+
+Primary classification: **`P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT`**.
+Identity sufficiency, exact dedup, non-preferential order, feasibility/objective/completion,
+invocation resources and canonical admission/results are sufficiently specified for a separately
+authorized bounded invented-only implementation. No owner identity/policy choice or semantic
+blocker remains. **`NO_NEW_PRODUCT_DECISION_REQUIRED`** for these technical mechanics; all existing
+equal-optimal alternatives survive and operational limits can only fail truthfully.
+
+Recommend one next task: explicit algorithm/cost audit and justified selection; production Data
+core consuming P; immutable invocation safeguards with invented evidence-backed bounds; independent
+test-only exhaustive prepared-input oracle; exact identity/dedup/order; complete winner freeze and
+canonical admission; invented matrix/regressions and Release compilation; independent review.
+Algorithm selection occurs inside that later task or a necessary preceding cost audit, never here.
+Keep real/private data, real prepared pilot, AppEnvironment/live routing adoption and Phase-10 out.
+Representative whole-pipeline workload, real policy/rights/authentication, delivery and adoption
+remain later gates. P3-T1 scope incomplete / Phase 3 In Progress remains unchanged.
+
+Exact next safe action, **not begun**:
+
+> Separately authorize one bounded invented-only production solver implementation consuming `PreparedInternalSearchInput`: first perform an explicit algorithm/cost audit, select a justified algorithm, establish evidence-backed immutable invocation safeguards, implement exact ride-sequence identity/dedup/reproducibility ordering, optimum/all-tie completion and canonical winner freeze/admission, and prove parity with an independent test-only exhaustive prepared-input oracle using the §24.9 matrix and Release compilation. Exclude real/private data, real prepared-input pilots, AppEnvironment/live routing adoption, Journey/UI wiring and Phase-10 guidance.
+
+### 24.11 Independent review, verification and publication
+
+Documentation-only scope: consumer contract plus ARCHITECTURE/ROADMAP and producer current-handoff
+overlay. No source/tests, algorithm implementation, route enumeration, solver invocation, runtime,
+network/IO/persistence/cache code, private artifact access or device work. No tests/builds are
+required or run because executable bytes are unchanged. Independent nonauthor 29-criterion review
+approved **29/29 PASS**, with **zero unresolved material findings**, after independently reading
+Accepted authority, exact production values, DEBUG references and the complete four-document diff.
+Review explicitly checked retained-key equality/spelling, unique-connection identity sufficiency,
+separate preparation/solver meters, pre-terminal cutoffs and local-versus-shared rejection mapping.
+Scope/architecture/privacy drift audit and working `git diff --check` pass: exactly these four docs,
+no unrelated or executable changes. The primary classification is
+`P3_PRODUCTION_SOLVER_IMPLEMENTATION_NEXT`, not implemented solver or phase completion.
+Final reviewed-byte/cached whitespace and exact docs-only staged scope, plus parent/ref/clean/main
+checks remain publication gates. Authorized commit: `docs: define production solver execution contract`;
+exactly one commit, normal push to origin/phase/03-route-search, no force or main merge.
