@@ -1113,6 +1113,22 @@ not search-input closure or runtime adoption. Consumer §20 recommends a future 
 request-scoped closure boundary with explicit unresolved connection-evidence obligations;
 neither that boundary nor connection payloads are implemented by the documentation audit.
 
+The separately authorized invented-only request-closure slice is independently approved
+(24/24 criteria; fresh 31/90 focused tests and standard Release app/extension build passed;
+no unresolved findings) and remains unstaged/uncommitted for owner publication review.
+It adds production
+`Data/Routing/RequestScopedSearchInputClosure.swift` over the exact existing
+`InternalSearchScope`, actual occurrence inventory and compatible static revision.
+Independent occurrence/interval, connection and unresolved dependency declarations each
+retain exact applicability; full profile/request/qualification/snapshot checks prevent stale
+reuse. Qualified negatives and unknown/missing typed holds remain distinct. Every supplied
+connection target remains unresolved; no connection payload, solver, route candidate/result,
+IO, persistence or runtime wiring exists. Complete-empty domains are explicitly stipulated
+invented premises, not production direct-only policy. Technical finite limits, complexity,
+verification and independent review are recorded in consumer §20.6; production horizon,
+resource/adoption policy and live/default routing remain unresolved/unconfigured. The older
+not-implemented recommendation above describes the documentation audit stage.
+
 The bounded DEC-079 context slice adds `TimetableRideContext` constructed from a
 TrainCandidate and locally valid TimetableOccurrenceFacts. It retains the exact
 binding/date/view and original ridden indices, extracts only exact boarding departure

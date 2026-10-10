@@ -1,5 +1,35 @@
 # TSUGINO — ROADMAP.md
 
+## Request-scoped search-input closure values — 2026-10-10
+
+The separately authorized invented-only §20.5 production Data slice is implemented in
+`TSUGINO/Data/Routing/RequestScopedSearchInputClosure.swift`, with invented coverage in
+`TSUGINOTests/RequestScopedSearchInputClosureTests.swift`.
+**`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+Author verification passed **116 functions / 240 expanded cases** (new **31/90**,
+unchanged required regressions **85/150**) and the standard Release app/extension build.
+Independent non-author review passed **24/24**, reran **31/90** and a fresh Release build.
+The cross-date snapshot finding is fixed with regression; no findings remain. Explicit
+iPhone 17 / iOS 26.3.1 Simulator only; no physical-device or real/private access. All six
+files remain unstaged/uncommitted; no staging/commit/push; published HEAD remains
+`f520d5ffe771820fa4e6d8d2b63c58bfe55fd60b`. Publication is not authorized in this task. The prior audit's next-implementation wording
+below is historical. [Consumer §20.6](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#206-invented-only-request-closure-implementation--2026-10-10)
+records exact types, independent complete/unknown requirement domains, qualified negatives
+versus missing/unknown holds, full scope/static/snapshot/interval-authority compatibility,
+unresolved directional connection targets and measured finite construction safeguards.
+
+Every nonempty connection requirement and every explicit external dependency remains held.
+Complete-empty domains need their own exact stipulated authority; no empty loaded map or
+direct ride certifies closure. No connection payload, solver/search/result, runtime wiring,
+persistence or real/private access is included. Domain and existing synthetic behavior are
+unchanged. Production horizon/resource/adoption policy remains unresolved. Broader status
+remains `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 In Progress,
+live/default routing unconfigured. No real request closure or Phase 3 exit is established.
+
+Exact next safe action, **not begun**:
+
+> Owner review and publication of the independently approved request-scoped search-input closure values. After publication, separately assess and authorize the smallest invented-only qualified connection/transfer evidence boundary that can resolve the retained connection requirements without changing request-closure semantics or invoking a solver.
+
 ## First real Candidate-B inventory pilot complete; request closure next — 2026-10-10
 
 **`FIRST_REAL_P3_T1_OCCURRENCE_INVENTORY_PILOT_COMPLETE`** records the supplied owner

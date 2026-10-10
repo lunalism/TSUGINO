@@ -3,6 +3,21 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing request-closure implementation status — 2026-10-10
+
+The owner separately authorized and implemented the invented-only production Data request-
+closure values: **`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+Author **116/240** tests and Release passed; independent **24/24** review, **31/90** focused
+rerun and fresh Release passed. No unresolved findings; publication pending, all six files
+unstaged/uncommitted at unchanged published HEAD `f520d5ffe771820fa4e6d8d2b63c58bfe55fd60b`.
+[Consumer §20.6](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#206-invented-only-request-closure-implementation--2026-10-10)
+records exact independent occurrence/interval requirements, known-negative/unknown handling,
+full applicability and measured finite safeguards. Every required connection remains unresolved;
+Boundary A payloads, solver, runtime adoption and real/private access are excluded. Earlier
+next-task/design-only request-closure wording below is historical. Broader P3-T1/Phase 3
+status, unresolved production horizon/resource/adoption policy and live/default routing remain
+unchanged. Publication and a separate invented-only connection-evidence assessment are next.
+
 ## Governing real inventory and next-boundary status — 2026-10-10
 
 The separately authorized first real production Candidate-B inventory pilot completed:

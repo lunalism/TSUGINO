@@ -3743,3 +3743,136 @@ Broader status remains **`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`
 separately authorize the smallest invented-only production Data request-scoped search-input
 closure values and focused tests above, with explicit unresolved connection-evidence obligations
 and fail-closed qualification; no connection payloads, solver, real access or runtime wiring.
+
+### 20.6 Invented-only request-closure implementation — 2026-10-10
+
+The owner separately authorized §20.5's bounded production Data slice at baseline
+`f520d5ffe771820fa4e6d8d2b63c58bfe55fd60b`. The §20.5 design recommendation and its
+not-begun next action above are historical. Implementation is in
+`Data/Routing/RequestScopedSearchInputClosure.swift`; invented tests are in
+`RequestScopedSearchInputClosureTests.swift`. Publication is not part of this task.
+
+`RequestScopedSearchInputClosure` retains the exact existing `InternalSearchScope` and
+actual `TimetableOccurrenceInventoryView`. The supplied `RailwayArtifactRevision` must
+exactly equal inventory qualification's revision; it is exposed from that retained truth.
+Three separate immutable `SearchInputClosureApplicability` values bind occurrence,
+connection and external dependency declarations to full scope/request/profile/policies/view
+and every inventory qualification component. Their bounded printable references identify
+stipulated authority; constructors cannot authenticate review, legal rights or completeness.
+Full profile definitions and request fields are compared, not identities alone.
+
+The independently supplied ordered occurrence domain has its own complete/unknown declaration.
+Each record retains a full expected dated binding, applicability reference, expected interval
+authority and explicit original-index interval obligations. Requiredness never follows loaded
+slots, winners, date parsing or all-pairs generation. Keyed full-snapshot representatives
+also reject known recurring-Trip contradictions across different dates, including a missing
+required date. For active records, positive intervals are locally accounted for; absent
+intervals under exact declared-complete interval authority are qualified negatives; absent
+intervals under unknown coverage remain held. Inactive records are qualified negatives without
+active event/interval-authority checks. Unsupported, insufficient evidence and not-loaded remain
+distinct holds. Profile support is checked on required active intervals' inclusive stations
+and movement-bearing line overlaps, with no whole-Trip support policy or candidate creation.
+
+Connection declarations independently retain complete/unknown domain authority and directional
+from/alighting/to/boarding targets. Targets must reference required occurrences and valid
+original endpoint roles; their exact required snapshots are known even if slots are missing.
+Every nonempty target remains unresolved. External dependency references are also explicitly
+unresolved; no asserted resolved bit exists. Complete-empty domains require their own exact
+applicability and stipulated completeness; unknown-empty domains hold. These invented premises
+select no direct-only or no-service production policy. `holds` and occurrence/interval accounting
+retain deterministic declaration order; technical qualification is derived solely from an empty
+hold collection after structural checks. Structural contradictions throw bounded typed errors
+atomically. No aggregate unavailable/incomplete precedence or Domain failure is introduced.
+
+#### Finite safeguards and invented evidence
+
+A generated optimized Swift representation-model study preceded limit selection. It used
+480 invented recurring Trips × six opaque dates = 2,880 requirement records, 32 intervals
+per record = 92,160 explicit obligations, keyed address/target duplicate checks, and 1,440
+unique dependency tokens (three invented ledger categories per Trip). Directional target
+fanout swept 1/2/4/8 supplied targets per address: 2,880 / 5,760 / 11,520 / 23,040 targets.
+Five iterations per shape on the development Mac measured fastest construction/checking
+0.865 / 1.361 / 2.381 / 4.328 ms. The model counted 13,227,840 through 13,248,000 bounded
+projection work units; this is a cost model, not actual production projection or iPhone timing.
+Eight is an exercised invented shape, never a generated production relation policy. The
+largest exercised shape bounds this initial target slice; 1,440 bounds the exercised unique
+external ledger. Actual production construction at all selected collection maxima is covered
+by the generated focused test, including full association, snapshot and interval checks.
+
+| Bound | Technical value / rationale |
+|---|---|
+| Required occurrence records | 2,880; at most one per independent address, inherited Candidate-B address ceiling |
+| Unique recurring Trips / opaque service dates | 480 / 6, inherited Candidate B |
+| Stops / intervals per occurrence / total intervals | 72 / 48 / 92,160, inherited Candidate B |
+| Full profile stations / lines / Trips | 34,560 / 34,080 / 480; 480 × 72 stops and 480 × 71 movement segments bound separately supplied sets; no membership is inferred |
+| Connection targets | 23,040, largest generated new-dimension study shape |
+| External unresolved references | 1,440, generated new-dimension ledger |
+| Every newly retained textual spelling | 192 UTF-8 bytes; bounded prefix check before hashing/comparison, including canonically equivalent Unicode IDs and request endpoint copies |
+| Supplied static input entries | 32, existing revision boundary, before comparing caller-supplied revision |
+| Expanded logical payload | 347,370,560 bytes, conservative algebraic envelope below; not measured heap, wire format or allocator capacity |
+
+Logical accounting uses an address envelope 432 bytes, reference 208, full required binding
+47,456, qualification 10,672 and full scope 14,377,504. The cap sums the inherited inventory
+120,000,000 envelope, separately retained scope, three applicability scope/qualification/reference
+copies, requirement bindings/references, explicit interval arrays, target addresses/references,
+dependency references, and conservative retained outcome/hold slots (64 fixed, 64 per occurrence,
+40 per interval and 32 per connection/dependency). No COW sharing is assumed. Each actual
+retained spelling is charged separately. Overflow-safe subtraction guards prevent budget wrap.
+All top-level counts are checked before nested traversal; bounded strings and subordinate
+counts precede hashing/full equality. Exact-limit/+1 and hostile top-level preflight tests
+exercise these safeguards, including the logical-budget primitive.
+
+Expected constructor work is O(I + R×S + Q×S + C + D + P): inventory address lookup I,
+requirement records R, snapshot size S≤72, supplied interval obligations Q, targets C,
+dependencies D and full profile members P. Set/hash lookup is expected complexity; bounded
+counts/text also impose finite worst work. There is no pairwise full-snapshot comparison,
+Cartesian interval/connection expansion or path generation. The maximum active fixture uses
+12-stop snapshots, 2,880 slots, 92,160 supplied intervals, 23,040 targets and 1,440 dependencies;
+a separate fixture checks the 72-stop bound. This avoids claiming that every independent
+Candidate-B maximum can coexist within its existing expanded-payload safeguard.
+
+Author verification passed on explicit **iPhone 17 / iOS 26.3.1 Simulator**
+(`84E47945-9D2E-446F-8C40-B835A9D15880`): **116 functions / 240 expanded cases**,
+zero failures/skips. New focused suite: **31 / 90**. Unchanged required regressions:
+
+| Suite | Functions / expanded cases |
+|---|---:|
+| InternalSearchScopeTests | 11 / 18 |
+| InternalSearchSuccessTests | 13 / 15 |
+| TimetableOccurrenceInventoryTests | 18 / 48 |
+| TimetableRideContextTests | 10 / 14 |
+| RoutingValueTests | 16 / 26 |
+| SyntheticTimetableRoutingIntegrationTests | 7 / 16 |
+| SyntheticTimetableBatchRoutingIntegrationTests | 6 / 7 |
+| SyntheticTimetableOptimalRoutingIntegrationTests | 4 / 6 |
+| Regression total | 85 / 150 |
+
+The maximum generated actual production test passed in **2.416 seconds**, including fixture
+creation and exact/+1 checks; this is whole Debug Simulator test time, not isolated constructor
+or physical-iPhone timing. Standard **Release app and Live Activity extension build passed**
+on that explicit Simulator destination; the new declaration is production-compiled with no
+DEBUG dependency or attributable new warning. Existing unrelated Domain Codable isolation
+warnings remain outside this slice. `git diff --check`, including both new files, passed.
+Independent non-author review: **24/24 PASS**, no unresolved findings. A material
+cross-date snapshot issue was corrected: a missing required date must still reject a
+contradictory loaded snapshot for the same recurring TripID. Its focused regression passed
+independently. Fresh independent rerun: **31 functions / 90 expanded cases**, zero failures,
+skips or runtime warnings; fresh standard **Release app/extension build passed**, with no
+warning attributable to the new files. The independent maximum generated whole test took
+**2.182 seconds**, including fixture/+1 checks, not an isolated constructor benchmark.
+Both runs used the same explicit iPhone Simulator. No physical-device step was required or run.
+
+**`P3_REQUEST_SCOPED_SEARCH_INPUT_CLOSURE_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+All six implementation/test/documentation files remain unstaged/uncommitted; published HEAD
+and upstream remain `f520d5ffe771820fa4e6d8d2b63c58bfe55fd60b` (0/0), main unchanged.
+No staging, commit or push was performed. Drift audit matches the bounded §20.5 scope.
+Exact next safe action, **not begun**:
+
+> Owner review and publication of the independently approved request-scoped search-input closure values. After publication, separately assess and authorize the smallest invented-only qualified connection/transfer evidence boundary that can resolve the retained connection requirements without changing request-closure semantics or invoking a solver.
+
+Domain,
+existing synthetic behavior and runtime composition are unchanged. No real/private artifact,
+CLI, IO/network, serialization, persistence/cache, connection payload, candidate, search result,
+searcher/solver, AppEnvironment, Journey or UI is included. Production horizon/resource/adoption
+policy remains unresolved; this is local coherence under stipulated invented declarations, not
+real search qualification, enumeration, fastest/all-tied proof, noResults or P3-T1/Phase 3 exit.
