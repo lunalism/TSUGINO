@@ -1094,6 +1094,18 @@ parsing, view registry, persistence, routing integration or Journey binding is a
 These values prove local structure, not activation, rights or source authenticity.
 P2-S9 and accepted feed-specific interpretation/validated import precede real use.
 
+The production immutable Candidate-B `Data/Timetable/TimetableOccurrenceInventory.swift`
+adds only a pure supplied-input boundary: exact qualification plus existing static artifact
+revision, independently declared finite ordered addresses, one full-snapshot-bound active/
+inactive/unavailable slot each and explicit original-index interval declarations with scoped
+complete/unknown coverage. Local constructors enforce bounded association/coherence, not
+source authentication. Structural intervals survive unusable endpoint facts. Complete-empty
+and unknown-empty are distinct and never route results. Static network state is not copied;
+connection/transfer authority, requests/horizons/search/optimality, IO/persistence and
+AppEnvironment/runtime adoption remain separate. Domain and DEBUG references are unchanged.
+Invented numeric study, construction bounds and verification are recorded in
+`PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md` §17. No real inventory acceptance follows.
+
 The bounded DEC-079 context slice adds `TimetableRideContext` constructed from a
 TrainCandidate and locally valid TimetableOccurrenceFacts. It retains the exact
 binding/date/view and original ridden indices, extracts only exact boarding departure

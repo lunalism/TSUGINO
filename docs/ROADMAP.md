@@ -1,5 +1,46 @@
 # TSUGINO — ROADMAP.md
 
+## Candidate-B immutable occurrence inventory values — 2026-10-10
+
+The owner-authorized invented-only Candidate-B implementation now lives in
+`TSUGINO/Data/Timetable/TimetableOccurrenceInventory.swift`, with focused invented
+coverage in `TSUGINOTests/TimetableOccurrenceInventoryTests.swift`.
+**`P3_T1_OCCURRENCE_INVENTORY_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+Author verification passed 90 test functions / 164 expanded cases and the standard
+Release app/extension build. Independent non-author review passed all 24 criteria,
+reran the focused suite (18 functions / 48 cases) and a fresh Release build. Two
+Unicode byte-accounting findings were fixed with regressions; no findings remain.
+Existing unmodified Domain/AppIntents/asset-catalog warnings remain; no warning is
+attributable to the new inventory source/tests. Work is unstaged/uncommitted for owner
+publication review; HEAD/main remain unchanged. The
+previous next-implementation wording below describes the preceding published audit.
+
+The pure production Data value retains an exact supplied qualification/static revision,
+independently declared ordered finite addresses and exactly one snapshot-bound slot per
+address. Active facts/explicit intervals, inactive and unavailable qualification holds
+remain distinct. Complete/unknown address and interval declarations are scoped to their
+supplied authority, including distinct empty declarations; none is search completeness
+or `noResults`. Original indices and full recurring Trip snapshots remain intact across
+dates. Interval structure survives missing/estimated events and prohibited/unknown
+permissions. Domain is unchanged. Static authority is referenced through the existing
+`RailwayArtifactRevision`; no station/line/topology copy is introduced.
+
+**`NUMERIC_PRODUCTION_LIMITS_IMPLEMENTATION_EVIDENCE`** is recorded in
+[producer §17](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#17-candidate-b-invented-only-production-values--2026-10-10):
+pre-constant generated invented measurements, independent reproduction, finite per-axis
+bounds and a separate conservative expanded-payload cap. These are technical safeguards,
+not promised network capacity or product/solver policy.
+
+No real/private artifact access, IO/network/persistence, transfer/connection authority,
+solver/search/horizon/optimality, AppEnvironment, Journey or UI adoption belongs to this
+change. No real production inventory is accepted. P3-T1 remains scope-incomplete and
+Phase 3 remains In Progress. No new product decision is required.
+
+Next safe action after independent approval, **not begun**: owner review and publication
+of these unstaged values; only after publication, separately assess and authorize one
+bounded real inventory pilot using accepted S9/timetable authorities without search or
+solver execution. Real inventory construction is excluded from implementation/publication.
+
 ## First real direct-route admission bridge complete; occurrence inventory next — 2026-10-10
 
 **`FIRST_REAL_P3_T1_DIRECT_ROUTE_ADMISSION_BRIDGE_COMPLETE`.** This governing

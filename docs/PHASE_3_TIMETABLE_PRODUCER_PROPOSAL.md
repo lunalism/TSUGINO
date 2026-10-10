@@ -3,6 +3,18 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing Candidate-B implementation status — 2026-10-10
+
+The separately authorized invented-only production Data values and focused tests are
+implemented and independently approved:
+**`P3_T1_OCCURRENCE_INVENTORY_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+[§17](#17-candidate-b-invented-only-production-values--2026-10-10) records invented
+limits, verification and separate review. Owner publication remains pending; all five
+implementation/test/documentation files are unstaged/uncommitted.
+Earlier Candidate-B next-action/design-only text below is historical for the published
+boundary audit. No real inventory construction/access, solver or runtime adoption is
+part of this implementation; Accepted producer/consumer semantics remain unchanged.
+
 ## Governing bridge/inventory status — 2026-10-10
 
 **`FIRST_REAL_P3_T1_DIRECT_ROUTE_ADMISSION_BRIDGE_COMPLETE`** records one successful
@@ -1427,3 +1439,238 @@ discovered later must be surfaced separately instead of silently broadening this
 Next safe action, **not begun**: obtain separate owner authorization to implement only
 these production immutable Data values and focused invented tests, with evidence-backed
 construction bounds and independent review. No implementation follows from this audit.
+
+
+## 17. Candidate-B invented-only production values — 2026-10-10
+
+### 17.1 Implemented boundary
+
+Production source: `TSUGINO/Data/Timetable/TimetableOccurrenceInventory.swift`.
+Invented tests: `TSUGINOTests/TimetableOccurrenceInventoryTests.swift`. Domain, DEBUG
+synthetic semantics, tools/CLI, AppEnvironment and storage remain unchanged.
+
+`TimetableOccurrenceInventoryView` atomically throws a finite
+`TimetableInventoryConstructionFailure` or returns one immutable Sendable Data view.
+`TimetableInventoryQualification` binds view UUID, exact source/profile/zone/mapping/
+review references and the existing unchanged `RailwayArtifactRevision`. Printable
+non-whitespace ASCII references are 1–192 UTF-8 bytes; `ExactValue` is retained without
+normalization. Static revision members receive local bounded-text/hash-shape checks,
+not history authentication. Qualification equality includes the exact full static value;
+station lookup and ID existence are never compatibility proofs. Equal references
+represent supplied qualified compatibility, not evidence authentication. Future Data
+qualification remains responsible for actual source meaning, revision non-reuse and
+compatibility with the actual static repository.
+
+The ordered address declaration is supplied independently from slots. Duplicate
+addresses, wrong view, duplicate/extra/missing slots, mixed qualification/static revision,
+conflicting same-Trip snapshots, facts/interval binding conflicts and invalid intervals
+reject the whole construction. Supplied slot order is mapped into declaration order;
+interval order is retained exactly. One representative per Trip is compared with
+`TimetableOccurrenceBinding.matches` under each current address, so identical snapshots
+on multiple dates succeed and changed stops/lines/coverage/service segments fail despite
+Trip's ID-only equality. Inputs remain unchanged after failure.
+
+`TimetableInventoryCompleteness.declaredComplete` and `.unknown` apply only to the
+finite declaration under its supplied producer qualification scope. Both require exactly
+one supplied slot per declared address. Complete-empty and unknown-empty remain distinct;
+neither proves network/date/horizon/search completeness or route `noResults`.
+
+`TimetableInventoryOccurrenceState.active` retains exact occurrence facts and a
+`TimetableOccurrenceIntervals` declaration. Inactive contains no facts or intervals.
+Unavailable contains only finite source-neutral `.unsupported`/`.insufficientEvidence`
+qualification-hold reasons, never fabricated facts or silent omission. Existing
+`TimetableDiagnostic` categories describe local validation/time faults; these two Data
+qualification-hold cases avoid mislabeling valid-but-held input as structurally invalid.
+Tool-local import reasons/raw source strings are absent.
+
+### 17.2 Explicit interval ownership and completeness
+
+`TimetableVerifiedRideInterval` is a supplied immutable original-index declaration;
+"verified" describes the supplied authority, not authentication by its memberwise
+initializer. Local validity is established only within a successfully constructed view.
+Each active `TimetableOccurrenceIntervals` shares one exact occurrence binding,
+bounded authority reference and scoped completeness for all its explicit intervals.
+This avoids duplicating a snapshot/authority per interval while preventing reuse on a
+changed address or full snapshot. The constructor requires 0 <= boarding < alighting <
+stopCount, distinct endpoint stations and unique index pairs. Existing valid Trip line
+segments already cover all movements; no topology lookup, TrainCandidate construction,
+all-pairs enumeration or implicit interval creation occurs.
+
+Complete-empty interval coverage states only that no positive ride interval is declared
+under this exact interval authority. Unknown-empty supplies no negative ride conclusion.
+Inactive/unavailable have no active interval declaration. No state supplies a route result.
+Explicit structural intervals are retained even with prohibited/unknown boarding or
+alighting and missing/estimated required events. A future admission/solver layer must
+separately evaluate eligibility and exact endpoint times; this constructor neither filters
+scheduled usability nor duplicates Domain chronology validation.
+
+Static station/line/topology state is referenced, never copied. Transfers, same-station or
+walking connections, allowances, route requests, date expansion/horizons, enumeration,
+ranking/optimality/ties, search completeness and execution cutoffs remain separate future
+qualified boundaries. No IO, networking, serialization/persistence, actor/global mutable
+state, runtime wiring, UI or Journey behavior is added.
+
+### 17.3 NUMERIC_PRODUCTION_LIMITS_IMPLEMENTATION_EVIDENCE
+
+A generated invented Swift representation/local-validation study ran **before production
+constants were fixed**. It compiled the current production Domain identifier, Trip,
+segment, coverage, address, binding, facts, diagnostic and time sources with Swift 6.4
+`swiftc -O` on arm64 macOS. It generated recurring Trips with `invented-*` identifiers,
+opaque invented day labels, missing event values and distinct stop indices. Active facts
+were built through actual Domain constructors. Explicit interval prefixes were supplied
+by the study generator, not inferred by the inventory. Nine validation runs per workload
+measured keyed full-snapshot association comparisons and per-supplied-interval checks.
+Generation includes actual Domain fact validation; measured validation excludes generation.
+
+The pre-implementation model charged expanded binding content, not allocator or COW
+sharing: measured strides were binding 96, visit 136 and two-index span 16 bytes.
+`bindingBytes = 96 + tripID/date UTF8 + sum(16 + stopID UTF8) +
+sum(32 + lineID UTF8) + sum(32 + serviceTypeID UTF8)`.
+Per active modeled slot: `3*bindingBytes + visits*(136+bindingBytes) + 16*intervals
++ 7*96`. This is conservative logical/encoded-equivalent content, **not measured heap**,
+wire format, serialization commitment or physical-iPhone performance. The final constructor
+also charges declaration addresses and exact qualification/static metadata; actual stress
+results are recorded separately below.
+
+| Trips × dates | Addresses | Stops / Trip | Intervals / slot | Total intervals | Expanded logical bytes | Full comparisons | Interval checks | Generation ms | Validation median ms |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 36 × 2 | 72 | 12 | 6 | 432 | 761,100 | 180 | 432 | 0.571 | 0.101 |
+| 120 × 3 | 360 | 24 | 12 | 4,320 | 10,516,770 | 960 | 4,320 | 17.353 | 0.804 |
+| 240 × 4 | 960 | 36 | 24 | 23,040 | 54,892,920 | 2,640 | 23,040 | 13.620 | 3.482 |
+| 480 × 6 | 2,880 | 72 | 48 | 138,240 | 564,954,660 | 8,160 | 138,240 | 71.754 | 18.029 |
+
+A separate non-author reran the same generated study: byte/work counts matched exactly;
+validation medians were 0.106 / 0.774 / 3.339 / 17.823 ms. Token scans at 48/96/192
+ASCII bytes × 10,000 checks scanned 480,000/960,000/1,920,000 bytes and took
+0.732/1.452/2.769 ms in the author run. Study source/results remain in the new invented-only
+verification workspace `/private/tmp/tsugino-candidate-b-invented-20261010/main.swift`
+and `study.txt`; no prior private workspace or railway authority was opened.
+
+These are hypothetical bounded Phase-3 input workloads, not assertions about real operator
+coverage: several hundred recurring runs over a few explicitly supplied dates and tens of
+passenger stops/positive spans. A large expansion demonstrates why separate axes need a
+combined safeguard. The selected limits provide headroom above the 240 × 4 study:
+
+| Production safeguard | Limit | Evidence/rationale |
+|---|---:|---|
+| Declared addresses and supplied slots | 2,880 each | 3× 960 studied; largest modeled declaration count |
+| Unique Trip snapshots | 480 | 2× 240 studied |
+| Distinct opaque service-date labels | 6 | 1.5× 4 studied; no calendar/horizon semantics |
+| Stops per supplied snapshot | 72 | 2× 36 studied; segment counts additionally <=71, already implied by valid Trip structure |
+| Intervals per active occurrence | 48 | 2× 24 studied |
+| Total intervals | 92,160 | 4× 23,040 studied; below the 138,240 Cartesian expansion |
+| Qualification references and each retained ID/date/version/role text | 192 UTF-8 bytes | 2× studied 96-byte reference; bounded-prefix rejection before hashing/equality |
+| Static revision input records | 32 | Reuses the existing RailwayArtifact revision format maximum, not importer or DEBUG capacity |
+| Expanded logical payload | 120,000,000 bytes | ~2.18× the 54.9 MB study; rejects the modeled 565 MB expansion |
+
+These independent maxima are **not a promise that every Cartesian combination fits**.
+The actual maximum-count test uses 480 Trips × 6 dates × 12 stops × 32 spans to hit
+2,880 addresses and 92,160 total intervals within the payload cap. A 72-stop variant
+with individually valid counts must fail the payload guard atomically. No truncation,
+partial view or weaker completeness is returned. Payload is a fixed logical charge:
+48-byte address header and an additional 48-byte binding header, plus independently
+retained address/Trip ID spellings,
+136-byte visit header plus its actual expanded full binding,
+16-byte intervals, bounded actual UTF-8 field bytes and explicit qualification/static
+headers. Canonically equal Unicode in Domain can have different UTF-8 lengths: every
+actual retained visit binding is individually bounded/charged, without changing Domain
+equality. Both address and snapshot Trip ID spellings are independently bounded. Caller allocations/Domain value construction precede this API; the safeguards
+bound this API's retained content and work, not upstream allocation. Checked budget
+subtraction precedes addition; exact-budget/+1/Int.max tests prove no integer wrap.
+
+After implementation and the review-driven Unicode accounting corrections, a second
+invented host study compiled the **actual final production constructor without DEBUG**,
+the same actual Domain sources and source-extracted existing ExactValue/static-revision
+definitions. Nine constructor runs excluded generation; missing facts, two line segments
+and one shared exact interval authority were used. This confirms the final preflight work
+cost, separately from the preceding pre-constant model:
+
+| Addresses / stops / intervals | Actual logical bytes | Actual constructor median ms | Outcome |
+|---|---:|---:|---|
+| 72 / 12 / 432 | 864,205 | 0.452 | constructed |
+| 360 / 24 / 4,320 | 11,399,211 | 4.670 | constructed |
+| 960 / 36 / 23,040 | 58,242,721 | 23.644 | constructed |
+| 2,880 / 12 / 92,160 | 35,833,341 | 23.458 | constructed |
+| 2,880 / 72 / 92,160 | no view returned | 44.668 | resourceLimit during payload preflight |
+
+These remain descriptive arm64 macOS timings, not iPhone measurements or runtime adoption.
+Reproduction source/results are `Actual.swift` / `actual-study.txt` in the same new
+invented verification workspace. The repository test generator independently exercises
+the constructor's count maximum, total-interval +1 and payload-overflow cases on Simulator.
+
+### 17.4 Complexity and verification
+
+Top-level counts are checked before traversal. All strings/snapshot arrays, total
+interval counts and expanded logical payload are preflighted before association hashing
+or full snapshot comparisons. Domain facts already guarantee exact visit association and
+chronology; neither is redundantly revalidated for every interval. With A addresses,
+U unique Trips, D dates, S stops, K static input records, B bounded text bytes and I
+supplied intervals, expected association work is `O(A*(S+K)*B + I*B)` using keyed
+representatives and one interval-binding comparison per active slot, rather than pairwise
+snapshot comparison or interval enumeration. Actual retained visit-binding payload
+preflight additionally costs `O(A*S*S*B)`: each of at most S visits retains a full
+snapshot whose actual text must be bounded, including canonically equivalent Unicode
+spellings. Total expected construction is `O(A*(S*S+K)*B + I*B)`; no pairwise
+comparison across A slots is introduced. All dimensions are independently finite
+and additionally payload-bounded. Auxiliary storage is `O(A+U+D+intervalsPerOccurrence)`;
+retained arrays preserve supplied order. Hash-table collision worst cases can increase
+lookup cost up to bounded quadratic in A; they do not change full snapshot semantics or
+permit unbounded input. No search complexity claim follows.
+
+Focused tests cover state/declaration/completeness/association, cross-date full snapshot
+conflicts, facts and interval ownership, invalid/extreme/duplicate indices, repeated stops,
+multi-Line structure, endpoint quality/permissions, exact/+1 bounds, generated stress,
+unchanged inputs and Sendable transfer. Source/dependency audit checks pure production
+compilation and exclusion of DEBUG, IO, transfer/search/runtime concerns.
+
+Author final-source verification passed on explicit iPhone 17 / iOS 26.3.1 Simulator
+`84E47945-9D2E-446F-8C40-B835A9D15880`: **90 test functions / 164 expanded cases**,
+zero failures/skips, including **18 new inventory functions / 48 expanded cases**.
+The seven unchanged suites passed: TimetableValueTests 16/21, TimetableRideContextTests
+10/14, SyntheticTimetableBatchTests 13/26, SyntheticTimetableRoutingIntegrationTests
+7/16, SyntheticTimetableBatchRoutingIntegrationTests 6/7,
+SyntheticTimetableOptimalRoutingIntegrationTests 4/6 and RoutingValueTests 16/26
+(functions/expanded cases). Standard Release app/extension build passed for the same
+explicit Simulator. No warning identifies the new inventory source/tests; existing
+unmodified Domain concurrency-conformance, AppIntents metadata and AppIcon asset-catalog
+warnings remain (the fresh independent build also exposes the existing asset warnings).
+No physical-device interaction or validation was needed for these pure values.
+Release module symbolgraph extraction at internal access confirms inventory, qualification,
+interval, state, limit and failure declarations are present; zero `Synthetic*` declarations
+are present. Unused unwired internal values may be eliminated from the linked executable
+by Release optimization, which does not imply runtime adoption or a DEBUG dependency.
+
+Author result bundle/logs: `verified-tests.xcresult`, `verified-tests.log` and
+`verified-release.log` in the new invented verification workspace. Two independent
+review findings about canonically equivalent Unicode spellings were fixed: independently
+bound/charge the snapshot Trip ID and each actual visit binding. Both have regression
+coverage; Domain equality/association/chronology remain unchanged.
+
+Independent non-author review **24/24 PASS**, with no unresolved findings. The reviewer
+independently reproduced the pre-constant invented study, inspected the actual final
+constructor study and author unchanged-regression results, then reran **18 focused
+inventory functions / 48 expanded cases** on the same explicit iPhone 17 / iOS 26.3.1
+Simulator: zero failures/skips/runtime warnings. A separate fresh standard Release
+app/extension build passed; Release module declarations were independently inspected
+with zero Synthetic declarations. Source/test SHA-256 pins matched before/after the
+independent executions. An initial sandbox-only Simulator destination-resolution failure
+occurred before compilation/tests; the authorized rerun with CoreSimulator access passed.
+Independent outputs are in the new invented-only directory
+`/private/tmp/tsugino-candidate-b-independent-20261010-0d1syrkd`.
+
+**`P3_T1_OCCURRENCE_INVENTORY_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`**.
+Final scope/privacy audit: only one production Data source, one invented test source and
+ROADMAP/producer/ARCHITECTURE documentation changed. No Domain, DEBUG semantics, tools,
+project configuration or unrelated files changed; no real/private railway/profile/bridge
+artifact was accessed. Whitespace checks include both new untracked files. Work remains
+unstaged/uncommitted, index empty; published branch/upstream remain
+`1d7bef9a332269578fc5c024f43dd6f92627ffb3` (0/0), main remains
+`e8a463d51f14b3cb1027960c63244b694579a71b`. No staging, commit or push occurred.
+
+This is **not** real inventory acceptance, real solver implementation, P3-T1 completion,
+production route-search readiness, runtime adoption or data delivery authorization.
+Exact next safe action, not begun: **Owner review and publication of the independently
+approved Candidate-B production inventory values. After publication, separately assess
+and authorize one bounded real inventory pilot using the already accepted S9/timetable
+authorities, without search or solver execution. Do not begin real inventory construction
+in the implementation/publication task.**
