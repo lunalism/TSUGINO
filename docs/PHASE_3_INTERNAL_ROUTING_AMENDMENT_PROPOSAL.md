@@ -3,6 +3,15 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Governing post-publication Boundary-A audit (2026-10-10):** request-closure values
+were published at `3359f1ca197a07e0e18b8d40751450a8a1608390` with the exact reviewed
+six-file bytes. [§21](#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)
+selects **`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_NEXT`** as the next
+separately authorized invented-only implementation slice. This audit defines Data-local
+evidence values and an immutable assessment seam only; neither is implemented here.
+Earlier publication-pending and B-next statements are historical. Accepted decision
+semantics, broader incomplete P3-T1/Phase 3 status and unconfigured live routing remain.
+
 **Production policy update (2026-10-04):** §10 / DEC-086 records bounded owner
 acceptance of route-selection/completion rules. Unresolved ownership, algorithm,
 configuration and adoption choices remain Proposed; no production engine is adopted.
@@ -3876,3 +3885,289 @@ CLI, IO/network, serialization, persistence/cache, connection payload, candidate
 searcher/solver, AppEnvironment, Journey or UI is included. Production horizon/resource/adoption
 policy remains unresolved; this is local coherence under stipulated invented declarations, not
 real search qualification, enumeration, fastest/all-tied proof, noResults or P3-T1/Phase 3 exit.
+
+## 21. Qualified connection/transfer evidence boundary audit — 2026-10-10
+
+### 21.1 Scope, publication and Accepted authority
+
+Documentation/architecture audit only, after publication of the exact reviewed request-
+closure implementation at `3359f1ca197a07e0e18b8d40751450a8a1608390`
+(`feat: add request-scoped search input closure`). §20.6's unstaged/publication-pending statements
+record the earlier implementation task. This audit changes no source/test/Domain value,
+accesses no real/private artifact or receipt, and runs no search, solver, build or test.
+
+The current acceptance selectors in §20.1 still govern: DEC-076 remains Accepted except
+for DEC-079's bounded internal amendment; DEC-078 §§2–4/O1–O6 and DEC-079 consumer
+§§2–5/C1–C6 are Accepted. In particular, §5 requires affirmative genuine train change,
+directional connectivity, exact original alighting/boarding association, justified total
+allowance including every applicable component once, line/service and time applicability,
+finite nonnegative values and safe arithmetic. Missing required evidence blocks successful
+coverage, even with a usable direct ride. Same station implies neither existence nor zero;
+no reverse relation is inferred. DEC-080 selects only §9.9 V1–V7 (P1–P4/P6); DEC-081's
+S1–S6 are synthetic-only and do not select production all-pairs requiredness or numbers.
+DEC-086's scoped objective/completion/on-iPhone direction and DEC-087's Application
+lifetime/retry ownership remain unchanged. Unselected historical proposals stay Proposed.
+
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`**: this recommendation encodes already Accepted
+truth without a universal margin, default same-station allowance, accessibility policy,
+route preference, degraded success or launch reduction. Type/association choices below
+are a technical recommendation for separate implementation authorization, not a new Accepted
+product record, a selected real policy or permission to consume real evidence.
+
+### 21.2 Purpose, ownership and the unchanged B seam
+
+Boundary A's only purpose is to represent independently qualified directional passenger
+connection evidence for exact occurrence endpoints, allowing separately checked immutable
+composition to account for B's existing `SearchInputConnectionTarget` obligations.
+Recommend `TSUGINO/Data/Routing/`, beside the production closure; no Domain extension is
+needed. Use immutable `nonisolated` Sendable production values without DEBUG dependencies.
+
+The existing target stores from address, original alighting index, to address, original
+boarding index and exact applicability reference. The closure constructor checks these targets: both
+addresses in the independently required occurrence domain, valid endpoint roles and no
+duplicate four-field key. It does not require distinct Trips, prove active usable endpoints,
+or authenticate any train-change relation. Every supplied target currently yields
+`connectionUnresolved`; every unknown declaration and external dependency remains held.
+This audit changes none of that behavior or `isTechnicallyQualified`.
+
+B remains the request-relative requiredness authority under independently supplied qualified
+declarations. A cannot derive requiredness from loaded records, routes, winners, calendars,
+proximity or pair enumeration. A supplies neither search completeness nor authenticated
+source review. No caller-set resolved bit or printable reference is a proof of external truth.
+
+### 21.3 Exact directional identity, anchors and train change
+
+Recommend one relation key with exactly four fields:
+
+`(from TimetableOccurrenceAddress, original alightingIndex, to TimetableOccurrenceAddress, original boardingIndex)`.
+
+This losslessly matches the closure's structural key. Repeated station visits have distinct
+indices; direction is significant. The target's applicability reference remains a separately
+checked authority association, not an extra physical identity component. Different authority,
+policy or generation must fail compatibility rather than create a second version under the
+same key in one view. Reject identical duplicates as well as contradictory records; no first
+or last wins. No names, provider IDs, station-pair identity or route similarity participate.
+
+Retain exact expected from/to `TimetableOccurrenceBinding` values. Compare full snapshots
+with `matches`, including ordered stops, line/service-type segments and coverage; Trip's
+ID-only equality is insufficient. Derive canonical station anchors by indexing these checked
+snapshots. Do not retain independently relabelable StationIDs; any future redundant projection
+must be exactly validated. Endpoint role checks precede indexing.
+
+Positive records explicitly retain `sameStation` or `walking`: the former requires equal
+derived anchors and independently qualified interchange evidence; the latter requires distinct
+anchors and evidence for that exact pedestrian direction. Neither equality, topology, proximity,
+a `WalkingTransfer` constructor nor chronological times establishes either relation.
+
+A positive record requires separately qualified affirmative genuine inter-ride passenger
+change for these dated endpoints, with no contradiction to separately established spanning
+Trip/through-run continuity. Distinct recurring TripIDs are necessary in this first positive
+slice, never sufficient evidence of train change. A proposed positive splitting one Trip is
+rejected; an unresolved same-Trip target may instead remain explicitly unsupported. Do not
+mint a new ID or infer absence to bypass it. A line/operator change inside one spanning Trip
+is one continuous ride when evidenced, never a passenger change. A must not stitch fragments
+or reinterpret uncertain continuity as transfer; known contradictory evidence fails closed.
+
+### 21.4 Qualification, policy and applicability
+
+Recommend a finite `QualifiedConnectionEvidenceView` with a supplied immutable qualification
+envelope retaining full `SearchInputClosureApplicability` (exact scope/request/full profile,
+inclusive bounds, inventory qualification and static revision), a distinct connection review/
+evidence reference, and the exact `InternalSearchPolicyReference` selected by the profile.
+Each declared key/record carries the exact target applicability reference and its own qualified
+evidence association. Preserve separate occurrence-inventory and connection-review authority.
+
+Compare every inventory qualification component, view ID, complete `RailwayArtifactRevision`,
+mapping/profile generation, full expected Trip snapshots, policy key/revision, full profile
+definition, request fields and bounds. Same IDs/revisions alone do not authenticate contents.
+The resolved qualified association must expressly state that this independently reviewed
+evidence implements the exact profile connection policy with the allowance/applicability
+semantics below. Retaining that assertion/reference is local association, not verifying the
+review itself. Conflicting supplied content under identical references is a shared typed
+construction/compatibility failure. Changed applicability prevents reuse; no latest lookup,
+mutable registry, TTL, universal fallback or hidden policy resolution is introduced.
+
+Select **occurrence-specific applicability**, not a reusable station-pair/time-window policy.
+All states bind the exact dated key, full snapshots and qualified declared context scope.
+For a positive record additionally retain the exact from-arrival and to-departure instants;
+composition requires the same active inventory facts, original indices, exact event quality
+and allowed alighting/boarding permissions. Changed scheduled endpoint values prevent reuse.
+Missing/estimated events or unknown permissions remain held, never zero or infeasible. A known
+prohibition prevents positive use. No device clock, locale/timezone, civil-date inference or
+service-label parsing is needed. The positive time association does not compare the train gap.
+
+A qualified absence instead needs explicit negative applicability for the exact dated relation
+under the same policy/context, covering all admitted forms, not merely one unavailable path.
+It may cover conclusively inactive or missing-event endpoints without fabricating active event
+instants only when the negative is expressly qualified for the entire exact occurrence-endpoint
+pair independently of event values. A time-dependent negative instead needs a separately reviewed
+applicability representation and remains held in this first slice. Its authority must qualify
+that negative independently; missing times, inactivity,
+missing positive allowance or a sparse-map miss alone never establishes connection absence.
+Unavailable records identify the exact held target/generation without claiming time validity.
+
+**Line/service context is endpoint-wide only when independently qualified.** A key does not
+contain complete inbound/outbound ridden intervals. The first slice therefore requires an
+express reviewed assertion that its one relation and allowance (or negative) apply to every
+supported incoming/outgoing ridden interval incident on these original endpoints in these
+exact full snapshots under this full profile. This is supplied applicability, never an inference
+from TripID, adjacent line segments or station equality. Full line and service-type segments
+remain bound; endpoint-adjacent projections can describe context but cannot prove the allowance
+is independent of earlier boarding/later alighting or other service restrictions.
+
+If that uniform applicability cannot be established, retain `unsupported` for a context model
+outside this narrow representation, or `insufficientEvidence` for an unproved assertion. Do not
+choose a worst/fastest/default allowance, broaden one line pair to every service, or introduce
+extra ridden intervals/required targets. Supporting context-dependent alternatives later needs
+a separately reviewed representation; it is not a new route preference or implicit policy now.
+
+### 21.5 Allowance: components and asserted total
+
+Select **component values plus asserted total**, rather than total only. Total only is smaller
+but hides whether alighting/access/boarding were included. Retain precisely three named duration
+components: `alighting`, `interchange` (all applicable walk/access/interchange requirements),
+`boarding`, plus the independently asserted `total`. The qualification expressly accounts for
+each applicable requirement once and partitions access into interchange, avoiding a fourth
+ambiguous overlapping component. No default duration is selected. A non-applicable component
+still needs qualified zero; absence of a supplied component is insufficient evidence.
+
+All four Double durations must be finite and nonnegative. Reject NaN, either infinity, negative
+values, overflow and a non-exact represented component sum. Canonicalize any supplied signed
+zero to positive zero before retained equality/accounting; negative zero creates no separate
+permission. In fixed order compute exact `alighting + interchange`, then exact `subtotal +
+boarding`; require the resulting represented value to equal asserted total exactly, with no
+tolerance, rounding, saturation or implicit unit conversion. Use seconds explicitly.
+
+Recommend a small production-local checked-addition rule using error-free TwoSum residuals:
+require finite operands, sum, intermediate terms and residual, and residual exactly zero for
+each addition. `SyntheticInternalArithmetic.exactSum` and `InternalSearchScope` provide existing
+arithmetic references, not production dependencies on DEBUG types. Independently implement/test
+only the required exact-addition primitive; do not refactor the synthetic engine in this slice.
+Finite nonnegative operands alone do not prove exactness. Reject unrepresentable sums atomically.
+
+Exact arithmetic detects inconsistent totals; it cannot prove semantic component inclusion or
+that a source did not double-count. Independent qualification must justify that partition as
+well. A numerically matching but known double-counted allowance is contradictory evidence and
+must not be admitted as qualified. **Zero total is representable only with affirmative qualified
+zero for the complete exact relation and all components.** Same station, identical times,
+missing walk duration or missing allowance never supplies zero.
+
+### 21.6 States and independent evidence completeness
+
+Recommend `present(qualified relation/form/allowance/applicability)`, explicit qualified
+`absent`, and `unavailable(unsupported | insufficientEvidence)`. A present state retains
+affirmative genuine-change and directional-relation evidence associations. An absent state
+retains affirmative scoped negative authority, without invented positive form/allowance.
+Unavailable retains the reason and target but no asserted resolved relation. No separate
+unknown record is needed: unknown declaration completeness and unrepresented keys preserve
+unknown/not-loaded; insufficient evidence preserves an examined but unresolved record.
+
+Declare an independent finite ordered key scope, qualification and `declaredComplete | unknown`,
+with exactly one explicit state per declared key. Reject undeclared records, missing declared
+slots and duplicate/conflicting keys as structural defects. Complete means only this explicitly
+declared directional evidence scope under exact qualified authority, never Tokyo, every request,
+or search completeness. Matching B's target set cannot manufacture independent evidence scope
+or its completeness proof. An unrepresented key remains not loaded even when another scope is
+complete. **No absence by omission** is selected. Explicit absence closes a target only under
+compatible qualified declared-complete negative scope; an absence assertion under unknown
+completeness remains held as insufficient negative coverage. Positively qualified records may
+resolve their exact obligations under an otherwise unknown scope; no missing obligations close.
+Complete-empty and unknown-empty remain distinct values; neither invents B's required domain.
+
+### 21.7 Immutable composition and accounting
+
+Select **Pattern 2**, an immutable derived `ResolvedSearchInputAssessment` wrapper retaining
+the original closure, exact connection view, declaration-order per-target accounting and
+derived remaining holds. It supplies only a pure local assessment, not a runtime resolver.
+The original closure, its holds and `isTechnicallyQualified` remain unchanged. No initializer
+extension or in-place mutation is required. This wrapper alone never authorizes route search.
+
+For the first slice require exact four-field target-set association between the view's declared
+keys and the closure's supplied connection targets, and exact applicability references. Reject
+extra or missing keys instead of silently filtering. This is a checked composition requirement,
+not A determining requiredness: a standalone A view may represent its own finite scope, but
+cannot change B's requirements. A missing exact view must remain unresolved; it is never negative.
+Record order may differ; keyed comparison and output in B's declaration order avoid pair scans.
+
+| Evidence for a retained target | Derived accounting / qualification effect |
+|---|---|
+| Compatible qualified positive, usable exact endpoint facts/permissions | `present`; remove only that target's connection hold; relation/allowance evidence resolved, no train-gap verdict |
+| Compatible explicit qualified absence in complete exact negative scope | `absentUnderCompleteAuthority`; remove only that target's connection hold; relation unusable by a future route |
+| Unsupported / insufficient evidence; positive missing exact event or permission; absence under unknown scope | Distinct held accounting/reason; retain the matching connection hold |
+| No represented key / wrong exact target set | Typed association failure, or absence of composition leaving the original unresolved closure; never inferred absence |
+| Incompatible view/static/policy/snapshot/context or contradictory evidence | Atomic typed compatibility/construction failure; no partial assessment |
+
+Preserve every occurrence/interval hold, `occurrenceDomainUnknown`, `connectionDomainUnknown`
+and external dependency hold. Resolving all supplied target records cannot remove unknown
+required-domain authority. Derive any wrapper technical-qualification predicate from remaining
+holds after exact compatibility, never from a caller success flag or presence of one direct
+ride. Preserve known negatives separately from held/unknown and deterministic reason ordering.
+No new aggregate failure precedence or Domain error/result is introduced.
+
+### 21.8 Feasibility and product exclusions
+
+Positive evidence resolves relation existence and applicable allowance only. Actual comparison
+`nextDeparture - previousArrival >= totalAllowance` belongs to later separately authorized
+schedule admission/solver consumption with exact safe arithmetic. Do not implement a gap helper
+in the first evidence/assessment slice. A known short gap later means `infeasibleConnection`;
+qualified relation absence is a known negative; unknown relation/allowance is missing required
+evidence; incompatible shared input is a data failure. Do not collapse those into infeasible.
+DEC-079 chronology/admission and existing failure/cancellation precedence remain unchanged.
+
+Topology, canonical station equality, proximity or a chronological gap supplies no transfer
+capability. Routing total allowance is not user-facing walking time: it includes alighting,
+all applicable interchange/walk/access and boarding. Exclude all Phase-10 car/door/exit-side,
+path geometry, gates, facilities, accessibility guidance and presentation-confidence fields.
+No RouteCandidate, RouteSearchResult/Failure, route enumeration, ranking, optimum/all-tie proof,
+noResults, search invocation, Application/AppEnvironment/Journey/UI wiring or runtime adoption.
+
+### 21.9 Finite safeguards and exact next implementation slice
+
+**`NUMERIC_CONNECTION_EVIDENCE_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`** for new dimensions:
+declared relation/record count, qualification/evidence references, bound full snapshots,
+line/service applicability associations, dated applicability/event records, separately retained
+scope/profile copies, component/total payload, assessment slots and expanded logical bytes.
+Preflight top-level counts before traversal, bounded actual text/nested content before hashing
+or full comparisons, and overflow-safe logical accounting will be required. Use keyed lookups
+and avoid context-pair expansion or pairwise full-snapshot scans. Existing B bounds constrain
+B only; neither its target ceiling nor synthetic fixture caps automatically sizes A's heavier
+payload. Generate invented representation/construction evidence before selecting new numeric
+limits, including exact-limit/+1 tests. No new numbers are selected in this audit; no product
+horizon, memory guarantee, solver capacity or launch quota follows.
+
+Primary classification: **`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_NEXT`**.
+The smallest separately authorized implementation is pure production Data values: exact key/
+qualification/bindings, explicit form, qualified components/total, occurrence-specific endpoint-
+wide applicability, explicit states/completeness, finite checked construction, and the immutable
+assessment wrapper above. Use invented focused tests only. No IO, file access, source parser,
+network, database, persistence/serialization/cache, runtime resolver or real qualification.
+No source/test change is made by this audit. Real connection review and all rights/delivery/
+adoption gates remain separately authorized prerequisites. Broader status remains
+`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**, live/default
+routing unconfigured; production horizon/resource policy and solver/adoption ownership unresolved.
+
+### 21.10 Invented future verification matrix — not executed
+
+| Group | Required invented cases |
+|---|---|
+| Direction/forms | Positive directional walking; reverse absent/not inferred; same-station needs affirmative evidence and never implies zero; wrong derived anchor/form rejects |
+| Train change | Distinct TripIDs without change authority hold; same-Trip splitting rejects; line/operator changes do not imply transfer; known through-continuity contradiction fails |
+| Allowance | Qualified all-component zero accepted; negative/NaN/infinities reject; signed zero canonicalized; exact component sum accepted; mismatch/rounded/overflow sum rejects; missing or known double-counted qualification cannot pass even with matching numbers |
+| Compatibility | Wrong view, full static revision, policy revision, full profile, request/bounds, inventory qualification, target address/original index, full snapshot, authority reference or evidence generation rejects |
+| Applicability | Changed endpoint instants reject; missing/estimated event and unknown permission hold; prohibited role rejects positive use; wrong line/service scope or unproved endpoint-wide uniformity holds; negative dated scope without active events is explicit, never inferred |
+| States/scope | Qualified absence distinct from unknown/unloaded/unavailable; unsupported distinct from insufficient evidence; complete-empty versus unknown-empty; absence under unknown scope holds; duplicates and contradictory same key reject; omitted declared slot rejects; complete scope does not infer omitted keys absent |
+| Composition | One unresolved B target becomes positive or qualified negative only with matching evidence; unavailable retains hold; direct usable ride cannot bypass unresolved relation; extra evidence cannot invent requiredness; missing key fails; unknown domain/occurrence/interval/external holds survive; original closure unchanged |
+| Boundaries/resources | No guidance/search/candidate/result/gap helper/DEBUG dependency; no IO/runtime integration; evidence-backed exact-bound/+1 and logical overflow/preflight tests; production compilation and nonisolated Sendable use |
+
+Tests/builds are intentionally not run in this documentation-only task. Independent non-author
+review: **18/18 PASS, zero unresolved material findings**. It covered the unchanged closure seam,
+requiredness/direction/forms, allowance inclusion/zero, exact target/context/time/policy association,
+negative/unknown distinctions, immutable composition, separate feasibility, Phase-10/search/privacy
+exclusions and the bounded next slice. Review also confirmed the genuine-change/through-service
+boundary. A minor wording clarification attributes target validation to the closure constructor,
+not the target's memberwise initializer. Historical text is preserved; the new diff introduces
+no real railway identifiers, private paths, artifact hashes, occurrence times or view UUIDs.
+
+Exact next safe action, **not begun**:
+
+> Separately authorize the smallest invented-only production Data qualified connection/transfer evidence values and immutable request-closure assessment defined in §21, with focused tests and evidence-backed finite construction safeguards. Preserve the original closure's requiredness, exact compatibility, known-negative/unknown distinctions and fail-closed holds. Do not access real/private data, evaluate train-gap feasibility, invoke a solver/search or wire runtime behavior in that task.

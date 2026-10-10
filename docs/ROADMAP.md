@@ -1,5 +1,45 @@
 # TSUGINO — ROADMAP.md
 
+## Qualified connection evidence boundary audit — 2026-10-10
+
+The exact reviewed request-closure values were published at
+`3359f1ca197a07e0e18b8d40751450a8a1608390` (`feat: add request-scoped search input closure`).
+Earlier unstaged/publication-pending and B-next records below are historical.
+[Consumer §21](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)
+selects **`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_NEXT`** and
+**`NO_NEW_PRODUCT_DECISION_REQUIRED`** under existing Accepted DEC-079 truth.
+This is a documentation-only technical recommendation, not Boundary-A implementation,
+real qualification, a new Accepted product policy or solver readiness.
+
+Recommend pure immutable `Data/Routing` evidence values: four-field directional occurrence/
+original-index key, snapshot-derived anchors, explicit same-station/walking forms, affirmative
+genuine train change, present/qualified absent/unavailable states, independent complete/unknown
+scope, exact full scope/view/static/inventory/policy/review association, and alighting + all
+interchange/walk/access + boarding components with an exact asserted total. No default allowance;
+zero requires affirmative qualification. Occurrence-specific time and explicitly qualified
+endpoint-wide line/service applicability prevent station-pair or recurring-ID-only reuse.
+Unproved or unsupported context remains held; source review is not authenticated by a token.
+
+The future immutable assessment retains B unchanged, requires exact target-set association and
+resolves only matching connection holds. Explicit qualified absence under complete exact scope
+is a known negative; missing records never imply absence. Other holds and unknown required-domain
+authority survive. Evidence resolution does not establish actual train-gap feasibility; that
+comparison remains later admission work. No route/search/solver/runtime or Phase-10 guidance.
+**`NUMERIC_CONNECTION_EVIDENCE_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`** for new dimensions;
+invented measurement precedes new numeric safeguards, with focused future tests in §21.10.
+No IO/persistence/cache/serialization/network or real data in the next value slice.
+
+Broader status stays `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`; Phase 3 **In Progress**,
+live/default routing unconfigured. Production horizon/resource policy and solver/adoption ownership
+remain unresolved. No source/tests changed; no tests/builds/device steps run in this audit.
+Independent non-author documentation review: **18/18 PASS**, zero unresolved material findings;
+target-constructor wording was clarified. Scope/privacy and working/cached whitespace checks
+are required before publication; no implementation or real qualification follows this approval.
+
+Exact next safe action, **not begun**:
+
+> Separately authorize the smallest invented-only production Data qualified connection/transfer evidence values and immutable request-closure assessment defined in consumer §21, with focused tests and evidence-backed finite construction safeguards. Preserve the original closure's requiredness, exact compatibility, known-negative/unknown distinctions and fail-closed holds. Do not access real/private data, evaluate train-gap feasibility, invoke a solver/search or wire runtime behavior in that task.
+
 ## Request-scoped search-input closure values — 2026-10-10
 
 The separately authorized invented-only §20.5 production Data slice is implemented in

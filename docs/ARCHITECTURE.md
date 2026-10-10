@@ -1027,6 +1027,26 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Current post-publication connection-boundary audit (2026-10-10):** request-closure values
+were published at `3359f1ca197a07e0e18b8d40751450a8a1608390` with the exact reviewed bytes.
+Older publication-pending/B-next statements below record prior tasks. [Consumer §21](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)
+selects `P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_NEXT`, a future invented-only
+immutable Data/Routing boundary; Domain and the published closure remain unchanged.
+The recommended view binds exact directional occurrence/original-index keys and full snapshots,
+derived station anchors, explicit same-station/walking evidence, genuine train change,
+qualified component/total allowance, occurrence-specific time and expressly qualified endpoint-
+wide line/service applicability. Exact scope/view/static/inventory/policy/review association
+is required; a reference alone authenticates nothing. Present, explicit qualified absence and
+unsupported/insufficient evidence remain distinct, with independent complete/unknown scope.
+Missing records never imply negative truth. The future immutable assessment retains B and its
+requiredness, checks the exact target set and resolves only matching connection holds; all other
+holds survive. Relation evidence does not prove schedule-gap feasibility or search completion.
+No default allowance, same-station zero, reverse inference or through-Trip splitting is permitted.
+No new product decision is required; new numeric evidence limits await implementation evidence.
+This audit adds no values, gap helper, IO/persistence, solver, runtime wiring or Phase-10 guidance.
+Live/default routing stays unconfigured; broader P3-T1/Phase 3 and horizon/resource/adoption gates
+remain incomplete. See §21 for exact future construction and invented-test requirements.
+
 **DEC-081 synthetic-only extension (2026-10-02 Asia/Seoul):** S1–S6 are accepted.
 DEBUG-only `SyntheticInternalRouteInput`, `SyntheticInternalRouteEngine` and
 `SyntheticInternalRouteSearcher` in Data/Routing declare an immutable finite fixture

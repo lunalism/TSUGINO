@@ -3,6 +3,18 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing published closure and Boundary-A audit — 2026-10-10
+
+Request-closure values were published at `3359f1ca197a07e0e18b8d40751450a8a1608390`;
+the publication-pending/B-next wording below records earlier tasks. The documentation-only
+[consumer §21 audit](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#21-qualified-connectiontransfer-evidence-boundary-audit--2026-10-10)
+selects **`P3_QUALIFIED_CONNECTION_TRANSFER_EVIDENCE_VALUES_NEXT`** under existing Accepted
+truth, without implementation or private access. It recommends independently qualified exact
+directional connection values and an immutable assessment that retains B's requiredness/holds.
+Occurrence production does not acquire connection authority; producer facts and the published
+closure remain unchanged. No solver/runtime adoption or P3-T1/Phase 3 completion follows.
+Production horizon/resource/adoption policy remains unresolved; live/default routing unconfigured.
+
 ## Governing request-closure implementation status — 2026-10-10
 
 The owner separately authorized and implemented the invented-only production Data request-
