@@ -3,6 +3,18 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Governing bridge/inventory status — 2026-10-10
+
+**`FIRST_REAL_P3_T1_DIRECT_ROUTE_ADMISSION_BRIDGE_COMPLETE`** records one successful
+private production-constructor composition for the explicitly authorized interval,
+not route search or runtime adoption. Broader P3-T1 remains
+`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`. [§15](#15-first-real-direct-route-admission-bridge--2026-10-10)
+records supplied safe evidence; [§16](#16-minimum-production-occurrence-inventory-boundary--2026-10-10)
+assesses Candidate B without implementation/private access. Earlier dated Candidate-A
+next-step and unverified-interval statements are preserved as history for that stage.
+The selected next task is `P3_T1_REAL_OCCURRENCE_INVENTORY_ADAPTER_NEXT`; no additional
+ordinary real direct-ride repetition is required first. Accepted semantics remain unchanged.
+
 ## Governing implementation/import status — 2026-10-10
 
 The first real dated occurrence import is complete for **one Trip / one service date /
@@ -1134,3 +1146,284 @@ and verify exact preservation, failing closed on any mismatch. Keep private IDs/
 out of repository output. No archive reopening, general inventory adapter, solver,
 search result, AppEnvironment/UI/Journey/runtime wiring is part of that bounded proposal.
 This task performs only the documentation/audit and does not begin that action.
+
+## 15. First real direct-route admission bridge — 2026-10-10
+
+**`FIRST_REAL_P3_T1_DIRECT_ROUTE_ADMISSION_BRIDGE_COMPLETE`.** Supplied owner
+execution/review evidence at repository commit `6a76f0f8d6e025887bb60ad689e44ef87edb2fcb`:
+one accepted real S9 Trip and one accepted dated occurrence composed through existing
+production constructors for service date **`2026-03-16`**, original indices **`0...13`**.
+This update does not reopen any private authority, harness, receipt or review artifact.
+
+| Supplied private evidence | Bytes | SHA-256 |
+|---|---:|---|
+| Execution receipt | 2159 | `04911e66091966abcb37fad81fe71418f717a7c8e3a19338c791df6113a3901a` |
+| Independent review | 2743 | `89844972cbb0b6a182270060ac418fcf466d3c9fe06cd52b2c04ef18912c7b1e` |
+
+Both published S9 and full timetable import verifiers passed `bundleValid unchangedReplay`
+read-only. Exact Trip/facts binding passed; endpoints were distinct; Trip coverage stayed
+false/false, with no claim of known service endpoints or complete external service extent.
+Index 0 boarding was allowed with exact departure; index 13 alighting was allowed with
+exact arrival. Actual `TrainCandidate` construction passed with line-sequence count 1;
+`TimetableRideContext` passed with exact retained dated binding/original indices/endpoints,
+context matching train and departure <= arrival. Actual matched `RouteRailProposal`
+and single-leg `RouteCandidate` construction passed. Full snapshot/anchors/context were
+preserved: **one rail leg / zero walking legs / zero transfers / matched travel /
+timetable scheduled context**.
+
+Author and separate reviewer independently compiled exact repository production/tool
+sources without DEBUG flags and ran the same bounded composition. Independent review:
+**25/25 PASS**, no unresolved findings. Provider context and RouteScheduleAdmission
+were not used; no searcher/solver, fastest/completeness claim, canonical candidate
+serialization or repository/runtime mutation occurred. The candidate remained in memory.
+
+This proves real canonical Trip/facts compatibility, qualified exact endpoints and
+preservation through one canonical matched direct candidate. It proves neither route
+enumeration/search, fastest/all-alternative or optimal/tie completeness, transfer
+feasibility, complete dated inventory, production solver readiness, launch-wide coverage
+nor runtime adoption. **`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`**
+is unchanged. The next assessment below consumes repository/supplied evidence only.
+
+## 16. Minimum production occurrence-inventory boundary — 2026-10-10
+
+### 16.1 Need and authority
+
+Primary next task: **`P3_T1_REAL_OCCURRENCE_INVENTORY_ADAPTER_NEXT`**.
+Candidate A has exercised the production composition; the remaining production gap
+is an explicitly qualified immutable collection of dated occurrence availability,
+not another ordinary constructor demonstration or a solver. Recommend the working
+name **`TimetableOccurrenceInventoryView`** under **Data/Timetable**, consistent with
+existing TimetableOccurrence/TimetableView naming. It is a technical design recommendation,
+not a new implemented type, persistent schema or accepted search policy.
+
+**`NO_ADDITIONAL_DIRECT_RIDE_CASE_REQUIRED_BEFORE_INVENTORY_BOUNDARY`**. Repository
+evidence includes [RoutingValueTests](../TSUGINOTests/RoutingValueTests.swift)
+(`originalSnapshotAndRepeatedVisitArePreserved`, `throughServiceAndLimitedStopStructure`,
+full-lap rejection) and [TimetableRideContextTests](../TSUGINOTests/TimetableRideContextTests.swift)
+(repeated subinterval binding, changed-snapshot rejection, all coverage combinations,
+missing/estimated endpoint rejection). Timetable routing integration tests also retain
+unknown/prohibited eligibility, legitimate prohibited exclusions and held quality states.
+These are distinct contract checks, not proof that every real source supports those forms.
+No currently identified unsupported constructor/evidence shape blocks Candidate B.
+Another ordinary interval of this one-Line Trip or same-profile all-exact date would
+repeat the existing proof. Revisit only if a newly identified repeated/multi-Line/source
+form lacks the required contract/evidence; do not manufacture a multiple-example quota.
+
+Basis: Accepted DEC-078 producer separation, DEC-079 coherent admission/coverage,
+DEC-080 scoped inputs, DEC-085 bounded conversion/batch authority and DEC-086 objective
+and honest cutoff requirements. [ARCHITECTURE §§4/10/16](ARCHITECTURE.md) retains
+Data qualification and unchanged Domain values. The [original outline](PHASE_3_INTERNAL_ROUTING_CONTRACT_OUTLINE.md)
+and unselected consumer details remain Proposed/historical where not separately accepted.
+This assessment grants no implementation or real-access authorization.
+
+### 16.2 Existing synthetic concepts and ownership split
+
+[`SyntheticInternalRouteInput`](../TSUGINO/Data/Routing/SyntheticInternalRouteInput.swift),
+[`SyntheticInternalRouteEngine`](../TSUGINO/Data/Routing/SyntheticInternalRouteEngine.swift)
+and [`SyntheticTimetableBatchAssembler`](../TSUGINO/Data/Timetable/SyntheticTimetableBatchAssembler.swift)
+are DEBUG-only. The engine requires declared intervals/slots independently of discovered
+paths, coherent views, active stations/lines, continuity and directional allowances.
+The batch checks an exact declared/received address set and same-Trip snapshot coherence;
+it explicitly does not authenticate source or close search coverage. Its eight-slot
+safeguard is experimental, not a production inventory capacity.
+
+| Concept | Production owner recommended by this audit |
+|---|---|
+| View identity, qualified source/profile/mapping/zone generation, dated slots, exact snapshots, occurrence availability, original-index interval evidence and finite inventory declaration | A — Candidate B, Data/Timetable, with traceable external qualification dependencies |
+| Station/line canonical membership, retirement and supported static data | Existing accepted static railway authority; Candidate B retains exact compatibility references, not a second state inventory |
+| Same-station train changes, directional walking links, connection inventory/validity and all-component allowances/policy | C — separately qualified connection/transfer boundary; neither timetable facts nor topology proves these |
+| Request intent, date/horizon expansion, applicable inventory closure, interval/relation requirements, enumeration, pruning, optimum/ties and cutoff/accounting | B — future solver/search-scope responsibility, separate from Candidate B's finite declaration |
+
+The A/B/C labels in this ownership table classify facts, not the earlier Candidate-A/B/C
+task alternatives. Existing [ordinary](../TSUGINOTests/SyntheticTimetableRoutingIntegrationTests.swift),
+[optimal](../TSUGINOTests/SyntheticTimetableOptimalRoutingIntegrationTests.swift) and
+[batch](../TSUGINOTests/SyntheticTimetableBatchRoutingIntegrationTests.swift) integrations
+preserve exact facts/bindings and explicit holds, but stipulate complete universes,
+station/line states, policies, connectivity and allowances. None is real inventory authority.
+
+### 16.3 Minimum immutable Data contract
+
+| Element | Minimum technical contract and Accepted basis |
+|---|---|
+| Coherent generation | One existing `TimetableViewID`; immutable resolved source/profile/mapping/zone authority references, interpretation applicability and exact dependency/version pins. DEC-078/079 view association; UUID/token equality is not authentication. |
+| Declared scope | A finite explicit ordered set of `TimetableOccurrenceAddress` values supplied independently of loaded entries, with traceable declaration authority. No request/date expansion or network-wide default; DEC-078 request independence and §10's bounded declared inventory. |
+| Slot binding | Exactly one supplied slot per declared address, no undeclared/duplicate/missing slot; each retains `TimetableOccurrenceBinding` and the entire exact Trip, including original indices/coverage. DEC-060/078 and §10 snapshot association. |
+| Occurrence state | `active(facts)`, conclusively `inactive` with no events, or `unavailable` with bounded category/reason and no fabricated facts. Retain unsupported/insufficient-evidence distinctions from qualified producer outcomes. DEC-078/085. |
+| Interval availability | Per-active-occurrence finite independently declared original-index interval scope, coverage declaration, and evidence-bound records; affirmative records form `verifiedIntervals`. Unknown/held interval evidence remains explicit; see §16.6. DEC-079 evidenced movement/continuity. |
+| Completeness | Complete only for the exact finite declared scope with qualification reference, or unknown/incomplete; distinct occurrence-slot and interval-coverage declarations. §10 and DEC-079/080 required-coverage obligations, not solver completeness. |
+| Static compatibility | Exact compatible static revision/schema and S9/mapping association references; membership/retirement authority remains external. DEC-073/076/079 coherent canonical view. |
+
+Reuse unchanged `TimetableOccurrenceAddress`, `TimetableOccurrenceBinding`,
+`TimetableOccurrenceFacts`, `Trip` and `TimetableViewID`. New internal immutable,
+Sendable Data values can carry these technical evidence/declaration associations;
+no new Domain model, provider branch or snapshot equality/Codable is needed.
+Full dependency closure must be resolvable by the qualifying Data/offline stage, not
+an untraceable `verified=true` flag. Initial local value construction checks supplied
+associations; it does not authenticate a source, owner statement or legal permission.
+Do not link owner-only macOS tool IO into app Data or add a raw-source parser here.
+
+### 16.4 Completeness: finite declarations, not search success
+
+Recommend completeness **per immutable view's explicitly declared finite address scope**,
+with separate per-active-occurrence interval coverage. Do not use bare per-view UUID,
+per-Trip identity or future query parameters as the completeness proof. A declaration
+must identify required membership independently of whatever entries happened to load,
+retain its exact qualified authority/dependency reference and match received membership.
+Dates are explicit supplied labels; no calendar-range enumeration is performed by B.
+
+`completeForDeclaredScope` means every declared address has an explicit qualified state;
+it says nothing about any undeclared Trip/date/address, network or future request horizon.
+Unknown/incomplete preserves lack of that coverage authority even when local entries are
+well formed. Missing a declared slot is a construction error, not inferred inactive or
+an automatically invented unavailable slot. A caller may explicitly supply a qualified
+unavailable outcome for a declared address, retaining why it is held.
+
+Completeness of enumeration and usability are independent: a complete declared set
+containing an unavailable slot is not a complete usable routing input. Such holds must
+not disappear during projection. Complete empty scope plus empty entries is distinct
+from unknown empty inventory; the former closes only that explicitly empty declared
+scope. For a nonempty declared Trip/date set, conclusive inactivity requires explicit
+inactive slots, not absence. No omitted address becomes known absent or inactive.
+Neither empty form nor `no occurrence found` produces route-search `noResults`.
+A future consumer must independently establish that its whole applicable search scope
+is covered, every required hold resolved and enumeration completed.
+
+### 16.5 Availability and snapshot/view coherence
+
+Active retains the exact already qualified facts unchanged; incomplete time fields or
+unknown eligibility may legitimately remain in those facts. Inactive has no event body.
+Unavailable retains bounded unsupported/insufficient-evidence category and applicable
+existing diagnostic/index association, never invented event facts. Known invalid producer
+input or structural contradictions reject construction; they are not downgraded into an
+apparently usable view. Current published TimetableImport bundles represent successful
+active facts only: this design does not claim they serialize inactive/held outcomes.
+Those states need explicitly qualified producer inputs; a missing bundle is never inactive.
+
+All addresses/facts/interval records must match one declared view and qualified generation.
+For the same TripID across dates, compare full snapshots using production
+`TimetableOccurrenceBinding.matches` with a comparison binding at the current address;
+Trip equality alone is insufficient. Preserve each original dated binding. Changed
+snapshot or incompatible revision requires a newly qualified coherent view or an explicit
+future revision workflow, never `latest by ID`, silent rebinding or in-place mutation.
+
+Pin exact S9/import/profile dependencies and source/mapping/zone interpretation authority;
+reject mixed/incompatible generation or dangling associations. Legitimate per-service
+calendars may differ within a qualified generation. Matching tokens/digests establish
+association/integrity, not semantic compatibility: known conflicting shared definitions
+remain held/rejected by qualification, never hidden by the value constructor. No new
+source interpretation, global view-ID registry or automatic revision resolver is proposed.
+
+### 16.6 Evidenced intervals versus endpoint usability
+
+Require explicit finite interval records for each active occurrence, addressed by its
+exact binding and original boarding/alighting indices, with movement/continuity and
+applicable service-restriction authority references. Validate range/order/distinct anchors
+using existing production structure. Do not derive all `i < j` pairs from stop count,
+interpolate between evidenced spans, crop/reindex the Trip or infer a continuous ride
+from graph reachability. The real `0...13` bridge had separately supplied verification
+authority; neither its success nor authorization certifies other intervals.
+
+Separate **structurally/evidentially verified interval** from **schedulably usable exact
+ride**. Retain a verified interval even when facts contain prohibited/unknown permissions
+or missing/estimated required endpoints; preserve the actual facts instead of filtering
+the interval away. A verified record proves supported continuous span, not permission
+to board, exact-time usability or actual train operation. Unknown continuity remains a
+held interval record, not part of the affirmative `verifiedIntervals` subset.
+
+An exact routing consumer must additionally require allowed boarding at start, allowed
+alighting at end, exact start departure and exact end arrival, then use the existing
+TrainCandidate/TimetableRideContext path. Prohibited permission is an explicit negative;
+unknown permission or missing/estimated required event is held for exact routing, not
+a legitimate omission/noResults proof. No provider-context detour or second chronology
+validator is introduced. Inventory stores evidence and facts; future solver determines
+which evidenced intervals and usable endpoints are required for its declared scope.
+An empty verified list never proves every other interval absent; unknown interval
+coverage and known complete-for-declared-interval-scope must remain distinguishable.
+
+### 16.7 Static network, connection and search boundaries
+
+Do not copy the synthetic five-way station-state map or line set into B as another
+canonical authority. Reuse [RailwayDataRepository](../TSUGINO/Domain/Repositories/RailwayDataRepository.swift)
+and accepted prepared static data behind Data. A compatibility reference should identify
+[RailwayArtifactMetadata](../TSUGINO/Data/Storage/RailwayArtifact.swift)'s schema and
+exact current `RailwayArtifactRevision` (dataVersion, registryRevision, input hashes,
+content hash and chain association), plus compatible S9/mapping dependencies.
+[SQLiteRailwayRepository](../TSUGINO/Data/Storage/SQLiteRailwayRepository.swift) exposes
+metadata/identities and checks an expected revision at open; the Domain protocol does not
+expose revision or a ready-made synthetic station-state inventory. No new protocol or
+real static/timetable compatibility is claimed here. Qualification must establish that
+relationship separately; opaque ID agreement or non-nil station lookup is insufficient.
+
+Same-station interchange, directional walking connections, train-change semantics,
+applicability and total alight/interchange/board allowances belong to a separately
+qualified connection/transfer view. Station identity or chronological order cannot
+create them. B contains no connection policy, adjacency graph or default allowance.
+
+Depart-not-before, service-date/horizon selection/expansion, every relevant occurrence
+and interval/relation requirement, route enumeration, optimum/equal ties, pruning,
+cutoff and handoff accounting stay with future search scope/solver ownership. B's
+finite address declaration can support that proof but cannot substitute for it.
+DEC-086's earliest arrival then fewer changes/all distinct equal optima remains
+Accepted and unexercised by this inventory assessment.
+
+### 16.8 Resources, persistence and authority
+
+Before implementation, define finite construction budgets for occurrence/address count,
+dates, unique snapshots, intervals per occurrence and total, retained facts/dependency
+bytes and whole-view bytes. Reject overflow without truncation, partial success or
+silently weakened completeness. Account for shared snapshot storage and bound all loops;
+do not inherit the DEBUG eight-slot cap or owner-only importer limits as runtime capacity.
+**`NUMERIC_PRODUCTION_LIMITS_REQUIRE_SEPARATE_IMPLEMENTATION_EVIDENCE`**: select and
+justify technical construction limits with representation/workload measurements and
+boundary tests during the authorized implementation. No production numbers or solver
+resource/cancellation policy are selected by this audit; numeric bounds are not a product
+decision. Failure to justify finite bounds prevents implementation completion.
+
+Start with a **pure immutable production Data value plus invented tests**, no IO,
+owner-only artifact format, SQLite schema, cache or persistence. It can be independently
+verified without data installation, update publication or serialization commitments.
+Production compilation, a separately authorized real pilot, app runtime adoption and
+shipping data rights are four distinct gates. Existing license/registry/publication/
+delivery/bundling requirements remain; no technical value grants permission to ship data.
+
+### 16.9 Layering and smallest invented-only implementation
+
+Data qualification/offline authority stages verify applicable imported bundle/profile/S9
+evidence and static compatibility; the internal Data/Timetable inventory retains exact
+qualified references, states, declared scope/coverage and interval evidence. The initial
+pure-value slice implements local association/consistency only, using invented supplied
+qualified inputs; real IO/authority qualification remains separately gated. Domain's facts,
+TrainCandidate, TimetableRideContext and RouteCandidate remain unchanged. A future solver
+captures one coherent inventory with compatible static/connection views, enumerates and
+proves the accepted objective. Application retains request lifecycle/cancellation and
+publication ownership; AppEnvironment composition remains unconfigured. This does not
+select detailed solver scheduling/supplier mechanics beyond existing accepted boundaries.
+
+Completion criteria for a separately authorized Candidate-B implementation:
+
+1. Production-compiled immutable internal Data values, reusing existing Domain bindings;
+   no DEBUG-only dependency, new source interpreter or Domain semantic change.
+2. Explicit finite address/interval declarations and qualification references; exact
+   one-to-one slots, deterministic duplicate/missing/extra rejection, complete/unknown
+   empty distinctions and visible holds, with no inference from absence.
+3. Fail-closed mixed view/revision/full-snapshot/dependency association checks, including
+   same Trip across dates, retained old/new views and incompatible static references.
+4. Distinct active/inactive/unsupported/insufficient-evidence cases; invalid input rejects;
+   facts/coverage/original indices remain unchanged. Structural interval evidence remains
+   separate from prohibited/unknown eligibility and exact/missing/estimated endpoints.
+5. Focused invented tests for those cases, repeated/multi-Line intervals, unknown interval
+   coverage, no inferred spans, and justified construction-bound exact/overflow cases.
+   Verify that no inventory outcome is a route result or completeness/optimality token.
+6. Justified finite numeric limits, smallest relevant verification and independent review;
+   document exact implemented scope and unresolved real qualification/adoption gates.
+
+No private/real access, networking, persistence, solver, candidate search, AppEnvironment,
+Journey or UI wiring belongs to that slice. **`NO_NEW_PRODUCT_DECISION_REQUIRED`**:
+this is a technical evidence/inventory boundary under Accepted semantics, not a new
+activation, uncertain-time, transfer, completeness or search policy. File placement and
+numeric limits do not require a product decision. A genuinely new semantic requirement
+discovered later must be surfaced separately instead of silently broadening this design.
+
+Next safe action, **not begun**: obtain separate owner authorization to implement only
+these production immutable Data values and focused invented tests, with evidence-backed
+construction bounds and independent review. No implementation follows from this audit.

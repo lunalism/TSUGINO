@@ -1,5 +1,66 @@
 # TSUGINO — ROADMAP.md
 
+## First real direct-route admission bridge complete; occurrence inventory next — 2026-10-10
+
+**`FIRST_REAL_P3_T1_DIRECT_ROUTE_ADMISSION_BRIDGE_COMPLETE`.** This governing
+overlay records supplied owner execution/review results, without reopening private
+S9, timetable, harness or receipt artifacts. Earlier next-Candidate-A and unconstructed
+interval statements below are historical for this completed pilot. The execution used
+repository commit `6a76f0f8d6e025887bb60ad689e44ef87edb2fcb`, service date
+**`2026-03-16`** and exactly the authorized original-index interval **`0...13`**.
+
+| Supplied private evidence | Bytes | SHA-256 |
+|---|---:|---|
+| Execution receipt | 2159 | `04911e66091966abcb37fad81fe71418f717a7c8e3a19338c791df6113a3901a` |
+| Independent review | 2743 | `89844972cbb0b6a182270060ac418fcf466d3c9fe06cd52b2c04ef18912c7b1e` |
+
+Both published S9 and full timetable verifiers passed `bundleValid unchangedReplay`
+read-only. Exact Trip/facts binding and distinct endpoint stations passed; coverage
+remained **false/false**, preserving unknown service origin/destination. Boarding at
+index 0 was allowed with exact departure; alighting at index 13 was allowed with
+exact arrival. Actual production `TrainCandidate`, `TimetableRideContext`,
+`RouteRailProposal` and `RouteCandidate` construction passed: context matched train,
+departure <= arrival, full snapshot/binding/original indices/endpoints were preserved,
+and timetable origin/matched travel remained intact. Aggregate: **one rail leg /
+zero walking legs / zero transfers / one line in the ridden line sequence**.
+
+Author and independent reviewer each compiled exact repository production/tool sources
+without DEBUG flags and ran the same bounded composition. Independent review:
+**25/25 PASS**, no unresolved findings. No provider context, RouteScheduleAdmission,
+searcher/solver, fastest/completeness claim, canonical candidate serialization or
+repository/runtime mutation occurred. The candidate existed only in memory. This
+establishes one known direct ride, not enumeration, transfers, optimal/tie completeness,
+complete dated inventory, solver readiness, launch-wide coverage or runtime adoption.
+**`P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`** is unchanged; Phase 3
+remains In Progress.
+
+Repository-only next-boundary assessment:
+**`NO_ADDITIONAL_DIRECT_RIDE_CASE_REQUIRED_BEFORE_INVENTORY_BOUNDARY`**. Repeated
+indices, multi-Line traversal, missing/estimated endpoints and permission distinctions
+already have focused production-contract/invented regression coverage. No materially
+different unresolved constructor/source shape currently requires another real pilot;
+another ordinary interval/date would repeat the same proof. New evidence of an
+unsupported shape would justify revisiting this conclusion, not a quota of examples.
+
+Primary next task: **`P3_T1_REAL_OCCURRENCE_INVENTORY_ADAPTER_NEXT`** (Candidate B).
+Recommend a production-compiled immutable **Data/Timetable** value with one qualified
+view/revision authority, independently declared finite dated-address scope, exact
+snapshot-bound active/inactive/unavailable slots, separately declared evidenced
+original-index interval availability and explicit scoped completeness. Complete empty
+and unknown empty remain distinct; a complete address set is not complete search input.
+Known holds remain visible. Static station/line authority is referenced by exact
+compatible revision, not duplicated; connections/allowances and solver horizon,
+enumeration, optimization and accounting remain separate. Initial implementation
+should use invented inputs/tests only, with no real access, IO, persistence, solver
+or runtime wiring. **`NO_NEW_PRODUCT_DECISION_REQUIRED`** for this technical boundary;
+**`NUMERIC_PRODUCTION_LIMITS_REQUIRE_SEPARATE_IMPLEMENTATION_EVIDENCE`**.
+
+Detailed minimum contract, ownership, completeness/interval semantics and completion
+criteria: [producer §§15–16](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#15-first-real-direct-route-admission-bridge--2026-10-10).
+Next safe action, **not begun**: separately authorize the invented-only Candidate-B
+immutable Data value and focused tests described there. This documentation/audit task
+accesses no private artifact, constructs no real candidate and changes no runtime/source.
+
 ## First real P3-T1 dated occurrence import complete; routing handoff — 2026-10-10
 
 **`FIRST_REAL_P3_T1_DATED_OCCURRENCE_IMPORT_COMPLETE`.** This governing overlay
