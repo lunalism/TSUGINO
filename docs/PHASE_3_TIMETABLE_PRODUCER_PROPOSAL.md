@@ -3,6 +3,17 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+**Governing prepared-input handoff (2026-10-10):** the separately authorized invented Data
+preparation slice is implemented; [consumer §23](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#23-invented-only-prepared-input-implementation--2026-10-10)
+records exact ride/connection/objective projection, generated limits and verification/review status.
+Earlier input-next/audit-only wording is historical. Producer/inventory/B and Domain remain unchanged;
+no real prepared input, solver/result, IO or runtime adoption follows. Author regressions and
+final focused reruns passed; author and independent Release app/extension builds passed.
+Independent review approved all 31 criteria with no unresolved material findings; §23 records
+the exact counts and implementation verdict. Changes remain unstaged/uncommitted.
+P3-T1/Phase 3 remains incomplete.
+
+
 ## Governing published connection and final-input handoff — 2026-10-10
 
 Qualified connection evidence and immutable assessment were published at

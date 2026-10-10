@@ -1,5 +1,29 @@
 # TSUGINO — ROADMAP.md
 
+## Invented prepared-input values implementation — 2026-10-10
+
+The owner separately authorized the input-only slice from published final-input audit
+`7d0b37e0162ada88e720cd368a88dd9f656edb7f`. Production Data/Routing now contains immutable
+`PreparedInternalSearchInput`: whole technically qualified assessment/derived scope, exact usable
+required ride tokens, explicit negative/excluded interval accounting, one exact connection gap
+projection per required key and fixed Accepted DEC-086 objective binding. Shared production
+TwoSum extraction preserves allowance semantics; no Proposed §10.2 comparator is implemented.
+[Consumer §23](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#23-invented-only-prepared-input-implementation--2026-10-10)
+records generated pre-selection models, selected finite safeguards (4,096 usable rides/96 MB
+logical payload; inherited 92,160 ledger/2,048 relation bounds), complexity and verification.
+No paths, search/optimization/pruning/winners/results, route-level constructors, runtime budgets,
+IO/persistence/real data/runtime adoption or Phase-10 guidance are added. Domain/B/inventory/DEBUG
+semantics are unchanged. Author verification passed **188 functions / 426 cases**; final author
+and independent focused reruns each passed **30/64**, and separate Release app/extension builds
+passed. Independent nonauthor review approved **31/31 criteria**, with no unresolved material
+findings. Verdict: `P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+Changes remain unstaged/uncommitted; no publication is authorized here.
+Broader `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**,
+live/default routing unconfigured and real/runtime/solver adoption gates remain unchanged.
+Earlier input-next/audit-only statements are historical. The exact next action in §23.5 is owner
+publication review, then a separate solver-execution-contract assessment; neither has begun.
+
+
 ## Published connection evidence; final immutable input audit — 2026-10-10
 
 The independently approved qualified connection evidence and immutable assessment were published

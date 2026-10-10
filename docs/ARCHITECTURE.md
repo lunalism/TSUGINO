@@ -1027,6 +1027,28 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+**Governing invented prepared-input implementation (2026-10-10):** the separately authorized
+§22 slice now adds production Data/Routing `PreparedInternalSearchInput`; [consumer §23](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#23-invented-only-prepared-input-implementation--2026-10-10)
+records values, numeric evidence and verification/review. Earlier audit-only/input-next text is
+historical. The whole technically qualified assessment and derived supplied scope are retained;
+only B-required usable intervals become actual TrainCandidate/TimetableRideContext tokens, with
+ordered inactive/absent/prohibited/outsideScope accounting. Prohibited-first sequencing precedes
+needed unknown permission/events. Each required relation gets one exact feasible/infeasible/
+qualified-absent projection, retaining original form/allowance/context via the assessment.
+A shared production-local TwoSum primitive preserves allowance behavior and supplies the single
+exact gap-threshold policy, including residual signs/positive overflow. Fixed Accepted DEC-086
+objective version/reference/obligations are bound; §10.2 comparator remains Proposed and absent.
+Technical safeguards: 4,096 usable rides, 96,000,000 logical bytes, inherited 92,160 ledger entries/
+2,048 relations, no incidence multiplicity; generated evidence and copy-by-copy accounting in §23.
+No solver/path/result, route-level reconstruction, operational budget, IO/persistence, real-input
+qualification, Application/UI/runtime wiring or Phase-10 guidance. Runtime policy resolution and
+future canonical final admission remain separate. Author verification passed 188 functions/426
+cases; final author and independent focused reruns each passed 30/64. Author and independent
+Release app/extension builds passed, and independent review approved 31/31 criteria with no
+unresolved material findings. Changes remain unstaged/uncommitted. Broader P3-T1/Phase 3 remains
+incomplete, live routing unconfigured; the exact bounded implementation verdict is recorded in §23.
+
+
 **Governing final-input boundary audit (2026-10-10):** qualified connection evidence and
 immutable assessment were published at `6f826fe175ce9ec4d0f5fa5c8293c17223e96667`.
 Earlier publication-pending/A-next statements below are historical. Production input values

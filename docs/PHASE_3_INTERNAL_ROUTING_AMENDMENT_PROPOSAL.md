@@ -3,6 +3,16 @@
 **Status:** Accepted conditional amendment — DEC-079; context-only partial implementation independently approved\
 **Date:** 2026-10-01
 
+**Governing prepared-input implementation (2026-10-10):** the owner separately authorized
+only the invented production Data slice from published §22 audit
+`7d0b37e0162ada88e720cd368a88dd9f656edb7f`. [§23](#23-invented-only-prepared-input-implementation--2026-10-10)
+records its immutable values, generated technical-limit evidence and completed verification/review.
+Verdict: `P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+Earlier input-next/audit-only statements are historical. No solver, result, real prepared input
+or runtime adoption follows; §10.2 comparator remains Proposed. Publication is not authorized
+in this implementation task: changes remain unstaged/uncommitted.
+
+
 **Governing post-publication final-input audit (2026-10-10):** qualified connection
 evidence and immutable assessment were published at
 `6f826fe175ce9ec4d0f5fa5c8293c17223e96667`. Earlier publication-pending statements
@@ -4641,3 +4651,195 @@ live/default routing unconfigured and production evidence/resource/adoption gate
 Exact next safe action, **not begun**:
 
 > Separately authorize the smallest invented-only production Data `PreparedInternalSearchInput` slice defined in §22: require a technically qualified `ResolvedSearchInputAssessment`, materialize exact usable required ride tokens through existing `TrainCandidate` and `TimetableRideContext`, retain known-negative/excluded accounting and full assessment provenance, project each required positive connection's exact gap feasibility once, bind only Accepted DEC-086 objective/completion semantics, and establish evidence-backed finite construction safeguards with invented tests. Exclude route enumeration, solver/results, runtime adoption, real/private data and Phase-10 guidance; leave detailed itinerary identity/comparator mechanics to later solver design.
+
+## 23. Invented-only prepared-input implementation — 2026-10-10
+
+### 23.1 Scope, values and accounting
+
+The independently reviewed §22 audit was published at
+`7d0b37e0162ada88e720cd368a88dd9f656edb7f`. This separately authorized implementation adds
+production `Data/Routing/PreparedInternalSearchInput.swift` and invented
+`PreparedInternalSearchInputTests.swift`. Domain, B closure, inventory and DEBUG synthetic
+semantics remain unchanged. The only other production edit mechanically extracts the existing
+allowance TwoSum operations into `ConnectionBinary64Addition` in QualifiedConnectionEvidence.
+
+`PreparedInternalSearchInput` is immutable/nonisolated Sendable, with the entire original
+`ResolvedSearchInputAssessment`, derived exact scope, fixed objective, ordered usable rides,
+ordered per-required-interval accounting, ordered prepared connections and logical payload bytes.
+Its sole throwing initializer requires technical qualification; any remaining hold refuses
+atomically. It creates no second closure, bare completion Bool, paths, candidates, winners,
+results, runtime configuration, persistence/cache or source/IO owner. References still do not
+resolve/authenticate real evidence, rights or DEC-080 runtime policy contents.
+
+Only B's occurrence/interval declarations are traversed, in their retained order. Each interval
+has occurrence/interval indices and exactly one state: usable with ride-array index, inactive,
+absentUnderCompleteAuthority, prohibitedEndpoint or outsideScope. Missing usable tokens have an
+explicit explanation; no negative is reclassified as unavailable or a search rejection.
+
+For active/present intervals, indexed inventory lookup and full binding association precede
+endpoint use. Either prohibited boarding/alighting excludes before unknown counterpart permission
+or unused events. Otherwise both permissions must be allowed, both required events exact, then
+both events must fall within inclusive supplied [L,U]. Needed unknown permission/missing/estimated
+event refuses the entire preparation; one out-of-scope timestamp cannot hide the other missing
+required endpoint. Exact outside-scope endpoints give a local exclusion without changing horizon.
+
+Each usable `PreparedTimetableRide` retains a request-local key (exact dated occurrence address,
+original boarding/alighting indices), actual `TrainCandidate` and actual `TimetableRideContext`.
+Anchors, lines and exact times derive from those canonical values. Full snapshots/coverage/service
+segments are preserved; no additional snapshot field or parallel validator exists. Unexpected
+canonical construction failures are typed consistency errors, never silently omitted. Repeated
+visits/dates stay distinct by key. A spanning multi-Line Trip remains one token, no line/operator
+boundary fragments or artificial train change. Future genuine change counting remains between
+rides, subject to existing duplicate recurring Trip constraints.
+
+### 23.2 Connection projection and exact arithmetic
+
+Exactly one `PreparedConnectionRelation` per B-required target retains its directional key,
+exact original evidence-array index and feasible/infeasible/absentUnderCompleteAuthority state.
+Output is B order independently of A storage order. The whole assessment retains original
+positive form/allowance/events/context/review; `positiveEvidence(at:)` derives that exact payload
+without retaining a second copy. Negative and infeasible states supply no traversal edge. A
+relation with no usable incident ride remains accounted for. No reverse inference, endpoint-pair
+Cartesian expansion, additional requiredness or incidence array is introduced.
+
+Preparation is the single production owner of exact train-gap projection. Finite arrival a,
+departure d and nonnegative qualified allowance t permit iff d >= exact mathematical a+t.
+`PreparedConnectionGap` uses the shared production-local error-free addition primitive: finite
+represented sum s with residual e permits d<s false, d>s true, d==s iff e<=0. Rounded-down equality
+therefore fails and rounded-up equality passes. Nonzero residual is legitimate. Positive overflow
+is normal known infeasibility before residual arithmetic; unexplained nonfinite intermediates
+produce typed arithmeticConflict. Zero allowance applies normally. No subtraction alternative,
+epsilon, time-zone conversion, saturation or synthetic helper is used.
+
+`ConnectionAllowance` retains precisely its old component validation, ordered TwoSum operations,
+finite intermediate checks, zero-residual requirement, asserted-total equality and signed-zero
+canonicalization. Only the primitive extraction changes its implementation. Feasibility states
+are not preparation errors or public search failures; infeasibleConnection remains a defensive
+later handed-off-candidate rejection.
+
+### 23.3 Accepted objective and future ownership
+
+`InternalRouteObjectiveDefinition` has a closed supported Accepted DEC-086 V1, immutable exact
+`InternalSearchPolicyReference` and 14 fixed obligations: earliest exact final arrival, fewer
+genuine train changes, no internal through-service changes, all distinct equal optima,
+reproducibilityOnly, optimum/all-tie proof before success, no first-found/first-K, cutoff as
+searchIncomplete, unknown required evidence as dataUnavailable, selection before frozen handoffs,
+preserve all admitted winners, mixed rejection as searchIncomplete and all rejected as existing
+unscoped noUsableAlternatives. `hasSameDefinition` compares full obligations/version/reference;
+changed reference prevents compatibility. No caller-configurable ranking or mutable latest lookup.
+
+This binds obligations, not execution proof. §10.2 itinerary-key/UUID/UTF8/form/prefix comparator
+and concrete identity/dedup mechanics remain Proposed and are absent. No new preference or product
+decision is introduced. Connection/time interpretation remains materialized upstream; DEC-080
+immutable definition resolution, real authentication and runtime preflight/adoption remain gates.
+Exact supplied scope/horizon/ride cap is derived unchanged, with no production default.
+
+Work/memory/cutoff/checkpoint configuration stays outside the input and belongs to future explicit
+invocations. Application retains runtime selection/lifetime/cancellation/publication/retry ownership;
+the future solver owns request execution accounting. This slice selects no algorithm or pruning.
+Later complete selected itineraries must reconstruct retained rides through RouteRailProposal,
+WalkingTransfer only for walking form, RouteCandidate and existing scoped admission constructors.
+Same-station changes add no walk. None of these route-level values is constructed here.
+
+Prepared qualification is not execution completion. Empty usable arrays are valid input, never
+noResults. A direct ride with feasible transfer possibilities establishes no winner or optimum.
+Later solver design must settle identity/dedup/reproducibility mechanics and prove optimum/all ties,
+sound bounds/pruning/cycles/used-Trip constraints and cutoff truth before any result. No real
+prepared input exists: invented production values precede any separately authorized bounded pilot.
+
+### 23.4 Generated finite-limit evidence and complexity
+
+Before selecting new constants, the invented workload model exercised actual TrainCandidate plus
+TimetableRideContext, full original assessment, interval ledger, relation records and conservative
+fixed objective payload. Snapshots/references were charged copy-by-copy, independent
+of COW. The printed model total did not separately charge its constructed interval array; the
+ledger-inclusive column below adds the measured 24-byte record stride analytically. 72-stop through Trips, up to 48 supplied intervals/occurrence, 32-byte stop identifiers and
+both positive/negative connection records were used. Simulator observations (not performance gates):
+
+| Rides | Relations | Assessment logical bytes | Printed model bytes | Ledger-inclusive model bytes | Ride projection time |
+|---|---:|---:|---:|---:|---:|
+| 256 | 0 | 1,811,129 | 3,758,009 | 3,764,153 | 0.0101 s |
+| 1,024 | 0 | 6,593,409 | 14,382,337 | 14,406,913 | 0.2053 s |
+| 4,096 | 2,048 | 43,127,224 | 74,717,529 | 74,815,833 | 0.1687 s |
+| 5,120 | 2,048 | 49,408,784 | 88,791,307 | 88,914,187 | 0.1737 s |
+
+Pre-selection model strides were ride 256, interval 24, relation 128 bytes. These in-memory struct
+strides and noisy Simulator timings do not measure expanded heap usage or establish iPhone capacity.
+The final accounting independently charges every interval record at 32 bytes (rather than
+omitting the array as the printed model did) and charges explicit
+objective/header plus every newly retained key and each actual train/context snapshot spelling.
+
+Selected technical safeguards: at most **4,096 usable rides**, **96,000,000 expanded logical bytes**,
+**92,160 interval accounting entries** (inherited B total), **2,048 prepared relations** (inherited A),
+existing **2,880 required/loaded occurrences**, **48 intervals/occurrence**, **72 stops/Trip** and
+**192 UTF-8 bytes/token**. Fixed objective accounting is 256 bytes; there is no variable objective
+payload or incidence multiplicity. The practical ride cap matches the measured mixed maximum;
+the 25%-larger model demonstrates construction stress beyond it, not authority to raise it. The
+96 MB logical cap provides headroom above that measured shape while rejecting longer/larger retained
+payloads independently of the ride cap. These are finite technical safeguards, not solver work
+budgets, production horizon choices, network coverage or heap/performance guarantees.
+
+Top-level counts precede nested traversal; inherited immutable constructors already bounded each
+actual text/nested snapshot before original hashing/equality. Preparation charges the exact whole
+constructor-accounted assessment, then new ledger/keys and each actual train/context snapshot copy
+before new lookup/canonical work. New text uses bounded prefix scans, nested counts precede scans,
+and an overflow-safe subtract-before-add budget fails atomically without truncation. No trusted
+caller size assertion exists. Required interval counts use remaining-capacity arithmetic.
+
+Expected O(I + Q*S + C + P) work with S<=72; keyed loaded/evidence/ride associations, declaration-order
+output, finite O(I+C+R) temporary indices. P is the inherited bounded payload, Q required intervals,
+C required relations and R usable rides. Full canonical snapshot semantics remain authoritative;
+no pairwise snapshot scan, all-index-pairs generation, paths or Cartesian ride connections.
+
+### 23.5 Verification and handoff
+
+Author required Debug verification passed on an explicit iPhone 17 Simulator: all **188 functions /
+426 cases**, comprising the new **30/64** suite and **158/362** relevant regression functions/cases.
+Regressions include QualifiedConnectionEvidence **42/122**, RequestScopedSearchInputClosure **31/90**,
+TimetableOccurrenceInventory **18/48**, TimetableRideContext **10/14**, InternalSearchScope **11/18**,
+InternalSearchSuccess **13/15**, RoutingValue **16/26**, and synthetic timetable direct **7/16**, batch
+**6/7**, optimal **4/6**. No regression test or synthetic behavior was changed.
+
+Actual production construction accepted **4,096 rides + 2,048 relations at 74,848,665 logical bytes**;
+**92,160 inactive ledger entries at 19,055,929 logical bytes**. Exact ride cap, +1 and 25% over-cap
+shapes, count preflight exact/+1/Int.max/negative cases, independent logical-budget exact/+1/overflow
+atomicity and longer-text payload rejection passed. Longer retained snapshot spellings are charged
+copy-by-copy. These observations establish bounded technical construction, not physical performance.
+
+The suite also covers all required holds, immutable assessment/scope provenance, unknown/estimated
+endpoint sequencing, inclusive bounds, canonical full snapshots/original repeated indices/dates,
+through multi-Line rides, positive same-station/walking/absent/infeasible directional projections,
+reordered A evidence with B-order output, no Cartesian pairs, relations with no usable incident ride,
+exact residual signs/equality/overflow/zero allowance, fixed objective/reference compatibility,
+empty input/direct-plus-transfer input without result/optimum, fixed API shape and detached Sendable
+construction. An initial fixture compilation omission and a same-station fixture's adjacent duplicate
+station were corrected; the full required regression run passed thereafter. Final focused reruns
+also include the strengthened direct-plus-incident-transfer assertions.
+
+Author standard Release app + dependent Live Activity extension build passed on explicit iPhone
+Simulator. The independent fresh Release app/extension build also passed; new production values
+compile without DEBUG dependencies. Neither changed production source adds a warning; existing
+icon-resource, Domain actor/Codable and skipped AppIntents metadata warnings remain unrelated.
+No physical-device work is required or performed. Final author and independent focused reruns
+each passed **30 functions / 64 cases**, including the strengthened direct-plus-incident-transfer
+assertions, with **0 failed, 0 skipped and 0 runtime warnings**. The independent nonauthor review
+approved **all 31 criteria**, including before/after allowance semantics and bounded construction,
+with **no unresolved material findings**. Independent fresh Release and focused reruns used an
+explicit iPhone 17 Pro Max Simulator; author verification used an explicit iPhone 17 Simulator.
+
+Bounded implementation verdict:
+`P3_PRE_SOLVER_EXECUTABLE_INPUT_VALUES_IMPLEMENTED_AND_INDEPENDENTLY_APPROVED`.
+This approves invented input values only, not real input, solver execution or phase completion.
+
+Scope/privacy/isolation and working git diff --check pass. No real/private GTFS/S9/timetable/static/
+profile/inventory/connection artifact or prior receipt/review was accessed. No paths/search/solver,
+route-level constructor/result, runtime budget/adoption, networking/IO/persistence/cache or Phase-10
+guidance is added. Exact change set: new production source/test, mechanical arithmetic extraction,
+consumer/ARCHITECTURE/ROADMAP plus producer current-handoff overlay. No stage, commit or push is
+authorized in this task.
+Broader `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE`, Phase 3 **In Progress**,
+live/default routing unconfigured and real coverage/resource/adoption gates remain unchanged.
+
+Exact next safe action, **not begun**:
+
+> Owner review and publication of the independently approved `PreparedInternalSearchInput` production values. After publication, separately assess the production solver execution contract: exact itinerary identity/dedup/reproducibility ordering, algorithm-neutral enumeration/optimality proof obligations, invocation resource/cutoff configuration and canonical winner admission. Do not begin solver implementation or real/private routing execution in the publication task.

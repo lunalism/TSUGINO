@@ -78,12 +78,21 @@ nonisolated struct ConnectionAllowance: Equatable, Sendable {
         self.total = total == 0 ? 0 : total
     }
     private static func exactSum(_ a: Double, _ b: Double) -> Double? {
+        guard let addition = ConnectionBinary64Addition.finiteSum(a, b), addition.residual == 0 else { return nil }
+        return addition.sum
+    }
+}
+
+/// Production-local error-free addition primitive. Callers own the policy:
+/// allowance requires zero residual; a temporal threshold compares its sign.
+nonisolated enum ConnectionBinary64Addition {
+    static func finiteSum(_ a: Double, _ b: Double) -> (sum: Double, residual: Double)? {
         let sum = a + b
         let bv = sum - a, av = sum - bv
         let ae = a - av, be = b - bv
         let residual = ae + be
-        guard [sum, bv, av, ae, be, residual].allSatisfy(\.isFinite), residual == 0 else { return nil }
-        return sum
+        guard [sum, bv, av, ae, be, residual].allSatisfy(\.isFinite) else { return nil }
+        return (sum, residual)
     }
 }
 
