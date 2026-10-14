@@ -3,6 +3,21 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Request→preparation→solver composition contract — 2026-10-14
+
+[Consumer §27](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#27-requestpreparationsolver-composition-contract--2026-10-14) is a Proposed
+documentation-only contract, drafted from published `df031dc05fe7fb4881b0441f824baea09b3e0b83`,
+that defines the future Data `RouteSearching` composition S0–S10: entry/configuration, one E2 view
+capture, shared-view validity, endpoints, `InternalSearchScope`, B closure, A evidence/assessment,
+`PreparedInternalSearchInput`, unchanged solver and return, with explicit typed-failure mapping,
+cancellation checkpoints, separate preparation safeguards/solver meter and future measurement
+boundaries. It verifies existing constructors and names missing seams: current-view supplier,
+resolved policy contents, endpoint dispositions inside the captured view, request-relative
+declaration and connection-evidence producers, and dependency resolution. No producer, conformer,
+numeric limit, AppEnvironment/Journey/UI wiring, test/build/measurement or private access.
+Recommended next task, **not begun**: documentation-only declaration/connection-evidence producer
+audit. P3-T1 stays scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Invented-only production prepared-input solver — 2026-10-10
 
 The separately authorized solver slice from `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`

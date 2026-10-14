@@ -4,6 +4,12 @@
 **Date:** 2026-10-01
 
 
+**Governing composition contract (2026-10-14):** the §26 audit is published at
+`df031dc05fe7fb4881b0441f824baea09b3e0b83`. [§27](#27-requestpreparationsolver-composition-contract--2026-10-14)
+records the documentation-only request→preparation→solver contract, its missing seams, open
+decisions and the next recommended audit (not begun). No implementation, test or measurement.
+P3-T1 stays incomplete, Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing published solver and post-publication readiness audit (2026-10-14):** the §25
 eight-file change set is published at `4df37d5cfcb9ab81106257b21855169450f72c46`
 (`feat: add bounded prepared internal route solver`, parent `05ea2cf`). Earlier unstaged/
@@ -5601,3 +5607,245 @@ instrument, and it can proceed without private data or product choices.
   data or pilots, measurements, numeric limits, Journey/UI, physical device, Phase-10.
 
 Secondary candidate after that contract: the G3 workload-frame/measurement protocol design.
+
+*Status update (2026-10-14):* this recommended contract is now drafted in
+[§27](#27-requestpreparationsolver-composition-contract--2026-10-14); the "not begun" heading above
+records the state when §26 was published.
+
+## 27. Request→preparation→solver composition contract — 2026-10-14
+
+### 27.1 Status, authority and boundary
+
+Documentation-only, owner-authorized from published checkpoint
+`df031dc05fe7fb4881b0441f824baea09b3e0b83` (§26.4). It specifies a **future** Data-owned
+`RouteSearching` conformer from `RouteSearchRequest` to canonical `RouteSearchResult`. Nothing here
+implements a producer, conformer, supplier or test; enables live routing; selects numeric limits;
+or establishes runtime, memory, cancellation-latency or deployment suitability. No tests, builds,
+solver runs, measurements, private artifacts or devices were used. P3-T1 remains scope-incomplete;
+Phase 3 remains **In Progress**; live/default routing remains unconfigured.
+
+Three classes are kept distinct throughout:
+
+- **[A] Accepted requirement.** DEC-076 port/failure vocabulary; DEC-079 owner-accepted preflight
+  order configuration → shared-view validity → endpoints → profile intent/bounds → required
+  coverage, with observed cancellation first and no lower-priority probing (DECISIONS DEC-079
+  "Owner acceptance", accepting consumer §§2–5; failure table and preflight list in consumer
+  §3); Accepted parts of DEC-080 (V1–V7: full profile, inclusive `L`/`U = L + duration`,
+  scoped success); Accepted parts of DEC-086 (objective, all equal optima, truthful cutoff →
+  `searchIncomplete`, unknown required evidence → `dataUnavailable`); DEC-087 Application
+  lifecycle; owner-accepted E2 capture/replacement (§19 scoped acceptance, ROADMAP 2026-10-05).
+- **[I] Published implemented technical contract.** §24 solver execution contract as implemented
+  in §25 (reviewed and published; `NO_NEW_PRODUCT_DECISION_REQUIRED`, not owner product acceptance),
+  including the separate solver meter and §24.8 terminal mapping.
+- **[P] Proposed technical composition.** This section's stage design, ownership placement and
+  typed-failure mapping. It needs review and separate implementation authorization.
+- **[O] Open choice.** Listed in §27.9, split into product semantics and implementation choices.
+
+### 27.2 Existing interfaces verified read-only (2026-10-14)
+
+| Stage input/output | Existing type and constructor | Failure surface | Cancellation inside |
+|---|---|---|---|
+| Port | `RouteSearching.search(_: RouteSearchRequest) async throws -> RouteSearchResult` (Domain) | `RouteSearchFailure` or `CancellationError` only | Caller task |
+| Request | `RouteSearchRequest.init?(origin:destination:departNotBefore:)` — distinct endpoints, finite instant | Constructed by caller; invalid requests never reach the port | — |
+| Profile/policy | `InternalSearchProfileDefinition.init?(identity:stations:lines:trips:maximumElapsedDuration:maximumRailRides:connectionPolicy:serviceDateInterpretation:)`; `InternalSearchPolicyReference` is a key/revision pair that "does not resolve, authorize or authenticate" policy | `nil` | — |
+| Scope | `InternalSearchScope.init?(profile:request:viewID:)` — endpoints in profile stations, exact finite `L+duration` | `nil` | — |
+| Static revision / endpoints | `RailwayArtifactRevision`; Domain `RailwayDataRepository.station(id:) async throws -> Station?` (actor `SQLiteRailwayRepository`) | `RailwayRepositoryError`; existence only | Suspends (actor) |
+| Occurrence inventory | `TimetableOccurrenceInventoryView.init(qualification:declaredAddresses:completeness:suppliedSlots:) throws(TimetableInventoryConstructionFailure)` | `resourceLimit`, conflicts | **None** (synchronous) |
+| Request closure (B) | `SearchInputClosureApplicability.init(reference:scope:qualification:)`; `RequestScopedSearchInputClosure.init(scope:inventory:railway:occurrences:connections:dependencies:) throws(SearchInputClosureConstructionFailure)`; `holds`, `isTechnicallyQualified` | `resourceLimit`, conflicts; holds are values, not throws | **None** |
+| Connection evidence (A) | `ConnectionEvidenceQualification.init(applicability:policy:review:)` (policy must equal profile `connectionPolicy`); `ConnectionEvidenceState.qualifyingPositive/qualifyingAbsence`; `QualifiedConnectionEvidenceView.init(qualification:declaredKeys:completeness:records:)` | `ConnectionEvidenceFailure` | **None** |
+| Assessment | `ResolvedSearchInputAssessment.init(closure:connections:) throws(ConnectionEvidenceFailure)`; `remainingHolds`, `isTechnicallyQualified` | as above; holds are values | **None** |
+| Prepared input | `InternalRouteObjectiveDefinition.init(reference:)` (version `acceptedDEC086V1`); `PreparedInternalSearchInput.init(assessment:objective:) throws(PreparedInputFailure)` | `resourceLimit`, `assessmentNotQualified`, `permissionUnknown`, `exactEventMissing`, conflicts | **None** |
+| Solver | `InternalRouteSolver.solve(_:configuration:) async throws` (`@concurrent`; does **not** conform to `RouteSearching`); `InternalSolverExecutionConfiguration` (validation ceilings = invented envelope) | `RouteSearchFailure`/`CancellationError` only; incompatible objective → `dataUnavailable`; invalid configuration → `configurationUnavailable` | Metered checkpoints at every stage (§25.2) |
+| Lifecycle | `RouteSearchCoordinator` (MainActor owner, DEC-087); `AppEnvironment.makeRouteSearchCoordinator()` → `.notConfigured` while `live()` passes `routeSearching: nil` | — | Owns Task |
+
+DEBUG precedent only (not production API): `SyntheticOptimalRouteSearcher` takes immutable
+configuration at construction plus an optional `captureView` closure and runs
+cancellation → configuration → capture → view validity/policy match → endpoints → scope
+(`unsupportedRequest`) → coverage, mapping unknown errors to `dataUnavailable` after a final
+cancellation check. The production conformer may reuse this **pattern**, not these types.
+
+### 27.3 Proposed stage sequence [P]
+
+One invocation of a future `nonisolated` conformer with an explicitly `@concurrent search`
+(required because the app target defaults to MainActor isolation, §19.1). Every arrow is a
+cancellation checkpoint; each stage stops the call at its first failure (§27.5).
+
+| # | Stage [A]-ordering slot | Inputs | Output | Missing seam (does not exist today) |
+|---|---|---|---|---|
+| S0 | Entry | request, conformer's immutable bindings | — | Conformer type |
+| S1 | Configuration (DEC-079 1) | immutable profile definition, objective reference, `InternalSolverExecutionConfiguration`, supplier present | validated bindings | **Resolved immutable policy contents** behind each `InternalSearchPolicyReference`; a production configuration source; a pre-load validator equivalent to the `InternalSolverMeter` ceilings plus a check that `configuration.objective` has the same definition as the bound objective (→ `configurationUnavailable`), so the S9 objective-mismatch `dataUnavailable` is unreachable for a valid configuration |
+| S2 | Capture (E2) | supplier | one whole immutable captured view `V` | **Current-view supplier** with a non-suspending linearized read returning one whole value; the production view type |
+| S3 | Shared-view validity (DEC-079 2) | `V`, S1 bindings | `V` accepted for this call | View validity interval/invalidation fields; correspondence of `V`'s policies with profile `connectionPolicy`/`serviceDateInterpretation` |
+| S4 | Endpoints (DEC-079 3) | request, captured `V` | origin then destination resolved | **Endpoint dispositions inside `V`.** DEC-079 validates endpoints "against that view" and E2 forbids separately read pieces or reloads, so dispositions must come from `V` itself (or a revision-pinned identity component retained as part of `V` for the call's lifetime), never a post-capture read of a shared mutable source. Today the Domain port's `station(id:)` reports existence only; the concrete actor's full-load `identities()` exposes retired status but no keyed conflicting/unsupported disposition, and neither is on a captured value |
+| S5 | Intent/bounds (DEC-079 4) | profile, request, `V.viewID`, validity interval | `InternalSearchScope` | None for construction; window-within-validity check needs S3's seam |
+| S6 | Closure (B) | scope, `V.inventory`, `V`'s railway revision, **request-relative declarations** | `RequestScopedSearchInputClosure` | **Request-relative required-domain declaration producer** (occurrences, intervals, connection targets, dependencies) bound by `SearchInputClosureApplicability` to this exact scope; **dependency-resolution authority**: the closure records `dependencyUnresolved` for every declared dependency and the assessment clears only `connectionUnresolved`, so today only an empty dependency declaration can qualify |
+| S7 | Connection evidence + assessment (A) | closure's connection targets, `V`'s connection authority, profile `connectionPolicy` | `QualifiedConnectionEvidenceView`, `ResolvedSearchInputAssessment` | **Request-scoped connection-evidence producer** that builds records via the checked state factories from `V`, without deriving requiredness |
+| S8 | Prepared input | assessment, objective definition | `PreparedInternalSearchInput` | None (exists) |
+| S9 | Solve | P, execution configuration | `RouteSearchResult` | None (exists) |
+| S10 | Return | result | final cancellation check, return | — |
+
+Coverage (DEC-079 5) is S6–S8 jointly: technical qualification of B, A and P is the coverage
+proof (with any nonempty dependency declaration necessarily unqualified until a resolution
+authority exists); only then does solving start. `V.inventory` is part of the captured shared view, built and
+validated by the supplier before publication, not per request; a supplier that cannot build a
+valid inventory publishes no usable view (capture outcome → `dataUnavailable` at S3).
+
+The conformer only sequences and maps. It does not reinterpret service dates, eligibility,
+continuity, allowances, gaps or requiredness; those remain owned by the existing constructors and
+by the producers named above. The solver keeps consuming only P (§24.1).
+
+### 27.4 Ownership, bindings and safeguards
+
+| Concern | Owner [P] unless marked | Basis |
+|---|---|---|
+| Current immutable view and its replacement | Data supplier; App composition root injects it into the conformer | §18.2, E2 [A] |
+| Profile definition, policy references, objective reference, execution configuration | Bound immutably to the conformer at construction for the port's lifetime; values chosen by an owner-approved configuration, injected by App | [P]. Reconciles §24.7 ("Application retains … runtime profile/configuration selection") by treating Application/App selection as choosing which configured conformer is composed. §19.2's port-lifetime immutability was scoped to the smallest experiment, so production port-lifetime binding is Proposed here. The existing port has no per-request profile parameter; per-request selection would need a port change [O] |
+| Request-relative declarations, connection evidence | Data producers reading only the captured `V` | §20 B authority, §21 A authority [A] |
+| Task lifetime, retry intent, superseded-response suppression, publication | Application `RouteSearchCoordinator` | DEC-087 [A] |
+| Canonical admission, terminal outcomes | Solver (§24.8), unchanged | [A] canonical admission (DEC-076/079); §24.8 terminal mapping [I] |
+
+**Safeguards.** Preparation retains its existing construction safeguards (inventory, closure,
+connection and prepared-input limits, all logical-payload accounting) and the solver keeps its
+own uninterrupted invocation meter starting at acceptance of P (§24.6 [I]; Accepted DEC-079/086
+cutoff duties [A]). They are not merged,
+summed or reset into a common unit, and no end-to-end hard budget exists or is proposed here.
+Execution configuration affects only whether completion can be proved, never semantics.
+
+**Measurement boundaries (future, not established).** A later authorized harness may timestamp
+S0, S1/S2 end, S3–S5 end, S6, S7, S8 and S9 end, and S10, reporting stage elapsed time, logical
+payload per stage, solver meter usage and peak memory if reliably measurable — separately, never
+summed into one budget (§16.2). Capture latency and supplier-side view construction are separate
+measurements. No hardware, numeric target or Simulator-to-device equivalence is implied.
+
+### 27.5 Failure mapping and cancellation precedence
+
+Cancellation: check at S0, after S2 resumption, after S4 if it suspends, between
+S5/S6/S7/S8, inside S9 (solver's own checkpoints) and at S10, and before throwing any pending
+non-cancellation failure. Once observed, `CancellationError` wins [A]. S6–S8 are **synchronous,
+non-cancellable bounded constructors** (verified: no cancellation checks in those files); a
+cancellation arriving during one is observed only at the next checkpoint. No latency is claimed;
+if later measurement shows unacceptable stretches, bounded partitioning needs separate review
+(§19.3).
+
+| Stage / observation | Outcome | Class |
+|---|---|---|
+| S1 missing/invalid profile, unresolved policy contents, missing supplier, invalid execution configuration | `configurationUnavailable`; no data is loaded to confirm lower faults | [A] order; [P] detection |
+| S2/S3 no view, invalid validity, policy/revision mismatch, inconsistent whole view | `dataUnavailable` | [A] |
+| S4 origin, then destination: conflicting → retired → unknown → unsupported, from dispositions in `V` | `invalidEndpoint(role, reason)`; a `V` unable to support endpoint validation fails earlier at S3 as `dataUnavailable` | [A] |
+| S5 `InternalSearchScope` init `nil` (endpoint outside profile, horizon not exactly representable) | `unsupportedRequest` | [A] (consumer §3 table) |
+| S5 scope window outside captured-view validity | `unsupportedRequest` proposed (DEC-081 synthetic precedent); `dataUnavailable` alternative (§3 "expired/insufficiently covered") | [P]; user-visible category is an [O] product choice (§27.9) |
+| S6–S8 conflicts (`scopeConflict`, `qualificationConflict`, `staticRevisionConflict`, `declarationConflict`, `snapshotConflict`, `intervalConflict`, `profileConflict`, `connectionTargetConflict`, `policyConflict`, `targetConflict`, `formConflict`, `trainChangeConflict`, `allowanceConflict`, `applicabilityConflict`, `endpointConflict`, `accountingConflict`, `occurrenceConflict`, `canonicalRideConflict`, `arithmeticConflict`) | `dataUnavailable` | [P], from [A] "contradictory input" |
+| Assessment `remainingHolds` non-empty; `assessmentNotQualified`; `permissionUnknown`; `exactEventMissing` | `dataUnavailable`, even if a usable direct ride exists | [A] (DEC-086 unknown required evidence) |
+| S6–S8 `resourceLimit` over otherwise consistent input | `searchIncomplete` | [P] from [A] truthful cutoff; any other category needs owner confirmation (§27.9) |
+| S9 | Unchanged §24.8 terminal outcomes [I] with Accepted cutoff/evidence duties [A]: scoped `noResults` only after proved empty universe; scoped alternatives; unscoped `noUsableAlternatives`; mixed → `searchIncomplete`; cutoff → `searchIncomplete` | [I] mapping; [A] duties |
+| Any other internal error | final cancellation check, then `dataUnavailable` | [P], matches §24.7 |
+
+Typed preparation failures are mapped **explicitly before** the generic catch, so a
+`resourceLimit` is never silently reported as `dataUnavailable`. Only `RouteSearchFailure` or
+`CancellationError` escapes; no partial, best-so-far or direct-only output exists at any stage.
+Preflight never emits `noResults`; empty declarations, zero rides or a missing direct route are not
+proof (§24.5).
+
+### 27.6 Replacement, overlap and retry
+
+- **Replacement (E2 [A]).** A call that captured V1 completes against V1 even if V2 is published
+  meanwhile; it is not cancelled, relabelled or mixed with V2. It does not claim V1 is current.
+  Mandatory invalidation/rights revocation of an in-flight V1 needs its own evidenced policy
+  before real deployment [O]; no stale fallback, TTL or refresh is designed.
+- **Overlap [A]/[P].** Each call owns its scope, closure, evidence, assessment, P and solver state;
+  only immutable `V`, bindings and configuration are shared. No global lock, actor-wide
+  serialization or concurrency cap; the supplier may serialize only its reference read.
+  Cancelling call A never cancels B or the supplier. No detached or orphan tasks.
+- **Retry [A].** Data never retries. DEC-087 C2: Application retries only the identified current
+  failed attempt with a fresh invocation identity, preserved explicit time or renewed now-capture.
+  A retry is a new call that captures afresh and may see V2.
+- **Publication [A].** Application alone publishes, suppresses superseded/cancelled responses and
+  keeps current-request-only state. The conformer returns or throws; it publishes nothing.
+
+### 27.7 Invented explanatory examples (not executed tests)
+
+All identifiers, times and sizes are invented placeholders; no real railway data.
+
+1. **Success.** Profile `P-x` covers stations `A,B,B',C`; request `A→C`, `L = t0`. S1–S5 pass; the
+   declaration producer declares two occurrences and one walking target `B→B'` under complete
+   authority; evidence marks it present with a qualifying allowance; assessment has no holds; P has
+   three rides. The solver proves two equal-arrival, equal-change itineraries and returns scoped
+   `.internalSuccess(... .alternatives(batch))` with both, in §24.4 order.
+2. **Unavailable input.** Same request; the declared connection target's evidence record is
+   `.unavailable(.insufficientEvidence)` → assessment keeps `connectionUnresolved` (a missing
+   record is instead a construction conflict → `dataUnavailable`). A direct `A→C` ride exists in `V`. Result:
+   `dataUnavailable`; the direct ride is not returned.
+3. **Incomplete computation.** Input qualifies, but the complete equal-optimal set exceeds the
+   configured winner safeguard → solver `searchIncomplete`, no subset. Alternatively the prepared
+   ride count exceeds `PreparedInputLimits.rides` → [P] `searchIncomplete` at S8.
+4. **Cancellation.** The user replaces the request while S7 runs. S7 finishes its synchronous
+   constructor; the S7→S8 checkpoint observes cancellation → `CancellationError`; no result.
+   Application had already suppressed publication for the superseded invocation.
+5. **Captured-view replacement.** Call 1 captures V1; V2 is published during S6; call 2 starts
+   and captures V2. Call 1 completes against V1 only; call 2 uses V2 only. Application publishes
+   only the current request's outcome.
+
+### 27.8 Future verification matrix (required, not executed)
+
+| Area | Cases |
+|---|---|
+| Preflight order | Each stage failing alone and with every lower stage also failing; no lower probing (e.g. missing configuration plus missing view → `configurationUnavailable`); endpoint role/reason order |
+| Capture | One supplier read per call; V1/V2 linearization; no reload; retry captures afresh |
+| Scope | Endpoint outside profile; inexact horizon → `unsupportedRequest`; window outside validity → whichever category §27.9 settles |
+| Endpoints | Dispositions read from captured `V` only; replacement during a call cannot change them; no shared-source read after capture |
+| Composition | Every typed preparation failure mapped as §27.5; `resourceLimit` distinct from conflicts; holds → `dataUnavailable` with usable direct ride; objective/policy mismatch at S9 → `dataUnavailable` (direct solver only; composed path → S1 `configurationUnavailable`) |
+| Solver parity | Composed outcomes equal direct `solve` on the same invented P, including all §24.8 outcomes |
+| Cancellation | Before entry, after capture, between each stage, after S4 if it suspends, inside solver, before pending failure and return; no partial output |
+| Isolation | Off-main execution under actual MainActor-default settings; overlapping calls independent; no detached tasks |
+| Lifecycle | Unchanged `RouteSearchCoordinator` tests with a fake conformer; superseded responses suppressed |
+| Build hygiene | Invented fixtures only; test seams absent from Release; standard Release app/extension on an explicit iPhone Simulator |
+
+### 27.9 Open decisions [O]
+
+**Product semantics (owner decisions):**
+
+- Production profile contents: station/line/Trip domain, elapsed horizon and ride cap (DEC-080
+  production parameters; no default).
+- Any production **requiredness/exclusion rule** used by the declaration producer, if one beyond
+  independently substantiated declarations is needed (§20.5: such a rule "must be surfaced
+  separately").
+- Invalidation/rights-revocation treatment of in-flight captured views before real deployment.
+- User-visible category when the scope window exceeds captured-view validity (`unsupportedRequest`
+  versus `dataUnavailable`, §27.5).
+- DEC-086 R6 deployment/ownership and eventual live adoption.
+
+**Implementation choices (technical, need review and authorization, not product decisions):**
+
+- Supplier API and production view type (validity interval, policy correspondence, revision).
+- Declaration producer and connection-evidence producer design and their safeguards.
+- Production source from which the supplier embeds endpoint dispositions into `V`.
+- Preparation `resourceLimit` mapping: `searchIncomplete` proposed, consistent with Accepted §3
+  ("do not misreport a computation cutoff") and DEC-086 truthful cutoff. Any other category would
+  change user-visible semantics and needs owner confirmation; none is recommended.
+- Form of endpoint dispositions inside `V` (embedded table versus revision-pinned identity component).
+- Dependency-resolution authority for declared external dependencies.
+- Whether per-request profile selection is ever needed (would change the Domain port; not proposed).
+- Measurement instrumentation placement and evidence-backed numeric safeguards (§26.2 G3–G5).
+
+### 27.10 Prerequisites by future step
+
+| Step | Prerequisites |
+|---|---|
+| Producer implementation (S6/S7 producers) | Reviewed producer design incl. requiredness authority; any surfaced requiredness rule decided; implementation authorization |
+| Invented integration (conformer over invented supplier) | This contract reviewed; producer interfaces fixed or stubbed as stipulated invented declarations; implementation authorization |
+| Measurement | Integrated invented path; §26.2 G3 workload frame; experiment authorization; physical-iPhone portion additionally needs explicit device authorization |
+| Runtime adoption | Real qualified views and rights (§26.2 G1), production profile/configuration decisions, measured suitability, separate AppEnvironment enablement authorization |
+
+### 27.11 Recommended next bounded task — not begun
+
+**Documentation-only request-relative declaration and connection-evidence producer audit.**
+S6/S7 are the first stages with no producer, and the B authority rule (§20.5, §21) forbids
+deriving requiredness from loaded slots, paths or pair enumeration. Before any conformer API is
+fixed, the audit should specify what authority produces exact per-request occurrence/interval/
+connection/dependency declarations and evidence records from one captured view, how declared
+dependencies are resolved (none can be cleared today), whether that
+needs a new requiredness rule (surfaced for owner decision, not chosen), its safeguards, and
+invented examples. Prerequisites: this contract; no private data. Completion: reviewed section,
+explicit owner-decision list, independent non-author review. Exclusions: source/tests, real data,
+measurements, numeric limits, AppEnvironment/Journey/UI, devices, Phase-10.
+An invented-only conformer implementation (§27.10 row 2) is the subsequent candidate.
