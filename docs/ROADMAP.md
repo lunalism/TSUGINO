@@ -1,5 +1,18 @@
 # TSUGINO — ROADMAP.md
 
+## Published solver; post-publication readiness audit — 2026-10-14
+
+The invented-only solver change set is published at `4df37d5cfcb9ab81106257b21855169450f72c46`
+(`feat: add bounded prepared internal route solver`), verified against the live phase branch;
+main remains `e8a463d51f14b3cb1027960c63244b694579a71b`. This documentation-only audit ran no
+tests, builds, solver or measurements and opened no private artifact. [Consumer §26](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#26-post-publication-readiness-audit--2026-10-14)
+records the readiness matrix: real-data coverage/rights, prepared-input producer/policy,
+representative workload, measured runtime/heap/cancellation, production configuration,
+RouteSearching composition and Phase 3 exit all remain open; invented credits/logical bytes are
+not elapsed time or heap evidence. Recommended next task, **not begun**: a documentation-only
+production preparation→solve composition contract (§26.4). P3-T1 stays scope-incomplete;
+Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Invented-only production prepared-input solver — 2026-10-10
 
 The separately authorized solver slice from `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`
@@ -9,7 +22,9 @@ retained-key reproducibility ordering and canonical scoped admission. [consumer 
 records the preimplementation algorithm/cost audit, uninterrupted metering schema,
 invented envelope, verification and independent review. Prior solver-next/algorithm-
 awaiting text is historical. Production input/objective and existing DEBUG contracts
-are unchanged. This change set remains unstaged/uncommitted; publication is separate.
+are unchanged. *Historical (2026-10-10, superseded):* "This change set remains
+unstaged/uncommitted; publication is separate." It is now published at
+`4df37d5cfcb9ab81106257b21855169450f72c46`; readiness: consumer §26, 2026-10-14.
 No real/private input, acquisition, live/default RouteSearching/AppEnvironment adoption,
 Journey/UI, physical-device or Phase-10 work. P3-T1 stays incomplete and Phase 3
 **In Progress**; live/default routing stays unconfigured. Invented evidence does not

@@ -1036,7 +1036,9 @@ retained-key reproducibility ordering and canonical scoped admission. [consumer 
 records the preimplementation algorithm/cost audit, uninterrupted metering schema,
 invented envelope, verification and independent review. Prior solver-next/algorithm-
 awaiting text is historical. Production input/objective and existing DEBUG contracts
-are unchanged. This change set remains unstaged/uncommitted; publication is separate.
+are unchanged. *Historical (2026-10-10, superseded):* "This change set remains
+unstaged/uncommitted; publication is separate." It is now published at
+`4df37d5cfcb9ab81106257b21855169450f72c46`; readiness: consumer §26, 2026-10-14.
 No real/private input, acquisition, live/default RouteSearching/AppEnvironment adoption,
 Journey/UI, physical-device or Phase-10 work. P3-T1 stays incomplete and Phase 3
 **In Progress**; live/default routing stays unconfigured. Invented evidence does not

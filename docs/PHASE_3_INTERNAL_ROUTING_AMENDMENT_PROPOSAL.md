@@ -4,14 +4,23 @@
 **Date:** 2026-10-01
 
 
+**Governing published solver and post-publication readiness audit (2026-10-14):** the §25
+eight-file change set is published at `4df37d5cfcb9ab81106257b21855169450f72c46`
+(`feat: add bounded prepared internal route solver`, parent `05ea2cf`). Earlier unstaged/
+uncommitted/publication-pending wording for it is historical. [§26](#26-post-publication-readiness-audit--2026-10-14)
+records the documentation-only readiness matrix and one recommended next task (not begun).
+No tests/builds/solver runs were performed for this audit. P3-T1 stays incomplete, Phase 3
+In Progress, live/default routing unconfigured.
+
 **Governing invented-only production solver implementation (2026-10-10):** the owner
 separately authorized the consumer §24 implementation from published contract checkpoint
 `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`. [§25](#25-invented-only-production-prepared-input-solver-implementation)
 records the iterative exhaustive DFS proof, invocation safeguards, independent test-only
 oracle and verification. Earlier algorithm/limits-awaiting and solver-next statements are
 historical. No Accepted objective, upstream truth or DEBUG synthetic contract changes.
-This is an uncommitted implementation slice; real input, runtime adoption and deployment
-suitability remain separate gates. P3-T1 stays incomplete, Phase 3 In Progress.
+It was uncommitted when recorded; it is now published (see 2026-10-14 overlay above).
+Real input, runtime adoption and deployment suitability remain separate gates.
+P3-T1 stays incomplete, Phase 3 In Progress.
 
 **Governing production execution-contract audit (2026-10-10):** the exact independently
 approved prepared-input bytes were published at `17b97ed86a2a20e950dded1a7fb95f8766257000`
@@ -5489,8 +5498,9 @@ Primary classification:
 No new product decision was required. The eight-file diff adds only one Data solver,
 three invented test/support files and consumer/producer/architecture/roadmap truth.
 Domain/upstream/preparation/DEBUG synthetic contracts, dependencies, persistence,
-UI/Journey and runtime wiring are untouched. Worktree changes are unstaged and
-uncommitted; HEAD/upstream remain `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`,
+UI/Journey and runtime wiring are untouched. *Historical publication state at review
+time (superseded by §26.1: published at `4df37d5cfcb9ab81106257b21855169450f72c46`):*
+worktree changes were unstaged and uncommitted; HEAD/upstream remained `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`,
 main/origin-main `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence 0/0.
 No commit/push/merge, private input, provider acquisition or physical-device work.
 
@@ -5500,6 +5510,94 @@ preparation+solve/cancellation/heap/performance suitability, Application lifecyc
 and RouteSearching/runtime adoption. Exhaustive enumeration is exponential and
 bounded refusal is expected outside this invented evaluation envelope. No automatic
 retry or slower replacement is supplied. P3-T1 stays scope-incomplete; Phase 3 stays
-In Progress, live/default routing unconfigured. Next safe action is review of this
-uncommitted diff and a separately authorized publication slice; no real pilot or
-runtime wiring is implied by this implementation verdict.
+In Progress, live/default routing unconfigured. Next safe action (historical; completed
+by publication at `4df37d5`) was review of this uncommitted diff and a separately
+authorized publication slice; no real pilot or runtime wiring is implied by this
+implementation verdict. Current readiness and next task: §26.
+
+## 26. Post-publication readiness audit — 2026-10-14
+
+Documentation-only, owner-authorized. No source/tests change, solver execution, performance
+experiment, test/build rerun, private-artifact access, provider acquisition, physical-device
+interaction or runtime/AppEnvironment/Journey/UI/Phase-10 work. P3-T1 remains scope-incomplete;
+Phase 3 remains **In Progress**; live/default routing remains unconfigured.
+
+Evidence labels: **[V]** directly verified in this checkout on 2026-10-14 by repository/Git
+inspection; **[H]** historical recorded evidence (supplied or reported earlier, not re-executed
+here); **[U]** unknown or not checked. Invented work credits and logical bytes are not elapsed
+time, measured heap/RSS or representative deployment evidence. Exhaustive DFS correctness
+(§25) does not establish acceptable performance at real timetable scale.
+
+### 26.1 Checkout and publication reconciliation
+
+- **[V]** Audit checkout `/Users/byungjin/TSUGINO` (an internal copy; the earlier external-drive
+  checkout was not accessed). `.git` is a self-contained directory: no `gitdir` indirection,
+  no object alternates, one worktree, and local config contains no external-drive path.
+  Connectivity check reported no missing objects (dangling objects only). Origin is
+  `https://github.com/lunalism/TSUGINO.git`.
+- **[V]** Branch `phase/03-route-search`; HEAD = upstream = live remote branch =
+  `4df37d5cfcb9ab81106257b21855169450f72c46`; local/tracked/live main =
+  `e8a463d51f14b3cb1027960c63244b694579a71b`; divergence 0/0; clean worktree/index; no
+  non-ignored untracked files before this audit's documentation edits.
+- **[V]** Commit `4df37d5` message `feat: add bounded prepared internal route solver`, parent
+  `05ea2cf463e3b88f14e81a7fc5055cff5c06e678`, exactly eight files and 1,405 insertions/0
+  deletions: `TSUGINO/Data/Routing/InternalRouteSolver.swift`,
+  `TSUGINOTests/InternalRouteSolverTests.swift`,
+  `TSUGINOTests/Support/ExhaustivePreparedSolverOracle.swift`,
+  `TSUGINOTests/Support/InternalSolverFixtures.swift`, `docs/ARCHITECTURE.md`, this proposal,
+  `docs/PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md` and `docs/ROADMAP.md`. The committed solver
+  source and test file SHA-256 values equal the reviewed values recorded in §25.4.
+- **[H]** §25.3–§25.4 author/independent verification (final 26/55 focused, Release app/
+  extension) was executed on 2026-10-10 from the earlier checkout path; its `/private/tmp`
+  logs/result bundles were not reopened. **No test or build was run on this checkout.**
+
+### 26.2 Readiness matrix
+
+| Gate | Status | Evidence and references | Missing evidence / unresolved dependency | Smallest next action | Authorization class |
+|---|---|---|---|---|---|
+| G1 Real-data/source qualification, rights, coverage | **Not ready.** Partial real evidence; recorded rights holds | [H] one real static revision / S9 Trip / dated occurrence / interval `0...13` only ([producer §18](PHASE_3_TIMETABLE_PRODUCER_PROPOSAL.md#18-first-real-production-occurrence-inventory-pilot--2026-10-10)); [H] P2-S9 remains incomplete beyond the pilot: for that one reviewed Trip only, classification gaps went 14 → 0 and source order was resolved (ROADMAP "Owner-reported same-candidate occurrence review — 2026-10-08"), followed by station crosswalk, canonical Trip registration and S9 snapshot selection (ROADMAP 2026-10-08/2026-10-09 checkpoints). Recurring-run identity, movement/endpoint, registration and final-acceptance gates remain for every other candidate and for launch coverage, and the pilot's origin/destination stay `unknownExtent`. Earlier consumer §16.1/§18.3 "14 + 14 gaps" text is historical. [H] ODPT: the October 3 Toei interpretation inquiry was answered (reply 2026-10-05; follow-up answers 2026-10-08; owner-accepted retained Toei interpretation profile, ROADMAP 2026-10-05/2026-10-08 checkpoints). Those replies grant no publication, translation, retention or bundling rights. The 2026-09-19 rights inquiry (Q2 caching/offline use, Q3 non-restorable canonical data/publication, Q4 translation, Q6 termination deletion; PROVIDER_FEASIBILITY_AUDIT §3.12) has no recorded reply ("unanswered" in DECISIONS DEC-068 context, 2026-09-28; no later reply found in the repository; consumer §16.3/§18.1 holds). Permanent binary bundling (audit §3.12 item 5) was not asked and remains unresolved; [V] no production code constructs a real closure/evidence/assessment or P (only value types and tests reference them) | Launch-scope (15-service) inventory/calendar/interval coverage; real directional connection relations and allowance applicability (consumer §16.1 transfers row) — source availability **[U]**, not a verified blocker; rights for retention/bundling/delivery (recorded hold) | After G2 design: a separately authorized bounded real direct/complete-empty-connection prepared-input pilot (consumer §22.6), or source identification for connection evidence | Private-data authorization; source/rights review; written ODPT confirmation covering retention/offline use and permanent binary bundling (audit §3.12 item 5, not yet asked) before bundling. Technical qualification itself needs no new product decision |
+| G2 Prepared-input producer and policy readiness | **Values ready (invented); producer absent** | [V] `PreparedInternalSearchInput`, `ResolvedSearchInputAssessment`, `RequestScopedSearchInputClosure`, `QualifiedConnectionEvidence`, `TimetableOccurrenceInventoryView` exist only as Data values; no Data/App/Application caller derives them from a `RouteSearchRequest`; [H] the E2 one-atomic-capture-per-call rule is owner-accepted (consumer §19; ROADMAP 2026-10-05), while the production capture API, current-view supplier and versioned immutable policy resolution remain Proposed (consumer §18.2, §22.1–§22.5); DEC-080 P5 and production horizon/ride cap deferred | Request→scope derivation, single view capture, inventory/connection supplier, policy resolution owner and contents, stage failure mapping | **Recommended §26.4:** documentation-only production preparation→solve composition contract | Docs design: none beyond this kind of authorization. Implementation: implementation authorization. Production horizon/ride-cap values: owner product decision |
+| G3 Representative workload shape; preparation + solve measurement | **Not started; shape unknown** | [H] §25.3 invented shapes only; §16.2 defines evidence classes and measurement plan; [H] §25.2 worst costs are exponential bounds (sum of R^k), not expected timetable size | Source-derived structural aggregates (dated rides per scope, connection density/fan-out, branching, tie multiplicity, key/output size); justified sampling frame; end-to-end preparation+solve harness | Workload-frame/measurement protocol design after G2's stage boundaries are fixed | Frame design: none. Structural extraction: private-data authorization. Harness: implementation authorization |
+| G4 Actual runtime, heap/memory, cancellation responsiveness | **Unmeasured** | [V] meter comment states credits bound logical storage/work, not allocator bytes or CPU time (`InternalRouteSolver.swift`, `InternalSolverMeter`); [H] no wall-time cancellation-latency bound claimed (§25.2); no elapsed/heap/RSS figure exists for preparation or solver | Elapsed time, peak memory, cancellation latency for preparation+solve, Simulator then physical iPhone | Follows G2/G3; no measurement now | Simulator measurement and harness design: experiment/implementation authorization only. Physical-iPhone measurement additionally requires explicit physical-device authorization (AGENTS §22) |
+| G5 Runtime configuration and policy resolution | **Invented envelope only; production values unselected** | [V] `InternalSolverExecutionConfiguration.inventedEvaluation` and meter validation hard-cap at 100,000,000 work / 1,000,000 slots / 256 winners / 16,384 keys / 256 MiB; larger configurations fail `configurationUnavailable`; no App/Application code selects a solver configuration; [H] the invented four-layer shape used 95.79M of 100M credits and §25.4 expects bounded refusal outside the envelope; `NUMERIC_PRODUCTION_SOLVER_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE` (§24.6) | Production profile/horizon/ride cap; budget values from G3/G4 evidence; selection owner (Application per §24.7) | Depends on G2 contract, then G3/G4 evidence | Horizon/ride cap: product decision. Numeric safeguards: technical, evidence-backed, implementation authorization |
+| G6 Application lifecycle and future RouteSearching composition | **Lifecycle implemented; composition absent** | [V] `RouteSearchCoordinator` and `RouteSearchCoordinatorTests` exist; `AppEnvironment.live()` passes `routeSearching: nil` → `.notConfigured`; `InternalRouteSolver` is documented as not conforming to `RouteSearching` and takes P, while `RouteSearching.search` takes `RouteSearchRequest`; [H] DEC-087 implementation approved (§12.9); E2 capture is test-only/DEBUG (§19.6–§19.7) | Data `RouteSearching` conformer composing capture → preparation → solve; cancellation and failure precedence across both; view replacement mid-call | Same G2 composition contract | Docs: none. Conformer: implementation authorization. AppEnvironment injection/enablement: separate explicit authorization |
+| G7 Deployment suitability; remaining Phase 3 exit | **Not met** | [H] Phase 3 exit "usable canonical journey plan for supported Tokyo routes" and decision gate (data quality, pricing, licensing, trip identity, mapping stability) in ROADMAP Phase 3; DEC-086 R6 deployment/ownership Proposed; `P3_T1_FIRST_REAL_IMPORT_ACCEPTED_BUT_SCOPE_INCOMPLETE` | G1–G6; real coverage; device evidence; rights | None directly; phase audit only after gates close | Owner product decisions (R6, suitability); rights; device authorization |
+
+**Verified blockers** (directly verified or explicitly recorded holds): no production preparation/
+composition code; solver configuration hard-capped at the invented envelope; live routing nil;
+recorded ODPT/S9/P3-T1 holds; Phase 3 exit unmet. **Unknown, not verified blockers:** availability
+of qualified real connection evidence; real workload shape; whether exhaustive DFS completes within
+any acceptable budget at real scale; device elapsed/memory/cancellation behavior.
+
+### 26.3 Selection rationale
+
+Real-data pilots need private authorization and, per §22.6, a defined preparation path; invented
+performance measurement would not be representative; algorithm optimization before workload
+evidence violates AGENTS §18. The missing request→prepared-input→solver composition blocks G2,
+G5 (who selects configuration and policy), G6 and the stage boundaries a G3/G4 measurement must
+instrument, and it can proceed without private data or product choices.
+
+### 26.4 Recommended next bounded task — not begun
+
+**Production route-search preparation→solve composition contract (documentation only).**
+
+- **Scope:** define the future Data `RouteSearching` conformer seam: entry cancellation and
+  configuration/profile preflight; single immutable view capture (reusing accepted E2, §19);
+  request→`InternalSearchScope` derivation from an injected immutable policy (horizon, ride cap,
+  objective) without choosing values; inventory → B closure → A evidence → assessment → P → solver
+  sequencing with owners; separate preparation safeguards and solver meter (§24.6); failure
+  precedence (`configurationUnavailable`/`dataUnavailable`/`searchIncomplete`/cancellation) across
+  stages; concurrent calls and view replacement; stage boundaries for future end-to-end
+  measurement; where Application selects runtime configuration. Preserve unchanged DEC-087
+  Application task lifetime, retry intent and publication/superseded-response guards; §24.6–§24.8
+  escape rules (only `RouteSearchFailure` or `CancellationError`), no partial/best-so-far output,
+  and canonical admission.
+- **Prerequisites:** published `4df37d5` checkpoint; Accepted DEC-076/078/079/087, the Accepted parts of DEC-080/DEC-086, and accepted §19 E2;
+  no private data.
+- **Completion:** reviewed contract section with invented filled/missing-evidence examples,
+  explicit list of owner decisions it exposes (production horizon/ride cap, R6) without making
+  them, future invented test matrix, independent non-author review, `git diff --check`, docs-only scope.
+- **Exclusions:** source/tests, conformer implementation, AppEnvironment injection, real/private
+  data or pilots, measurements, numeric limits, Journey/UI, physical device, Phase-10.
+
+Secondary candidate after that contract: the G3 workload-frame/measurement protocol design.
