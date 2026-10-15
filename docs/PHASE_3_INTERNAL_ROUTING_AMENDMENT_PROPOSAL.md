@@ -4,6 +4,13 @@
 **Date:** 2026-10-01
 
 
+**Governing invented-only composition implementation (2026-10-15):** the §28 audit is published at
+`e3da19dbc2f40e8265d649836bacc85e7fde6635`; its not-begun wording for the §28.6 slice is historical.
+[§29](#29-invented-only-end-to-end-routing-composition--2026-10-15) records that slice implemented
+for invented data only, with two provisional mappings pending owner confirmation, and its
+verification. Not registered in AppEnvironment. P3-T1 stays incomplete, Phase 3 In Progress,
+live/default routing unconfigured.
+
 **Governing producer/dependency audit (2026-10-14):** the §27 contract is published at
 `b0438eda9082104cb99949b21b7c7669bd5ab909`; its unpublished-state wording is historical.
 [§28](#28-declaration-connection-evidence-and-dependency-producer-audit--2026-10-14) audits the declaration,
@@ -6100,3 +6107,210 @@ not blocking it: production requiredness rule (R1/R2/R3), the G2 qualified-negat
 question, dependency resolution, the two §27.9 user-visible mappings, and all §26.2 real-data,
 measurement and adoption gates. Exact next action, **not begun**: separately authorize the
 §28.6 invented-only end-to-end implementation slice.
+
+*Status update (2026-10-15):* §28 was published at `e3da19dbc2f40e8265d649836bacc85e7fde6635`;
+the §28.6 slice is now implemented, invented-only, as
+[§29](#29-invented-only-end-to-end-routing-composition--2026-10-15). The text above records the
+state at §28 publication.
+
+## 29. Invented-only end-to-end routing composition — 2026-10-15
+
+### 29.1 Scope lock and authority
+
+Owner-authorized implementation of the published §28.6 slice from checkpoint
+`e3da19dbc2f40e8265d649836bacc85e7fde6635`. In scope: new Data code (captured view, supplier seam,
+two pure producers, a `RouteSearching` conformer), invented tests, relevant regressions, Simulator
+builds and these documents. Out of scope and unchanged: Domain; the published inventory, closure
+(B), evidence/assessment (A), prepared-input (P) and solver code; AppEnvironment/live routing;
+Journey/UI; real/private data; R2/R3; dependency resolution; G2; production values or limits;
+measurements; devices; Phase 10. P3-T1 stays scope-incomplete, Phase 3 **In Progress**,
+live/default routing unconfigured: the conformer is not registered anywhere.
+
+### 29.2 Implemented request→result flow [I, invented only]
+
+`PreparedRouteSearcher` (`TSUGINO/Data/Routing/PreparedRouteSearcher.swift`) is a `nonisolated`
+struct with `@concurrent search`. Its immutable bindings are a `PreparedRouteViewSupplying`
+supplier, an `InternalSearchProfileDefinition`, an objective reference (bound as
+`InternalRouteObjectiveDefinition`) and an `InternalSolverExecutionConfiguration`. All per-call
+values are locals. Each named stage below ends in a checkpoint (`PreparedRouteSearchStage`)
+followed by `Task.checkCancellation()`:
+
+| Stage | Work | Failure |
+|---|---|---|
+| `entry` | — | `CancellationError` |
+| `configuration` (S1) | `InternalSolverMeter(configuration)` validation; `configuration.objective.hasSameDefinition(as:)` the bound objective | `configurationUnavailable`, no capture |
+| `capture` (S2) | exactly one `await supplier.currentView()` | — |
+| `viewValidity` (S3) | view present; finite `validFrom < validUntil`; view connection-policy and service-date references equal the profile's | `dataUnavailable` |
+| `endpoints` (S4) | origin then destination from the captured `endpoints` table; absent station → `unknown` | `invalidEndpoint(role, reason)` |
+| `scope` (S5) | `InternalSearchScope(profile:request:viewID:)`; then inclusive `[L, U]` within validity | `unsupportedRequest`; window outside validity → **provisional** mapping |
+| `declarations`, `closure` (S6) | declaration producer, then `RequestScopedSearchInputClosure` | typed mapping (§29.4) |
+| `evidence`, `assessment` (S7) | evidence producer, then `ResolvedSearchInputAssessment`; `isTechnicallyQualified` required | typed mapping; remaining holds → `dataUnavailable` |
+| `preparedInput` (S8) | `PreparedInternalSearchInput` | typed mapping |
+| `solve` (S9/S10) | unchanged `InternalRouteSolver.solve` (own meter, §24.8 outcomes), then final checkpoint and return | solver outcomes unchanged |
+
+The outer `search` catch performs a cancellation check before any pending failure, rethrows
+`CancellationError` or `RouteSearchFailure`, and maps anything else to `dataUnavailable`.
+No retry, partial, best-so-far or direct-only output; no publication (DEC-087 stays in
+Application). The view's `id` and `railway` are derived from its inventory qualification
+(one view ⇒ one qualification ⇒ one view ID and revision, §28.3), so they cannot disagree with it.
+
+S6–S8 are synchronous and run inside existing constructors, which have no cancellation checks;
+a cancellation arriving during one is observed at the next checkpoint. No interruption inside a
+constructor and no wall-time responsiveness is claimed.
+
+### 29.3 Captured view and producers [I, invented only]
+
+`TSUGINO/Data/Routing/PreparedRouteSearchView.swift`:
+
+- **`PreparedRouteSearchView`** — validity interval, the two policy references, the
+  `TimetableOccurrenceInventoryView`, endpoint dispositions (`active` or an existing
+  `RouteSearchEndpointFailureReason`), occurrence/relation/dependency domain authority (§28.3) and
+  connection authority (§28.4: review, completeness, entries keyed by `ConnectionRelationKey`).
+- **`PreparedRouteViewSupplying`** — one `async` read returning the whole view or `nil` (E2).
+  Supplier obligation: an endpoint table that cannot support endpoint validation must not be
+  published (return `nil` → S3 `dataUnavailable`); a station absent from a published table is
+  treated as `unknown`.
+  The replaceable test supplier actor (`InventedPreparedRouteViewSupplier`, `replace(_:label:)`)
+  lives in `TSUGINOTests/Support/PreparedRouteSearchFixtures.swift`; there is no production supplier.
+- **`PreparedRouteDeclarationProducer`** — R1 for invented integration only: every supplied
+  domain member is required regardless of date. The only exclusion is the DEC-080 V1 profile
+  projection: non-profile Trips, intervals touching a non-profile station or line (a copy of the
+  closure's own `profileConflict` predicate, cross-referenced in source), and relations incident to
+  an excluded occurrence. It reads no loaded slot. Projected-in members, including malformed ones
+  (bad indices, duplicates, relations to undeclared addresses), pass through unchanged so the
+  closure rejects them; projected-out members are dropped without structural checks. The producer
+  applies no limits of its own: the closure's existing safeguards govern the projected output
+  (`closureLimitsApplyToProjectedDomainOnly`), and producer work is linear in the supplied domain,
+  whose size the supplier owns.
+- **Interpretation recorded for owner review:** a relation between two kept occurrences stays
+  required even when it alights or boards at a non-profile station (§28.3 "relations whose
+  endpoints both survive" read at occurrence level). Without supplied evidence for it, every
+  request fails `dataUnavailable`. The alternative reading of DEC-080 V1 (exclude such transfers)
+  is not implemented; see §29.6.
+- **`PreparedRouteConnectionEvidenceProducer`** — one record per required closure target, in closure
+  order. It computes only the key and the two bindings copied from the closure; form, allowance
+  components (through the checked `ConnectionAllowance` init), premises, review, completeness and
+  examined instants pass through. It throws `targetConflict` rather than trapping if the closure's
+  one-requirement-per-address invariant were ever violated. A missing entry or examined instant →
+  `.unavailable(.insufficientEvidence)`; absence is never inferred. Supplied absences go through
+  `qualifyingAbsence`, the §21.4 path G1 relies on. It pre-checks the target count against
+  `ConnectionEvidenceLimits.relations` before building records.
+
+Dependencies: the invented fixtures declare an empty list as an explicit stipulation (§28.5). A
+nonempty list is passed through and stays unresolved (`dataUnavailable`); nothing resolves it.
+
+### 29.4 Failure mapping and provisional mappings
+
+Typed preparation failures are mapped in `PreparedRouteSearchFailureMapping` before the generic
+fallback: `resourceLimit` → the provisional preparation mapping; every other
+closure/evidence/prepared-input failure → `dataUnavailable`.
+
+**Provisional, pending owner confirmation for production** — one named point,
+`PreparedRouteSearchProvisionalMapping`, pinned by `provisionalMappingsArePinnedAtOnePoint` and
+end-to-end tests:
+
+| Mapping | Implemented category | Basis |
+|---|---|---|
+| `windowOutsideViewValidity` | `unsupportedRequest` | §27.5 Proposed (DEC-081 synthetic precedent); `dataUnavailable` is the §27.9 alternative |
+| `preparationResourceLimit` | `searchIncomplete` | §27.5/§27.9 Proposed; DEC-086 truthful cutoff |
+
+This implementation authorization is not production acceptance of either mapping.
+
+### 29.5 Invented verification (2026-10-15)
+
+Destination: iPhone 17 Simulator `84E47945-9D2E-446F-8C40-B835A9D15880` (explicit). No physical
+device was discovered, selected or used.
+
+```text
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-composition-dd -resultBundlePath /private/tmp/tsugino-composition-first.xcresult -only-testing:TSUGINOTests/PreparedRouteSearchCompositionTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-composition-dd -resultBundlePath /private/tmp/tsugino-composition-regression.xcresult -only-testing:TSUGINOTests/PreparedRouteSearchCompositionTests -only-testing:TSUGINOTests/InternalRouteSolverTests -only-testing:TSUGINOTests/PreparedInternalSearchInputTests -only-testing:TSUGINOTests/QualifiedConnectionEvidenceTests -only-testing:TSUGINOTests/RequestScopedSearchInputClosureTests -only-testing:TSUGINOTests/RouteSearchCoordinatorTests -only-testing:TSUGINOTests/TimetableOccurrenceInventoryTests -only-testing:TSUGINOTests/InternalSearchScopeTests -only-testing:TSUGINOTests/InternalSearchSuccessTests -only-testing:TSUGINOTests/RouteSearchingTests -only-testing:TSUGINOTests/RouteSearchCaptureIntegrationTests -only-testing:TSUGINOTests/AppEnvironmentTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-composition-release-dd build
+```
+
+Current state: the post-review figures below (213 tests; composition suite 18 functions / 57
+cases) supersede the earlier runs, which are kept as history.
+
+- **First focused run:** compiled; one assertion failed (the test wrongly expected an empty
+  closure-hold list; `connectionUnresolved` holds always remain until the assessment). The
+  assertion was corrected; no source change.
+- **First regression run:** `TEST SUCCEEDED`, 212 tests passed.
+- **Post-review run** (same command, result bundle `/private/tmp/tsugino-composition-corrected.xcresult`,
+  after the §29.7 corrections): `TEST SUCCEEDED`, 213 tests passed, 0 failed, 0 skipped. The new
+  `PreparedRouteSearchCompositionTests` contributes 18 test functions (57 argument cases); the rest
+  are the unchanged affected suites listed above. The post-review Release build also succeeded.
+- **Release:** `BUILD SUCCEEDED` for the app with the embedded `TSUGINOLiveActivity.appex`. No
+  warnings from the new files. Test seams (`PreparedRouteSearchTestHooks`, the hooks initializer and
+  the solver-hook branch) are `#if DEBUG`; Release compiling without them is the evidence. A symbol
+  scan of the Release binary is inconclusive because the unregistered conformer is dead-stripped too.
+
+| Area (§28.6) | Covered by |
+|---|---|
+| Success parity | `composedEqualsDirectSolver` ×7: direct, same-station and walking transfers, fewer-changes tie, two equal optima in §24.4 order, `noResults` (twice). Composed outcome equals direct `solve` on the same SolverFixture P, and the oracle agrees |
+| Preflight | `preflightOrderAndPrecedence`, `endpointDispositionsFromCapturedViewOnly` ×4, `configurationValidatedBeforeCaptureIncludingObjective` (zero/over-ceiling/objective mismatch → `configurationUnavailable` with no capture; the direct solver reports the same mismatch as `dataUnavailable`) |
+| Projection | `profileProjectionDropsNonProfileMembers` ×3 (Trip, station, line); `requiredWholeSuppliedDomainKeepsOutOfWindowDatesOutsideScope` (R1 requires both dates; the later one is `outsideScope`) |
+| Coverage | `unknownOrContradictoryInputIsDataUnavailableDespiteDirectRide` ×18: unknown domains, unloaded/unavailable occurrence, unknown interval, unavailable/missing/instant-less evidence, nonempty dependency, contradictory premise, absence under unknown authority, allowance contradiction, examined-time mismatch, positive evidence at an inactive endpoint, unknown permission, missing event, relation to an undeclared address, duplicate declaration |
+| Evidence pass-through | `suppliedExaminedInstantsPassThroughUnchanged`; `suppliedDatedPairAbsenceResolvesInactiveEndpoint` (G1 path) |
+| Incomplete | `preparationSafeguardsAndSolverCutoffAreSearchIncomplete`: closure dependency and occurrence limits, evidence relation limit, solver winner cap and work cutoff; `closureLimitsApplyToProjectedDomainOnly`; `provisionalMappingsArePinnedAtOnePoint` |
+| Cancellation | `cancellationAtEveryStageBoundary` ×12; `cancellationBeforeEntryInsideSolverAndBeforePendingFailure` (before entry with no capture; inside the solver; cancellation beats a pending non-canonical error and a pending `RouteSearchFailure`; otherwise a canonical failure is rethrown unchanged and a non-canonical error falls back to `dataUnavailable`) |
+| Replacement | `inFlightCallKeepsV1AfterReplacementAndLaterCallCapturesV2` (captures `[V1, V2]`) |
+| Concurrency | `overlappingCallsAreIndependentAndEachCapturesOnce` (both calls in flight; cancelling one leaves the other to succeed); `mainActorCallerRunsEveryStageOffMain` (every stage recorded off the main thread, in order) |
+| Lifecycle | `coordinatorPublishesCompletedFailedAndCancelledAttempts` through the unchanged `RouteSearchCoordinator`, plus the unchanged `RouteSearchCoordinatorTests` |
+
+PreparedInputFailure `resourceLimit` (more than 4,096 rides) is covered by the mapping unit test
+only, not by an end-to-end input. Isolation evidence is the app target's actual settings
+(`SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`, approachable concurrency, Swift 5 mode) plus the
+off-main test; it is not a performance or responsiveness measurement.
+
+### 29.6 Remaining gates
+
+- **Real data:** no qualified real view, supplier, endpoint-disposition source, or rights (§26.2 G1).
+- **Policy:** policy contents behind every reference are stipulated; production profile, horizon,
+  ride cap and coverage are unchosen; the two §29.4 mappings await owner confirmation.
+- **Requiredness:** R1 is invented-only; production R1/R2/R3 stays open (§28.3), as does the
+  §29.3 non-profile-transfer-station interpretation.
+- **View size:** producer work is bounded only by the supplied view; a real supplier needs its own
+  reviewed bound on published domain size.
+- **Evidence burden:** G1 is implemented as published; the G2 owner question stays open (§28.4).
+- **Dependencies:** nonempty dependency resolution is unimplemented (§28.5).
+- **Measurement:** no runtime, memory or cancellation-latency evidence (§26.2 G3–G5).
+- **Runtime adoption:** no AppEnvironment injection, live enablement, in-flight invalidation policy
+  or DEC-086 R6 ownership decision.
+
+### 29.7 Independent review and handoff
+
+A fresh non-author agent with no author context reviewed the final source, tests and documents.
+Like the author, it is the same model in the same environment, so this is not a blinded
+external review. One reviewer performed every round. Independence is distinct from the verdict.
+
+- **Round 1 — REQUEST CHANGES.**
+  - F1 (M): the declaration producer applied closure limits to the unprojected supplied domain.
+    That was not authorized by §28.2/§28.3, was an effectively new limit, and was untested.
+  - Minor findings:
+    - F2: the pass-through wording was overstated.
+    - F3: the non-profile transfer-station interpretation was unstated.
+    - F4: cancellation over a pending failure was shown only with a non-canonical error.
+    - F5: overlap cancellation was not tested with both calls in flight.
+  - Nits:
+    - F6: the endpoint-table supplier obligation was not recorded.
+    - F7: a trapping dictionary init.
+    - F8: the predicate copy had no cross-reference.
+  - The reviewer's own Simulator tests, Release build and mutation runs confirmed F1 was untested
+    and that the off-main test fails without `@concurrent`.
+- **Corrections:**
+  - F1: the preflight was removed and `closureLimitsApplyToProjectedDomainOnly` added.
+  - F2/F3/F6: wording and an owner-open item in §29.3/§29.6.
+  - F4/F5: strengthened tests.
+  - F7: throws `targetConflict` instead of trapping.
+  - F8: added a source cross-reference.
+  - The author re-ran the §29.5 regression set (213 passed) and the Release build (succeeded).
+- **Round 2 — APPROVE.**
+  - The reviewer re-ran the same regression set (213 passed, 0 failures) and the Release build
+    (succeeded).
+  - Mutation runs: restoring the preflight fails `closureLimitsApplyToProjectedDomainOnly`;
+    removing the outer cancellation check fails
+    `cancellationBeforeEntryInsideSolverAndBeforePendingFailure`.
+  - Two documentation nits (this record; current-state labelling in §29.5) were addressed afterwards.
+
+Unresolved: none from review. Owner-open items are listed in §29.4 and §29.6. Next safe action:
+the owner's publication review of the §29 change set (2 source files, 2 test files, 4 documents).
+Any real-data, policy, measurement or adoption step needs its own authorization.

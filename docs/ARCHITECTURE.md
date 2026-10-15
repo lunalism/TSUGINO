@@ -1027,6 +1027,22 @@ Only the streamed members are integrity-checked; other members are recorded by n
 
 ## 10. Route Search Architecture
 
+## Invented-only end-to-end routing composition — 2026-10-15
+
+The §28 producer/dependency audit is published at `e3da19dbc2f40e8265d649836bacc85e7fde6635`;
+earlier not-begun wording for its §28.6 slice is historical. [Consumer
+§29](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#29-invented-only-end-to-end-routing-composition--2026-10-15)
+records that slice as implemented for **invented data only**: a captured prepared view, a
+one-read supplier seam, pure declaration (R1 plus DEC-080 profile projection) and
+connection-evidence producers, and a Data-owned `RouteSearching` conformer
+(`PreparedRouteSearcher`) running S0–S10 over the unchanged inventory, closure, evidence,
+prepared-input and solver code. Two user-visible mappings are **provisional**, pending owner
+confirmation: request window outside view validity → `unsupportedRequest`; preparation
+`resourceLimit` → `searchIncomplete`. Real data and rights, policy contents and production values,
+production requiredness (R1/R2/R3), the G2 question, dependency resolution, measurement and
+runtime adoption remain open. The conformer is not registered in AppEnvironment. P3-T1 stays
+scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Producer and dependency audit; published composition contract — 2026-10-14
 
 The §27 composition contract is published at `b0438eda9082104cb99949b21b7c7669bd5ab909`; earlier
