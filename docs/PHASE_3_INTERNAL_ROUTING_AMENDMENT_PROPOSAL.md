@@ -4,6 +4,13 @@
 **Date:** 2026-10-01
 
 
+**Governing producer/dependency audit (2026-10-14):** the §27 contract is published at
+`b0438eda9082104cb99949b21b7c7669bd5ab909`; its unpublished-state wording is historical.
+[§28](#28-declaration-connection-evidence-and-dependency-producer-audit--2026-10-14) audits the declaration,
+connection-evidence and dependency seams and hands off an invented-only integration slice (not begun).
+No implementation, test or measurement. P3-T1 stays incomplete, Phase 3 In Progress,
+live/default routing unconfigured.
+
 **Governing composition contract (2026-10-14):** the §26 audit is published at
 `df031dc05fe7fb4881b0441f824baea09b3e0b83`. [§27](#27-requestpreparationsolver-composition-contract--2026-10-14)
 records the documentation-only request→preparation→solver contract, its missing seams, open
@@ -5838,6 +5845,9 @@ All identifiers, times and sizes are invented placeholders; no real railway data
 
 ### 27.11 Recommended next bounded task — not begun
 
+*Status update (2026-10-14):* §27 was published at `b0438ed`; this audit is now drafted as
+[§28](#28-declaration-connection-evidence-and-dependency-producer-audit--2026-10-14). The heading records the state at §27 publication.
+
 **Documentation-only request-relative declaration and connection-evidence producer audit.**
 S6/S7 are the first stages with no producer, and the B authority rule (§20.5, §21) forbids
 deriving requiredness from loaded slots, paths or pair enumeration. Before any conformer API is
@@ -5849,3 +5859,244 @@ invented examples. Prerequisites: this contract; no private data. Completion: re
 explicit owner-decision list, independent non-author review. Exclusions: source/tests, real data,
 measurements, numeric limits, AppEnvironment/Journey/UI, devices, Phase-10.
 An invented-only conformer implementation (§27.10 row 2) is the subsequent candidate.
+
+## 28. Declaration, connection-evidence and dependency producer audit — 2026-10-14
+
+### 28.1 Status, labels and boundary
+
+Documentation-only audit authorized after publication of the §27 contract at
+`b0438eda9082104cb99949b21b7c7669bd5ab909`. Labels as in §27.1: **[A]** Accepted decision;
+**[I]** published implemented code/contract (read-only inspection on 2026-10-14); **[P]** Proposed
+here; **[O]** open. No source/tests, test/build/solver runs, measurements, private artifacts,
+devices or runtime wiring. No transfer source, allowance or numeric production limit is chosen.
+§27's preflight order, E2 capture, captured-view-only endpoint truth, DEC-087 ownership, §24 solver
+semantics, separate safeguards/meter, escape rules and no-retry/no-partial rules are unchanged.
+P3-T1 remains scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
+### 28.2 What the implemented constructors already enforce [I]
+
+| Constructor | Enforced (so a producer must satisfy it, not re-check it) | Holds produced (values, not throws) |
+|---|---|---|
+| `SearchInputClosureApplicability(reference:scope:qualification:)` | `scope.viewID == qualification.viewID`; later full scope/profile/request/bounds equality and inventory-qualification equality per declaration | — |
+| `RequestScopedSearchInputClosure` | Railway revision equals inventory's; every requirement and target carries its declaration's applicability reference; one requirement per address; full snapshot agreement with loaded and other same-Trip bindings; interval index validity (`b < a`, distinct stations); targets' endpoints must be required addresses with `alightingIndex > 0`, `boardingIndex < count-1`, unique; dependency references unique; active required Trip ∈ profile Trips and each interval's stations/lines ∈ profile, else `profileConflict` | `occurrenceDomainUnknown`, `connectionDomainUnknown`, `occurrenceNotLoaded`, `occurrenceUnsupported`, `occurrenceInsufficientEvidence`, `intervalUnknown`, **every** `connectionUnresolved`, **every** `dependencyUnresolved` |
+| `ConnectionEvidenceState.qualifyingPositive/qualifyingAbsence` | Any `contradictory` premise throws; `unsupported`/`insufficientEvidence` premises yield `.unavailable` | — |
+| `QualifiedConnectionEvidenceView` | Records' keys equal declared keys exactly (no missing/extra/duplicate); record review and target applicability equal the qualification's; binding/address/index agreement; positive requires distinct TripIDs and `form == .sameStation` iff the two indexed stations are equal; its `ConnectionEvidenceQualification` requires policy equal to the profile's `connectionPolicy` | — |
+| `ResolvedSearchInputAssessment` | Same applicability reference, profile definition, request, bounds, view and inventory qualification as the closure; one record per required target; deep binding agreement; positive endpoints: prohibited role throws `endpointConflict`, changed exact instant throws `applicabilityConflict` | Positive: `endpointNotLoaded/Inactive/Unsupported/InsufficientEvidence`, `permissionUnknown`, `exactEventMissing`; absent under unknown authority: `negativeScopeUnknown`; unavailable: `unsupported`/`insufficientEvidence`. Clears **only** resolved `connectionUnresolved` |
+| `PreparedInternalSearchInput` | Requires zero remaining holds; per interval: inactive, absent-under-complete, prohibited endpoint, outside scope or usable ride; unknown permission / missing exact event throw | — |
+
+The invented test helper `SolverFixture.world` (`TSUGINOTests/Support/InternalSolverFixtures.swift`)
+already composes this whole chain from stipulated invented values: one view ID, invented railway
+revision and qualification, profile derived from the fixture Trips, scope, applicabilities named
+`invented-occurrence-domain` / `invented-connection-domain` / `invented-dependencies`, records built
+with the checked factories, and the assessment. `prepare(...)` then builds P from that world.
+It is the reference shape for the producers below, not a production producer.
+
+### 28.3 Seam 1 — per-request required-domain declarations [P]
+
+**Inputs.** The captured view `V` (§27.3 S2) and the S5 `InternalSearchScope`. `V` must carry,
+as supplied authority: an occurrence-domain reference; occurrence-domain completeness; a finite list of
+`(TimetableOccurrenceBinding, intervalAuthority, [TimetableVerifiedRideInterval])` entries; a
+relation-domain reference, completeness and finite list of directional targets
+`(from address, alightingIndex, to address, boardingIndex)`; and a dependency reference with its
+unresolved list. None of these view-level members exists today.
+
+**Output.** `SearchInputOccurrenceDeclaration`, `SearchInputConnectionDeclaration` and
+`SearchInputDependencyDeclaration`, each holding a `SearchInputClosureApplicability` built from
+the corresponding occurrence, relation or dependency reference in `V`, **this** scope and `V.inventory.qualification`.
+
+**Association.** The only per-request computation is re-binding the view-level authority to the
+exact scope through `SearchInputClosureApplicability` (scope carries request, profile, view ID and
+bounds). The closure then rejects any mismatch. One view ⇒ one inventory qualification ⇒ one
+railway revision. Nothing is cached across calls.
+
+**Supplied vs computed.** Supplied: membership of occurrences, intervals, relations and
+dependencies, and both completeness values. Computed: only applicability binding and the
+projection below. The producer never reads slot activation, facts, permissions or times to decide
+membership (§20.5: "do not derive requiredness by scanning loaded slots").
+
+**Projection through the profile [P].** The closure rejects a required active occurrence whose Trip
+is outside the profile, and any interval touching a non-profile station/line (`profileConflict`).
+Under Accepted DEC-080, profile sets are the declared search domain and scoped success can carry
+only profile members (`InternalSearchSuccess.matches`). The producer therefore declares only domain
+entries whose Trip is in `profile.trips` and intervals whose stations/lines are in the profile,
+and only relations whose endpoints both survive. This projection uses declared profile and domain
+data only, never loaded state. This exclusion follows directly from Accepted DEC-080 V1 (§9.1 "explicit
+allow-list domain": movements outside the profile are excluded) and V5 / the implemented
+`InternalSearchSuccess.matches`, so it is not a new §27.9 requiredness rule. The §28.6
+producer is for invented integration only; production use of R1 or this projection still requires
+the §27.9/§27.10 requiredness decision.
+
+**Requiredness rule — decision analysis [O].** Which declared view-domain entries are required for
+a given request window changes which evidence must be supplied, so it is not silently chosen:
+
+| Option | Rule | Soundness | Evidence burden / availability | Decision class |
+|---|---|---|---|---|
+| R1 Whole projected domain | Every profile-projected entry of `V` is required regardless of date | Sound superset: out-of-window intervals become `outsideScope` in P; no route can be omitted | Every date in `V` must be fully qualified; any unknown anywhere fails every request (`dataUnavailable`); P grows with view span, and closure/evidence/prepared limits (e.g. 2,048 relations in `ConnectionEvidenceLimits.relations`) apply to the whole span, giving preparation `resourceLimit` on every request when exceeded | Technical; availability impact. **Adequate for invented integration** |
+| R2 Supplied per-window authority | `V` carries declarations already scoped to service-date windows; producer selects the window covering `[L, U]` | Sound only if the supplied window authority includes prior-day/extended-hour dates | Burden moves to the supplier's reviewed authority | Technical, but the window rule itself must be reviewed |
+| R3 Computed date relevance | Producer derives contributing service dates from `serviceDateInterpretation` | Requires resolved interpretation policy contents (DEC-080 V3: from reviewed qualified source rules, never opaque labels) | Smallest P | Needs resolved policy contents; may need owner decision |
+
+Recommendation: R1 for the invented integration only; production selection stays [O].
+
+**Fact handling (existing authority, unchanged) [I].** Inactive → qualified negative (`.inactive`,
+no ride); not loaded → hold; unsupported/insufficient → hold; interval positive → present; not
+declared under complete interval authority → `absentUnderCompleteAuthority`; under unknown →
+hold; prohibited endpoint → excluded ride in P; unknown permission or missing exact event on a
+present interval → `dataUnavailable` at P. Unknown domains hold. Identity stays the dated
+address `(viewID, TripID, serviceDate)` plus original indices; repeated visits keep their own
+indices; no date parsing.
+
+### 28.4 Seam 2 — per-request connection evidence [P]
+
+**Inputs.** The closure's required targets (B order) and `V`'s connection authority: review
+reference, completeness, and for each relation key the supplied form, `ConnectionAllowance`
+components and the four positive premises, or the three absence premises, or an unavailable reason.
+
+**Output.** One `ConnectionEvidenceRecord` per required target, exactly, in a
+`QualifiedConnectionEvidenceView` whose qualification uses the **same applicability reference and
+scope** as the closure's connection declaration and the profile's `connectionPolicy`, so the
+assessment's equality checks pass.
+
+**Supplied vs computed.** Supplied: form, allowance components and total, all premises,
+completeness, review, and for a positive entry the exact `fromArrival`/`toDeparture` instants it
+was examined under (§21.4: "Changed scheduled endpoint values prevent reuse"). Computed: only the
+record key from the target and the two bindings copied from B's required bindings. The producer
+passes the supplied instants through unchanged and never copies them from the inventory, so the
+assessment's exact-instant comparison still detects evidence examined against changed times. If
+`V`'s positive entry lacks either examined instant, emit `.unavailable(.insufficientEvidence)`;
+otherwise pass the entry through and let the published assessment classify endpoint state
+(including `exactEventMissing`, `endpointInactive` and prohibited-role conflicts at both ends). Form is never inferred from
+station equality, which only checks consistency; the producer never computes allowances or gaps,
+since gap feasibility stays in P. No station-pair or TripID-only reuse: a supplied entry applies
+only where its endpoint-wide premise qualifies those exact dated endpoints (§21).
+
+**Missing/unknown/contradictory.** No entry for a required key → emit
+`.unavailable(.insufficientEvidence)`, never omit (omission throws `declarationConflict` in the view, or `targetConflict` in the
+assessment if the key is also left out of the declared keys);
+contradictory premise → construction throws → `dataUnavailable`; absence under unknown authority
+→ `negativeScopeUnknown` hold. No absence is inferred from missing data.
+
+**Evidence burden at qualified-negative endpoints [I]/[O].** Positive evidence on a target whose
+endpoint occurrence is **inactive** stays held (`endpointInactive`); positive evidence at a **known
+prohibited** endpoint role throws `endpointConflict`. Published §21.4 already provides the
+resolving path: a supplied qualified absence "may cover conclusively inactive or missing-event
+endpoints without fabricating active event instants only when the negative is expressly qualified
+for the entire exact occurrence-endpoint pair independently of event values". Under declared-complete
+evidence authority such a record resolves as `absentUnderCompleteAuthority` (the absence branch does
+not inspect endpoints). §21.4 also states that "missing times, inactivity … alone never establishes
+connection absence". The open question is therefore evidence burden, not a code gap: a date-spanning
+R1 relation domain may include such targets, and each needs either exclusion from the supplier's
+declared relation domain or a supplied dated-pair absence, else it blocks the request as
+`dataUnavailable`.
+
+| Option | Effect | Evidence obligation change | Class |
+|---|---|---|---|
+| G1 Keep current semantics | Supplier omits such relations from its declared domain or supplies a qualified event-independent dated-pair absence (§21.4) | Burden on supplied authority | No code change |
+| G2 Derive resolution from a qualified inactive occurrence or known-prohibited role, with no edge in P | Consumes existing qualified negatives; can never create a success or ride | Removes the need for supplied dated-pair absence | Amends §21.4's rule that inactivity alone never establishes absence; owner decision, plus review of published §21/§22 code |
+
+Smallest owner question, **not blocking the invented integration**: *"May resolution of a required
+connection target be derived from a qualified inactive endpoint occurrence or a known-prohibited
+endpoint role, without a supplied dated-pair absence?"*
+
+### 28.5 Seam 3 — dependency resolution [I]/[O]
+
+`SearchInputDependencyDeclaration` carries only `unresolved` references; the closure adds one
+`dependencyUnresolved` hold per entry, and nothing clears it. **An empty list is sufficient for a
+bounded invented integration**: the invented `V`'s dependency authority stipulates that no external
+obligation applies under its reference. This is exactly what `SolverFixture.world` does by default,
+and it is a stipulation, not authentication. A nonempty list cannot qualify today. Resolving one
+would need a new resolution value bound to the same applicability reference and scope, carrying
+a qualified premise per dependency, plus an assessment change that clears only matching
+`dependencyUnresolved` holds. That is a source change with its own review. Which real dependencies
+exist (calendar authority, connection policy contents, rights) belongs to real qualification [O].
+
+### 28.6 Invented-integration handoff — smallest end-to-end slice [P]
+
+**Product decisions required before this slice: none.** The injected profile is an invented
+fixture (invented stations, lines, Trips, horizon and ride cap). It is test data passed to the
+conformer, not a production default, so no production horizon, ride cap or launch coverage is
+chosen. The two §27.9 user-visible mappings (window outside validity; preparation
+`resourceLimit`) are implemented once, at a single named mapping point, using the §27 Proposed
+categories. Each is pinned by a test and listed as pending owner confirmation. Live routing stays
+unconfigured, so nothing user-visible ships.
+
+Policy contents behind the profile's and objective's `InternalSearchPolicyReference` values (§27.3 S1)
+are stipulated for the invented fixtures; only reference correspondence is checked, and no real
+policy is resolved.
+
+**Interfaces to implement (new production Data code, not registered anywhere):**
+
+1. Captured view value (one immutable `Sendable` struct) containing: view ID; railway revision; validity interval;
+   connection-policy and service-date-interpretation references; `TimetableOccurrenceInventoryView`;
+   endpoint dispositions keyed by `StationID` (active, or an existing
+   `RouteSearchEndpointFailureReason`); occurrence/relation/dependency domain authority (§28.3);
+   connection authority (§28.4).
+2. Supplier abstraction with one `async` read returning the whole current view or none (E2), plus
+   an invented test supplier actor with `replace(_:)`.
+3. Declaration producer: pure throwing function `(view, scope) → three declarations`, R1 plus
+   profile projection.
+4. Connection-evidence producer: pure throwing function `(view, closure) → QualifiedConnectionEvidenceView`.
+5. Conformer: `nonisolated` type conforming to `RouteSearching` with `@concurrent search`. Its
+   initializer takes the supplier, an immutable profile, an objective reference and an
+   `InternalSolverExecutionConfiguration`. It runs §27.3 S0–S10.
+   - At S1 it validates the configuration through the existing `InternalSolverMeter` initializer
+     and checks that `configuration.objective` has the same definition as the bound objective
+     (`configurationUnavailable` otherwise).
+   - It maps typed failures explicitly as in §27.5, then applies the final cancellation check and
+     the generic `dataUnavailable` fallback.
+
+**Flow.**
+1. Check cancellation, then validate the configuration.
+2. Capture once, then check cancellation.
+3. Check view validity and policy correspondence.
+4. Validate origin, then destination, against `V`'s dispositions.
+5. Build `InternalSearchScope`.
+6. Run the declaration producer, then the closure.
+7. Run the evidence producer, then the assessment, and require `remainingHolds` to be empty.
+8. Build `PreparedInternalSearchInput`, then call `InternalRouteSolver.solve`.
+9. Run the final cancellation check and return.
+
+There is a cancellation checkpoint between every stage.
+
+**Technical choices resolvable inside implementation:** type and file names; whether the view
+retains the inventory or the slot inputs; how the test supplier serializes replacement; the
+test-only checkpoint seam (excluded from Release, like `InternalSolverTestHooks`); invented
+fixture sizes. Any change to published B/A/P/solver code is **out of scope**; G2 and dependency
+resolution stay separate.
+
+**Required verification (invented only):**
+
+| Area | Cases |
+|---|---|
+| Success | Direct and one-transfer itineraries equal direct `InternalRouteSolver.solve` on the same P built by `SolverFixture`; all equal optima retained in §24.4 order |
+| Preflight | Invalid configuration (including ceiling and objective mismatch) → `configurationUnavailable` without capture; no view → `dataUnavailable`; each endpoint reason and role order; origin outside profile → `unsupportedRequest` |
+| Projection | Non-profile Trip, station or line entries and their relations are dropped, never reported as `profileConflict`; an R1 out-of-window interval becomes `outsideScope` |
+| Coverage | Unknown occurrence/relation domain, unloaded/unavailable occurrence, unknown interval, unavailable or missing-instant evidence, nonempty dependency → `dataUnavailable` even with a usable direct ride; contradictory premise → `dataUnavailable` |
+| Incomplete | Solver winner/work cutoff → `searchIncomplete`; preparation `resourceLimit` → pinned Proposed mapping |
+| Cancellation | Before entry, after capture, at every stage boundary, inside solver, before pending failure and return → `CancellationError`, no result |
+| Replacement | Call 1 captures V1, V2 published mid-call: call 1 result derives only from V1; call 2 only from V2; one supplier read per call |
+| Concurrency | Overlapping calls on one conformer are independent; cancelling one does not affect the other; off-main execution under MainActor-default settings; no detached tasks |
+| Lifecycle | Existing `RouteSearchCoordinator` behaviour unchanged when driven by the conformer in tests |
+| Build | Focused new tests plus affected suites (`InternalRouteSolverTests`, `PreparedInternalSearchInputTests`, `QualifiedConnectionEvidenceTests`, `RequestScopedSearchInputClosureTests`, `RouteSearchCoordinatorTests`); standard Release app/extension on an explicit iPhone Simulator; test seams absent from Release |
+
+**Completion criteria.**
+- The tests above pass, with exact commands recorded.
+- The Release build passes.
+- An independent non-author review is approved.
+- Documentation records which mappings are provisional.
+- There are no changes to Domain, published B/A/P/solver code, AppEnvironment, Journey or UI.
+
+**Exclusions.**
+- Real or private data, and real pilots.
+- G2 and dependency-resolution changes.
+- Production requiredness (R2/R3), production policy values and numeric limits.
+- Measurements.
+- AppEnvironment injection and live enablement.
+- Journey/UI work, physical devices and Phase-10 work.
+
+### 28.7 Classification and next action
+
+`NO_NEW_PRODUCT_DECISION_REQUIRED` for the invented integration slice in §28.6. Open for later,
+not blocking it: production requiredness rule (R1/R2/R3), the G2 qualified-negative-endpoint
+question, dependency resolution, the two §27.9 user-visible mappings, and all §26.2 real-data,
+measurement and adoption gates. Exact next action, **not begun**: separately authorize the
+§28.6 invented-only end-to-end implementation slice.

@@ -1,5 +1,22 @@
 # TSUGINO — ROADMAP.md
 
+## Producer and dependency audit; published composition contract — 2026-10-14
+
+The §27 composition contract is published at `b0438eda9082104cb99949b21b7c7669bd5ab909`; earlier
+drafted/not-published wording for it is historical. [Consumer
+§28](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#28-declaration-connection-evidence-and-dependency-producer-audit--2026-10-14)
+is a documentation-only audit of the three producer seams: per-request required-domain
+declarations (re-binding view-level supplied authority to the exact scope, projected through the
+profile; requiredness rule R1/R2/R3 left open with R1 adequate for invented integration),
+per-request connection evidence (supplied form/allowance/premises and examined instants checked
+against exact facts, never inferred absence) and dependency resolution (empty list sufficient for
+invented integration; nonempty cannot qualify today). It records an open evidence-burden question
+for connection targets at qualified-inactive or prohibited endpoints that does not block invented
+integration, and hands off a concrete invented-only end-to-end slice with no new product decision
+required. No source/tests, runs, measurements, private access or runtime wiring. Next action,
+**not begun**: separately authorize that invented-only slice (§28.6). P3-T1 stays
+scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Request→preparation→solver composition contract — 2026-10-14
 
 [Consumer §27](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#27-requestpreparationsolver-composition-contract--2026-10-14) is a Proposed
