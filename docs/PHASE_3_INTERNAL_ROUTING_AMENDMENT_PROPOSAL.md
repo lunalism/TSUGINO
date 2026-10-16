@@ -4,6 +4,13 @@
 **Date:** 2026-10-01
 
 
+**Governing measurement design (2026-10-16):** §29 is published at
+`7886c20ab7a2b4dda8fc1cb23a57ad9132ad6d26`; its pre-publication wording is historical.
+[§30](#30-bounded-invented-workload-and-measurement-experiment-design--2026-10-16) designs the
+bounded invented workload and measurement experiment and its harness handoff (documentation
+only; nothing run). P3-T1 stays incomplete, Phase 3 In Progress, live/default routing
+unconfigured.
+
 **Governing invented-only composition implementation (2026-10-15):** the §28 audit is published at
 `e3da19dbc2f40e8265d649836bacc85e7fde6635`; its not-begun wording for the §28.6 slice is historical.
 [§29](#29-invented-only-end-to-end-routing-composition--2026-10-15) records that slice implemented
@@ -6314,3 +6321,485 @@ external review. One reviewer performed every round. Independence is distinct fr
 Unresolved: none from review. Owner-open items are listed in §29.4 and §29.6. Next safe action:
 the owner's publication review of the §29 change set (2 source files, 2 test files, 4 documents).
 Any real-data, policy, measurement or adoption step needs its own authorization.
+
+*Status update (2026-10-16):* the §29 change set is published at
+`7886c20ab7a2b4dda8fc1cb23a57ad9132ad6d26` (`feat: add invented prepared route search composition`,
+parent `e3da19dbc2f40e8265d649836bacc85e7fde6635`, 8 files). The "next safe action" above records
+the state before publication. The bounded measurement experiment design is
+[§30](#30-bounded-invented-workload-and-measurement-experiment-design--2026-10-16).
+
+## 30. Bounded invented workload and measurement experiment design — 2026-10-16
+
+### 30.1 Scope lock, checkpoint and authority
+
+This is a documentation-only design, authorized by the owner. It covers the invented stress
+workload, the measurements, execution containment and the implementation handoff for the §29
+composition. Nothing here implements a harness, runs a test, build, workload or measurement,
+opens real or private data, or touches a device. It does not change production code, numeric
+limits, requiredness, G2, dependency semantics, AppEnvironment, Journey/UI or Phase 10. P3-T1
+stays scope-incomplete; Phase 3 stays **In Progress**; live/default routing stays unconfigured.
+
+- **[V] Checkout (2026-10-16).** Internal checkout `/Users/byungjin/TSUGINO`; origin
+  `https://github.com/lunalism/TSUGINO.git`; branch `phase/03-route-search`. HEAD, upstream and
+  the live remote branch are all `7886c20ab7a2b4dda8fc1cb23a57ad9132ad6d26`. Local, tracked and
+  live main are all `e8a463d51f14b3cb1027960c63244b694579a71b`. Divergence 0/0. Worktree and
+  index were clean, with no non-ignored untracked files, before these edits.
+- **Authority.**
+  - §24.6: no numeric production solver limit without implementation evidence
+    (`NUMERIC_PRODUCTION_SOLVER_LIMITS_REQUIRE_IMPLEMENTATION_EVIDENCE`); orchestration may
+    measure preparation + solve separately, with no common budget unit.
+  - §16.2: the four evidence classes. Everything here is **invented stress evidence**, never
+    representative workload evidence.
+  - §26.2 G3/G4 and §29.6 "Measurement": the gates this experiment starts to address.
+  - §27.4: measurement boundaries; stage figures are never summed into one budget.
+  - AGENTS §18/§22/§23 and RULES 29/30: evidence before optimization; Simulator-first; no
+    physical device without explicit authorization.
+- **Labels.** **[V]** verified read-only in this checkout on 2026-10-16; **[P]** proposed
+  experiment design; **[O]** open. Figures marked *predicted* come from the §25.2 cost model and
+  the §25.3 observations. They guide ladder placement only, are never asserted, and are never
+  results.
+
+### 30.2 Instrumentation visibility [V]
+
+| Observable | Existing mechanism | Builds where it exists | Consequence for the design |
+|---|---|---|---|
+| Whole-call elapsed time | Harness clock around `PreparedRouteSearcher.search` | Any | Primary timing; needs no hook |
+| Composition stage boundaries | `PreparedRouteSearchTestHooks.checkpoint`, called at each of the 12 `PreparedRouteSearchStage` checkpoints just before `Task.checkCancellation()`. `entry` fires at the start; every other checkpoint fires at the end of its stage | `#if DEBUG` | Stage timing and cancellation observation. With `solver: nil`, the searcher still calls the production `InternalRouteSolver.solve` path |
+| Solver stage entries and `InternalSolverUsage` | `InternalSolverTestHooks.checkpoint` via `solveForTesting` | `#if DEBUG` | Diagnostic only. `.tieCollection` is entered at **every** destination-reaching prefix, so an awaited hook there adds per-path overhead |
+| Solver usage at a cutoff | Not exposed. Only the usage at the last entered stage is visible | — | Report "last observed usage ≤ limit". No source change is proposed |
+| Preparation counters | Each constructed value exposes `logicalPayloadBytes` (closure, assessment, P) and P exposes `rides`/`connections`/`intervalAccounting`. They are locals of the composed call | Any (values) | Read them in a separate structural pass with `PreparedRouteFixture.prepareThroughProducers`, outside timed calls |
+| Cancellation inside the solver | `InternalSolverMeter.charge` and `product` call `Task.checkCancellation()` at every charge | Any | Not visible to composition hooks; only the caller-visible throw time is |
+| Release configuration | `ENABLE_TESTABILITY = YES` is set only for Debug. Test support uses DEBUG-only hooks without guards (`PreparedRouteFixture.searcher(hooks:)`) | — | The test target cannot be measured in Release without structural change. See §30.6 build variants |
+
+New files under `TSUGINOTests/` join the test target automatically (file-system synchronized
+root group); `Tools/` belongs to no target. The scheme marks tests `parallelizable = "YES"`.
+
+### 30.3 Constructibility of boundaries [V]
+
+Every boundary uses the real constructors through `SolverFixture.world` →
+`PreparedRouteFixture.make`. Where the fixture world itself would exceed a cap, a valid
+view-level `Parts` edit is used, as the existing composition limit tests already do (§29.5). No
+constructor is bypassed and no invalid value is forged. Payload estimates are computed from the
+accounting code; a structural pre-check must confirm the actual value before any timing (§30.9).
+
+| Boundary (source constant) | End-to-end through the composition? | Finding |
+|---|---|---|
+| Inventory caps (`TimetableInventoryLimits`: 2,880 addresses, 480 Trips, 6 dates, 92,160 intervals, 120,000,000 logical bytes) | **No.** The supplier enforces them while building `TimetableOccurrenceInventoryView`, before any view exists | Exceeding one is a setup failure (class S), not a route outcome. The composition analogue (supplier returns `nil` → `dataUnavailable`) is already tested. Lower-level owner: `TimetableOccurrenceInventoryTests` |
+| Closure occurrences 2,880 | **Yes** | Exact: 480 Trips × 6 dates. +1: one extra view-level domain entry, because the count guard precedes every hold. Last checkpoint reached: `declarations` |
+| Closure connections 23,040 | **Yes** | The closure runs before the evidence producer. From 2,049 to 23,040 targets, the closure succeeds and the evidence pre-check throws (last checkpoint `closure`). At 23,041 the closure's own count guard throws (last checkpoint `declarations`). Both end as provisional `searchIncomplete`; the last checkpoint tells them apart. Constructible with view-level `Parts` target edits over ten 72-stop occurrences (71 × 71 valid keys per ordered pair); see W7c |
+| Closure dependencies 1,440 | Yes | Already covered end to end (§29.5); not timed |
+| Closure total intervals 92,160 | Yes (required intervals may exceed loaded positives) | Not timed. `PreparedInputLimits.intervals` is the **same constant**, so the P interval cap is shadowed by the closure and unreachable at P; lower-level only (`PreparedInternalSearchInputTests` count checks) |
+| Evidence relations 2,048 | **Yes** | Exact: one 72-stop occurrence pair with 2,048 distinct (alighting, boarding) targets out of 71 × 71, all qualified absences, no rides. +1: a `Parts` edit, because the fixture world builds its own evidence view and would fail at 2,049. Last checkpoint: `closure`. `PreparedInputLimits.relations` is the same constant, so it is shadowed |
+| P occurrence/inventory counts | No | Shadowed by the closure and inventory caps |
+| **P rides 4,096** (§29.5 gap) | **Yes, constructible** | 11-stop Trip of distinct stations (`O`, nine intermediates, `D`); 48 declared and required intervals per occurrence, namely the first 48 of the 55 (b, a) pairs in lexicographic order, all inside the window. **Exact:** 85 occurrences × 48 + one occurrence × 16 = 4,096. **+1:** 85 × 48 + 17 = 4,097. Upstream totals: 86 occurrences, 86 recurring Trips, one date label, 4,096/4,097 intervals, 0 relations. All are far below their caps. *Estimated* P payload ≈ 4–5 MB against 96,000,000. P throws `resourceLimit` on the 4,097th usable ride (`rides.count < PreparedInputLimits.rides`) → provisional `searchIncomplete`, last checkpoint `assessment`. At 4,096, `preparedInput` is reached and the solver **always** cuts off during indexing: `snapshotCost` alone charges 4,096 rides × 49,152 = 201,326,592 credits, which is more than the 100M ceiling, whatever the P payload |
+| P logical payload 96,000,000 | **Conditional** | Uses near-maximal snapshots: 72-stop Trips and 192-byte tokens. `SolverFixture.Spec` can express at most two line segments and one service segment. Through it, an active slot carries ≈ 1.24 MB of inventory logical bytes (`TimetableOccurrenceInventoryView.bindingBytes`). About 77 slots stay under 96 MB and about 78 go over, while staying under the 120 MB inventory cap. A generator beyond `Spec` with 71 segments of each kind would carry ≈ 3.57 MB per slot (about 26 below, 27 over). Because `prepareThroughProducers` throws at P, the pre-check builds the stages one at a time and reads `assessment.logicalPayloadBytes`. Include the pair only if that confirms 96,000,000 < `assessment.logicalPayloadBytes` with every upstream constructor succeeding. Slot counts are an upper bound, because the assessment also retains closure binding and scope copies; the pre-check fixes the actual pair. Under the cap, the expected outcome is a solver result after `preparedInput`; over it, provisional `searchIncomplete` at `assessment`. Otherwise record it as unreachable; the budget unit test in `PreparedInternalSearchInputTests` stays the coverage |
+| Solver winner 256 / work 100,000,000 (configuration ceilings) | Yes | 257 direct ties → `searchIncomplete` before ordering (§25.3). Work cutoffs follow from the shape. Lower positive per-call limits are legal configurations and do not raise any ceiling |
+
+**Discriminator finding.** A preparation `resourceLimit` (provisional mapping) and a solver
+cutoff both surface as `searchIncomplete`. The outcome alone cannot tell them apart. The
+composition stage trace can: if `preparedInput` was reached, the solver cut off; otherwise the
+failing stage is the one after the last checkpoint.
+
+**Legality of repeated-station and zero-duration shapes.**
+
+- `Trip` forbids only *adjacent* duplicate stops.
+- `TimetableRideContext` requires departure ≤ arrival.
+- `PreparedConnectionGap.permits` accepts departure ≥ arrival + allowance.
+- The inventory and closure reject an interval whose two endpoint stations are equal.
+
+So station revisits across Trips, zero-duration rides and zero-gap/zero-allowance connections are
+constructor-legal, and §24.2 permits them. A within-Trip repeated station must be non-adjacent;
+`InternalRouteSolverTests` already covers repeated original indices.
+
+### 30.4 Workload matrix [P]
+
+**Common rules.**
+
+- **Generation.** Every case is generated by pure deterministic code into
+  `[SolverFixture.Spec]` + `[SolverFixture.Link]`, plus `Parts` edits where §30.3 says so. One view
+  ID (`uuid(91)`); request `O → D`; `L = 900`; horizon 2,000 s (window ends at 2,900); exact
+  invented elapsed instants; invented configuration unless stated.
+- **Names and order.** Trip names are zero-padded, so UTF-8 order equals numeric order. Tie
+  families store specs in **reverse** name order, matching §25.3's worst-case discovery order.
+- **Randomness.** Only W3 uses any: SplitMix64 with seed `0x5453_5547_494E_4F00 + p`, where `p`
+  is the feasible percentage. It drives a Fisher–Yates selection over relation indices in
+  generator order.
+- **Oracles.**
+  - The generator emits an **analytic expected identity list** in §24.4 order, built without
+    production search code. Examples: a layered Cartesian product, or enumeration of W3's 216
+    combinations.
+  - When P has ≤ 16 rides, `ExhaustivePreparedSolverOracle` must also agree.
+  - Each case also records its expected composition outcome and expected last checkpoint.
+
+| ID | Shape | Sizes | Rides R / relations C | Expected outcome | Why |
+|---|---|---|---|---|---|
+| W1 | `k` direct Trips `d-NNNN` O→D, dep 1000, arr 1010 | k ∈ {1, 2, 8, 32, 64, 128, 256, 257} | k / 0 | k ≤ 256: success with exactly k one-ride winners in name order. 257: solver `searchIncomplete` (winner cap; `preparedInput` reached) | Equal-optimum identity growth; insertion-order cost; known boundary (256 used 88,479,312 credits in §25.3) |
+| W2a | Two layers, width w: `A-NNN` O→H (1000→1010), `B-NNN` H→D (1020→1030); every A→B link `sameStation`, allowance 0 | w ∈ {2, 3, 4, 6, 8, 9, 10, 11, 12} | 2w / w² | Success with the w² two-ride Cartesian winners, or solver `searchIncomplete` (work). *Predicted* boundary w ≈ 9–10 | Branching with rising tie count; per-frame R × C relation scan |
+| W2b | Width 2, depth d: stations H0 = O … Hd = D; layer j is 1000 + 20j → 1010 + 20j; all adjacent links; `maximumRides: 8` | d ∈ {2, 3, 4, 5, 6, 7, 8} | 2d / 4(d−1) | Success with 2^d d-ride winners, or solver `searchIncomplete`. *Predicted* boundary d ≈ 6–7 | Depth growth; frame count 2^d − 2 |
+| W3 | Layered pattern (as W2a/W2b) with d = 3, w = 6. Exactly `Int((f × 72).rounded(.toNearestOrAwayFromZero))` of the 72 relations are feasible (7 at f = 0.10); the rest are infeasible positives (allowance 15 s > gap 10 s) | f ∈ {1.0, 0.5, 0.25, 0.10, 0.0}; plus W3a: f = 0.10 with the rest as qualified absences | 18 / 72 | Analytic surviving set, possibly empty → scoped `noResults` (always at f = 0), or solver `searchIncomplete`. *Predicted:* cutoff at f ≥ 0.5, completion at f ≤ 0.10 | Mostly infeasible/absent connections. Fewer frames, but every frame still scans all C |
+| W4a | 64 rides X→D plus one D→O ride (keeps O in the profile) | — | 65 / 0 | Scoped `noResults` | Completed zero-route: no ride boards at O |
+| W4b | Layered pattern with d = 3, w = 4, final layer ending at Z ≠ D, plus one D→Y ride | — | 13 / 32 | Scoped `noResults` after exploring every dead-end prefix | Cost of proving emptiness |
+| W4c | 64 O→D rides departing 3000 (> U) | — | P rides 0; 64 `outsideScope` intervals | Scoped `noResults` | R1 out-of-window ledger with an empty universe |
+| W4d | W2b with d = 4 and `maximumRides: 3` | — | 8 / 12 | Scoped `noResults` | Ride bound prevents completion |
+| W5 | m zero-duration loops at t = 1000: `out-i` O→Aᵢ, `back-i` Aᵢ→O, plus `direct` O→D. Zero-allowance `sameStation` links: out-i→back-i, back-i→out-j for all j, back-i→direct; `maximumRides: 7` | m ∈ {1, 2, 3, 4, 5} | 2m+1 / m² + 2m | Success with exactly one winner, `[direct]`: cycles tie on arrival but have more changes. Or solver `searchIncomplete` at large m | Legal repeated stations and zero-duration rides/connections; exploration with no new ties |
+| W5t | Zero-duration O→A→D and O→B→D at t; no direct ride | — | 4 / 2 | Two winners | Ties through zero-duration transfers |
+| W6 | Core = W2a with w = 3, plus n filler occurrences of `F-NNN` over the non-profile stations `F-a`, `F-b`, `F-c` with intervals (0,1), (0,2), (1,2), spread over ≤ 6 date labels, one of which must be the core's label (the default `invented-day`); a seventh label makes the inventory throw `resourceLimit` (class S). Maximum: 474 Trips × 6. Filler relations: qualified absences between consecutive filler occurrences (alighting index 2 → boarding index 0), at most min(n − 1, 1,536), so the fixture world stays under 2,048. The searcher profile is **narrowed** to core stations, lines and Trips (same identity and policy references) | n ∈ {0, 96, 384, 1,536, 2,844} | P: 6 / 9 | Success, with identities equal to the n = 0 run. Structural pass shows exactly 6 required occurrences and 9 targets | Supplied-domain growth with substantial out-of-profile filtering (producer cost is linear in the supplied domain) |
+| W6p | W6 with n = 384, core Trips extended by a trailing non-profile stop | — | as W6 | As W6; only in-profile intervals remain | Interval filtering inside kept Trips |
+| W7r | §30.3 ride boundary | 4,096 / 4,097 | 4,096 / 0 | 4,096: solver `searchIncomplete` during indexing, last checkpoint `preparedInput` (deterministic, §30.3). 4,097: provisional `searchIncomplete`, last checkpoint `assessment` | The missing end-to-end P ride-cap case |
+| W7e | §30.3 relation boundary | 2,048 / 2,049 | 0 / 2,048 | 2,048: scoped `noResults`. 2,049: provisional `searchIncomplete`, last checkpoint `closure` | Evidence cap with trivial solving |
+| W7o | 480 Trips × 6 dates of 2-stop Trips (the only exact fill under 480 Trips and 6 dates): 4 Trips O→D, so 24 identity-distinct tied direct rides; all others in-profile X→Y | 2,880 / 2,881 | 2,880 / 0 | 2,880: success with 24 winners, or solver `searchIncomplete`. 2,881: provisional `searchIncomplete`, last checkpoint `declarations` | Maximum preparation occurrence volume; prep-heavy cancellation carrier |
+| W7c | Ten 72-stop occurrences, no intervals; view-level targets added in lexicographic (from, to, a, b) order over ordered pairs | 23,040 / 23,041 | 0 / 23,040 | Both: provisional `searchIncomplete`. 23,040: last checkpoint `closure` (evidence pre-check). 23,041: last checkpoint `declarations` (closure guard) | Closure connection cap, told apart from the evidence cap |
+| W7p | Conditional §30.3 payload pair (≈ 77/78 `Spec` slots) | Set by pre-check | — | Over the cap: provisional `searchIncomplete`, last checkpoint `assessment` | Only if constructible |
+| W8 | W2a with w = 8, `maximumWork` ∈ {1,000,000; 4,000,000; 16,000,000; 64,000,000}; other dimensions at the invented ceilings. 64M is the intended completing control | 4 | 16 / 64 | `searchIncomplete` when the limit is below the carrier's completed usage (from the W2a diagnostic), otherwise success | Time-to-cutoff and elapsed time per credit, without raising any ceiling |
+| W9 | Cancellation carriers: W7o-2,880 (preparation), W2a w = 8 (exploration), W1 k = 256 (ordering/admission), W2a w = 3 (boundary reference) | §30.6 M8 | — | `CancellationError`, or a completed result when the cancellation arrives after the final checkpoint | Integrated preparation/solve cancellation |
+
+There are 58 unconditional cases plus the conditional W7p pair.
+
+W3's f = 0 case doubles as a completed zero-route case.
+
+**Expected class per case.** The generator emits one fixed expected class wherever the source
+fixes it: W1, W4, W5t, W6, both sides of W7r, W7e and W7c, and W7o-2,881. Some cases depend on
+how many credits the solver spends: W2, W3, W5, W7o-2,880 and W8. For those the admissible set is
+{C with the analytic identities, I-solver}. W7o-2,880 is estimated at about 70M credits, so it
+most likely completes with 24 winners. The V-D discovery pass fixes the observed class, and
+every later sample of the case must match it.
+
+### 30.5 Escalation ladder, termination and envelope [P]
+
+- **Ladder.** Within a family, sizes run in ascending order. A discovery pass runs each size once:
+  structural pre-check, correctness check and one diagnostic call. That pass fixes the admitted
+  set for the timed passes.
+- **Family stop.** After the first size ending in solver `searchIncomplete` by work, at most one
+  more size runs, then the family stops. Larger sizes would only re-measure time-to-cutoff under
+  the same ceiling. Fixed boundary pairs (W1 256/257, W7) always run.
+- **Per-call watchdog.** 60 s in V-O, 180 s in V-D. The harness cancels its own task (class W)
+  and stops the family's escalation.
+- **Per-process timeout.** The driver kills an `xcodebuild` invocation after 20 min (class H). No
+  automatic retry; the affected family stops. Before the next invocation, the driver terminates
+  the test host on that Simulator UDID (`xcrun simctl terminate <UDID> <bundle id>`, or shuts
+  the Simulator down) and records that no host process remains, so a later fresh-process memory
+  sample is not contaminated.
+- **Memory guard.** If `phys_footprint` exceeds 2 GiB between calls, or in the sampler where it
+  is used, the harness cancels and stops the family (harness stop, not a route outcome).
+- **Correctness failure (class U)** stops the whole experiment. Nothing is timed after a wrong
+  result.
+- **Setup failure (class S).** If it is a §30.3 documented-unreachable boundary, record it and
+  continue. Otherwise stop the family and report it.
+- **Envelope.**
+  - At most 60 cases (58 unconditional plus the W7p pair).
+  - Discovery: 1 call per case.
+  - Whole-call timing: V-O 1 warm-up + 7 measured calls per case; the V-D reference is 1 + 3.
+  - Stage timing: 1 + 5 per case.
+  - Memory: one fresh process per case, 1 + 3 calls.
+  - Cancellation: 126 samples (4 preparation targets × 3 δ × 5, 2 solver targets × 3 δ × 5,
+    12 boundary checkpoints × 3).
+  - Total: 60 + 480 (V-O M1) + 240 (V-D M1) + 360 (M2) + 240 (M7) + 126 (M8) = 1,506. That is
+    at most about 1,500 search calls, each bounded by the watchdog.
+  - Total wall-clock budget: 4 h. If it is exhausted, the experiment stops and is reported as
+    incomplete. That is a harness fact, never a route outcome.
+- **These are technical experiment parameters.** They are not production policy, profile,
+  horizon, ride cap, timeout or solver ceiling.
+
+### 30.6 Measurements [P]
+
+**Build variants.** Use the explicit iPhone 17 Simulator
+`84E47945-9D2E-446F-8C40-B835A9D15880`, or another explicitly selected iPhone Simulator, recorded.
+No physical device is used.
+
+- **V-D:** the standard Debug configuration (`-Onone`, `DEBUG`, testability), as in §29.5. Used
+  for the correctness gate, the structural pass and instrumented diagnostics.
+- **V-O:** the Debug configuration with only these command-line overrides:
+  `SWIFT_OPTIMIZATION_LEVEL=-O SWIFT_COMPILATION_MODE=wholemodule`. These are Release's effective
+  Swift optimization settings: the `-O` default, and `wholemodule` from the project's Release
+  configuration. The `DEBUG` condition and testability remain. Hooks are compiled in but unset in
+  minimal timing runs. Its label is **"optimized DEBUG-condition test build" — never "Release"**.
+  If V-O fails to build or run, it is dropped and reported; V-D timings remain labelled `-Onone`.
+- **Release:** not measurable in-tree (§30.2). This is a recorded limitation, not a blocker.
+  Possible later paths need separate authorization: a `Tools/` macOS CLI in the
+  `Tools/StorageMeasurement` style, or a Release-compilable measurement host.
+
+| # | Metric | Method | Runs |
+|---|---|---|---|
+| M0 | Setup cost | `ContinuousClock` around generator + `make` + view + searcher construction | Reported apart from the search |
+| M1 | Whole-call elapsed | `ContinuousClock.now` immediately before `try await searcher.search(request)` and immediately after it returns or throws, in a harness-owned `Task` started from a nonisolated test context. Covers the `@concurrent` hop, every stage, terminal construction and unwinding | V-O minimal (no hooks); V-D reference with 1 + 3 calls |
+| M2 | Stage elapsed | The composition hook appends `(stage, ContinuousClock.now, Task.isCancelled)` to a preallocated buffer under a `Synchronization.Mutex` (deployment target 18.0); no actor hop or suspension. hop = t(entry) − t_call; S1 = t(configuration) − t(entry); each later stage = t(k) − t(k−1); preparation = t(preparedInput) − t(scope); solve = t(solve) − t(preparedInput) | A separate V-O sample set with composition hooks only (`solver: nil`). Never mixed with M1 samples |
+| M3 | Solver internal stages | Solver-hook entry time and `InternalSolverUsage` per stage | V-D diagnostics only; no timing claims |
+| M4 | CPU time | `getrusage(RUSAGE_SELF)` user + system delta around the call. Process-wide, not per thread. CPU/elapsed ratio reported | With M1 |
+| M5 | Outcome | Class (§30.8), `RouteSearchFailure` case, candidate (winner) count, omission count, `noResults`, scope equality, last checkpoint (hooked runs), SHA-256 of the ordered winner-key summary (`trip/day/b-a`), never the routes themselves | Every call |
+| M6 | Logical counters | Structural pass: inventory slots, required occurrences/intervals/targets, P rides, relation states, closure/assessment/P `logicalPayloadBytes`. Diagnostics: solver usage at `.terminal`, or at the last observed stage | V-D |
+| M7 | Process memory | `task_info(TASK_VM_INFO)` `phys_footprint` (instantaneous), plus `ledger_phys_footprint_peak` (lifetime peak) when the returned count covers that field; `getrusage` `ru_maxrss` (bytes on Darwin) as secondary. One **fresh test-host process per case**: the driver passes the case via a `TEST_RUNNER_`-prefixed environment variable to `xcodebuild test-without-building -only-testing:`. Samples: F0 at test start; F1 after setup; per call, before, after return (result retained) and after release; peak after each call | V-O, minimal |
+| M8 | Cancellation | See below | V-O with composition hooks only; V-D diagnostics |
+
+**Memory derived values.**
+
+- F1 − F0 is setup growth.
+- Peak − F1 is approximate call-induced peak growth. It includes allocator retention and the test
+  runtime, and it is not per-call allocation.
+- The residual after release is also reported.
+- If the peak field is unavailable, a 1 ms background sampler approximates the peak. It may miss
+  spikes, and the method is recorded.
+- Simulator figures are host macOS accounting for the simulated process, not iPhone jetsam
+  footprint.
+
+**M8 cancellation.**
+
+- **Request.** The harness reads t_req immediately before `task.cancel()`.
+- **Placement.** The hook at the checkpoint preceding the target stage releases a canceller task.
+  The canceller sleeps δ × that stage's M2 median, then cancels. δ ∈ {0.1, 0.5, 0.9}.
+  Preparation targets: inside `closure`, `evidence`, `assessment`, `preparedInput`. Solver
+  targets: W2a w = 8 and W1 k = 256, with δ relative to the median of the whole `solve` stage.
+  Solver samples are labelled **"within solve (substage unverified)"**. Their solver substage
+  is not observable in V-O. A V-D cross-check with solver hooks reports only the last entered
+  solver stage for the same δ values. Exploration and admission are not claimed separately.
+- **Classification.** Landing is classified afterwards: the stage whose interval contains t_req.
+  The observing checkpoint is the first hook record with `Task.isCancelled == true`; the
+  `checkCancellation()` that follows it throws.
+- **Preparation latency** = t_obs − t_req. It is bounded by the containing synchronous stage,
+  because S6–S8 constructors have no internal checks.
+- **Solver observation** happens at the next meter charge, which composition hooks cannot see.
+  For every sample, the caller-visible latency t_throw − t_req is recorded. Solver diagnostics
+  show only the last entered solver stage.
+- **Boundary reference.** The hook cancels its own task at checkpoint k
+  (`withUnsafeCurrentTask { $0?.cancel() }`); observation is expected at the same checkpoint.
+- **Late cancellation.** A cancellation that arrives after the final checkpoint can return a
+  completed result. It is recorded as "completed before observation", is checked like any
+  success, and is not a latency sample.
+
+**Warm-up, repetition, order and statistics.**
+
+- **Setup and warm-up.** Each process builds its fixtures before any timing. Then it makes one
+  warm-up call per case; that call is recorded with `warmup: true` and excluded from summaries.
+- **Rotation.** Repetition r runs the family's admitted cases starting at offset r mod n.
+- **Isolation between calls.** Results are released between calls; there are no sleeps.
+- **Summaries.**
+  - Per case and variant: n, median and [min–max], following the `Tools/StorageMeasurement`
+    convention. All samples are retained. No confidence intervals, no pooled percentiles and no
+    outlier deletion.
+  - Derived: median solve elapsed ÷ solver work credits (ns per credit), per completed or
+    cut-off case. This is invented-shape calibration only.
+
+**Metadata recorded per run.**
+
+- **Toolchain:** `xcodebuild -version`, `swift --version`, the SDK and every
+  configuration/override.
+- **Simulator:** device type, runtime version and UDID.
+- **Host:** `sw_vers`, `hw.model`, `machdep.cpu.brand_string`, `hw.ncpu`, `hw.memsize`, power
+  source (`pmset -g batt`), load average, and `ProcessInfo.thermalState` at start and end of each
+  process.
+- **Repository:** HEAD and clean status; SHA-256 of the production routing sources
+  (`PreparedRouteSearcher.swift`, `PreparedRouteSearchView.swift`, `InternalRouteSolver.swift`,
+  `PreparedInternalSearchInput.swift`, `QualifiedConnectionEvidence.swift`,
+  `RequestScopedSearchInputClosure.swift`, `TimetableOccurrenceInventory.swift`) and of every
+  harness file.
+- **Run:** UTC start and end.
+
+### 30.7 Interpretation boundaries
+
+- **Elapsed is not CPU.** Elapsed includes scheduling and executor hops; CPU is process-wide.
+- **Logical is not measured.** Logical credits and bytes are conservative accounting units.
+  They are neither heap bytes, allocator retention nor CPU time. Credit-to-time ratios hold only
+  for the shapes measured.
+- **Process is not per-call.** Process footprint and RSS include the host app, test runtime and
+  allocator retention. Call-attributable allocation is not measured.
+- **Simulator is not iPhone.** Simulator processes run on the Mac host CPU and memory system.
+  Physical-iPhone timing, memory, thermal and jetsam behaviour needs explicit device
+  authorization (AGENTS §22).
+- **Invented is not representative.** These shapes expose growth and failure handling. They say
+  nothing about Tokyo timetable distributions (§16.2); G1/G3 stay open.
+- **No variant here is Release.** V-D is `-Onone`. V-O is an optimized DEBUG-condition build.
+  Hooked runs are diagnostic.
+- **Completion is proved only by the solver's terminal outcome checked against the oracle.**
+  Elapsed time, a missing timeout or watchdog silence never certifies completion, and a
+  watchdog/harness stop is never `searchIncomplete`.
+- **How results are used.**
+  - **Optimization candidates:** for example, the linear relation scan repeated per DFS frame,
+    `snapshotCost`, or quadratic ordering.
+  - **Safeguard sizing evidence:** for example, elapsed time per 100M credits, preparation
+    cost per occurrence, and cancellation latency per synchronous stage.
+  - **No automatic changes.** No ceiling, mapping, profile, horizon, ride cap, timeout or
+    requiredness changes automatically. Any change needs its own decision and authorization
+    (§24.6, RULES 29).
+
+### 30.8 Execution containment and outcome classes [P]
+
+- **Concurrency.**
+  - Strictly serial: one search in flight, one Simulator, one `xcodebuild` at a time.
+  - Run with `-parallel-testing-enabled NO` and a Swift Testing `.serialized` suite.
+  - The only concurrent helpers are the canceller, the watchdog and the optional sampler.
+  - Overlapping-call correctness is already tested (§29.5); it is not measured here.
+- **Output volume.**
+  - One `PRS_MEASURE {json}` line per sample, ≤ 2 KB, following the `SELECT_PROFILE` precedent;
+    ≤ about 1,600 lines in total.
+  - No candidate legs are printed and no partial set is ever printed.
+- **Artifacts.**
+  - `Tools/PreparedRouteMeasurement/` holds:
+    - `README.md`: the method, frozen before any run.
+    - `run.py`: the driver.
+    - `results.json`: all samples, metadata and fingerprints.
+    - `RESULTS.md`: the summary.
+  - Raw logs, `.xcresult` bundles and the V-D/V-O DerivedData directories go under
+    `/private/tmp/tsugino-prs-measure-<UTC>/`. They are local evidence and are not committed.
+    They are kept until the independent review ends, then deleted, and the deletion is recorded.
+  - The driver refuses to overwrite an existing run, as `Tools/StorageMeasurement/run.py` does.
+
+| Class | Meaning | Route output |
+|---|---|---|
+| C | Completed `internalSuccess`: alternatives or scoped `noResults`, checked against the oracle | Counts and digest only |
+| R | Expected canonical failure (`dataUnavailable`, `unsupportedRequest`, …) | None |
+| I-prep | `searchIncomplete` with no `preparedInput` checkpoint (provisional mapping) | None |
+| I-solver | `searchIncomplete` after `preparedInput`: solver cutoff or winner cap | None |
+| X | `CancellationError` from an experimental cancel | None |
+| W | `CancellationError` (or a stop) caused by the harness watchdog or memory guard | None; a harness event |
+| H | External timeout or forced termination of the process; the driver writes the record | None; a harness event |
+| S | Setup failure or invalid fixture: a generator or constructor threw, or a structural pre-check failed | None; not a routing result |
+| U | Unexpected outcome or identity mismatch | None; stops the experiment |
+
+Unhooked samples (M1, M7) cannot see the last checkpoint. They inherit I-prep or I-solver from
+the case's hooked discovery and correctness pass. A mismatch in outcome class against that pass
+is class U.
+
+No class other than C carries winners. A partial route set is never output, logged or
+summarized. The in-process watchdog **cannot interrupt** the synchronous S6–S8 constructors or
+bulk canonical constructors. Only the external per-process timeout ends a stuck synchronous
+stage. A C result returned after the watchdog fired is still C, flagged `watchdogFired`, and is
+oracle-checked.
+
+### 30.9 Implementation handoff [P]
+
+**Next task scope: test target and `Tools/` only.**
+
+| File (target) | Content |
+|---|---|
+| `TSUGINOTests/Support/PreparedRouteWorkloads.swift` (TSUGINOTests) | Deterministic W1–W9 generators; profile narrowing; `Parts` edits for the +1 boundaries; analytic expected identities; SplitMix64; expected class and last checkpoint per case |
+| `TSUGINOTests/Support/PreparedRouteMeasurementProbe.swift` (TSUGINOTests, `#if DEBUG`) | Mutex clock buffer, `getrusage`/`task_info` probe, canceller, watchdog, optional sampler, JSON-line emitter |
+| `TSUGINOTests/PreparedRouteWorkloadTests.swift` (TSUGINOTests) | **Always-run** correctness tests on small sizes: generator determinism, analytic oracle = `ExhaustivePreparedSolverOracle` = composed result (P ≤ 16 rides), W6 filter invariance, W5 legality. Plus the end-to-end boundary pairs W7r (4,096/4,097, closing the §29.5 gap), W7e, W7c and W7o, each asserting outcome and last checkpoint |
+| `TSUGINOTests/PreparedRouteMeasurementTests.swift` (TSUGINOTests, `#if DEBUG`, `.serialized`, `.enabled(if:)` on `TSUGINO_PRS_MEASURE == "1"`) | Structural, diagnostic, timing, memory and cancellation passes, selected by `TSUGINO_PRS_PASS` / `TSUGINO_PRS_CASE` |
+| `Tools/PreparedRouteMeasurement/` (no target) | README, driver, results and summary (§30.8) |
+
+**Exclusions.**
+
+- Any change under `TSUGINO/` (production code).
+- New production APIs.
+- `project.pbxproj` or scheme changes; overrides are command-line only.
+- Dependencies.
+- Changes to ceilings, limits or mappings.
+- AppEnvironment, Journey/UI, real or private data, physical devices and Phase 10.
+
+If the always-run boundary tests make the normal suite too slow, gate them like the measurement
+suite and record that. They must not be dropped.
+
+**Result schema (one JSON object per sample).** `schema: 1`, `runID`, `utc`, `variant`
+(`V-D`/`V-O`), `pass`, `caseID`, `family`, `size`, `seed?`, `repetition`, `warmup`, `class`,
+`failure?`, `lastCheckpoint?`, `winners?`, `omissions?`, `noResults?`, `winnerDigest?`,
+`wholeNs`, `cpuUserNs`, `cpuSystemNs`, `stageNs{…}?`, `solverUsage{work, slots, keys, bytes,
+observedAt}?`, `structural{slots, occurrences, intervals, targets, rides, relationsByState,
+closureBytes, assessmentBytes, preparedBytes}?`, `memory{f0, f1, before, after, released, peak,
+peakMethod, maxrss}?`, `cancel{target, delta, tReqNs, landingStage, observedAt, latencyNs,
+throwLatencyNs}?`, `watchdogFired`, `thermalState`. `results.json` wraps the samples with run
+metadata (§30.6) and fingerprints.
+
+**Correctness before timing.**
+
+1. The existing affected suites pass in V-D: the §29.5 regression list plus
+   `PreparedRouteWorkloadTests`.
+2. Every case's structural pre-check and expected class, identity list and last checkpoint
+   pass in the same variant that will be timed.
+3. Any mismatch is class U, and the experiment stops.
+
+**Required verification for the implementation.**
+
+- Focused `PreparedRouteWorkloadTests`.
+- The §29.5 regression set.
+- V-O `build-for-testing`.
+- An empty `git diff -- TSUGINO/ TSUGINO.xcodeproj/`, which is the proof that production, the
+  project and the scheme are unchanged.
+- A Release app build, which shows that Release still compiles.
+- All on the explicit Simulator, with the exact commands recorded.
+
+Execution of the experiment itself (§30.5 envelope) belongs to that same authorized task, after
+the README method is frozen.
+
+**Independent review.** A non-author reviewer checks:
+
+- Generator constructibility and the expected outcomes.
+- Oracle independence: no production search code in the analytic oracle.
+- Labels (V-D/V-O, never Release) and the containment classes.
+- That the frozen README predates `results.json`.
+- That 3–5 reported cases reproduce in a fresh V-O run. Agreement is on class, identity digest
+  and order of magnitude, not on exact timings.
+- The documentation and Git scope.
+
+**Completion criteria.**
+
+- Tests and builds pass.
+- The experiment ran within the envelope, or its stop is reported.
+- Every sample is classified.
+- `RESULTS.md` and consumer documentation record the figures with §30.7 labels and limitations.
+- The review is approved.
+- No production diff.
+
+**Blockers: none.** Release-configuration and physical-iPhone measurement, and representative
+workloads (G1/G3), are recorded limitations with their own future authorizations. They are not
+prerequisites for this invented experiment, and no production policy value is needed to run it.
+
+### 30.10 Independent review and handoff
+
+**Reviewer.** A fresh non-author agent (Claude Code `general-purpose` subagent) reviewed the
+design. It started without the author's context and read the current source, fixtures, tests,
+project/scheme settings and §24–§29 itself. It worked read-only and ran no builds, tests or
+measurements. It is the same model in the same environment as the author, so this is not a
+blinded external review. One reviewer performed every round.
+
+- **Round 1 — REQUEST CHANGES.**
+  - Material:
+    - F1: the closure connection cap was wrongly called shadowed. The closure runs before the
+      evidence producer, so it is reachable end to end.
+  - Minor:
+    - F2: the W7r 4,096 indexing cutoff is deterministic.
+    - F3: the W7p slot estimate assumed segment counts that `Spec` cannot express.
+    - F4: solver substages are not observable for cancellation landing.
+    - F5: the envelope left out the V-D reference runs.
+    - F6: unhooked samples cannot classify I-prep vs I-solver.
+    - F7: a Release build is not proof that production is unchanged.
+    - F8: no cleanup after a forced kill.
+    - F9: the W6 date-label constraint was missing.
+  - Nits:
+    - F10: equal-endpoint interval rejection was missing from the legality note.
+    - F11: W3 rounding was unspecified.
+    - F12: W8 had no completing control.
+    - F13: artifact cleanup was incomplete.
+    - F14: this placeholder.
+- **Corrections.**
+  - F1: new W7c case (23,040/23,041, `closure` vs `declarations`).
+  - F2: deterministic W7r expectation.
+  - F3: slot estimate through `Spec` (≈ 77/78), stage-by-stage pre-check.
+  - F4: "within solve (substage unverified)" label and a V-D cross-check.
+  - F5: envelope recomputed to 1,506 calls.
+  - F6: class inheritance; a mismatch is U.
+  - F7: empty `git diff -- TSUGINO/ TSUGINO.xcodeproj/` as the proof.
+  - F8: `simctl terminate` cleanup after class H.
+  - F9–F13: applied as described.
+  - F14: this record.
+- **Round 2 — APPROVE.** The reviewer re-verified F1–F13 against the source, including the W7c,
+  W7r and W7p arithmetic, the 58 + 2 case count and the 1,506-call total. It noted three
+  non-blocking items:
+  - The expected-class paragraph contradicted itself on W7o. Now W7o-2,881 is fixed and only
+    W7o-2,880 depends on credits.
+  - The W7p slot count is an upper bound. That is now stated.
+  - Some lines were long. They are rewrapped.
+  All three were applied afterwards.
+
+**Final state.** Documentation only: this section, its governing header, the §29 publication
+note and identical overlays in ROADMAP, ARCHITECTURE and the producer proposal. Insertions only;
+no historical text was removed. `git diff --check` is clean. A file cannot contain its own
+digest, so the SHA-256 values of the four final approved documents are recorded in the author's
+hand-off report and in the publication commit's review record, not here.
+
+**Unresolved:** none from review. Open limitations are Release-configuration and physical-iPhone
+measurement, and representative workloads (G1/G3). Each needs its own authorization.
+
+**Next safe action:**
+
+1. The owner's publication review of this four-document change.
+2. Separately authorize the §30.9 harness implementation and the bounded experiment within the
+   §30.5 envelope.

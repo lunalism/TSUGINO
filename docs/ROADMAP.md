@@ -1,5 +1,28 @@
 # TSUGINO — ROADMAP.md
 
+## Published composition; bounded invented measurement design — 2026-10-16
+
+The invented-only composition (consumer §29) is published at
+`7886c20ab7a2b4dda8fc1cb23a57ad9132ad6d26`; earlier unpublished-state wording for it is
+historical. [Consumer
+§30](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#30-bounded-invented-workload-and-measurement-experiment-design--2026-10-16)
+is a documentation-only design for the next measurement task. It covers:
+
+- **Workload.** A finite invented stress matrix (W1–W9): direct ties, layered
+  branching/depth, sparse connections, completed zero-route, zero-duration cycles,
+  out-of-profile filtering, preparation boundaries, solver cutoffs and cancellation.
+- **Ride boundary.** The end-to-end 4,096/4,097 P ride boundary is constructible under every
+  upstream cap.
+- **Discipline.** A bounded escalation ladder and envelope; elapsed, stage, CPU,
+  logical-counter, process-memory and cancellation-latency methods; containment and outcome
+  classes.
+- **Handoff.** A test-target-plus-`Tools/` harness with no production change.
+
+Nothing was implemented, built, run or measured. No production limit, policy or mapping
+changed; there are no blockers. Release-configuration and physical-iPhone measurement and
+representative workloads remain separately authorized limitations. P3-T1 stays
+scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Invented-only end-to-end routing composition — 2026-10-15
 
 The §28 producer/dependency audit is published at `e3da19dbc2f40e8265d649836bacc85e7fde6635`;
