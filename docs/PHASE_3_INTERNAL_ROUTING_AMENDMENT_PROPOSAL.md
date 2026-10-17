@@ -4,6 +4,12 @@
 **Date:** 2026-10-01
 
 
+**Governing measurement execution (2026-10-16):** §30 is published at
+`c2917e3f511ef33d5b471dc620adc8448723fa88`. [§31](#31-invented-measurement-harness-and-experiment-results--2026-10-16)
+records the test-target/Tools harness and the bounded invented experiment: 1,460 of 1,506 calls
+in 54.5 min, with no harness stops. Simulator only, not Release, not representative; no production change.
+P3-T1 stays incomplete, Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing measurement design (2026-10-16):** §29 is published at
 `7886c20ab7a2b4dda8fc1cb23a57ad9132ad6d26`; its pre-publication wording is historical.
 [§30](#30-bounded-invented-workload-and-measurement-experiment-design--2026-10-16) designs the
@@ -6803,3 +6809,283 @@ measurement, and representative workloads (G1/G3). Each needs its own authorizat
 1. The owner's publication review of this four-document change.
 2. Separately authorize the §30.9 harness implementation and the bounded experiment within the
    §30.5 envelope.
+
+*Status update (2026-10-16):* §30 was published at `c2917e3f511ef33d5b471dc620adc8448723fa88`.
+Its harness is implemented and the bounded experiment executed in
+[§31](#31-invented-measurement-harness-and-experiment-results--2026-10-16). The "next safe action"
+above records the state at §30 publication.
+
+## 31. Invented measurement harness and experiment results — 2026-10-16
+
+### 31.1 Scope and checkpoint
+
+This step was authorized by the owner. It implemented the §30.9 harness and ran the §30 experiment
+from checkpoint `c2917e3f511ef33d5b471dc620adc8448723fa88`. At that point HEAD, upstream and the live
+branch matched, main was `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence was 0/0 and the
+worktree was clean.
+
+- **Changed:** test-target code, `Tools/PreparedRouteMeasurement/` and these documents.
+- **Unchanged:** production source, the project and the schemes.
+- **Not done:** Release-configuration or device measurement, real or private data, any policy,
+  limit or mapping change, and any runtime wiring.
+
+P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**; live/default routing stays unconfigured.
+
+### 31.2 Implemented harness
+
+| File | Role |
+|---|---|
+| `TSUGINOTests/Support/PreparedRouteWorkloads.swift` | §30.4 generators (58 cases plus the W7p pre-check pair) over `SolverFixture` / `PreparedRouteFixture` and §30.3 `Parts` edits; analytic identity lists in §24.4 order; expected class and last checkpoint |
+| `TSUGINOTests/Support/PreparedRouteMeasurementProbe.swift` (`#if DEBUG`) | `Mutex` stage trace; `task_info(TASK_VM_INFO)` and `getrusage` probe; harness-owned call with an elapsed-time watchdog that only cancels; structural pass; class checks |
+| `TSUGINOTests/PreparedRouteWorkloadTests.swift` (`#if DEBUG`, always run) | Determinism; analytic = exhaustive oracle = composed result (P ≤ 16 rides); W6 out-of-profile invariance; end-to-end exact/+1 boundaries W7r, W7e, W7o and W7c, including the **4,096-ride case (P built, solver indexing cutoff) versus the 4,097-ride preparation refusal** |
+| `TSUGINOTests/PreparedRouteMeasurementTests.swift` (`#if DEBUG`) | The discovery, reference, timing, stage, memory and cancel passes. **Disabled unless `TSUGINO_PRS_MEASURE=1`** |
+| `Tools/PreparedRouteMeasurement/{README.md, run.py, results.json, RESULTS.md}` | Method frozen before the run; driver; every sample with metadata and fingerprints (a sanitized derivative of the raw record, §31.7); summary |
+| `TSUGINOTests/PreparedRouteHarnessFaultTests.swift` (`#if DEBUG`, always run; added 2026-10-17, after the run) | Deterministic fault injection into the real memory and cancel passes (§31.7) |
+| `Tools/PreparedRouteMeasurement/test_run.py` (added 2026-10-17, after the run) | Driver tests with synthetic test-host processes (§31.7) |
+
+Three of these files were corrected after the official run (§31.7). The run's own harness
+fingerprints are preserved in `results.json`; the final files did not execute the experiment.
+
+The diff under `TSUGINO/`, `TSUGINOLiveActivity/` and `TSUGINO.xcodeproj/` is empty. There is no
+new production API and no dependency. Build overrides are command-line only.
+
+### 31.3 Correctness gate and builds
+
+All runs used the explicit iPhone 17 Simulator `84E47945-9D2E-446F-8C40-B835A9D15880` (iOS 26.3
+runtime), Xcode 27.1, Swift 6.4 in language mode 5. No physical device was used.
+
+```text
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Debug -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-prs-gate/dd -resultBundlePath /private/tmp/tsugino-prs-gate/regression.xcresult -parallel-testing-enabled NO -only-testing:TSUGINOTests/PreparedRouteWorkloadTests -only-testing:TSUGINOTests/PreparedRouteMeasurementTests -only-testing:TSUGINOTests/PreparedRouteSearchCompositionTests -only-testing:TSUGINOTests/InternalRouteSolverTests -only-testing:TSUGINOTests/PreparedInternalSearchInputTests -only-testing:TSUGINOTests/QualifiedConnectionEvidenceTests -only-testing:TSUGINOTests/RequestScopedSearchInputClosureTests -only-testing:TSUGINOTests/RouteSearchCoordinatorTests -only-testing:TSUGINOTests/TimetableOccurrenceInventoryTests -only-testing:TSUGINOTests/InternalSearchScopeTests -only-testing:TSUGINOTests/InternalSearchSuccessTests -only-testing:TSUGINOTests/RouteSearchingTests -only-testing:TSUGINOTests/RouteSearchCaptureIntegrationTests -only-testing:TSUGINOTests/AppEnvironmentTests test
+xcodebuild -project TSUGINO.xcodeproj -scheme TSUGINO -configuration Release -destination 'platform=iOS Simulator,id=84E47945-9D2E-446F-8C40-B835A9D15880' -derivedDataPath /private/tmp/tsugino-prs-gate/release-dd build
+python3 Tools/PreparedRouteMeasurement/run.py run
+```
+
+- **Gate:** `TEST SUCCEEDED`, **220 tests passed, 0 failed**. The 6 new workload test functions
+  (31 cases) passed in 2.4 s. `PreparedRouteMeasurementTests` was **skipped** by default.
+- **Release:** `BUILD SUCCEEDED` with the embedded `TSUGINOLiveActivity.appex`.
+- **Variant builds:** the driver's V-D and V-O (`SWIFT_OPTIMIZATION_LEVEL=-O
+  SWIFT_COMPILATION_MODE=wholemodule`) `build-for-testing` both succeeded.
+- **Harness validation:** before the official run, 14 calls on dev builds exercised each pass
+  type. They are excluded from results.
+
+### 31.4 Execution and accounting
+
+| | |
+|---|---|
+| Duration | Experiment 19:13:13–20:07:42 UTC on 2026-10-16: **3,269 s of the 4 h budget**. Builds came before the experiment clock |
+| Calls | **1,460 of the 1,506 ceiling**: discovery 58, V-D reference 232, V-O timing 464, V-O stage 348, memory 232, cancel 126 |
+| Processes | 95 test hosts plus 2 builds, all exit 0. There were no external kills, watchdog stops, memory-guard stops, setup failures or class U samples |
+| Coverage | All 58 unconditional cases were considered. W2a-12 and W2b-8 were skipped by the §30.5 family stop. The W7p pair was **included at 81/82 slots**, set from actual constructor values: assessment logical bytes 95,596,884 (P built) versus 96,776,154 (P `resourceLimit`). That replaces the §30.3 ≈ 77/78 estimate. 60 cases were admitted |
+| Classes | Discovery: 40 C, 12 I-solver, 6 I-prep. Every later sample matched its discovery class. Cancel: 109 X, plus 17 C whose cancellation request came after completion |
+
+**Interpretation applied, as recorded in the frozen README.** W8 is a configuration ladder over
+one fixed workload, so the §30.5 family stop was not applied to it and all four limits ran.
+
+### 31.5 Measurements
+
+[`RESULTS.md`](../Tools/PreparedRouteMeasurement/RESULTS.md) holds the tables and
+`results.json` holds every sample. Figures are medians [min–max] on the Simulator in V-O, the
+optimized DEBUG-condition test build (not Release). **Whole-call** figures come from the unhooked
+timing pass. **Stage** figures come from the separately run, hooked stage pass; they are not
+additive with whole-call figures.
+
+**Elapsed time.**
+
+- Whole call: the slowest completed call was W1-0256 at 93.1 ms [65.9–117.2].
+- Whole call: every 100M-credit solver cutoff returned in ≤ 20 ms median (max 47.6 ms).
+- V-D was about 3–107× slower than V-O (ratio of whole-call medians from separate passes, carrying
+  the ≈ 2× variation).
+- Stage pass: preparation dominates the large-domain shapes:
+  - W7o-2880: closure 15.6 ms, preparedInput 11.6 ms, solve 3.8 ms.
+  - W6-2844: preparation 17.1 ms, solve 0.35 ms.
+- Stage pass: solve dominates the tie-heavy shape, with W1-0256 solve at 72.7 ms.
+
+**Cutoff points under the invented envelope.**
+
+- W2a: from width 10 (20 rides, 100 relations).
+- W2b: from depth 6.
+- W3: from 50% feasible.
+- W5: from 5 loops.
+- W1: at 257 ties (winner cap).
+
+**Logical versus measured.**
+
+- Stage-pass solve time per completed credit ranged from about 0.02 to 0.8 ns. W7p-81 (≈ 0.0002) is excluded:
+  its credits are almost all the inherited-payload charge.
+- Out-of-profile filler raised solver credits (2.44M → 9.67M), because P's inherited payload is
+  charged as work, while solve time stayed at about 0.35 ms.
+- Memory figures are **process-level observations** from one fresh process per case:
+  - Baseline F1 is `phys_footprint` after the workload and searcher were built, before the
+    warm-up call.
+  - `peak` is the process-lifetime `ledger_phys_footprint_peak`, read after each of the 4 calls.
+    It was available in every process, so no sampling was used.
+  - The largest peak − F1 was 8.2 MiB (W7c-23040).
+  - The lifetime peak also covers setup, the test runner and every thread, and footprint does not
+    grow when a call reuses allocator-held pages. The figure is therefore neither per-call
+    allocation nor an upper bound on call-attributable peak memory.
+- W7p's ≈ 96 MB of logical bytes came with ≤ 2.9 MiB F1 − F0 process growth.
+- Process-wide CPU / whole-call elapsed was ≈ 0.8–1.3.
+
+**Cancellation.**
+
+- Boundary self-cancel was observed at the same checkpoint in 36/36 samples.
+- Preparation observations always came at the next checkpoint. Their latency never exceeded the
+  containing synchronous stage (0/50 exceptions); the maximum was 11.6 ms (closure, W7o-2880).
+- The caller-visible solver throw latency had a median of about 0.2 ms and a maximum of 6.1 ms;
+  the substage was not verified.
+- δ targeting drifted to later stages, so evidence-stage coverage is 2 samples.
+
+**Variability and load.**
+
+- Absolute milliseconds vary by about 2× between processes and runs. Examples:
+  - Hooked stage-pass medians reach about 2× the unhooked timing pass in 21 cases.
+  - Two identical 54.8M-credit solves took 8.7 ms and 4.7 ms.
+  - The reviewer's 18-call rerun measured about half the official stage figures, with identical
+    classes and digests.
+- Stage figures are within-process splits. They are not comparable with whole-call medians.
+- Host load was recorded only once, before the builds: 115.71 / 69.16 / 36.27. That deviates from
+  §30.6's per-process requirement; the driver now records load per process.
+
+### 31.6 Interpretation and limits
+
+These figures are invented stress evidence for later decisions. They are not deployment
+suitability.
+
+- **Optimization candidates** (owner-gated, RULES 29):
+  - The exhaustive DFS cuts off on small branching shapes (20 rides).
+  - Solve cost grows with tie count. Per-frame linear relation scans and tie ordering are the
+    suspected cause; this has not been profiled.
+  - Preparation constructors dominate the large-domain shapes.
+- **Safeguard evidence:**
+  - Credit ceilings bound elapsed time only shape by shape.
+  - Logical-byte accounting is far larger than the observed process footprint.
+  - Cancellation responsiveness inside preparation is bounded by single synchronous stages.
+    These were of order 10 ms here (max 11.6 ms observed). That is subject to the ≈ 2×
+    run-to-run variation, and it is not a latency bound.
+
+None of this changes a ceiling, mapping, profile, horizon, ride cap, timeout or requiredness.
+
+**Limitations.**
+
+- V-D and V-O are not Release.
+- The Simulator is not an iPhone.
+- The shapes are invented, not representative workloads (§26.2 G1/G3 remain).
+- Memory is process footprint relative to a post-setup baseline: not per-call allocation and not
+  a bound on call-attributable memory.
+- Solver usage at a cutoff is a lower bound.
+- The cancellation solver substage is unverified.
+- One host and one run; absolute ms vary by about 2×; load was not recorded per process.
+
+§26.2 G4 now has invented Simulator evidence only. G3, G5 and the physical-device part of G4
+remain open.
+
+### 31.7 Independent review and handoff
+
+**Reviewer.** A fresh non-author agent (Claude Code `general-purpose` subagent) reviewed the
+work with no author context. It is the same model in the same environment, so this is not a
+blinded external review. One reviewer performed every round.
+
+**Reviewer's own runs** (explicit Simulator, its own DerivedData under
+`/private/tmp/tsugino-prs-review-20261016/`, no repository change):
+
+- V-D `PreparedRouteWorkloadTests` passed, and the measurement suite was skipped.
+- The V-O `build-for-testing` succeeded.
+- One bounded V-O stage-pass rerun of W1-0256, W7o-2880 and W6-2844 used **18 search calls**,
+  separate from the 1,460 official calls. Classes, winner counts, digests and last checkpoints
+  were identical. Absolute times were about half the official ones.
+
+**Round 1 — REQUEST CHANGES.**
+
+- **Material — F1:** run-to-run variation (≈ 2×) and the load deviation were not disclosed, and
+  stage figures were set beside whole-call medians.
+- **Minor:**
+  - F2: the process count was wrong (95, not 97).
+  - F3: the V-D/V-O ratio was wrong (3–107×, not 10–70×).
+  - F4: in the memory pass, a watchdog event would have become class U; the cancel pass did not
+    reconcile unexpected outcomes. Neither occurred in this run.
+- **Nits (F5):** suite time 2.4 s; "no harness stops"; the W7p-81 exclusion from the ns/credit
+  range; `#require` before the oracle precondition; W6p specs not in reverse name order.
+
+**Corrections.**
+
+- F1–F3 and the F5 text items: RESULTS.md and §31.4–§31.6 were corrected.
+- F4 and the `#require` nit: harness code was changed in `PreparedRouteMeasurementTests.swift` and
+  `PreparedRouteWorkloadTests.swift`.
+- The driver now records `vm.loadavg` at the start and end of each process.
+- The W6p order nit was left unchanged; W6p specs stay in generator order. It does not affect
+  correctness, and the measured case must match its recorded definition.
+- **These code changes came after the run.** The run's harness fingerprints in `results.json` are
+  the pre-correction ones, and the corrected memory/cancel/driver paths have not run an
+  experiment.
+- After the corrections, the author re-ran `PreparedRouteWorkloadTests`, the measurement suite
+  (skipped) and `PreparedRouteSearchCompositionTests`: **24 tests passed and 1 was skipped** (Swift Testing reported 25). The V-O
+  `build-for-testing` and Release-unaffected checks also passed: the diff under `TSUGINO/`,
+  `TSUGINOLiveActivity/` and `TSUGINO.xcodeproj/` stays empty.
+
+**Round 2.** The reviewer approved the corrected files on 2026-10-16.
+
+**Gap closure (2026-10-17).** No existing check had exercised the three post-run fixes:
+
+- The post-correction run skipped the measurement suite.
+- The reviewer's rerun came before the corrections.
+- A compilation pass alone does not exercise them.
+
+Deterministic, bounded checks were therefore added and run:
+
+- **Swift fault injection** (`PreparedRouteHarnessFaultTests`): the real memory and cancel passes
+  and the real emitter. Only the searcher is replaced, through a test-target factory in
+  `PRSRunner`; no production seam was added.
+  - A watchdog stop in the memory pass becomes class W and ends that case.
+  - R, I and wrong-identity C outcomes in the cancel pass become class U and stop the pass.
+  - X, W and oracle-checked C outcomes are admitted.
+  - Result: 8 functions (9 cases) passed. Restoring the exact run-time code made 4 of 8
+    functions (5 of 9 cases) fail.
+- **Driver tests** (`test_run.py`): synthetic child processes.
+  - Covered: per-process `loadStart`/`loadEnd`, the class U halt, the H paths, the memory guard,
+    the envelope and the `results.json` schema.
+  - Result: 8 passed (9 after the sanitization test was added, below). Removing the load fields
+    made 2 fail.
+
+**Retrospective check.** The recorded data shows the fixes would change no classification:
+
+- No call fired the watchdog.
+- The cancel pass recorded only X and C, and all 17 C digests equal their discovery
+  digests, which were checked analytically (W2a-08 also by the exhaustive oracle).
+
+No rerun was made, and the recorded results were not rewritten. The full evidence, call
+accounting and remaining unverified behaviour are in RESULTS.md, "Post-run harness changes and
+their verification".
+
+**Publication sanitization (2026-10-17).** The committed `results.json` is a sanitized derivative
+of the raw run record, not a byte-identical copy.
+
+- **Raw record:** SHA-256 `5ae1014a15cf4fba3f12f4dd42ee66c604debcef30e5bbd4a9e2e29132420664`, preserved outside version control in the run's raw-evidence
+  directory as `results.raw.json`.
+- **What changed:** only metadata.
+  - The battery identifier in `metadata.host.power` became `(id=<removed>)`.
+  - The absolute checkout path in the 2 recorded build commands became `<repo>`.
+  - A `sanitization` object records the raw SHA-256, the transformed fields, the placeholders and
+    the reason.
+- **Structural comparison:** exactly these 4 differences. Records, sample values, timestamps,
+  outcomes, route digests, counts, ordering and run-time fingerprints are identical.
+- **Driver:** the final `run.py` now records only the power-source line and writes `<repo>` in
+  recorded build commands. A synthetic regression test was added to `test_run.py`, and the driver
+  tests pass (9 of 9).
+- **Not changed:** the Swift tests, the experiment and the frozen README.
+
+The final verdict and the approved SHA-256 values are recorded in the author's hand-off report.
+A file cannot contain its own digest.
+
+**Raw evidence.** `/private/tmp/tsugino-prs-measure-20261016T190846Z`, `/private/tmp/tsugino-prs-gate`,
+`/private/tmp/tsugino-prs-dev` and the reviewer's directory are local only. They are to be deleted
+after the owner's publication review, and the deletion recorded. Before that deletion, the owner
+decides where to keep the raw `results.raw.json`, which is the only byte-exact run record.
+
+**Next safe action.**
+
+1. The owner's publication review of this change set. It has 5 test files, 5 Tools files and 4
+   documents, and no production change.
+2. Then, separately and owner-gated:
+   - Choose whether to investigate the measured optimization candidates (§31.6) or to gather
+     real-workload evidence (G1/G3).
+   - Physical-iPhone or Release measurement each need their own authorization.

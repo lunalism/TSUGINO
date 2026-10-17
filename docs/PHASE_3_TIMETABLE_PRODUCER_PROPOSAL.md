@@ -3,6 +3,25 @@
 **Status:** Accepted semantic boundary — DEC-078; implementation is partial\
 **Date:** 2026-10-01
 
+## Invented measurement harness and experiment — 2026-10-16
+
+The §30 design is published at `c2917e3f511ef33d5b471dc620adc8448723fa88`. [Consumer
+§31](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#31-invented-measurement-harness-and-experiment-results--2026-10-16)
+records its implementation and execution.
+
+- **Harness:** test target plus `Tools/PreparedRouteMeasurement/`, with no production, project or
+  scheme change. Measurement passes are disabled by default.
+- **Correctness gate:** 220 tests passed. It includes the end-to-end 4,096-ride boundary (prepared
+  input built, then a solver indexing cutoff) and the 4,097-ride boundary (preparation refusal).
+  The Release build succeeded.
+- **Experiment:** 1,460 of 1,506 calls in 54.5 min, with no harness stops. Results are in
+  [`RESULTS.md`](../Tools/PreparedRouteMeasurement/RESULTS.md).
+
+These are invented stress shapes on an iPhone Simulator, in Debug and optimized DEBUG-condition
+builds. They are not Release, not physical-iPhone and not representative-workload evidence. No
+policy, limit or mapping changed. P3-T1 stays scope-incomplete; Phase 3 **In Progress**;
+live/default routing unconfigured.
+
 ## Published composition; bounded invented measurement design — 2026-10-16
 
 The invented-only composition (consumer §29) is published at
