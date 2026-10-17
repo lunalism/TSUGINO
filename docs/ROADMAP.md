@@ -1,5 +1,23 @@
 # TSUGINO — ROADMAP.md
 
+## Bounded solver optimization audit — 2026-10-17
+
+The §31 harness, results and sanitized evidence are published at
+`4dfb8e50920368358c9e1b304d7a23749cc10807`. [Consumer
+§32](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#32-bounded-solver-optimization-audit--2026-10-17)
+audits solver work from committed evidence only.
+
+- **Credits:** a charge-formula model reproduces all 37 recorded solver usage observations
+  exactly. Cutoffs are credit exhaustion dominated by 4,096-credit linear relation scans.
+- **Time:** recorded time tracks fine-grained operation counts, not credits. V-D ordering is about
+  94% of solve time (W1-0128, W1-0256).
+- **Handoff:** one slice, metered merge-sort ordering. It keeps the comparator and the output
+  order, and is expected to cut W1-0256 ordering comparisons from 32,640 to 1,024. Runtime
+  benefit must be shown by the matched measurement in §32.6.
+
+Analysis only: no source, test or harness change and nothing executed. P3-T1 stays
+scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Invented measurement harness and experiment — 2026-10-16
 
 The §30 design is published at `c2917e3f511ef33d5b471dc620adc8448723fa88`. [Consumer

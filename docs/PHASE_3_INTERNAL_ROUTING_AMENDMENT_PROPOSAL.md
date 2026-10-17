@@ -4,6 +4,13 @@
 **Date:** 2026-10-01
 
 
+**Governing solver optimization audit (2026-10-17):** the §31 harness, results and sanitized
+evidence are published at `4dfb8e50920368358c9e1b304d7a23749cc10807`; its unpublished-state
+wording is historical. [§32](#32-bounded-solver-optimization-audit--2026-10-17) audits solver work
+from committed evidence only and hands off one bounded optimization slice (metered merge-sort
+ordering). Analysis only: no source, test or harness change and nothing executed. P3-T1 stays
+incomplete, Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing measurement execution (2026-10-16):** §30 is published at
 `c2917e3f511ef33d5b471dc620adc8448723fa88`. [§31](#31-invented-measurement-harness-and-experiment-results--2026-10-16)
 records the test-target/Tools harness and the bounded invented experiment: 1,460 of 1,506 calls
@@ -7089,3 +7096,304 @@ decides where to keep the raw `results.raw.json`, which is the only byte-exact r
    - Choose whether to investigate the measured optimization candidates (§31.6) or to gather
      real-workload evidence (G1/G3).
    - Physical-iPhone or Release measurement each need their own authorization.
+
+## 32. Bounded solver optimization audit — 2026-10-17
+
+### 32.1 Scope, authority and evidence
+
+The owner authorized a read-only, evidence-led audit of `InternalRouteSolver` and the selection
+of one small optimization slice. It started from `4dfb8e50920368358c9e1b304d7a23749cc10807`, which
+publishes §31. HEAD, upstream and the live branch matched, main was
+`e8a463d51f14b3cb1027960c63244b694579a71b`, divergence was 0/0 and the worktree was clean.
+
+- **Evidence used:** the committed solver and composition source, the §30.4 generators,
+  `Tools/PreparedRouteMeasurement/README.md`, `RESULTS.md` and the sanitized `results.json`.
+- **Not used:** private evidence folders, the archived raw record, external-drive files and
+  temporary logs.
+- **Nothing executed:** no source, test or harness change; no build, test, workload or profiler run.
+- **Authority unchanged:** §24.3–§24.8, DEC-086 and Rule 29 still govern. There is no new product
+  decision.
+
+**Method.**
+
+- **Charge model.** The author wrote an arithmetic replica of every `SolverKernel` charge formula
+  in `TSUGINO/Data/Routing/InternalRouteSolver.swift`, including the default `work: 1` of every
+  `charge(slots:/bytes:)` call. It ran over the generator structure for W1, W2a, W2b, W3, W3a, W5
+  and W8. This is a calculation over committed definitions; it executes no TSUGINO code.
+  `preparedBytes` from `results.json` supplied P's inherited payload.
+- **Validation.** For all **37 of 37** recorded discovery observations in those families, the
+  model reproduces exactly:
+  - the recorded `solverUsage.work` at the recorded `observedAt` stage entry (terminal for
+    completions, the last observed entry for cutoffs);
+  - the recorded class;
+  - the stage reached.
+
+  The model is a scratch derivation, not a committed artifact. Reviewers re-derive it.
+
+Three quantities are kept apart below:
+
+- **Logical credits:** deterministic meter units. They bound work and storage; they are not time.
+- **Operation counts:** loop iterations, relation inspections, comparisons and `meter.charge`
+  calls, derived from code and workload structure.
+- **Measured time:** only what `results.json` records. That is the V-O whole-call and stage-pass
+  medians, plus the V-D discovery `solverStageEntryNs`: one hooked Debug call per case, which
+  gives solver-stage boundaries.
+
+### 32.2 Charge structure (source)
+
+Principal charges only. Small unit charges are omitted: per-winner `enter`, `1` per token and
+per edge, slot-only charges and the per-ride order-key `n`.
+
+| Site (`InternalRouteSolver.swift`) | Charge |
+|---|---|
+| `validateAndIndex` | P's whole logical payload as work once; per ride `4096 × (stops + 1)` snapshot; per ride an outgoing scan of `4096` per inspected relation until the first feasible match (all R if none); per relation `4096` evidence check |
+| `relation(_:)` | Linear scan of `input.connections`, `4096` per inspected relation, stopping at the first equal key; a miss inspects all R |
+| DFS loop (`run`) | `1` per loop step; `4096` per candidate ride; `1024` per prior path ride in the trip-repeat check; `relation` for every non-root candidate that passes the trip check |
+| Tie collection | `winner.count + 1` per existing winner in the exact-duplicate scan; `path.count` plus storage per appended winner |
+| Ordering | Insertion sort: `1` per comparison attempt and `1` per swap; `less` charges `1` per token pair, `1` (plus storage) per differing pair, and `1` per compared UUID/trip/day byte |
+| Admission (per winner) | `makeClaim`: snapshots and one `relation` per transition; `admit`: `4096 × n`, a second `relation` per transition, `1024` per trip pair, two more snapshot sets, `1024 × n²` |
+| Finalization (per winner token) | `snapshot + 1024 × (profile stations × stops + profile lines × line segments + profile trips)` |
+
+Every `charge` call also runs `Task.checkCancellation()`. It builds three four-element arrays and
+a `zip` before its guard, whatever the amount charged.
+
+### 32.3 Where credits go (derived, model-validated)
+
+**W2a: width 9 completes, width 10 cuts off.**
+
+- Rides P = 2w; relations R = w², all feasible; w² tied winners.
+- DFS relation inspections are exactly `w³(w − 1) + w²(w² + 1)/2`:
+  - each `A_i` node tries w − 1 other `A` rides, each a full-R miss;
+  - it tries w `B` rides, each found at from-major position `i·w + j + 1`.
+- Admission inspects another `2 · w²(w² + 1)/2`: the claim and the admit for each winner's single
+  transition.
+- Every inspection costs 4,096 credits.
+
+| w | DFS inspections | Admission inspections | Credits to complete | Recorded |
+|---:|---:|---:|---:|---|
+| 8 | 5,664 | 4,160 | 54.84M | C (54,840,071) |
+| 9 | 9,153 | 6,642 | 83.97M | C (83,974,702) |
+| 10 | 14,050 | 10,100 | 123.72M | I-solver |
+| 11 | 20,691 | 14,762 | 176.45M | I-solver |
+
+- **W2a-10:** exploration (58.67M) and ordering finish.
+  - **Recorded evidence:** the last observed stage entry is admission (99,915,309), and
+    finalization was never entered.
+  - **Model-derived:** the meter runs out inside the 82nd of 100 winners. The model's usage at
+    that winner's admission entry equals the recorded 99,915,309 exactly.
+- **W2a-11:** cuts off inside its 25th admission.
+- **Share:** relation scans (DFS, claim, admit and the indexing outgoing scan) are about 79–95% of
+  the credits consumed for w = 8–11 (up to the cutoff where one occurs).
+
+**W2b: depth.**
+
+- Width 2 and depth d give 2d rides, R = 4(d − 1), and 2^d tied winners of d rides each.
+- Credits needed grow about 2.7–2.9× per level: 37.31M at d = 5, then 106.04M, 285.48M, and
+  ≈ 738M at d = 8. The d = 8 figure excludes the unrecorded inherited payload of about 0.1M.
+- Exploration and admission split almost evenly. Relation scans are 58–66% of W2b-5/6 credits;
+  most of the rest is per-winner snapshot and finalization accounting for the 2^d winners.
+- **W2b-6:** cuts off in finalization, matching the recorded last stage.
+- **W2b-7:** cuts off in the DFS after its last observed `tieCollection` entry, before `ordering`.
+
+**W3: usable-connection density.**
+
+- R is fixed at 72, but infeasible relations are still scanned and found, so density acts through
+  the number of expanded nodes.
+
+| Feasible | Nodes | DFS inspections | Winners | Credits to complete | Recorded |
+|---:|---:|---:|---:|---:|---|
+| 0 | 6 | 0 | 0 | 6.08M (87% indexing outgoing scan) | C |
+| 7 | 10 | 2,943 | 2 | 19.60M | C |
+| 18 | 21 | 7,656 | 9 | 44.47M | C |
+| 36 | 79 | 24,408 | 55 | 155.20M | I-solver (DFS) |
+| 72 | 258 | 43,110 | 216 | 370.21M | I-solver (DFS) |
+
+**W5: loops.** One winner, but every loop rotation is a full DFS branch. Credits to complete:
+35.17M at m = 4 and 141.88M at m = 5; m = 5 cuts off in the DFS. Relation scans are 83–89% of
+the credits consumed.
+
+**W1: 256 tied direct routes.**
+
+- There are no relations. 81% of W1-0256's 88.21M credits is finalization membership accounting:
+  `(2·2 + 1 + 256) × 1024 + 12,288` = 279,552 per winner, × 256 = 71,565,312. It is proportional
+  to profile trips × winners.
+- **W1-0257:** this is the 257th distinct tie hitting the 256-winner cap, a structural limit. Only
+  5.12M credits were used.
+
+**W6/W7: preparation-dominated shapes.**
+
+- **W6:** solver credit growth is exactly the inherited-payload charge: 9,672,541 − 2,444,041 =
+  7,228,500, which is P's growth. Time is outside the solver: V-O preparation 17.1 ms against
+  solve 0.35 ms.
+- **W7o-2880:** V-O closure 15.6 ms, preparedInput 11.6 ms, solve 3.8 ms.
+- These costs belong to the preparation constructors, outside `InternalRouteSolver`, and would
+  need constructor profiling. Not addressed here.
+
+### 32.4 Credits are not time; operation count tracks time
+
+**Ordering dominates measured V-D solve time.** In the V-D discovery stage entries, ordering is
+the largest solver segment for every tie-heavy shape:
+
+| Case | Ordering (V-D, one call) | Solve (V-D) | Ordering credits |
+|---|---:|---:|---:|
+| W1-0256 | 5,350.6 ms | 5,691 ms (94%) | 0.80M (0.9% of credits) |
+| W1-0128 | 1,532.2 ms | 1,626 ms | — |
+| W2a-09 | 514.1 ms | 691 ms (74%) | 0.08M |
+| W2b-5 | 110.6 ms | 207 ms | — |
+
+**Calls, not credits, track V-D time.**
+
+- Selection: 8 cases (W1-0064, W1-0128, W1-0256, W2a-08, W2a-09, W2b-5, W3-025, W5-4). Their
+  exploration and tie-collection segments are merged into one, and only segments with more than
+  1,000 modeled `charge` calls count: 22 segments.
+- Over those 22, segment time is 6.3–12.7 µs per call (median 8.4). The Pearson correlation between calls and
+  segment milliseconds is r = 0.9993.
+- Credits do not track time. W1-0256 finalization is 71.6M credits and took 5.9 ms.
+
+**V-O agrees, with less certainty.**
+
+- Over 25 completed cases, V-O stage-pass solve medians correlate with modeled total calls at
+  r = 0.997, and with credits at only r = 0.674. The cases are the W1, W2a, W2b, W3 and W5
+  completions plus W8-064M. W3a-010 was not included; with it the values are 0.997 and 0.673.
+- **Caveats:**
+  - W1-0256 dominates the fit.
+  - V-O records no solver-internal split.
+  - The ≈ 2× run-to-run variation (§31.5) applies.
+  - Correlation is not attribution.
+
+**What this means.**
+
+- **Cutoffs** are credit exhaustion, dominated by the 4,096-credit linear relation inspections.
+- **Elapsed time** in these shapes tracks the number of fine-grained operations.
+- For tie-heavy shapes, the largest single source of operations is the O(W²) insertion sort's
+  byte-wise comparisons: 795,941 of W1-0256's 833,457 modeled calls and 81,325 of W2a-09's 103,882.
+- The winner input arrives in descending §24.4 order in W1 and W2a, so they hit the insertion
+  sort's worst case.
+- Which instructions in V-O dominate per call (allocation, cancellation check, byte loop) is
+  **suspected, not measured**. That needs profiling.
+
+### 32.5 Candidates
+
+| # | Candidate | Concrete change | Effect (derived) | Proof obligations and risks | Cancellation | Evidence still needed | Scope |
+|---|---|---|---|---|---|---|---|
+| 1 | **Metered merge-sort ordering** | Replace the insertion sort with a bottom-up merge over an `Int` index permutation, using the unchanged `less`; materialize the permuted winners once | Comparisons ≤ W⌈log₂W⌉ (≤ 2,048 at the 256-winner cap) instead of up to W(W − 1)/2 (32,640). W1-0256: 32,640 → 1,024 comparisons, ordering calls 795,941 → 26,939, total calls 833,457 → 64,455, credits −0.77M. W2a-09: 3,240 → 242 comparisons. Classes, cutoff stages and winner order unchanged in every modeled case | `less` must be a strict total order on the distinct winner set (§32.6), so the sorted sequence is unique and algorithm-independent. Scratch index and permuted-copy storage must be charged before allocation. Every comparison and move is charged | Same per-charge cancellation check; stage entry unchanged | Matched V-O and V-D runtime (§32.6) | One function in one file, plus tests |
+| 2 | Comparator: skip the UUID byte loop | All ride keys share `input.scope.viewID` (guarded in `validateAndIndex`), so 16 equal UUID bytes are compared on every differing pair | About 16 of ~24 calls per differing comparison | Relies on the single-view guard; §24.4's field order is kept by construction. Small risk, but it touches the identity comparator | Unchanged | Same as #1 | Small. **Deferred** as a possible follow-up once #1 is measured |
+| 3 | Per-ride outgoing relation lists | During indexing, record every relation whose from-key equals the ride's (address, alighting index). The DFS and `makeClaim` scan only that list | Large credit reductions in W2a, W2b, W3 and W5. Would likely move some recorded cutoffs (for example W2a-10) to completion | Construction must scan all R per ride (no early exit): more indexing credits, and entries are metered storage up to P·R in the worst case. `admit` must not trust claimed tokens, so it keeps an independent full-relation lookup or an equivalent proof. Equality of the full key is still required | Same checks; larger indexing segment | Credit and runtime measurement; design review of `admit` independence | Moderate. **Not selected:** larger proof surface; it changes recorded outcomes, not measured time first |
+| 4 | Drop the tie-collection duplicate scan | The DFS enumerates each token sequence once, so duplicates cannot occur | W1-0256: about 32,640 fewer calls (≈ 4%) | A tree-enumeration invariant replaces a defensive exact check (§24.3 dedup duty) | Unchanged | — | **Rejected for now:** small gain against removing a defensive check |
+| 5 | Accounting changes (finalization membership 1024 × profile size; inherited payload as work) | — | Credits only; no measured time effect | The existing charges are conservative but not shown to be unjustified | — | — | **Rejected:** fails the "demonstrably unjustified" test |
+| 6 | Preparation constructors (W6/W7) | — | V-O 10–40 ms whole call | Outside the solver | — | Constructor profiling | **Deferred** to a separate task |
+
+None of the candidates raises safeguards, truncates ties, prunes on equality, adopts dominance or
+station-visited pruning, or changes identity, objective, permissions, requiredness, connection
+semantics or admission.
+
+### 32.6 Selected next slice: metered merge-sort ordering
+
+**Components.**
+
+- `SolverKernel.run()`, ordering stage only (`InternalRouteSolver.swift`).
+- `less` and every other stage stay unchanged.
+- §25's "metered insertion sort" description is updated by that task.
+
+**Algorithm justification.**
+
+- **The order is unique.** Within one P, ride keys are unique: P rejects equal keys, including
+  Swift String canonical equivalence. Distinct keys are therefore distinguished by §24.4's fields:
+  unequal Strings have unequal UTF-8 bytes. Winners are distinct token sequences, and the prefix
+  rule makes `less` total. So `less` is a strict total order on any winner set, and the sorted
+  sequence is unique. Merge sort and insertion sort must produce byte-identical output.
+- **Modeled check.** The model confirmed this for every case above, and for reverse, sorted and
+  seeded-random discovery orders at W ∈ {0, 1, 2, 3, 7, 8, 9, 255, 256}.
+- **Deterministic tie rule.** The merge takes the left element unless `less(right, left)`.
+
+**Accounting and resources.**
+
+- **Storage first.** Before allocating, charge the index and scratch buffers (2W slots,
+  16W + header bytes) and the materialized permuted winner array (W slots plus the existing
+  per-winner byte basis).
+- **Per-step charges.** Charge `1` per comparison attempt (as now) and `1` per element move.
+- **No opaque sort.** No stdlib sort and no uncharged callback (§24.6, §25). Credits stay
+  cumulative and are never refunded.
+- **Cutoffs.** A cutoff inside ordering stays `searchIncomplete` with no output.
+
+**Cancellation.** Every comparison and move goes through `charge`, which checks cancellation. The
+stage entry and hooks are unchanged, so `cancellationAtEveryStageWinsPendingFailure` still applies.
+
+**Regression and oracle cases** for the later task:
+
+- the existing `InternalRouteSolverTests` ordering tests (`orderedForTesting`), cancellation and
+  cutoff tests;
+- the existing `PreparedRouteWorkloadTests` (analytic, exhaustive oracle and composed result);
+- new adversarial discovery orders (descending, ascending, seeded permutation) at
+  W ∈ {0, 1, 2, 3, 7, 8, 9, 255, 256};
+- a cutoff landing inside ordering (a configuration chosen from the charge model): it must be
+  `searchIncomplete`;
+- cancellation inside ordering via the existing stage hook;
+- a work assertion that ordering comparisons stay at or below W⌈log₂W⌉.
+
+**Matched before/after subset (10 cases).**
+
+- W1-0064, W1-0128, W1-0256;
+- W2a-08, W2a-09;
+- W2b-5;
+- W1-0257, which must keep its winner-cap cutoff;
+- W2a-10, which must stay I-solver in admission;
+- controls with almost no ordering: W3-025 and W5-4.
+
+**Metrics.**
+
+- Class, winner count and winner digest must be identical to `results.json` for every case.
+- Exact solver credits must equal the charge-model prediction:
+  - W1-0256: about 87.44M under this audit's modeled scratch charges. The implementation task
+    re-derives the exact figure from its final charge formulas before running;
+  - W5-4: +2, from the two storage preflights that also run for a single winner. The
+    implementation task re-derives this figure too.
+- V-D hooked solver stage entries (ordering segment), one call per case per build.
+- V-O timing-pass `wholeNs` and stage-pass `solve`, n = 7 plus warm-up, before and after builds
+  alternated in the same session, on the explicit Simulator.
+
+**Acceptance.**
+
+- **Correctness:** all correctness metrics are identical, and all existing and new tests pass.
+- **Comparisons:** the comparison bound holds.
+- **Runtime:** in both of two alternated rounds, the after-build V-O stage-pass solve median for
+  W1-0128 and W1-0256 is ≤ 0.5× the before-build median. That threshold equals the ≈ 2×
+  between-process variation, so it is meaningful only when before and after are paired and
+  alternated in one session.
+- **Reporting:** the controls are reported without a claim.
+- **If the runtime criterion fails,** report it as a negative result, not an improvement.
+
+**Execution envelope for that later validation.**
+
+- **Calls:** at most 660 search calls in total:
+  - V-O timing pass: 10 cases × 8 calls × 2 builds × 2 rounds = 320;
+  - V-O stage pass: the same, 320;
+  - V-D hooked: 10 × 2 builds = 20.
+- **Time and processes:** 2 h wall clock; 20-minute per-process cap; watchdog 60 s for V-O and
+  180 s for V-D. §31 ran 1,460 calls over a heavier matrix in 54.5 min.
+- **Execution:** strictly serial; invented data only; explicit Simulator only; no device.
+
+**Exclusions.**
+
+- Candidates 2–6.
+- Any safeguard or limit change, and any comparator, identity or accounting change outside the
+  ordering stage.
+- Release or device claims; production adoption.
+- Preparation constructors.
+
+### 32.7 Remaining uncertainty
+
+- V-O per-stage time is not recorded. Ordering's V-O share is inferred from the call correlation,
+  not measured.
+- Why a V-O `charge` call costs about 70–190 ns on average (aggregate ≈ 96 ns), and whether it is
+  array construction, the cancellation check or loop overhead, is a suspicion that needs
+  profiling. The slice does not depend on it,
+  because it reduces the operation count itself.
+- The charge model covers the solver only, and only the seven families validated above.
+- The derived counts are not measurements.
+- The selected slice changes no recorded cutoff:
+  - W2a-10 still needs about 123.7M credits;
+  - W2b-6 still needs about 106.0M.
+  Those are relation-scan bound; candidate 3 is the evidence-supported follow-up for them.
+
+P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**; live/default routing stays unconfigured.
