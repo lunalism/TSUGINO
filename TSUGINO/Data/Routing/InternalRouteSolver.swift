@@ -297,15 +297,7 @@ private nonisolated struct SolverKernel {
         }
         // Complete exhaustive proof. Subsequent stages still use the same meter.
         try await enter(.ordering)
-        // In-place insertion sort; every comparison/shift checked, no opaque stdlib sort.
-        for i in winners.indices.dropFirst() {
-            var j = i
-            while j > 0 {
-                try meter.charge()
-                if try !less(winners[j], winners[j - 1]) { break }
-                try meter.charge(); winners.swapAt(j, j - 1); j -= 1
-            }
-        }
+        winners = try ordered(winners)
         try await enter(.admission)
         var admitted: [RouteCandidate] = [], omissions: [RouteAlternativeOmission] = []
         try meter.charge(slots: 2, bytes: 48)
@@ -364,6 +356,46 @@ private nonisolated struct SolverKernel {
             output = .internalSuccess(success)
         }
         try await enter(.terminal)
+        return output
+    }
+    /// Bottom-up merge sort over an index permutation, using `less` unchanged; at most
+    /// n⌈log₂n⌉ comparisons. Distinct winners under the strict total §24.4 order have a
+    /// unique sorted sequence. Every comparison and move is checked, buffers are charged
+    /// before allocation, and there is no opaque stdlib sort.
+    mutating func ordered(_ winners: [[Int]]) throws -> [[Int]] {
+        let n = winners.count
+        // Index and scratch permutations plus the permuted output array.
+        try meter.charge(slots: InternalSolverMeter.product(n, 2) + 1,
+                         bytes: InternalSolverMeter.product(n, 16) + InternalSolverMeter.product(n, 8) + 72)
+        var order = Array(0..<n), scratch = Array(repeating: 0, count: n)
+        var width = 1
+        while width < n {
+            var low = 0
+            while low < n {
+                let middle = min(low + width, n), high = min(middle + width, n)
+                var i = low, j = middle, k = low
+                while i < middle && j < high {
+                    try meter.charge()
+                    // Left run first unless strictly greater: deterministic and stable.
+                    if try less(winners[order[j]], winners[order[i]]) { scratch[k] = order[j]; j += 1 }
+                    else { scratch[k] = order[i]; i += 1 }
+                    try meter.charge(); k += 1
+                }
+                while i < middle { try meter.charge(); scratch[k] = order[i]; i += 1; k += 1 }
+                while j < high { try meter.charge(); scratch[k] = order[j]; j += 1; k += 1 }
+                low = high
+            }
+            swap(&order, &scratch)
+            width = try InternalSolverMeter.product(width, 2)
+        }
+        var output: [[Int]] = []
+        output.reserveCapacity(n)
+        for index in order {
+            let winner = winners[index]
+            // Retained copy charged by value, like the original winner append.
+            try meter.charge(slots: winner.count + 1, bytes: InternalSolverMeter.product(winner.count, 8) + 24)
+            output.append(winner)
+        }
         return output
     }
     mutating func less(_ lhs: [Int], _ rhs: [Int]) throws -> Bool {

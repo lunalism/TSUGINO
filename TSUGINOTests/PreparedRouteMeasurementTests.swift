@@ -120,8 +120,10 @@ final class PRSRunner {
     // MARK: Discovery (V-D): structural pre-check, correctness, one diagnostic call
 
     func discovery() async {
-        var list = PreparedRouteWorkloads.matrix.filter { $0.group == group }
-        if group == "W7" { list += payloadPrecheck() }
+        // Optional explicit case list (§32 matched protocol); otherwise the whole group.
+        let only = (env["TSUGINO_PRS_ONLY"] ?? "").split(separator: ",").map(String.init)
+        var list = PreparedRouteWorkloads.matrix.filter { only.isEmpty ? $0.group == group : only.contains($0.id) }
+        if only.isEmpty, group == "W7" { list += payloadPrecheck() }
         var ladder: [String: Int] = [:]
         for w in list {
             if stopped { return }
@@ -220,7 +222,7 @@ final class PRSRunner {
     // MARK: Timed passes: V-D reference (1+3), V-O whole-call (1+7), V-O stage (1+5)
 
     func timed() async {
-        let reps = pass == "reference" ? 3 : pass == "timing" ? 7 : 5
+        let reps = Int(env["TSUGINO_PRS_REPS"] ?? "") ?? (pass == "reference" ? 3 : pass == "timing" ? 7 : 5)
         let staged = pass == "stage"
         struct Item { let w: PreparedRouteWorkload; let cls: String; let c: PreparedRouteFixture.Case; let trace: PRSBox<PRSStageTrace>
                       let searcher: PreparedRouteSearcher; var dead = false }

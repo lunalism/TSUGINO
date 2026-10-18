@@ -1,0 +1,212 @@
+{
+ "W1-0064": {
+  "baseline": {
+   "chargeCalls": 53921,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 2016,
+   "work": 9311566
+  },
+  "optimized": {
+   "chargeCalls": 8351,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 192,
+   "work": 9266059
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 9311566
+  }
+ },
+ "W1-0128": {
+  "baseline": {
+   "chargeCalls": 211541,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 8128,
+   "work": 27116002
+  },
+  "optimized": {
+   "chargeCalls": 22433,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 448,
+   "work": 26927021
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 27116002
+  }
+ },
+ "W1-0256": {
+  "baseline": {
+   "chargeCalls": 833457,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 32640,
+   "work": 88209662
+  },
+  "optimized": {
+   "chargeCalls": 64455,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 1024,
+   "work": 87440915
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 88209662
+  }
+ },
+ "W1-0257": {
+  "baseline": {
+   "chargeCalls": 34699,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "orderingComparisons": 0,
+   "work": 5118353
+  },
+  "optimized": {
+   "chargeCalls": 34699,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "orderingComparisons": 0,
+   "work": 5118353
+  },
+  "recorded": {
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 5118353
+  }
+ },
+ "W2a-08": {
+  "baseline": {
+   "chargeCalls": 65165,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 2016,
+   "work": 54840071
+  },
+  "optimized": {
+   "chargeCalls": 19631,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 192,
+   "work": 54794600
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 54840071
+  }
+ },
+ "W2a-09": {
+  "baseline": {
+   "chargeCalls": 103882,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 3240,
+   "work": 83974702
+  },
+  "optimized": {
+   "chargeCalls": 29072,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 242,
+   "work": 83899972
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 83974702
+  }
+ },
+ "W2a-10": {
+  "baseline": {
+   "chargeCalls": 153816,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "orderingComparisons": 4950,
+   "work": 99915309
+  },
+  "optimized": {
+   "chargeCalls": 38102,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "orderingComparisons": 316,
+   "work": 99799666
+  },
+  "recorded": {
+   "class": "I-solver",
+   "observedAt": "admission",
+   "work": 99915309
+  }
+ },
+ "W2b-5": {
+  "baseline": {
+   "chargeCalls": 22725,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 496,
+   "work": 37305816
+  },
+  "optimized": {
+   "chargeCalls": 11319,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 80,
+   "work": 37294441
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 37305816
+  }
+ },
+ "W3-025": {
+  "baseline": {
+   "chargeCalls": 11809,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 36,
+   "work": 44473398
+  },
+  "optimized": {
+   "chargeCalls": 11255,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 13,
+   "work": 44472852
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 44473398
+  }
+ },
+ "W5-4": {
+  "baseline": {
+   "chargeCalls": 11557,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 0,
+   "work": 35171876
+  },
+  "optimized": {
+   "chargeCalls": 11559,
+   "class": "C",
+   "observedAt": "terminal",
+   "orderingComparisons": 0,
+   "work": 35171878
+  },
+  "recorded": {
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 35171876
+  }
+ }
+}

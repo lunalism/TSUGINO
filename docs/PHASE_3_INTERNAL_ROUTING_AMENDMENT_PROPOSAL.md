@@ -4,6 +4,14 @@
 **Date:** 2026-10-01
 
 
+**Governing winner-ordering implementation (2026-10-17):** §32 is published at
+`3368eb13d102831ba473b84e13cb0f0329451cf6`; its not-yet-implemented wording is historical.
+[§33](#33-metered-merge-sort-winner-ordering-implementation-and-matched-validation--2026-10-17)
+implements the §32.6 metered merge-sort ordering and records its tests and the matched validation:
+660 of 660 calls, identical classes, digests and predicted credits, and both runtime targets met.
+Simulator only, not Release, not representative. P3-T1 stays incomplete, Phase 3 In Progress,
+live/default routing unconfigured.
+
 **Governing solver optimization audit (2026-10-17):** the §31 harness, results and sanitized
 evidence are published at `4dfb8e50920368358c9e1b304d7a23749cc10807`; its unpublished-state
 wording is historical. [§32](#32-bounded-solver-optimization-audit--2026-10-17) audits solver work
@@ -7397,3 +7405,171 @@ stage entry and hooks are unchanged, so `cancellationAtEveryStageWinsPendingFail
   Those are relation-scan bound; candidate 3 is the evidence-supported follow-up for them.
 
 P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**; live/default routing stays unconfigured.
+
+## 33. Metered merge-sort winner ordering: implementation and matched validation — 2026-10-17
+
+### 33.1 Scope and checkpoint
+
+The owner authorized implementing §32.6 and running its matched validation. It started from
+`3368eb13d102831ba473b84e13cb0f0329451cf6`, which publishes §32. HEAD, upstream and the live branch
+matched, main was `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence was 0/0 and the worktree
+was clean.
+
+**Changed:**
+
+| File | Change |
+|---|---|
+| `TSUGINO/Data/Routing/InternalRouteSolver.swift` | The ordering stage only |
+| `TSUGINOTests/InternalSolverWinnerOrderingTests.swift` | New tests |
+| `TSUGINOTests/PreparedRouteMeasurementTests.swift` | Two harness options, off by default |
+| `Tools/PreparedRouteMeasurement/WinnerOrdering/` | New experiment folder |
+| These documents | This record |
+
+**Unchanged:**
+
+- the relation lookup, the `less` comparator fields, identity, dedup and the objective;
+- the winner cap and every other safeguard ceiling;
+- admission, finalization, preparation and composition;
+- policy, requiredness, G2 and dependencies;
+- the project and the schemes.
+
+No selectable legacy algorithm remains in production. The §31 files are unchanged. §25's
+"metered insertion sort" description is historical for the ordering stage.
+
+### 33.2 Algorithm, proof and accounting
+
+**Algorithm.** `SolverKernel.ordered(_:)` is a bottom-up merge sort over an `Int` index
+permutation, using `less` unchanged. It takes the left element unless `less(right, left)`. After
+sorting, the winners are materialized once in permuted order.
+
+**Correctness.** Ride keys in P are unique, including Swift String equivalence, and distinct keys
+differ in §24.4's byte or numeric fields. So `less` is a strict total order on distinct winners
+(§32.6). The sorted sequence is unique and equals the previous insertion-sort output. Every tied
+winner is preserved, and the handoff to admission is unchanged.
+
+**Accounting**, all on the one uninterrupted invocation meter:
+
+| Item | Charge |
+|---|---|
+| Preflight before allocation | One charge for the index, scratch and output buffers: `slots 2n + 1`, `bytes 16n + 8n + 72`, work 1 |
+| Comparison | `1`, plus the unchanged `less` charges (including its per-differing-pair scratch) |
+| Element move | `1` |
+| Retained output copy | Per winner, by value: `slots count + 1`, `bytes 8·count + 24`, work 1 |
+| Run width | Doubled with the overflow-reporting `InternalSolverMeter.product` |
+
+- At most n⌈log₂n⌉ comparisons.
+- **Cancellation:** every charge checks it, so it is observed at the next comparison, move, copy
+  or stage checkpoint.
+- **Cutoff:** any cutoff is `searchIncomplete` with no output.
+
+### 33.3 Tests and builds
+
+All runs used the explicit iPhone 17 Simulator `84E47945-9D2E-446F-8C40-B835A9D15880`. No device
+was used.
+
+**New `InternalSolverWinnerOrderingTests`: 5 functions, 34 cases.**
+
+- **Canonical order and exact accounting:** W ∈ {0, 1, 2, 3, 7, 8, 9, 255, 256} × ascending,
+  descending and seeded-permuted discovery orders.
+  - Each case is checked against an independent test-side order, and against the exhaustive oracle
+    when P ≤ 16.
+  - The ordering-stage work, slots and bytes are checked exactly. Their expected values come from a
+    test-side replay of the merge, using an independent replica of the comparator's charges.
+  - Comparisons stay at or below n⌈log₂n⌉, and descending W = 256 makes exactly 1,024.
+- **Multi-ride and identity-edge ties:** equal prefix tokens, decomposed versus precomposed
+  spellings with distinct dates, numeric original indices, and both spec orders. All match the
+  oracle.
+- **Resource boundaries:** exact final usage completes, and one unit less in any meter dimension
+  refuses, at W = 9 and W = 256.
+- **Cutoffs:** work and slot limits that land on the preflight, the first comparison, mid-merge,
+  the last copy, the admission entry and the finalization entry are all `searchIncomplete` with
+  no output.
+- **Cancellation:** cancellation requested at the ordering, admission and finalization checkpoints
+  wins with `CancellationError`.
+  - A mid-sort cancellation is observed by the same `charge` check that the mid-sort cutoff tests
+    exercise. There is no deterministic in-sort cancellation seam, and none was added.
+
+**Mutation check.** The new suite was run against the baseline insertion sort, in a scratch copy:
+
+- the order, oracle, boundary, cutoff and cancellation assertions pass, because the output is
+  identical;
+- only the exact ordering-accounting assertions fail (54 issues across 27 cases), as intended.
+
+**Results.**
+
+- **Targeted regression:** `TEST SUCCEEDED`. Swift Testing reported 233 tests in 16 suites: 232
+  passed and `measure()` was skipped. The suites were:
+  - the new suite, `InternalRouteSolverTests`, `PreparedRouteWorkloadTests` and
+    `PreparedRouteHarnessFaultTests`;
+  - the measurement suite (skipped);
+  - the §31 gate's composition, preparation, scope, success, coordinator and AppEnvironment
+    suites.
+- **Release:** app plus `TSUGINOLiveActivity.appex`, `BUILD SUCCEEDED`.
+- **Driver tests:** `WinnerOrdering/test_run.py`, 4 synthetic tests OK. They cover plan order and
+  exact envelope use, the class-drift halt, the call-ceiling halt and path redaction.
+
+### 33.4 Matched experiment
+
+**Method:** [`WinnerOrdering/README.md`](../Tools/PreparedRouteMeasurement/WinnerOrdering/README.md),
+frozen before any matched call.
+
+**Build provenance.**
+
+- **Baseline:** `git archive 3368eb1` plus identical harness bytes. Its solver is `f8670cac…`,
+  which equals the base commit and the §31 run-time solver.
+- **Optimized:** `git archive HEAD` plus the working changes; solver `1aac67ba…`.
+- Both trees were exported to `/private/tmp`. The working checkout was not built from.
+
+**Envelope use.**
+
+- **Run:** `20261017T194225Z`: 660 of 660 calls in 293.7 s of the 2 h budget.
+- **Processes:** 10 test hosts and 4 builds, all exit 0.
+- **No harness events:** no watchdog, H, U, S or memory-guard events.
+- **Harness validation, separate:** 4 calls on cases outside the matched set, before the run.
+- **Reviewer:** no reviewer measurement calls fit within the envelope.
+
+**Correctness.**
+
+- All 10 cases keep their §31 class, winner count and route digest in both trees.
+- V-D solver work equals the frozen predictions in all 20 observations, for example:
+  - W1-0256: 88,209,662 → 87,440,915;
+  - W5-4: +2. §32.6 attributed this to two storage preflights. The implementation charges one
+    buffer preflight plus one per-winner output copy, which gives the same +2.
+
+**Observation points.**
+
+- **W2a-10:** still cuts off in admission. The recorded last admission entry moves from
+  99,915,309 to 99,799,666, and that value equals the model's entry for the 82nd winner. The
+  winner index is model-derived; the records hold only the credit.
+- **Predicted but not in this subset:** the charge model predicts no class or cutoff-stage change
+  across the 37 §31 cases. It also predicts moved observation points for W2b-6, and a cutoff moving
+  from the 25th to the 26th admitted winner for W2a-11. These were not measured here.
+
+**Runtime.**
+
+- **V-D ordering segment, one call each:** W1-0256 2,367.9 → 94.8 ms; W1-0128 596.8 → 42.9 ms.
+- **V-O stage-pass solve median ratios** (optimized / baseline, rounds 1/2):
+  - W1-0128: **0.140 / 0.142**;
+  - W1-0256: **0.095 / 0.107**.
+- **Both §32.6 targets (≤ 0.5× in both rounds) are met.**
+- **Whole-call timing pass:** W1-0256 73.7 → 10.7 ms and 53.3 → 6.8 ms.
+- **Controls:** the cases without ordering work gave ratios 0.91–1.24 (W5-4 above 1 in both
+  rounds). They are not interpreted.
+- **Variability:** absolute times differ about 2× between rounds, and host load rose from 5 to
+  about 212 during the run (recorded per process). Only within-round paired ratios are interpreted.
+
+### 33.5 Limits and next gates
+
+- **Scope of the evidence:**
+  - Simulator only; V-O is not Release; no physical iPhone.
+  - Invented shapes; one host and one session.
+  - The runtime gain is consistent with the reduced operation count, but it is not attributed by
+    profiling.
+- **Relation-scan cutoffs are unchanged:** W2a ≥ 10, W2b ≥ 6, W3 ≥ 50% and W5-5. §32.5 candidate 3
+  remains the evidence-supported, owner-gated follow-up.
+- **Open gates:** real-workload (G1/G3), Release, device and deployment gates remain open.
+- **Production adoption:** none. P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**;
+  live/default routing stays unconfigured.
+
+**Review.** The final verdict and the approved SHA-256 values are recorded in the author's hand-off
+report. A file cannot contain its own digest.

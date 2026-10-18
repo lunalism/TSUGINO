@@ -1,5 +1,22 @@
 # TSUGINO — ROADMAP.md
 
+## Metered winner ordering implemented and validated — 2026-10-17
+
+§32 is published at `3368eb13d102831ba473b84e13cb0f0329451cf6`. [Consumer
+§33](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#33-metered-merge-sort-winner-ordering-implementation-and-matched-validation--2026-10-17)
+records the change.
+
+- **Change:** `InternalRouteSolver` orders winners with a metered bottom-up merge sort, using the
+  unchanged §24.4 comparator. Classes, winners and order are identical.
+- **Tests:** 232 targeted tests passed (plus the skipped measurement suite). The Release app and
+  extension built.
+- **Matched validation:** 660 of 660 calls, with identical classes and digests and exactly the
+  predicted credits. V-O stage-solve ratios were 0.140/0.142 (W1-0128) and 0.095/0.107 (W1-0256),
+  so both ≤ 0.5× targets are met.
+
+Simulator only, not Release, not representative. Relation-scan cutoffs are unchanged. P3-T1 stays
+scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## Bounded solver optimization audit — 2026-10-17
 
 The §31 harness, results and sanitized evidence are published at
