@@ -1,5 +1,31 @@
 # TSUGINO — ROADMAP.md
 
+## Per-ride relation-list design audit — 2026-10-18
+
+The §33 merge-sort ordering is published at `9accdeae9e3e6070647a546746aa3ee2cff0132c`. [Consumer
+§34](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#34-per-ride-feasible-relation-lists-design-and-cost-audit--2026-10-18)
+designs per-ride ascending feasible-relation lists for exploration.
+
+- **Construction:** one metered pass at 4,096 credits per (relation, ride) pair.
+- **Acceptance test:** a sorted-list intersection.
+- **Equivalence:** the DFS trace is unchanged, proved from unique relation keys and the unchanged
+  candidate order.
+- **Admission:** keeps its independent linear scans.
+
+**Derived, not measured:**
+
+- **New completions** within the unchanged 100M ceiling: W2a-10, W2a-11, W2b-6, W3-050, W5-5.
+- **Moved cutoffs:**
+  - W2b-7 and W3-100 still cut off, now in admission;
+  - W8-016M's last observation moves into admission;
+  - W8-004M's cutoff moves earlier, into indexing.
+
+The analysis tool `Tools/PreparedRouteMeasurement/ChargeModel/charge_model.py` reproduces all 47
+recorded credit observations. A matched validation is handed off (16 cases, ≤ 1,056 calls).
+
+Analysis only. P3-T1 stays scope-incomplete; Phase 3 **In Progress**; live/default routing
+unconfigured.
+
 ## Metered winner ordering implemented and validated — 2026-10-17
 
 §32 is published at `3368eb13d102831ba473b84e13cb0f0329451cf6`. [Consumer

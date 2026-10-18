@@ -4,6 +4,15 @@
 **Date:** 2026-10-01
 
 
+**Governing relation-index design audit (2026-10-18):** the §33 metered merge-sort ordering, its
+tests and matched evidence are published at `9accdeae9e3e6070647a546746aa3ee2cff0132c`; its
+unpublished-state wording is historical.
+[§34](#34-per-ride-feasible-relation-lists-design-and-cost-audit--2026-10-18) designs per-ride
+feasible-relation lists for exploration (§32.5 candidate 3) and hands off one implementation slice.
+Analysis only: no source, test or harness change and nothing executed except the arithmetic charge
+model delivered with this change. P3-T1 stays incomplete, Phase 3 In Progress, live/default routing
+unconfigured.
+
 **Governing winner-ordering implementation (2026-10-17):** §32 is published at
 `3368eb13d102831ba473b84e13cb0f0329451cf6`; its not-yet-implemented wording is historical.
 [§33](#33-metered-merge-sort-winner-ordering-implementation-and-matched-validation--2026-10-17)
@@ -7573,3 +7582,363 @@ frozen before any matched call.
 
 **Review.** The final verdict and the approved SHA-256 values are recorded in the author's hand-off
 report. A file cannot contain its own digest.
+
+## 34. Per-ride feasible-relation lists: design and cost audit — 2026-10-18
+
+### 34.1 Scope, authority and evidence
+
+The owner authorized a read-only design and cost audit of §32.5 candidate 3. It started from
+`9accdeae9e3e6070647a546746aa3ee2cff0132c`, which publishes §33. HEAD, upstream and the live branch
+matched, main was `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence was 0/0 and the worktree
+was clean.
+
+- **Evidence:** committed source and sanitized results only.
+- **Not used:** private, archived or temporary evidence.
+- **Nothing executed:** no source, test or harness change; no build, test, workload or profiler run.
+- **Authority unchanged:** §24.3–§24.8, DEC-086 and Rule 29 still govern. There is no new product
+  decision.
+
+**Analysis tooling.** The charge model delivered with this change is
+`Tools/PreparedRouteMeasurement/ChargeModel/charge_model.py`.
+
+- It is an arithmetic replica of the `InternalRouteSolver` meter over the §30.4 generators. It is
+  not TSUGINO execution, profiling or measurement.
+- `validate` reproduces exactly:
+  - all 37 §31 discovery observations with the pre-9accdea insertion ordering;
+  - all 10 §33 optimized-tree observations with the published merge ordering.
+- `index` adds this section's design. Its figures are **derived predictions, not measurements**.
+
+### 34.2 What the current exploration does (source facts)
+
+- **Candidate loop.** For path end `x`, the DFS tries every ride `y` in P order. Each `y` is
+  charged 4,096, plus the trip-repeat check (1,024 per path ride). Then `relation(_:)` scans
+  `input.connections` linearly at 4,096 per inspected relation, and accepts only if the found
+  relation is `feasible`.
+- **Outgoing flags.** `validateAndIndex` sets `outgoing[x]` by scanning for the first feasible
+  relation whose from-endpoint equals `(x.address, x.alightingIndex)`. The scan stops at the first
+  match and inspects all R if there is none.
+- **Keys are unique.** `RequestScopedSearchInputClosure` rejects duplicate
+  `(from, alightingIndex, to, boardingIndex)` targets (`connectionTargetConflict`), and P maps
+  targets 1:1 to relations. So in any valid P a transition key matches **at most one** relation,
+  and `relation(_:)`'s first match is the unique match.
+- **Endpoint sharing.** A relation does **not** identify one ride:
+  - every ride with out-endpoint `(address, alightingIndex)` equal to the relation's from-endpoint
+    is a source, whatever its boarding index;
+  - every ride with in-endpoint `(address, boardingIndex)` equal to its to-endpoint is a target.
+  - Occurrence addresses are unique (`declarationConflict`), and one occurrence declares at most
+    48 intervals (`SearchInputClosureLimits.intervalsPerOccurrence`). So at most 48 rides share an
+    endpoint.
+- **Admission is independent.** `makeClaim` and `admit` re-derive every transition edge by their
+  own linear `relation(_:)` scans over the original P.
+- **No useful depth bound.** `maximumRailRides` has no upper bound beyond `> 0`, so the depth bound
+  can reach P.
+
+### 34.3 Representations compared
+
+| # | Representation | Construction | Storage | Per-candidate test | Verdict |
+|---|---|---|---|---|---|
+| 1 | Current linear key scan | — (`outgoing` scan stops at first feasible match) | — | Up to R key comparisons × 4,096 | Baseline |
+| 2 | Hash map keyed by `ConnectionRelationKey` | R string hashes | R entries plus table | Expected O(1); collisions and String hashing are unbounded and opaque | **Rejected**: breaks the solver's "no hidden hash-table collision cost" rule |
+| 3 | Per-ride out-relation list only | P × F endpoint comparisons | Σ\|O\| | \|O(x)\| key comparisons × 4,096 | Viable but weak: still key comparisons |
+| 4 | Materialized ride-successor pairs | P × F | Σ_r \|src(r)\| × \|tgt(r)\|, up to 48² per relation (≈ 4.7M worst case, over the 1M slot ceiling) | O(1) | **Rejected**: pair blow-up can turn completing inputs into cutoffs |
+| 5 | Per-depth successor marker arrays | P × F, plus a fill per frame | depth × P Ints; depth is bounded only by P (≤ 4,096), so storage reaches 4,096² Ints | O(1) | **Rejected**: storage is not bounded by policy |
+| 6 | **Per-ride ascending out- and in-relation lists; test by sorted intersection** | One pass: R state checks plus P × F pair comparisons | 2P list headers + E entries, E ≤ 2 · 48 · F ≤ 196,608 | 1 + at most \|O(x)\| + \|In(y)\| integer merge steps | **Selected** |
+
+### 34.4 Selected design
+
+**Definitions.** Let F be the feasible relations of P. For each ride z:
+
+- `O(z)` = indices r of feasible relations with `from(r) == z.address` and
+  `alightingIndex(r) == z.alightingIndex`, ascending.
+- `In(z)` = indices r of feasible relations with `to(r) == z.address` and
+  `boardingIndex(r) == z.boardingIndex`, ascending.
+
+Entries are **relation indices**, not successor rides. Rides sharing an endpoint each list the same
+relations, so every matching retained ride is represented. Infeasible and qualified-absent
+relations are never listed, because exploration can never accept them.
+
+**Construction**, inside `validateAndIndex`. The early-exit `outgoing` scan leaves the ride loop,
+and the pass runs **after** the ride-validation loop and the evidence-record check loop, as the
+charge model does. So every validation now runs before the pass. For malformed but large P, a
+`dataUnavailable` can now precede a construction cutoff; that is a benign precedence change.
+Steps:
+
+1. Preflight 2P empty list headers: `slots 2P`, `bytes 48P`, work 1.
+2. For each relation `r` in P order: charge `1` for the state check, and skip it unless feasible.
+3. For each ride `z` in P order, charge **4,096** for one key-equivalent comparison of both
+   endpoints, using the same `TimetableOccurrenceAddress ==` and `Int` equality as
+   `ConnectionRelationKey ==`.
+4. On a from-match append `r` to `O(z)`, and on a to-match append `r` to `In(z)`. Each append is
+   charged before it happens: `slots 1`, `bytes 8`, work 1.
+5. The relation-major order makes every list ascending without sorting. Then
+   `outgoing[z] = !O(z).isEmpty`, which is exactly the current definition.
+
+**Exploration.** The candidate loop, its order, its 4,096 candidate charge, the trip-repeat check
+and its position, the depth-bound check and frame pushes are all unchanged. Only
+`relation(transition(x, y))` plus the feasibility check is replaced by `accepted(x, y)`:
+
+- charge `1` for the lookup;
+- walk `O(x)` and `In(y)` as an ascending merge, charging `1` per step;
+- accept on the first common index.
+
+`makeClaim`, `admit`, the evidence-record check loop, ordering, finalization and every safeguard
+ceiling are unchanged.
+
+**Cancellation and resources.**
+
+- Every pair comparison, entry, lookup and merge step goes through `charge`, which checks
+  cancellation.
+  - Between two checks there is O(1) native work, with amortized list growth covered by the
+    per-append charge.
+  - The exceptions are the 2P header allocation after its preflight, and deriving `outgoing` from
+    `O`. Each is bounded O(P) ≤ 8,192 native steps.
+- Sizes are bounded below Int overflow: P ≤ 4,096, R ≤ 2,048, E ≤ 196,608. Products use
+  `InternalSolverMeter.product`.
+
+### 34.5 Exploration equivalence (proof)
+
+**Claim.** For every valid P, the indexed solver performs exactly the same sequence of DFS state
+transitions as the current solver: path pushes and pops, tie-collection updates, winner-cap checks
+and winners. Only meter charges differ. The sequences agree up to the earlier of the two variants'
+cutoffs, or completely under a meter that never cuts off.
+
+**Proof.**
+
+1. **Same acceptance test.** Fix path end x and candidate y that passed the unchanged trip-repeat
+   check.
+   - The current code accepts iff some relation has key `k = (x.address, x.alightingIndex,
+     y.address, y.boardingIndex)` and the first such relation is feasible. By key uniqueness, that
+     means: the unique relation with key k exists and is feasible.
+   - The index accepts iff some r is in both `O(x)` and `In(y)`. That holds iff r is feasible,
+     `from(r) = (x.address, x.alightingIndex)` and `to(r) = (y.address, y.boardingIndex)`, that is,
+     iff r is feasible with key k. With unique keys, the two are equivalent.
+   - Construction enumerates every (r, z) pair with the same equality, so the lists contain
+     exactly these relations: none missing and none extra.
+2. **Same outgoing flags.** `outgoing[z]` is unchanged, as defined above.
+3. **Same DFS states, by induction.** Candidate order, the trip-repeat check, the bound check and
+   frame pushes are unchanged, and acceptance is identical. So by induction over loop iterations
+   the DFS state after every iteration is identical.
+4. **Same results.** In particular the discovery order of incumbents and ties is identical, so the
+   order-sensitive 256-winner cap behaves identically too.
+
+**Preserved behaviour.** It follows that the solver still keeps:
+
+- every feasible identity-distinct sequence and every equal optimum;
+- exact directional connection semantics, with no inferred absence;
+- no repeated recurring TripID across dates;
+- permitted station revisits and zero-duration rides;
+- the comparator, merge-sort ordering, objective, admission and terminal mapping;
+- no new dominance, pruning or first-K behaviour.
+
+**Operational effects (not semantic).**
+
+- With lower exploration charges, some inputs that previously hit the work ceiling now complete
+  within the same unchanged ceiling. Their results are the full, correct optimum set.
+- Cutoff and cancellation observation points move.
+- The up-front construction pass can move a cutoff earlier, as for W8-004M below.
+
+### 34.6 Admission independence
+
+- **The index is never consulted after exploration.** `makeClaim` derives each transition key
+  from retained tokens and re-finds the edge by linear scan. `admit` independently re-derives it
+  from the claimed keys and checks form, chronology, feasibility and canonical construction
+  against the original immutable P. So the index cannot authenticate its own claims.
+- **A phantom acceptance fails closed.** That would be an index entry with no feasible relation
+  behind it, which only an index defect could produce.
+  - If no relation has the key, `makeClaim` throws `dataUnavailable`.
+  - If the relation is in `absentUnderCompleteAuthority` state, `positiveEvidence` is nil, so
+    `makeClaim` also throws `dataUnavailable`.
+  - If the relation is infeasible, its positive evidence is present, so `makeClaim` succeeds and
+    `admit` rejects with `infeasibleConnection`.
+    Precedence, `noUsableAlternatives` and the mixed→`searchIncomplete` mapping are unchanged.
+  - No wrong success can escape.
+  - **Residual:** such a defect would surface as `dataUnavailable` from `makeClaim`, which reads
+    as an input fault. That branch is unreachable for a correct index; the tests in §34.8 guard it.
+- **A missing entry would silently omit routes.** Admission cannot detect a missing winner, so
+  omission safety rests on the §34.5 construction proof and on independent exhaustive-oracle and
+  brute-force index-equivalence tests. This is stated as a residual risk; the index does not hide
+  shared-input truth, because it is derived from P alone.
+- **Smallest change.** Admission keeps its linear scans. Their residual cost is
+  `2 × Σ (scan position) × 4,096` per winner transition. This is the dominant remaining cost:
+  for example 41.4M of W2a-10's 68.3M derived credits.
+
+### 34.7 Derived costs (charge model; predictions, not measurements)
+
+**General formulas.**
+
+| Cost | Formula |
+|---|---|
+| Construction | `1 + R + 4,096 · P · F + E` credits |
+| Lookup | `1 + steps`, where steps ≤ \|O(x)\| + \|In(y)\| ≤ 2F; the current worst case is R × 4,096 per candidate |
+| Retained storage | `2P + E` slots and `48P + 8E` bytes |
+
+- **Unfavorable cases:**
+  - Construction is paid up front for every ride, including rides that are never expanded, and it
+    has no early exit.
+  - Large P · F with a cheap DFS costs more than the current early-exit outgoing scan.
+  - High fan-out raises merge steps per candidate, but each step is an integer comparison, not a
+    key comparison.
+
+**Matrix cases, with the merge ordering as baseline:**
+
+| Case | §31 class | Credits to complete (merge → index) | Outcome under the unchanged 100M ceiling |
+|---|---|---:|---|
+| W1-0064 / W1-0256 | C | 9.27M / 87.44M, **+1** (index preflight) | unchanged |
+| W1-0257 | I-solver | — | unchanged (winner cap, same discovery order) |
+| W2a-08 / W2a-09 | C | 54.79M → 32.74M / 83.90M → 48.03M | C |
+| W2a-10 | I-solver | 123.60M → 68.27M | **completes** (derived) |
+| W2a-11 | I-solver | 176.28M → 94.46M | **completes** (derived; 5.5% headroom) |
+| W2b-5 | C | 37.29M → 25.41M | C |
+| W2b-6 | I-solver | 105.99M → 69.06M | **completes** (derived) |
+| W2b-7 | I-solver | 285.27M → 180.85M | still I-solver; cutoff moves from exploration to admission |
+| W3-000 / W3-025 | C | 6.08M → 0.77M / 44.47M → 10.60M | C |
+| W3-050 | I-solver | 155.16M → 54.34M | **completes** (derived) |
+| W3-100 | I-solver | 369.65M → 194.94M | still I-solver; cutoff moves to admission |
+| W5-4 | C | 35.17M → 6.82M | C |
+| W5-5 | I-solver | 141.88M → 17.20M | **completes** (derived) |
+| W8-004M | I-solver | — | still I-solver; cutoff moves **earlier**, from exploration to indexing (construction 4,194,497 against a 4M limit) |
+| W8-016M | I-solver | — | still I-solver; the last observation moves from tieCollection (15,863,703) to admission (15,743,878) |
+
+**Other families** (not modeled in the tool; derived from structure):
+
+- **W6:** after profile narrowing P = 6 and R = F = 9, the same relation shape as W2a-03.
+- **W7e:** gains +2,049 credits (one preflight plus 2,048 state checks; no feasible relation and
+  no ride).
+- **W7o, W7p and W7r:** +1 each (no relations).
+- **W7p-81:** about 95.6M, still completes.
+
+**W2a closed forms**, for width w:
+
+| Quantity | Formula | At w = 10 |
+|---|---|---:|
+| Pairs | P · F = 2w³ | 2,000 |
+| Entries | 2w² | 200 |
+| Lookups | w(2w − 1) | 190 |
+| Merge steps | w³ | 1,000 |
+| Exploration credits | — | 58.67M → 1.12M |
+
+**Runtime proxy.** Modeled `charge` calls track recorded solve time (§32.4). The `index` command
+prints them, both under the 100M ceiling and run to completion.
+
+- **Cases that complete in both variants:**
+  - W3-025: 0.298;
+  - W5-4: 0.528;
+  - W2a-08, W2a-09 and W2b-5: 0.74–0.80.
+- **Formerly incomplete cases that now complete,** measured against the merge calls up to its
+  cutoff:
+  - W2a-10 0.788;
+  - W2b-6 0.767;
+  - W3-050 0.724;
+  - W5-5 0.566;
+  - W2a-11 0.952.
+
+  Measured against the merge variant run to completion, the ratios are 0.715, 0.763, 0.456, 0.398
+  and 0.695.
+- **Cases that still cut off** do more work before the ceiling: W2b-7 1.529×, W3-100 2.324× and
+  W8-016M 2.655× calls.
+- Integer merge steps are natively cheaper than key comparisons, so the proxy is coarse. Runtime is
+  unmeasured.
+- **Storage:** W2a-10 adds 240 slots; the worst case is about 205k of the 1M ceiling.
+
+### 34.8 Implementation-ready handoff
+
+**Components.** `InternalRouteSolver.swift` only:
+
+- the `validateAndIndex` outgoing scan becomes the §34.4 construction;
+- the exploration `relation(transition(...))` call becomes `accepted(x, y)`;
+- one DEBUG-only test accessor returns `(outgoing, O, In)`, following the `orderedForTesting`
+  precedent;
+- one DEBUG-only `InternalSolverTestHooks` field corrupts the built lists, following the
+  `brokenSharedRelationIndex` precedent.
+
+**Excluded:**
+
+- `makeClaim` and `admit` (their linear scans are kept);
+- ordering, the comparator, preparation and composition;
+- every safeguard ceiling;
+- policy and requiredness;
+- the root candidate loop and finalization accounting;
+- any other §32.5 candidate.
+
+**Tests.**
+
+- **Brute-force index equivalence.** For adversarial P, compare every (x, y) pair against the
+  linear key scan. The inputs cover:
+  - several rides sharing out- and in-endpoints, with different boarding and alighting indices;
+  - recurring TripIDs on different dates;
+  - feasible, infeasible and qualified-absent relations;
+  - relations to endpoints with no usable ride;
+  - walking and same-station forms, zero duration and station revisits.
+- **Exhaustive-oracle parity** (P ≤ 16) over the existing adversarial masks and new shared-endpoint
+  shapes; existing `PreparedRouteWorkloadTests` parity.
+- **Trace parity.** The sequence of tieCollection hook entries must equal a test-side replay of
+  the current scan-based DFS order, built with linear key scans.
+- **Order-sensitive winner-cap preservation.** Over 256 two-ride equal ties precede a strictly
+  earlier direct ride in P order. The result must stay `searchIncomplete`, exactly as the scan
+  solver gives.
+- **Corruption.**
+  - A phantom entry pointing at an infeasible relation must give `infeasibleConnection` rejection
+    semantics, with no success.
+  - A phantom entry for a key that no relation has, and one pointing at an
+    `absentUnderCompleteAuthority` relation, must each give `dataUnavailable`, with no success.
+  - The existing claim-corruption tests stay unchanged.
+- **Exact and one-below resources:** the final work, slots, keys and bytes complete, and one less
+  in any dimension refuses.
+- **Cutoffs** at the construction preflight, mid-pair pass, last entry and mid-lookup must be
+  `searchIncomplete` with no output.
+- **Cancellation** at the indexing and exploration checkpoints must give `CancellationError`.
+  The checkpoint hooks fire only at stage entry, so cancellation mid-construction or mid-lookup is
+  not reachable through them. It is observed by the same `charge` check that the mid-pass cutoff
+  tests exercise.
+
+**Matched validation (later task).** Same method as §33, with baseline `9accdea` and the
+optimized working tree.
+
+- **Cases (16):** W1-0064, W1-0256, W1-0257, W2a-08, W2a-09, W2a-10, W2a-11, W2b-5, W2b-6, W2b-7,
+  W3-025, W3-050, W3-100, W5-4, W5-5, W8-004M.
+- **Passes per tree:** V-D hooked discovery once; V-O timing and stage passes at 1 + 7 per case;
+  two alternated rounds.
+- **Discovery classes:** each tree is compared with its own frozen predicted classes, not the §31
+  classes.
+
+**Metrics.**
+
+| Metric | Requirement |
+|---|---|
+| Correctness | Every completed case's class, winner set and order, and route digest equal the analytic values, and the §31 values where §31 completed |
+| Credits | Solver work and last observation stage equal frozen model predictions (re-derived from the final charge formulas before running) |
+| Completion coverage | The listed completions and moved cutoffs |
+| Runtime | V-O stage `solve` for cases completing in both trees; whole-call time for the rest, reported without a ratio claim |
+| Storage | Retained-slot delta from the V-D usage |
+
+**Predeclared acceptance.**
+
+1. All correctness and credit metrics are exact, and all tests pass.
+2. In both rounds, the optimized V-O stage-solve median is ≤ 0.5× the baseline for W3-025 and
+   ≤ 0.75× for W5-4.
+3. Formerly incomplete cases are reported honestly, whatever their outcome. A deviation from the
+   predicted completion is a model error that fails criterion 1; it is never repaired by changing
+   limits.
+
+**Envelope.**
+
+- **Calls:** at most 1,056 search calls in total:
+  - V-D discovery: 16 × 2 = 32;
+  - V-O timing: 16 × 8 × 2 × 2 = 512;
+  - V-O stage: 512.
+- **Time:** 2 h wall clock after the builds; 20-minute per-process cap.
+- **Watchdog:** 60 s for V-O and 180 s for V-D.
+- **Execution:** strictly serial; explicit Simulator only; no device; no reviewer measurement calls
+  beyond the envelope.
+
+### 34.9 Remaining uncertainty
+
+- **Not measured:** runtime, real-workload relation density and the native cost of list
+  construction.
+- **Model scope:** predictions cover W1, W2a, W2b, W3, W5 and W8 only. W6 and W7 relations are not
+  modeled.
+- **Admission becomes the bottleneck:** its linear scans dominate the remaining cutoffs (W2b-7,
+  W3-100). Reusing indexed edges in `makeClaim` while `admit` stays independent would be a separate,
+  later candidate.
+- **No production adoption.** P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**;
+  live/default routing stays unconfigured.
