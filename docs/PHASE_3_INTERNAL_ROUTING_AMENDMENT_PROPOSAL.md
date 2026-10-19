@@ -4,6 +4,14 @@
 **Date:** 2026-10-01
 
 
+**Governing relation-index implementation (2026-10-19):** §34 is published at
+`8e5aae10ddd1b39559a7273a72bf8fbdba7bd216`; its not-yet-implemented wording is historical.
+[§35](#35-exploration-relation-index-implementation-and-matched-validation--2026-10-19)
+implements the §34 exploration-only relation lists and records the tests and matched validation.
+That is 1,056 of 1,056 calls, with every credit, class and stage equal to the frozen predictions,
+five new completions validated, and both runtime targets met. Simulator only, not Release, not
+representative. P3-T1 stays incomplete, Phase 3 In Progress, live/default routing unconfigured.
+
 **Governing relation-index design audit (2026-10-18):** the §33 metered merge-sort ordering, its
 tests and matched evidence are published at `9accdeae9e3e6070647a546746aa3ee2cff0132c`; its
 unpublished-state wording is historical.
@@ -7942,3 +7950,191 @@ optimized working tree.
   later candidate.
 - **No production adoption.** P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**;
   live/default routing stays unconfigured.
+
+## 35. Exploration relation index: implementation and matched validation — 2026-10-19
+
+### 35.1 Scope and checkpoint
+
+The owner authorized implementing §34 and running its matched validation. It started from
+`8e5aae10ddd1b39559a7273a72bf8fbdba7bd216`, which publishes §34. HEAD, upstream and the live branch
+matched, main was `e8a463d51f14b3cb1027960c63244b694579a71b`, divergence was 0/0 and the worktree
+was clean.
+
+**Changed:**
+
+| File | Change |
+|---|---|
+| `TSUGINO/Data/Routing/InternalRouteSolver.swift` | The index construction and exploration lookup, plus one DEBUG accessor and one DEBUG hook field |
+| `TSUGINOTests/InternalSolverRelationIndexTests.swift` | New tests |
+| `Tools/PreparedRouteMeasurement/RelationIndex/` | New experiment folder |
+| These documents | This record |
+
+**Unchanged:**
+
+- `makeClaim` and `admit`, including their linear scans over the original P;
+- the comparator, merge sort, identity, dedup and the objective;
+- preparation and composition;
+- every safeguard ceiling and the root candidate loop;
+- the measurement harness, the project and the schemes;
+- the §31 and §33 artifacts.
+
+### 35.2 Implementation
+
+**Construction.** `SolverKernel.buildRelationLists()` runs at the end of `validateAndIndex`, after
+the ride-validation and evidence-record loops.
+
+| Step | Charge |
+|---|---|
+| Preflight | `slots 2P`, `bytes 48P`, work 1 |
+| Per relation | State check 1; non-feasible relations are skipped |
+| Per (relation, ride) pair | 4,096 |
+| Per from-match or to-match | `slots 1`, `bytes 8`, work 1, charged before appending r to `O(z)` / `In(z)` |
+
+- Relation order makes the lists ascending without sorting.
+- Entries are original relation indices. Every ride sharing an endpoint is listed.
+- `outgoing` is derived as `!O(z).isEmpty`.
+- The DEBUG `corruptRelationIndex` hook runs before `outgoing` is derived.
+
+**Exploration.** `accepted(x, y)` charges 1 per lookup and 1 per merge step, and returns on the
+first common relation index. It replaces only the exploration `relation(transition(...))` call and
+its feasibility check. Candidate order, the trip-repeat check, the bound and frame pushes are
+unchanged.
+
+**DEBUG-only additions.**
+
+- `InternalRouteSolver.relationIndexForTesting(_:)`, following the `orderedForTesting` precedent.
+- `InternalSolverTestHooks.corruptRelationIndex`.
+- Neither appears in the Release binary: no matching strings in the Release product.
+
+**Cancellation and overflow.** Every pair, entry, lookup and merge step goes through `charge`,
+which checks cancellation. Products use `InternalSolverMeter.product`.
+
+### 35.3 Tests and builds
+
+All runs used the explicit iPhone 17 Simulator `84E47945-9D2E-446F-8C40-B835A9D15880`. No device
+was used.
+
+**New `InternalSolverRelationIndexTests`: 13 functions, 22 cases.**
+
+- **Every-ride-pair equivalence.**
+  - Built `O`, `In` and `outgoing` equal independent brute-force definitions.
+  - The intersection decision equals the original first-match-feasible scan for every (x, y).
+  - The adversarial shapes cover:
+    - several intervals per occurrence sharing endpoints;
+    - walking and same-station forms;
+    - feasible, infeasible and qualified-absent relations;
+    - a relation to an endpoint with no ride;
+    - a recurring TripID on two dates;
+    - zero and non-zero step times.
+  - Workload inputs: W2a-04, W2b-4, W3-025, W3a-010, W5-3, W4b and W6p-0384 (composed path), plus a
+    recurring-trip shape.
+- **Missing-entry protection.** A dropped entry is reported by the every-pair check, which admission
+  cannot do.
+- **Exhaustive-oracle parity** on the adversarial shapes and the 32 adversarial masks.
+- **Trace parity.** The number of tieCollection entries equals a test-side replay of the scan-based
+  DFS for every input. A hook entry carries only its stage and usage, and usage differs by design,
+  so the entry count is the observable form of §34.8's "sequence".
+- **Winner-cap discovery order.** 17 × 16 ties ahead of an earlier direct ride stay
+  `searchIncomplete`. With the direct ride first, the same search completes.
+- **Phantom corruption, against independent admission:**
+  - a phantom pointing at an infeasible relation gives `noUsableAlternatives` with
+    `infeasibleConnection`;
+  - a phantom for a key no relation has, and one pointing at a qualified-absent relation, each give
+    `dataUnavailable`;
+  - none of them returns a success.
+- **Exact construction accounting.** The indexing-stage work and slot deltas equal the approved
+  formula on every input:
+  - payload + 1 + per-ride snapshot and order key + 4,096·R;
+  - plus 1 + R + 4,096·P·F + E;
+  - plus the next stage entry.
+- **Resource boundaries:** exact final usage completes, and one less in any dimension refuses.
+- **Cutoffs:**
+  - work limits at the construction preflight, first state check, first pair, first entry, last
+    entry and exploration entry;
+  - a slot limit at the second entry;
+  - **every** work limit from the exploration entry to the first tie-collection entry, which covers
+    lookups and merge steps.
+  - All of them are `searchIncomplete` with no output.
+- **Cancellation** at the indexing and exploration checkpoints gives `CancellationError`. Stage
+  hooks fire only at entry, so mid-construction and mid-lookup cancellation are observed by the
+  same `charge` check that the dense cutoff tests exercise.
+
+**Mutation check.** A scratch copy dropped the `In` entries of the last ride. 4 functions failed:
+workload every-pair equivalence, trace parity, exact construction accounting and the cutoff test.
+The adversarial shapes and the oracle checks did not catch this particular mutant, because their
+last ride has no incoming relation.
+
+**Results.**
+
+- **Targeted regression:** `TEST SUCCEEDED`. Swift Testing reported 246 tests in 17 suites: 245
+  passed and `measure()` was skipped. The suites were the new suite, the §33 ordering suite,
+  `InternalRouteSolverTests`, `PreparedRouteWorkloadTests`, the harness fault tests and the §31
+  gate suites.
+- **Release:** app plus `TSUGINOLiveActivity.appex`, `BUILD SUCCEEDED`.
+- **Driver tests:** `RelationIndex/test_run.py`, 5 synthetic tests OK.
+
+### 35.4 Matched experiment
+
+**Method:** [`RelationIndex/README.md`](../Tools/PreparedRouteMeasurement/RelationIndex/README.md),
+frozen with `predictions.json` before any matched call.
+
+**Run.**
+
+- **Run:** `20261018T222536Z`: 1,056 of 1,056 calls in 318.1 s.
+- **Processes:** 10 test hosts and 4 builds, all exit 0, with no halts.
+- **Builds:** baseline `9accdea` (solver `1aac67ba…`) and optimized (solver `748966e9…`), with
+  identical harness bytes. Both were exported to `/private/tmp`.
+- **Harness validation, separate:** 4 calls on cases outside the matched set.
+- **Reviewer:** no reviewer measurement calls.
+
+**Exact reconciliation.** All 32 V-D solver-work values, classes and last-observed stages equal the
+frozen charge-model predictions. **There were no prediction deviations.**
+
+**Unchanged-result parity.** The 7 jointly completed cases have identical winners and digests,
+equal to §31.
+
+**Expanded completion coverage.**
+
+- W2a-10 (100 winners), W2a-11 (121), W2b-6 (64), W3-050 (55) and W5-5 (1) now complete within the
+  unchanged 100M ceiling.
+- They passed the analytic identity check; W2b-6 and W5-5 also passed the exhaustive oracle.
+
+**Observation points.**
+
+- W2b-7 and W3-100 now cut off in admission.
+- W8-004M now cuts off earlier. The last observed point is the indexing entry; that the cutoff
+  falls in index construction is inferred.
+- The direct-route controls rise by +1.
+
+**Runtime.**
+
+- **V-O stage-solve median ratios** (rounds 1/2):
+  - W3-025: **0.314 / 0.441**, against ≤ 0.5;
+  - W5-4: **0.359 / 0.551**, against ≤ 0.75.
+- **Both §34.8 targets are met.**
+- Cases that still cut off take longer to reach the ceiling, because they progress further.
+- **Controls:** the direct-route controls (no relation work) also ran faster in the optimized tree
+  in both rounds (0.69–0.94). That is unexplained, so a systematic bias of up to about 30% cannot
+  be excluded. W3-025's margin is robust to it; W5-4's round-2 margin is narrower.
+
+**Storage.** Retained slots rise by `2P + E` for jointly completed cases. The case that progressed
+furthest, W2b-7, reached 15,464 slots, far below the 1M ceiling.
+
+**Variability.** Absolute times differ up to about 2× between rounds, and load rose from about 6 to
+about 160.
+
+### 35.5 Limits and next gates
+
+- **Scope of the evidence:**
+  - Simulator only; V-O is not Release; invented shapes; one session.
+  - The runtime gain is not attributed by profiling.
+- **Admission is now the dominant cost** of the remaining cutoffs (W2b-7, W3-100). Its linear scans
+  are unchanged; reusing indexed edges in `makeClaim` while `admit` stays independent would be a
+  separate, owner-gated candidate.
+- **Construction is paid up front** and can move low-budget cutoffs earlier.
+- **Open gates:** real-workload (G1/G3), Release, device and deployment gates remain open.
+- **Production adoption:** none. P3-T1 stays scope-incomplete; Phase 3 stays **In Progress**;
+  live/default routing stays unconfigured.
+
+**Review.** The final verdict and the approved SHA-256 values are recorded in the author's hand-off
+report. A file cannot contain its own digest.

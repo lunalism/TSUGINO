@@ -1,5 +1,24 @@
 # TSUGINO — ROADMAP.md
 
+## Exploration relation index implemented and validated — 2026-10-19
+
+§34 is published at `8e5aae10ddd1b39559a7273a72bf8fbdba7bd216`. [Consumer
+§35](PHASE_3_INTERNAL_ROUTING_AMENDMENT_PROPOSAL.md#35-exploration-relation-index-implementation-and-matched-validation--2026-10-19)
+records the change.
+
+- **Change:** `InternalRouteSolver` builds per-ride feasible-relation lists and accepts exploration
+  transitions by sorted intersection. Admission keeps its independent linear scans.
+- **Tests:** 245 targeted tests passed (plus the skipped measurement suite), including
+  every-ride-pair equivalence and trace parity. The Release app and extension built.
+- **Matched validation:** 1,056 of 1,056 calls.
+  - Every credit, class and stage equals the frozen predictions.
+  - Jointly completed results are unchanged.
+  - W2a-10, W2a-11, W2b-6, W3-050 and W5-5 now complete.
+  - V-O stage-solve ratios were W3-025 0.314/0.441 and W5-4 0.359/0.551, so both targets are met.
+
+Simulator only, not Release, not representative. P3-T1 stays scope-incomplete; Phase 3
+**In Progress**; live/default routing unconfigured.
+
 ## Per-ride relation-list design audit — 2026-10-18
 
 The §33 merge-sort ordering is published at `9accdeae9e3e6070647a546746aa3ee2cff0132c`. [Consumer

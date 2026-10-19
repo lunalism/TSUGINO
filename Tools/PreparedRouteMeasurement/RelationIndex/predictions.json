@@ -1,0 +1,242 @@
+{
+ "W1-0064": {
+  "baseline": {
+   "calls": 8414,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 9266059
+  },
+  "optimized": {
+   "calls": 8415,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 9266060
+  },
+  "s31Class": "C"
+ },
+ "W1-0256": {
+  "baseline": {
+   "calls": 64710,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 87440915
+  },
+  "optimized": {
+   "calls": 64711,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 87440916
+  },
+  "s31Class": "C"
+ },
+ "W1-0257": {
+  "baseline": {
+   "calls": 34699,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 5118353
+  },
+  "optimized": {
+   "calls": 34700,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 5118354
+  },
+  "s31Class": "I-solver"
+ },
+ "W2a-08": {
+  "baseline": {
+   "calls": 19694,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 54794600
+  },
+  "optimized": {
+   "calls": 15135,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 32742561
+  },
+  "s31Class": "C"
+ },
+ "W2a-09": {
+  "baseline": {
+   "calls": 29152,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 83899972
+  },
+  "optimized": {
+   "calls": 21521,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 48032426
+  },
+  "s31Class": "C"
+ },
+ "W2a-10": {
+  "baseline": {
+   "calls": 38201,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "work": 99799666
+  },
+  "optimized": {
+   "calls": 30121,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 68269399
+  },
+  "s31Class": "I-solver"
+ },
+ "W2a-11": {
+  "baseline": {
+   "calls": 43273,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "work": 99961417
+  },
+  "optimized": {
+   "calls": 41206,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 94461355
+  },
+  "s31Class": "I-solver"
+ },
+ "W2b-5": {
+  "baseline": {
+   "calls": 11350,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 37294441
+  },
+  "optimized": {
+   "calls": 9043,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 25408444
+  },
+  "s31Class": "C"
+ },
+ "W2b-6": {
+  "baseline": {
+   "calls": 32008,
+   "class": "I-solver",
+   "observedAt": "finalization",
+   "work": 90658229
+  },
+  "optimized": {
+   "calls": 24539,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 69057387
+  },
+  "s31Class": "I-solver"
+ },
+ "W2b-7": {
+  "baseline": {
+   "calls": 36447,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 98118896
+  },
+  "optimized": {
+   "calls": 55720,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "work": 99674503
+  },
+  "s31Class": "I-solver"
+ },
+ "W3-025": {
+  "baseline": {
+   "calls": 11263,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 44472852
+  },
+  "optimized": {
+   "calls": 3362,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 10595206
+  },
+  "s31Class": "C"
+ },
+ "W3-050": {
+  "baseline": {
+   "calls": 26952,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 98049919
+  },
+  "optimized": {
+   "calls": 19525,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 54341063
+  },
+  "s31Class": "I-solver"
+ },
+ "W3-100": {
+  "baseline": {
+   "calls": 32147,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 99052152
+  },
+  "optimized": {
+   "calls": 74719,
+   "class": "I-solver",
+   "observedAt": "admission",
+   "work": 99550709
+  },
+  "s31Class": "I-solver"
+ },
+ "W5-4": {
+  "baseline": {
+   "calls": 11559,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 35171878
+  },
+  "optimized": {
+   "calls": 6100,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 6820829
+  },
+  "s31Class": "C"
+ },
+ "W5-5": {
+  "baseline": {
+   "calls": 30087,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 99735472
+  },
+  "optimized": {
+   "calls": 17026,
+   "class": "C",
+   "observedAt": "terminal",
+   "work": 17202046
+  },
+  "s31Class": "I-solver"
+ },
+ "W8-004M": {
+  "baseline": {
+   "calls": 944,
+   "class": "I-solver",
+   "observedAt": "tieCollection",
+   "work": 3968326
+  },
+  "optimized": {
+   "calls": 1080,
+   "class": "I-solver",
+   "observedAt": "indexing",
+   "work": 1
+  },
+  "s31Class": "I-solver"
+ }
+}

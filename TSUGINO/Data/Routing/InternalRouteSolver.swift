@@ -91,6 +91,8 @@ nonisolated struct InternalSolverTestHooks: Sendable {
     var checkpoint: (@Sendable (InternalSolverStage, InternalSolverUsage) async throws -> Void)?
     var claim: (@Sendable (Int, SolverAdmissionClaim) -> SolverAdmissionClaim)?
     var brokenSharedRelationIndex: Int?
+    /// Corrupts the built exploration relation lists (O, In) before `outgoing` is derived.
+    var corruptRelationIndex: (@Sendable (inout [[Int]], inout [[Int]]) -> Void)?
 }
 #endif
 
@@ -123,6 +125,13 @@ nonisolated struct InternalRouteSolver: Sendable {
         kernel.orderKeys = retained.map(SolverOrderKey.init)
         return try kernel.less(l,r)
     }
+    /// The exploration relation lists and derived `outgoing` flags built for `input` (§34.4).
+    func relationIndexForTesting(_ input: PreparedInternalSearchInput) async throws
+        -> (outgoing: [Bool], outgoingRelations: [[Int]], incomingRelations: [[Int]]) {
+        var kernel = try SolverKernel(input: input, configuration: .inventedEvaluation(objective: input.objective))
+        try await kernel.validateAndIndex()
+        return (kernel.outgoing, kernel.outgoingRelations, kernel.incomingRelations)
+    }
     @concurrent func solveForTesting(_ input: PreparedInternalSearchInput,
         configuration: InternalSolverExecutionConfiguration, hooks: InternalSolverTestHooks) async throws -> RouteSearchResult {
         do {
@@ -154,6 +163,9 @@ private nonisolated struct SolverKernel {
     var meter: InternalSolverMeter
     var orderKeys: [SolverOrderKey] = []
     var outgoing: [Bool] = []
+    /// Per ride, ascending indices of feasible relations leaving / entering its endpoint (§34.4).
+    var outgoingRelations: [[Int]] = []
+    var incomingRelations: [[Int]] = []
     #if DEBUG
     var hooks: InternalSolverTestHooks?
     #endif
@@ -204,13 +216,6 @@ private nonisolated struct SolverKernel {
                   input.scope.contains(ride.context.departure), input.scope.contains(ride.context.arrival) else {
                 throw RouteSearchFailure.dataUnavailable
             }
-            var canExtend = false
-            for connection in input.connections {
-                try meter.charge(work: 4_096)
-                if connection.state == .feasible && connection.key.from == ride.key.address
-                    && connection.key.alightingIndex == ride.key.alightingIndex { canExtend = true; break }
-            }
-            outgoing.append(canExtend)
             let address = ride.key.address
             // Bounded lengths are inherited from P, charged before allocating comparator bytes.
             let n = 16 + address.tripID.rawValue.utf8.count + address.serviceDate.label.utf8.count
@@ -234,6 +239,49 @@ private nonisolated struct SolverKernel {
             default: throw RouteSearchFailure.dataUnavailable
             }
         }
+        try buildRelationLists()
+    }
+    /// One relation-major pass over feasible relations and all rides (§34.4): each (relation, ride)
+    /// pair is one key-equivalent comparison of both endpoints, every entry is charged before it is
+    /// appended, and relation order makes every list ascending without sorting. Only exploration
+    /// reads these lists; claims and admission re-derive edges from the original relations.
+    mutating func buildRelationLists() throws {
+        let rides = input.rides.count
+        try meter.charge(slots: InternalSolverMeter.product(rides, 2), bytes: InternalSolverMeter.product(rides, 48))
+        var out = Array(repeating: [Int](), count: rides), into = Array(repeating: [Int](), count: rides)
+        for r in input.connections.indices {
+            try meter.charge()
+            let key = input.connections[r].key
+            guard input.connections[r].state == .feasible else { continue }
+            for z in input.rides.indices {
+                try meter.charge(work: 4_096)
+                let ride = input.rides[z].key
+                if key.from == ride.address && key.alightingIndex == ride.alightingIndex {
+                    try meter.charge(slots: 1, bytes: 8); out[z].append(r)
+                }
+                if key.to == ride.address && key.boardingIndex == ride.boardingIndex {
+                    try meter.charge(slots: 1, bytes: 8); into[z].append(r)
+                }
+            }
+        }
+        #if DEBUG
+        hooks?.corruptRelationIndex?(&out, &into)
+        #endif
+        outgoingRelations = out; incomingRelations = into
+        outgoing = out.map { !$0.isEmpty }
+    }
+    /// Exploration acceptance (§34.4): keys are unique, so x→y is a feasible transition exactly
+    /// when O(x) and In(y) share a relation index. 1 per lookup plus 1 per ascending-merge step.
+    mutating func accepted(_ x: Int, _ y: Int) throws -> Bool {
+        try meter.charge()
+        let o = outgoingRelations[x], i = incomingRelations[y]
+        var p = 0, q = 0
+        while p < o.count && q < i.count {
+            try meter.charge()
+            if o[p] == i[q] { return true }
+            if o[p] < i[q] { p += 1 } else { q += 1 }
+        }
+        return false
     }
     mutating func run() async throws -> RouteSearchResult {
         try await validateAndIndex()
@@ -263,8 +311,7 @@ private nonisolated struct SolverKernel {
                     if input.rides[previous].train.trip.id == ride.train.trip.id { repeated = true; break }
                 }
                 if repeated { continue }
-                guard let edge = try relation(transition(path[path.count - 1], candidate)),
-                      input.connections[edge].state == .feasible else { continue }
+                guard try accepted(path[path.count - 1], candidate) else { continue }
             }
             if path.count >= bound { continue }
             try meter.charge(work: path.count + 1, slots: path.count + 1, bytes: InternalSolverMeter.product(path.count + 1, 8))
