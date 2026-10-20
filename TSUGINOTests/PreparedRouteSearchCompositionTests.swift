@@ -49,6 +49,124 @@ struct PreparedRouteSearchCompositionTests {
         if variant >= 5 { #expect(p.summary(composed).last == "noResults") }
     }
 
+    // MARK: Local/express (Phase 3 test list; DEC-086 objective, §24.4 order)
+
+    /// Invented train serving exactly `stops`, evenly timed, with only the declared intervals.
+    func train(_ name: String, _ stops: [String], departure: Double, step: Double,
+               rides: [(Int, Int)]) -> SolverFixture.Spec {
+        var s = SolverFixture.Spec(); s.name = name; s.stops = stops; s.base = departure; s.step = step
+        s.required = rides.map { .init(boardingIndex: $0.0, alightingIndex: $0.1) }; return s
+    }
+    /// Independent oracle winners, rendered like `summary` rail legs (same-station links only).
+    func oracleRoutes(_ c: PreparedRouteFixture.Case) throws -> [String] {
+        let prepared = try PreparedInternalSearchInput(assessment: c.world.assessment, objective: .init(reference: p.objective))
+        return try ExhaustivePreparedSolverOracle().winners(prepared).map { keys in
+            try keys.map { key in
+                let ride = try #require(prepared.rides.first { $0.key == key })
+                return "\(key.address.tripID.rawValue)/\(key.address.serviceDate.label)/\(key.boardingIndex)-\(key.alightingIndex)"
+                    + "@\(ride.context.departure.timeIntervalSinceReferenceDate)-\(ride.context.arrival.timeIntervalSinceReferenceDate)"
+            }.joined(separator: " | ")
+        }
+    }
+    /// Composed = direct solver = oracle, exact routes in order, one capture; returns the routes.
+    func localExpressRoutes(_ specs: [SolverFixture.Spec], links: [SolverFixture.Link] = []) async throws -> [String] {
+        let c = try p.make(specs, links: links)
+        let supplier = InventedPreparedRouteViewSupplier(c.view)
+        let composed = p.summary(try await p.searcher(c, supplier).search(c.request))
+        #expect(composed == p.summary(try await p.direct(c)))
+        #expect(await supplier.captures == ["V1"])
+        let routes = Array(composed.dropFirst(2))
+        #expect(routes == (try oracleRoutes(c)))
+        #expect(composed.dropFirst().first == (routes.isEmpty ? "noResults" : "omissions 0"))
+        return routes
+    }
+
+    @Test func expressSkippingStopsArrivesEarlierAndWins() async throws {
+        let local = train("invented-local", ["O", "A", "B", "D"], departure: 1000, step: 10, rides: [(0, 3)])
+        let express = train("invented-express", ["O", "D"], departure: 1005, step: 15, rides: [(0, 1)])
+        #expect(try await localExpressRoutes([local, express]) == ["invented-express/invented-day/0-1@1005.0-1020.0"])
+    }
+
+    /// A skipped station is absent from the express's own stop sequence. Here the express omits
+    /// the requested origin (0) or destination (1); it is still prepared as an earlier usable ride,
+    /// but none of its rides touches that endpoint, so the slower local is the only result.
+    @Test(arguments: 0...1) func expressCannotUseUnservedRequestedStation(_ variant: Int) async throws {
+        let local = train("invented-local", ["O", "M", "D"], departure: 1000, step: 10, rides: [(0, 2)])
+        let express = variant == 0
+            ? train("invented-express", ["U", "D"], departure: 1000, step: 15, rides: [(0, 1)])
+            : train("invented-express", ["O", "E"], departure: 1000, step: 12, rides: [(0, 1)])
+        let prepared = try PreparedInternalSearchInput(assessment: p.make([local, express]).world.assessment,
+                                                       objective: .init(reference: p.objective))
+        let rides = prepared.rides.filter { $0.train.trip.id.rawValue == "invented-express" }
+        #expect(rides.count == 1)
+        #expect(rides.allSatisfy { $0.context.arrival < p.date(1020) }) // earlier than the local
+        if variant == 0 {
+            let origin = try p.station("O")
+            #expect(rides.allSatisfy { $0.train.anchors.boardingStationID != origin })
+        } else {
+            let destination = try p.station("D")
+            #expect(rides.allSatisfy { $0.train.anchors.alightingStationID != destination })
+        }
+        #expect(try await localExpressRoutes([local, express]) == ["invented-local/invented-day/0-2@1000.0-1020.0"])
+    }
+
+    /// Equal arrival and equal (zero) changes: both distinct trips survive in §24.4 order,
+    /// whatever the supplied order. Equal arrival with an extra change (1) is not a tie.
+    @Test(arguments: 0...1) func equalOptimaNeedEqualArrivalAndEqualChanges(_ variant: Int) async throws {
+        let express = train("invented-express", ["O", "D"], departure: 1010, step: 10, rides: [(0, 1)])
+        if variant == 0 {
+            let local = train("invented-local", ["O", "A", "D"], departure: 1000, step: 10, rides: [(0, 2)])
+            let expected = ["invented-express/invented-day/0-1@1010.0-1020.0", "invented-local/invented-day/0-2@1000.0-1020.0"]
+            #expect(try await localExpressRoutes([local, express]) == expected)
+            #expect(try await localExpressRoutes([express, local]) == expected)
+        } else {
+            let first = train("invented-local-a", ["O", "M"], departure: 1000, step: 5, rides: [(0, 1)])
+            let second = train("invented-local-b", ["M", "D"], departure: 1005, step: 15, rides: [(0, 1)])
+            #expect(try await localExpressRoutes([first, second, express], links: [f.link(0, 1)])
+                    == ["invented-express/invented-day/0-1@1010.0-1020.0"])
+        }
+    }
+
+    /// Local O→M then express M→D (arrives 1015) beats the local through to D (1020) only with
+    /// positive, feasible directional evidence (0). No relation (1), qualified absence (2) or an
+    /// allowance the gap cannot meet (3) leaves the slower local; the shared station M never
+    /// implies a connection. Unknown evidence (4) is dataUnavailable, not a fabricated transfer.
+    @Test(arguments: 0...4) func localToExpressTransferNeedsExplicitDirectionalEvidence(_ variant: Int) async throws {
+        let local = train("invented-local", ["O", "M", "D"], departure: 1000, step: 10, rides: [(0, 1), (0, 2)])
+        let express = train("invented-express", ["M", "D"], departure: 1012, step: 3, rides: [(0, 1)])
+        let links: [SolverFixture.Link] = switch variant {
+        case 0: [f.link(0, 1, allowance: 2)]
+        case 1: []
+        case 2: [f.link(0, 1, kind: 1)]
+        case 3: [f.link(0, 1, allowance: 5)]
+        default: [f.link(0, 1, kind: 2)]
+        }
+        if variant == 4 {
+            let c = try p.make([local, express], links: links)
+            #expect(await run(c) == ("data", ["V1"]))
+            #expect(throws: PreparedInputFailure.assessmentNotQualified) {
+                try PreparedInternalSearchInput(assessment: c.world.assessment, objective: .init(reference: p.objective))
+            }
+            return
+        }
+        // Variants 1 and 3 share a result; the prepared relation state tells them apart.
+        let prepared = try PreparedInternalSearchInput(assessment: p.make([local, express], links: links).world.assessment,
+                                                       objective: .init(reference: p.objective))
+        let states: [[PreparedConnectionState]] = [[.feasible], [], [.absentUnderCompleteAuthority], [.infeasible]]
+        #expect(prepared.connections.map(\.state) == states[variant])
+        if variant == 0 || variant == 3 {
+            // Invented timing: the local reaches M at 1010 and the express leaves M at 1012, a
+            // 2-second gap that an allowance of 2 meets and an allowance of 5 does not.
+            let arrive = try #require(prepared.rides.first { $0.key.address.tripID.rawValue == "invented-local" && $0.key.alightingIndex == 1 })
+            let leave = try #require(prepared.rides.first { $0.key.address.tripID.rawValue == "invented-express" })
+            #expect(leave.context.departure.timeIntervalSince(arrive.context.arrival) == 2)
+        }
+        let routes = try await localExpressRoutes([local, express], links: links)
+        #expect(routes == (variant == 0
+            ? ["invented-local/invented-day/0-1@1000.0-1010.0 | invented-express/invented-day/0-1@1012.0-1015.0"]
+            : ["invented-local/invented-day/0-2@1000.0-1020.0"]))
+    }
+
     // MARK: Preflight order (DEC-079)
 
     @Test func preflightOrderAndPrecedence() async throws {
