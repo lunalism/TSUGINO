@@ -5634,6 +5634,21 @@ recorded ODPT/S9/P3-T1 holds; Phase 3 exit unmet. **Unknown, not verified blocke
 of qualified real connection evidence; real workload shape; whether exhaustive DFS completes within
 any acceptable budget at real scale; device elapsed/memory/cancellation behavior.
 
+*Evidence-status update (2026-10-21):* G1's rights text above describes the repository as of
+2026-10-14 and is preserved. The 2026-09-19 inquiry had in fact been answered on 2026-10-08. The
+reply was reviewed from the owner-supplied original on 2026-10-21 (audit §3.12 reconciliation
+record; ROADMAP "ODPT correspondence reconciliation — 2026-10-21"). G1's rights evidence status
+is now: **ODPT conditional response received; implementation compliance and production
+authorization remain unverified.** The G1 matrix cell and its **Not ready** status are unchanged.
+
+- Permanent binary bundling (the permanent-bundling part of audit §3.12 item 5) is still unasked.
+- Public-repository publication of Tokyo Metro-derived records remains gated (DEC-065 §A,
+  DEC-068 §F).
+- Replace/delete, update-handling and termination mechanisms are unimplemented.
+
+Real-data coverage remains incomplete. G1 stays **Not ready**; P3-T1 remains scope-incomplete;
+Phase 3 remains **In Progress**; live/default routing remains unconfigured.
+
 ### 26.3 Selection rationale
 
 Real-data pilots need private authorization and, per §22.6, a defined preparation path; invented

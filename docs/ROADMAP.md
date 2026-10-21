@@ -1,5 +1,44 @@
 # TSUGINO — ROADMAP.md
 
+## ODPT correspondence reconciliation — 2026-10-21
+
+Documentation-only. The owner supplied original email exports of two ODPT Secretariat threads,
+and both were directly reviewed. The review was a print-view inspection, not header or mailbox
+authentication. No export, correspondence text, address or header enters the repository. SHA-256
+of the reviewed exports, each verified in full from the files:
+
+- Toei GTFS stop/pass representation thread: `e137c7f522ad73ea2fea18f0104c453ccc0f0863dbd2cac4a170f59cd6f1ea53`
+- Basic License scope inquiry thread: `99e5ba776eab427711a2fc63a3308a14d6c72f3c597b2dd27a907a1348a4dc47`
+
+**Licence inquiry.**
+
+- The 2026-09-19 inquiry was answered on 2026-10-08, with Q1–Q6 each answered. See the
+  [audit §3.12 reconciliation record](PROVIDER_FEASIBILITY_AUDIT.md#312-written-confirmation-backlog-directed-to-the-odpt-secretariat-operators-only-if-odpt-refers-the-question).
+- Every answer is a conditional Secretariat view, mostly "possible in principle".
+- It is **not** production authorization, verified compliance, or a rights grant for other
+  operators or feeds.
+- Status: **response received — compliance pending.**
+
+**Toei interpretation thread.**
+
+- The 2026-10-05 and 2026-10-08 replies were reviewed directly and agree with the 2026-10-05
+  checkpoints and the 2026-10-08 evidence checkpoint below.
+- That checkpoint's statement that it relied on an owner-supplied transcription remains
+  historically accurate; this direct review corroborates it.
+- The accepted interpretation profile (resource `35b68908-4558-47ae-bfa5-867e58544a1a`,
+  `feed_version 20260921`), its scope and every classification are unchanged.
+
+**Still open.**
+
+- Permanent binary bundling: never asked (the permanent-bundling part of audit §3.12 item 5).
+- Public-repository records derived from Tokyo Metro data: DEC-065 §A and DEC-068 §F remain gated.
+- Replace/delete, update-handling and termination mechanisms: not implemented.
+- Official marks and logos: excluded.
+- Challenge-only operators and production entitlement: unchanged; DEC-004 remains Provisional.
+
+Real-data coverage remains incomplete. P3-T1 stays scope-incomplete; Phase 3 **In Progress**;
+live/default routing unconfigured.
+
 ## Exploration relation index implemented and validated — 2026-10-19
 
 §34 is published at `8e5aae10ddd1b39559a7273a72bf8fbdba7bd216`. [Consumer

@@ -2123,6 +2123,14 @@ TWR, MIR, Tama Monorail, and Yurikamome may be promoted through Post-Launch Trac
 
 The inquiry sent 2026-09-19 (audit §3.12) is unanswered. Still pending: App Store screenshots/previews containing Basic-License data; offline bundling of static GTFS in the binary; the non-restorable canonical-data interpretation; Korean translation of Tokyo Metro strings and incident text and its notices; official line colours as standalone tokens; installed-device cache deletion on termination. Official Tokyo Metro logos, station-number icons, and line symbols remain outside the v1 UI. Silence is not approval.
 
+**Evidence note — 2026-10-21.** The paragraph above is historical and was accurate on 2026-09-19. The Secretariat answered the inquiry on 2026-10-08; see the audit §3.12 reconciliation record. The answers are conditional views:
+
+- Screenshots and previews, replaceable/deletable caching, Korean translation and unaltered line colours are each described as acceptable or possible in principle under stated premises.
+- App-internal non-restorable data that is not provided externally is not, per se, a prohibited act.
+- On termination, the Secretariat asks for deletion and a technically reasonable way to stop continued use and display.
+
+Implemented compliance is unverified. Permanent offline bundling of static GTFS in the binary was never asked and remains open. Official logos, station-number icons and line symbols remain outside the v1 UI. This note changes no part of this Decision or its status.
+
 ## Criteria for upgrading a service from Scheduled Journey Guidance to Realtime Journey Tracking
 
 Promotion requires, in order (the DEC-046 point 11 gates): catalog/license verification of an official Trip Update (and optionally Vehicle Position) resource; payload/schema verification; identity-join verification against the static feed; freshness/coverage verification across repeated snapshots; UI-state verification. Promotion changes only the service's verified capability set; it does not reopen scope.
@@ -4327,6 +4335,14 @@ Offline **bundling** of normalized Basic-License static data in the shipped bina
 
 Committing and bundling are separate: this table governs the repository only. Whether normalized Tokyo Metro static data may be bundled in the shipped binary remains the pending ODPT question (audit §3.12 item 5).
 
+**Evidence note — 2026-10-21.** The ODPT reply this table refers to was received on 2026-10-08 (audit §3.12 reconciliation record).
+
+- **Q3.** The Secretariat considered app-internal data that is not provided externally, and from which the original cannot be restored in whole or in large part, not to be, per se, an Art. 8(4) prohibited act. That view is conditioned on non-external provision. TSUGINO conservatively treats committing records to this public repository as external provision, outside that view. The Tokyo Metro rows for bulk identifiers and names and for mapping records therefore remain **Unresolved**, and nothing becomes committable.
+- **Q4.** The Secretariat considered in-app Korean translation possible in principle, with the original shown for dynamic text. That does not decide whether project-owned canonical Korean data derived from Tokyo Metro may be committed; that remains a later decision.
+- **Permanent bundling** (the permanent-bundling part of item 5) was not asked and remains pending.
+
+The table entries and statuses above are unchanged.
+
 ### B. P2-S1 scope — a Toei-only static GTFS reader
 
 1. P2-S1 reads the **text content of individual GTFS tables** supplied by its caller — `agency`, `routes`, `trips`, `stops`, `stop_times`, `calendar`, `calendar_dates`, `feed_info`, and `translations` — into provider DTOs under `Data/GTFS/Static` (`ARCHITECTURE.md` §4, §4.3).
@@ -4963,6 +4979,8 @@ Rejected alternatives:
    - the grouping-proposal, binding, and reconciliation code;
    - fully invented synthetic fixtures (DEC-065 §A, DEC-067 §B), including invented reviewed records;
    - aggregate counts and hashes (DEC-067 §E).
+
+**Evidence note — 2026-10-21.** The Context statement that the 2026-09-19 inquiry is unanswered was accurate when recorded. A reply arrived on 2026-10-08 (audit §3.12 reconciliation record). Its Q3 view covers app-internal, non-restorable data that is not provided externally. It does not resolve publishing Tokyo Metro-derived mapping records in this repository. Item 3 above therefore still applies: such records need a separate accepted publication decision, or a confirmation specific to publication. The registry-of-record decision in item 1 remains pending, and no record becomes committable.
 
 ### G. Where the code lives (`ARCHITECTURE.md` §4, §39, §40)
 

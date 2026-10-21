@@ -338,6 +338,22 @@ Outcome values: `READY_WITH_COMPLIANCE` · `READY_WITHOUT_SPECIAL_ACTION` · `BL
 | 9 | medium | How does termination deletion (Art. 13(3)) apply to caches on already-installed user devices? | sent — Q6 (backend caches, device caches, delivered data, pre-termination screenshots, remote invalidation, notice period) |
 | 10 | low | Preferred Toei CC BY attribution placement (in-app screen vs. App Store description) | deferred — not release-blocking |
 
+**Reconciliation record — 2026-10-21 (reply received 2026-10-08).** The status line and table above are historical as of 2026-09-19 and are preserved unchanged. The Secretariat replied on 2026-10-08 and answered Q1–Q6 individually. The owner supplied the original email export, which was directly reviewed on 2026-10-21. That review was a print-view inspection, not header or mailbox authentication. No correspondence text, address or header is recorded here.
+
+- **Nature of the answers.** Each answer is the Secretariat's view, conditioned on the premises stated in the inquiry and mostly worded as "possible in principle" (原則可能) or "we consider". None amends the Basic License or the Specific Terms. None verifies TSUGINO's implementation. Scope: Tokyo Metro data under the Basic License; Toei CC BY 4.0 obligations are unchanged.
+- **Current status:** **response received — compliance pending.**
+
+| Q | Secretariat's view (paraphrased) | Conditions stated | Still open |
+|---|---|---|---|
+| Q1 App Store screenshots/previews | Within display of the Deliverable; no separate permission needed under the stated premises | No logos, corporate emblems, station-numbering images or line-symbol marks; nothing that could be mistaken for an official or endorsed app | Store-listing compliance review |
+| Q2 Static GTFS caching/offline use | Fetching, normalizing, caching in the app or on device and using offline is possible in principle | No redistribution to third parties; handle updates; a replace/delete mechanism; no external provision of the source in a reusable form. The inquiry also committed to guideline duties such as update notices and showing retrieval time | Mechanisms not implemented or verified. **Permanent binary bundling (item 5) was not asked and remains unresolved**; it is not implied by this answer |
+| Q3 App-internal normalized data | Not, per se, an Art. 8(4) prohibited act | App-internal use only; not provided externally; the original cannot be restored in whole or in large part | Not a blanket permission. TSUGINO conservatively treats committing records to a public repository as external provision, outside this view (DEC-065 §A, DEC-068 §F remain gated). Restorability is assessed per artifact |
+| Q4 Korean translation | (a) Line, station and destination names: possible in principle. (b) Service information/Alerts shown alongside the original: possible in principle | (b) the original must be shown. Care is asked over mistranslation and update delay; labelling as a reference or machine translation and showing the original is recommended | No specific notice wording per method; translation quality and latency handling are design obligations |
+| Q5 Official line colours | Unaltered colour values with text line names, letter symbols and own-design badges: possible in principle | No appearance that could be taken as imitating official symbols or marks | Official logos, station-number images and line symbols stay excluded |
+| Q6 Termination | Do not keep holding or using the data after licence termination; delete it, stop distribution, and use a technically reasonable configuration so it is not used or displayed in apps | — | Items (a)–(d) were not answered individually; pre-termination screenshots were not addressed; notice period: no uniform answer given. No revocation mechanism is implemented |
+
+Items 2, 3, 4 and 10 remain deferred as recorded above. The permanent-bundling part of item 5 was never asked; only its download, normalization, caching and offline-use part was asked, as Q2. Operator-specific regimes, Challenge-only access limits and production entitlement are unchanged; DEC-004 remains Provisional.
+
 ---
 
 ## 4. Tokyo Metropolitan Operator Set — Coverage Boundary
