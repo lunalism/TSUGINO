@@ -6301,6 +6301,21 @@ The code in this section still implements the earlier provisional D1 mapping and
 §29.3 reading. Changing it needs separate implementation authorization; see DEC-088's
 implementation handoff. R1 stays invented-only; R2 is a possible direction and R3 is deferred.
 
+*Implementation overlay (2026-10-21):* the preceding sentence, that the code still implements
+the provisional D1 mapping and the earlier §29.3 reading, is now historical. Under a separate
+owner authorization, the invented-only code implements DEC-088:
+
+- **D1:** `windowOutsideViewValidity` returns `dataUnavailable`.
+- **D4:** `PreparedRouteDeclarationProducer.untraversableAtProfileBoundary` drops only relations
+  that pass the closure's target checks and alight or board outside `profile.stations`, between
+  uniquely addressed retained occurrences, with a key occurring once.
+- **D2 and D3:** unchanged.
+
+The closure's count/budget limit and the evidence relation limit apply to the retained, projected
+relations, as they already did for profile-excluded occurrences. Excluded valid relations can
+therefore lower the retained count; malformed or duplicate relations are never excluded. Evidence
+(invented, Simulator, Debug): see DEC-088 "Implementation evidence — 2026-10-21".
+
 ### 29.5 Invented verification (2026-10-15)
 
 Destination: iPhone 17 Simulator `84E47945-9D2E-446F-8C40-B835A9D15880` (explicit). No physical

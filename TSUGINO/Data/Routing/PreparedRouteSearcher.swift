@@ -6,12 +6,14 @@ nonisolated enum PreparedRouteSearchStage: CaseIterable, Hashable, Sendable {
     case declarations, closure, evidence, assessment, preparedInput, solve
 }
 
-/// PROVISIONAL user-visible mappings, pending owner confirmation for production
-/// (consumer §27.9, §28.6). Pinned by tests; this implementation is not acceptance.
+/// User-visible mappings formerly provisional (consumer §29.4), now Accepted by DEC-088
+/// D1/D2. The name is kept for traceability with §29.4. Pinned by tests.
 nonisolated enum PreparedRouteSearchProvisionalMapping {
-    /// The request window [L, U] is not inside the captured view's validity interval.
-    static var windowOutsideViewValidity: RouteSearchFailure { .unsupportedRequest }
-    /// A preparation safeguard (`resourceLimit`) over otherwise consistent input.
+    /// D1: a constructible in-profile window [L, U] that the captured view's validity
+    /// interval does not cover is insufficient input coverage (DEC-079 §3), not an
+    /// unsupported request. An unconstructible scope stays `unsupportedRequest`.
+    static var windowOutsideViewValidity: RouteSearchFailure { .dataUnavailable }
+    /// D2: a preparation safeguard (`resourceLimit`) over otherwise consistent input.
     static var preparationResourceLimit: RouteSearchFailure { .searchIncomplete }
 }
 

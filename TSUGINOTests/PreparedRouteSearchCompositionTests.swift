@@ -59,8 +59,10 @@ struct PreparedRouteSearchCompositionTests {
     }
     /// Independent oracle winners, rendered like `summary` rail legs (same-station links only).
     func oracleRoutes(_ c: PreparedRouteFixture.Case) throws -> [String] {
-        let prepared = try PreparedInternalSearchInput(assessment: c.world.assessment, objective: .init(reference: p.objective))
-        return try ExhaustivePreparedSolverOracle().winners(prepared).map { keys in
+        try oracleRoutes(PreparedInternalSearchInput(assessment: c.world.assessment, objective: .init(reference: p.objective)))
+    }
+    func oracleRoutes(_ prepared: PreparedInternalSearchInput) throws -> [String] {
+        try ExhaustivePreparedSolverOracle().winners(prepared).map { keys in
             try keys.map { key in
                 let ride = try #require(prepared.rides.first { $0.key == key })
                 return "\(key.address.tripID.rawValue)/\(key.address.serviceDate.label)/\(key.boardingIndex)-\(key.alightingIndex)"
@@ -167,6 +169,264 @@ struct PreparedRouteSearchCompositionTests {
             : ["invented-local/invented-day/0-2@1000.0-1020.0"]))
     }
 
+    // MARK: Profile-boundary relations (DEC-088 D4)
+
+    /// The case with the named stations/lines removed from its profile; everything else unchanged.
+    func restricted(_ c: PreparedRouteFixture.Case, stations: [String] = [], lines: [String] = []) throws -> PreparedRouteFixture.Case {
+        var c = c
+        let base = c.profile
+        var s = base.stations, l = base.lines
+        for name in stations { s.remove(try p.station(name)) }
+        for name in lines { l.remove(try f.need(LineID(name))) }
+        c.profile = try f.need(InternalSearchProfileDefinition(identity: base.identity, stations: s, lines: l,
+            trips: base.trips, maximumElapsedDuration: base.maximumElapsedDuration, maximumRailRides: base.maximumRailRides,
+            connectionPolicy: base.connectionPolicy, serviceDateInterpretation: base.serviceDateInterpretation))
+        return c
+    }
+    func requiredKeys(_ c: PreparedRouteFixture.Case) throws -> [ConnectionRelationKey] {
+        try p.prepareThroughProducers(c).0.connections.required.map(ConnectionRelationKey.init)
+    }
+    /// Composed = the unchanged solver over the producer-built P = independent oracle over that
+    /// P, exact routes in order, one capture. Returns the routes.
+    func boundaryRoutes(_ c: PreparedRouteFixture.Case) async throws -> [String] {
+        let supplier = InventedPreparedRouteViewSupplier(c.view)
+        let composed = p.summary(try await p.searcher(c, supplier).search(c.request))
+        let prepared = try p.prepareThroughProducers(c).1
+        #expect(composed == p.summary(try await InternalRouteSolver().solve(prepared, configuration: c.configuration)))
+        #expect(await supplier.captures == ["V1"])
+        let routes = Array(composed.dropFirst(2))
+        #expect(routes == (try oracleRoutes(prepared)))
+        return routes
+    }
+    func link(_ from: Int, _ to: Int, alight: Int = 1, board: Int = 0, form: ConnectionForm = .sameStation,
+              allowance: Double = 0) -> SolverFixture.Link {
+        var l = f.link(from, to, form: form, allowance: allowance); l.alight = alight; l.board = board; return l
+    }
+    func slowDirect() -> SolverFixture.Spec { train("invented-direct", ["O", "D"], departure: 1000, step: 20, rides: [(0, 1)]) }
+
+    /// A walking relation whose alighting (0) or boarding (1) station X is outside the profile is
+    /// provably untraversable and dropped, so even missing evidence for it no longer fails the call.
+    @Test(arguments: 0...1) func boundaryRelationIsExcludedEvenWithoutEvidence(_ variant: Int) async throws {
+        let a = train("invented-a", ["O", variant == 0 ? "X" : "Y"], departure: 1000, step: 5, rides: [(0, 1)])
+        let b = train("invented-b", [variant == 0 ? "Y" : "X", "D"], departure: 1006, step: 4, rides: [(0, 1)])
+        let full = try p.make([slowDirect(), a, b], links: [link(1, 2, form: .walking, allowance: 1)])
+        // With X in the profile, the walking transfer is the earliest route and is required.
+        let walk = variant == 0 ? "walk X->Y" : "walk Y->X"
+        let unrestricted = try await p.searcher(full, InventedPreparedRouteViewSupplier(full.view)).search(full.request)
+        #expect(p.summary(unrestricted).last?.contains(walk) == true)
+        var unknown = full; unknown.parts.setEntry(full.firstKey, nil)
+        #expect(await run(unknown) == ("data", ["V1"]))
+        for missing in [false, true] {
+            var c = try restricted(full, stations: ["X"])
+            if missing { c.parts.setEntry(full.firstKey, nil) }
+            #expect(try requiredKeys(c).isEmpty)
+            #expect(try await boundaryRoutes(c) == ["invented-direct/invented-day/0-1@1000.0-1020.0"])
+        }
+    }
+
+    /// Relations whose alighting and boarding stations are both in the profile stay required:
+    /// plain (0), untraversable only because a line is outside the profile (1), and repeated
+    /// station visits addressed by exact index (2).
+    @Test(arguments: 0...2) func relationsAtProfileStationsStayRequired(_ variant: Int) async throws {
+        let b = train("invented-b", ["H", "D"], departure: 1005, step: 5, rides: [(0, 1)])
+        switch variant {
+        case 0:
+            let a = train("invented-a", ["O", "H"], departure: 1000, step: 5, rides: [(0, 1)])
+            let c = try p.make([slowDirect(), a, b], links: [link(1, 2)])
+            #expect(try requiredKeys(c) == [c.firstKey])
+            #expect(try await boundaryRoutes(c) == ["invented-a/invented-day/0-1@1000.0-1005.0 | invented-b/invented-day/0-1@1005.0-1010.0"])
+            var missing = c; missing.parts.setEntry(c.firstKey, nil)
+            #expect(await run(missing) == ("data", ["V1"]))
+        case 1:
+            var a = train("invented-a", ["O", "M", "H"], departure: 995, step: 5, rides: [(0, 2)]); a.through = true
+            let c = try restricted(try p.make([slowDirect(), a, b], links: [link(1, 2, alight: 2)]), lines: ["invented-line-b"])
+            #expect(try requiredKeys(c) == [c.firstKey]) // the ride is gone, but only a line excludes it
+            #expect(try await boundaryRoutes(c) == ["invented-direct/invented-day/0-1@1000.0-1020.0"])
+            var missing = c; missing.parts.setEntry(c.firstKey, nil)
+            #expect(await run(missing) == ("data", ["V1"]))
+        default:
+            let a = train("invented-a", ["O", "H", "X", "H"], departure: 1000, step: 5, rides: [(0, 1)])
+            let full = try p.make([slowDirect(), a, b],
+                links: [link(1, 2), link(1, 2, alight: 3), link(1, 2, alight: 2, form: .walking)])
+            let keys = full.world.assessment.closure.connections.required.map(ConnectionRelationKey.init)
+            let c = try restricted(full, stations: ["X"])
+            #expect(try requiredKeys(c) == [keys[0], keys[1]]) // H at indices 1 and 3 kept; X at index 2 dropped
+            #expect(try await boundaryRoutes(c) == ["invented-a/invented-day/0-1@1000.0-1005.0 | invented-b/invented-day/0-1@1005.0-1010.0"])
+        }
+    }
+
+    /// The exclusion depends on station membership only, never on the service date: the same
+    /// recurring Trip on a prior service date whose events fall inside [L, U] is treated alike.
+    @Test(arguments: [true, false]) func boundaryExclusionIgnoresServiceDate(_ outside: Bool) throws {
+        let station = outside ? "X" : "H"
+        var prior = train("invented-a", ["O", station], departure: 1000, step: 5, rides: [(0, 1)]); prior.day = "invented-day-0"
+        let current = train("invented-a", ["O", station], departure: 1000, step: 5, rides: [(0, 1)])
+        let b = train("invented-b", [outside ? "Y" : "H", "D"], departure: 1006, step: 4, rides: [(0, 1)])
+        let form: ConnectionForm = outside ? .walking : .sameStation
+        let full = try p.make([slowDirect(), prior, current, b],
+                              links: [link(1, 3, form: form, allowance: 1), link(2, 3, form: form, allowance: 1)])
+        let c = try restricted(full, stations: outside ? ["X"] : [])
+        let keys = full.world.assessment.closure.connections.required.map(ConnectionRelationKey.init)
+        #expect(Set(keys.map(\.from.serviceDate.label)) == ["invented-day-0", "invented-day"])
+        #expect(try requiredKeys(c) == (outside ? [] : keys))
+    }
+
+    /// Runs only the S6 producer and S7 closure, so a test can assert the closure's typed failure.
+    @discardableResult
+    func closureOnly(_ c: PreparedRouteFixture.Case) throws -> RequestScopedSearchInputClosure {
+        let scope = try f.need(InternalSearchScope(profile: c.profile, request: c.request, viewID: c.view.id))
+        let d = try PreparedRouteDeclarationProducer.declarations(view: c.view, scope: scope)
+        return try RequestScopedSearchInputClosure(scope: scope, inventory: c.view.inventory, railway: c.view.railway,
+            occurrences: d.occurrences, connections: d.connections, dependencies: d.dependencies)
+    }
+
+    /// Relations the closure rejects keep that exact rejection even where a station is outside
+    /// the profile, so D4 never filters them away. Each `extra[0]` sits at the boundary
+    /// station X on at least one side. The closure's typed failure (its implemented constructor
+    /// contract) is asserted, and the composed call stays dataUnavailable (consumer §27.5).
+    /// Cases: index-0 alighting (0); last-index boarding (1); duplicated excludable key (2);
+    /// duplicated in-profile key beside an excludable one (3); undeclared address (4);
+    /// duplicated occurrence address (5); valid excludable alone succeeds (6); out-of-range
+    /// alighting (7); out-of-range boarding (8); wrong view ID (9); negative boarding (10).
+    @Test(arguments: 0...10) func boundaryRelationsFailingClosureChecksStayRejected(_ variant: Int) async throws {
+        let a = train("invented-a", ["O", "H"], departure: 1000, step: 5, rides: [(0, 1)])
+        let b = train("invented-b", ["H", "D"], departure: 1005, step: 5, rides: [(0, 1)])
+        let e = train("invented-e", ["X", "D"], departure: 1000, step: 30, rides: [(0, 1)])
+        let g = train("invented-g", ["H", "X"], departure: 1000, step: 30, rides: [(0, 1)])
+        var c = try restricted(try p.make([slowDirect(), a, b, e, g], links: [link(1, 2)]), stations: ["X"])
+        let bindings = c.world.bindings
+        func address(_ i: Int) -> TimetableOccurrenceAddress { bindings[i].address }
+        let inProfile = c.firstKey
+        // Valid and excludable: alights a at H, boards e at X (outside the profile).
+        let excludable = ConnectionRelationKey(from: address(1), alightingIndex: 1, to: address(3), boardingIndex: 0)
+        let ghost = TimetableOccurrenceAddress(viewID: c.view.id, tripID: try f.need(TripID("invented-ghost")),
+                                               serviceDate: try f.need(TimetableServiceDate("invented-day")))
+        let foreign = TimetableOccurrenceAddress(viewID: TimetableViewID(f.uuid(7)), tripID: address(3).tripID,
+                                                 serviceDate: address(3).serviceDate)
+        let extra: [ConnectionRelationKey] = switch variant {
+        case 0: [.init(from: address(3), alightingIndex: 0, to: address(2), boardingIndex: 0)]   // alights X at index 0
+        case 1: [.init(from: address(1), alightingIndex: 1, to: address(4), boardingIndex: 1)]   // boards X at last index
+        case 2: [excludable, excludable]
+        case 3: [inProfile, excludable]
+        case 4: [.init(from: address(4), alightingIndex: 1, to: ghost, boardingIndex: 0)]        // alights X, undeclared to
+        case 7: [.init(from: address(1), alightingIndex: 2, to: address(3), boardingIndex: 0)]   // boards X; alighting 2 == count
+        case 8: [.init(from: address(4), alightingIndex: 1, to: address(2), boardingIndex: 5)]   // alights X; boarding past end
+        case 9: [.init(from: address(4), alightingIndex: 1, to: foreign, boardingIndex: 0)]      // alights X; other view
+        case 10: [.init(from: address(4), alightingIndex: 1, to: address(2), boardingIndex: -1)] // alights X; negative
+        default: [excludable]
+        }
+        #expect(try PreparedRouteDeclarationProducer.untraversableAtProfileBoundary(extra[0],
+            kept: Dictionary(uniqueKeysWithValues: bindings.map { ($0.address, $0.trip) }),
+            scope: try f.need(InternalSearchScope(profile: c.profile, request: c.request, viewID: c.view.id)))
+            == [2, 5, 6].contains(variant))
+        c.parts.relations = .init(reference: c.parts.relations.reference, completeness: .declaredComplete,
+                                  targets: c.parts.relations.targets + extra)
+        if variant == 5 {
+            c.parts.occurrences = .init(reference: c.parts.occurrences.reference, completeness: .declaredComplete,
+                                        entries: c.parts.occurrences.entries + [c.parts.occurrences.entries[1]])
+        }
+        if variant == 6 {
+            #expect(try requiredKeys(c) == [inProfile])
+            #expect(try await boundaryRoutes(c) == ["invented-a/invented-day/0-1@1000.0-1005.0 | invented-b/invented-day/0-1@1005.0-1010.0"])
+            return
+        }
+        let failure: SearchInputClosureConstructionFailure = variant == 5 ? .declarationConflict : .connectionTargetConflict
+        #expect(throws: failure) { try self.closureOnly(c) }
+        #expect(await run(c) == ("data", ["V1"]))
+        #expect(await runStages(c, view: c.view).1.last == .declarations) // rejected by the closure (S7)
+    }
+
+    /// D4 and the preparation relation limit (D2 unchanged). The limit applies to the retained,
+    /// projected relations: more than `ConnectionEvidenceLimits.relations` retained in-profile
+    /// relations is searchIncomplete (0). The same number of valid boundary relations is
+    /// legitimately excluded and the call succeeds (1). A malformed (2) or duplicated (3) relation
+    /// among them is not excluded, so the closure still rejects it.
+    @Test(arguments: 0...3) func boundaryExclusionAndRelationLimit(_ variant: Int) async throws {
+        let outside = (0..<40).map { "invented-x\($0)" }   // stations removed from the profile
+        let inside = (0..<60).map { "invented-y\($0)" }
+        let more = (0..<40).map { "invented-z\($0)" }
+        let u = train("invented-u", outside, departure: 1000, step: 1, rides: [])
+        let v = train("invented-v", inside, departure: 1000, step: 1, rides: [])
+        let w = train("invented-w", more, departure: 1000, step: 1, rides: [])
+        var c = try restricted(try p.make([slowDirect(), u, v, w]), stations: outside)
+        let address = c.world.bindings.map(\.address)
+        func keys(_ from: Int, _ fromStops: Int, _ to: Int, _ toStops: Int) -> [ConnectionRelationKey] {
+            (1..<fromStops).flatMap { alight in (0..<(toStops - 1)).map { board in
+                ConnectionRelationKey(from: address[from], alightingIndex: alight, to: address[to], boardingIndex: board) } }
+        }
+        let boundary = keys(1, outside.count, 2, inside.count)   // every one alights at a removed station
+        let retained = keys(2, inside.count, 3, more.count)      // every station in the profile
+        #expect(boundary.count > ConnectionEvidenceLimits.relations && retained.count > ConnectionEvidenceLimits.relations)
+        #expect(boundary.count < SearchInputClosureLimits.connections && retained.count < SearchInputClosureLimits.connections)
+        let extra: [ConnectionRelationKey] = switch variant {
+        case 0: retained
+        case 1: boundary
+        case 2: boundary + [.init(from: address[1], alightingIndex: 0, to: address[2], boardingIndex: 0)]
+        default: boundary + [boundary[0]]
+        }
+        c.parts.relations = .init(reference: c.parts.relations.reference, completeness: .declaredComplete, targets: extra)
+        #expect(await run(c).0 == ["incomplete", "success", "data", "data"][variant])
+        switch variant {
+        case 0:
+            // The closure accepts every retained relation; the evidence relation limit is what refuses.
+            let closure = try closureOnly(c)
+            #expect(closure.connections.required.count == retained.count)
+            #expect(throws: ConnectionEvidenceFailure.resourceLimit) {
+                try PreparedRouteConnectionEvidenceProducer.evidence(view: c.view, closure: closure)
+            }
+        case 1:
+            #expect(try requiredKeys(c).isEmpty)
+            #expect(try await boundaryRoutes(c) == ["invented-direct/invented-day/0-1@1000.0-1020.0"])
+        default: #expect(throws: SearchInputClosureConstructionFailure.connectionTargetConflict) { try self.closureOnly(c) }
+        }
+    }
+
+    /// Producer/closure agreement: an excluded relation has no ride at the excluded endpoint, and
+    /// the producer's interval projection drops exactly what the closure would reject as profileConflict.
+    @Test func boundaryPredicateMatchesPreparedRidesAndClosure() throws {
+        let a = train("invented-a", ["O", "H", "X", "H"], departure: 1000, step: 5, rides: [(0, 1), (0, 2), (2, 3)])
+        let b = train("invented-b", ["H", "D"], departure: 1005, step: 5, rides: [(0, 1)])
+        let x = train("invented-x", ["X", "D"], departure: 1000, step: 30, rides: [(0, 1)])
+        // Kept: a@1→b and a@3→b (H). Excluded: a@2 (X)→b alighting, and a@1→x@0 (X) boarding.
+        let full = try p.make([slowDirect(), a, b, x], links: [link(1, 2), link(1, 2, alight: 2, form: .walking),
+            link(1, 2, alight: 3), link(1, 3, form: .walking)])
+        let c = try restricted(full, stations: ["X"])
+        let scope = try f.need(InternalSearchScope(profile: c.profile, request: c.request, viewID: c.view.id))
+        let (closure, prepared) = try p.prepareThroughProducers(c)
+        let kept = Dictionary(uniqueKeysWithValues: closure.occurrences.required.map { ($0.binding.address, $0.binding.trip) })
+        let required = Set(closure.connections.required.map(ConnectionRelationKey.init))
+        var excludedCount = 0
+        for key in c.view.relations.targets {
+            let excluded = PreparedRouteDeclarationProducer.untraversableAtProfileBoundary(key, kept: kept, scope: scope)
+            #expect(excluded == !required.contains(key))
+            guard excluded else { continue }
+            excludedCount += 1
+            let alights = prepared.rides.contains { $0.key.address == key.from && $0.key.alightingIndex == key.alightingIndex }
+            let boards = prepared.rides.contains { $0.key.address == key.to && $0.key.boardingIndex == key.boardingIndex }
+            let alightOutside = try #require(kept[key.from]).stopSequence[key.alightingIndex] == (try p.station("X"))
+            let boardOutside = try #require(kept[key.to]).stopSequence[key.boardingIndex] == (try p.station("X"))
+            // The side at the removed station has no ride; the in-profile side does, so the
+            // exclusion is due to the boundary station, not to both rides being absent anyway.
+            #expect(alightOutside != boardOutside)
+            #expect(alights == !alightOutside)
+            #expect(boards == !boardOutside)
+        }
+        #expect(excludedCount == 2)
+        // Unfiltered intervals: the closure throws profileConflict, as the producer predicted by dropping some.
+        let d = try PreparedRouteDeclarationProducer.declarations(view: c.view, scope: scope)
+        #expect(d.occurrences.required.map(\.intervals.count) != c.view.occurrences.entries.map(\.intervals.count))
+        let unfiltered = c.view.occurrences.entries.map {
+            SearchInputOccurrenceRequirement(binding: $0.binding, applicabilityReference: c.view.occurrences.reference,
+                                             intervalAuthority: $0.intervalAuthority, intervals: $0.intervals)
+        }
+        #expect(throws: SearchInputClosureConstructionFailure.profileConflict) {
+            try RequestScopedSearchInputClosure(scope: scope, inventory: c.view.inventory, railway: c.view.railway,
+                occurrences: .init(applicability: d.occurrences.applicability, completeness: d.occurrences.completeness,
+                                   required: unfiltered),
+                connections: d.connections, dependencies: d.dependencies)
+        }
+    }
+
     // MARK: Preflight order (DEC-079)
 
     @Test func preflightOrderAndPrecedence() async throws {
@@ -189,20 +449,42 @@ struct PreparedRouteSearchCompositionTests {
         // Endpoints beat intent/bounds.
         var outside = bad; outside.validUntil = p.date(1000)
         #expect(await run(c, view: outside.view).0 == "endpoint origin retired")
-        // Intent/bounds beat coverage; the provisional window mapping is unsupportedRequest.
+        // Intent/bounds beat coverage. DEC-088 D1: a window outside view validity is
+        // dataUnavailable, the same category as the unresolved dependency, so the stage
+        // reached is what shows the window check (S5) fired before coverage (S6–S8).
         outside.endpoints[try p.station("O")] = .active
         outside.dependencies = .init(reference: c.parts.dependencies.reference, unresolved: [try f.ref("invented-dependency")])
-        #expect(await run(c, view: outside.view) == ("unsupported", ["V1"]))
+        #expect(await run(c, view: outside.view) == ("data", ["V1"]))
+        let throughEndpoints: [PreparedRouteSearchStage] = [.entry, .configuration, .capture, .viewValidity, .endpoints]
+        #expect(await runStages(c, view: outside.view) == ("data", throughEndpoints))
+        var dependencyOnly = c.parts; dependencyOnly.dependencies = outside.dependencies
+        #expect(await runStages(c, view: dependencyOnly.view)
+                == ("data", throughEndpoints + [.scope, .declarations, .closure, .evidence]))
         var edge = c.parts; edge.validUntil = p.date(2900) // inclusive U = L + duration
         #expect(await run(c, view: edge.view).0 == "success")
         edge.validFrom = p.date(901)
-        #expect(await run(c, view: edge.view).0 == "unsupported")
-        // Origin active in the view but outside the profile.
+        #expect(await runStages(c, view: edge.view) == ("data", throughEndpoints))
+        // Origin active in the view but outside the profile: unconstructible scope stays
+        // unsupportedRequest, at the same stage as the D1 window failure.
         var stranger = c.parts
         stranger.endpoints[try p.station("Z")] = .active
         let request = try f.need(RouteSearchRequest(origin: p.station("Z"), destination: p.station("D"),
                                                     departNotBefore: p.date(900)))
         #expect(await run(c, view: stranger.view, request: request).0 == "unsupported")
+        #expect(await runStages(c, view: stranger.view, request: request) == ("unsupported", throughEndpoints))
+        // Both failures together: the unconstructible scope is detected first.
+        var both = outside; both.endpoints[try p.station("Z")] = .active
+        #expect(await runStages(c, view: both.view, request: request) == ("unsupported", throughEndpoints))
+    }
+
+    /// Outcome plus every checkpoint reached, to tell equal-category failures apart by stage.
+    func runStages(_ c: PreparedRouteFixture.Case, view: PreparedRouteSearchView,
+                   request: RouteSearchRequest? = nil) async -> (String, [PreparedRouteSearchStage]) {
+        let recorder = PreparedRouteStageRecorder()
+        let searcher = p.searcher(c, InventedPreparedRouteViewSupplier(view),
+                                  hooks: .init(checkpoint: { await recorder.record($0) }))
+        let outcome = await p.outcome { try await searcher.search(request ?? c.request) }
+        return (outcome, await recorder.stages)
     }
 
     @Test(arguments: [RouteSearchEndpointFailureReason.unknown, .retired, .conflicting, .unsupported])
@@ -260,9 +542,10 @@ struct PreparedRouteSearchCompositionTests {
             #expect(smaller.profile.hasSameDefinition(as: c.profile))
             #expect(p.summary(result) == p.summary(try await p.direct(smaller)))
         case 1:
-            // Endpoints of the relation remain in the profile: the target is kept.
+            // Both occurrences stay, but the transfer station H is outside the profile: DEC-088 D4
+            // drops the provably untraversable relation (formerly kept and required).
             #expect(closure.occurrences.required.allSatisfy { $0.intervals.count == ($0.binding.trip.id.rawValue == "invented-direct" ? 1 : 0) })
-            #expect(closure.connections.required.count == 1 && prepared.connections.count == 1)
+            #expect(closure.connections.required.isEmpty && prepared.connections.isEmpty)
         default:
             let through = try #require(closure.occurrences.required.last)
             #expect(through.intervals == [.init(boardingIndex: 0, alightingIndex: 1)])
@@ -424,8 +707,27 @@ struct PreparedRouteSearchCompositionTests {
         #expect(Array(p.summary(result).dropFirst(2)) == ["invented-direct/invented-day/0-1@1000.0-1010.0"])
     }
 
+    /// DEC-088 D1 end to end: the window failure reaches the Application owner and presentation
+    /// as an ordinary dataUnavailable failure with the existing retry/edit/search actions.
+    @MainActor @Test func windowOutsideViewValidityIsPublishedAsDataUnavailable() async throws {
+        let c = try p.make([direct()])
+        var late = c.parts; late.validFrom = p.date(901)
+        let searcher = p.searcher(c, InventedPreparedRouteViewSupplier(late.view))
+        let environment = AppEnvironment(configuration: try .forTesting(), clock: FixedAppClock(now: p.date(900)),
+            logging: AppLogging(subsystem: "prepared-route-test", sink: RecordingLogSink()), routeSearching: searcher)
+        guard case let .ready(owner) = environment.makeRouteSearchCoordinator() else { Issue.record("Expected owner"); return }
+        let intent = RouteSearchIntent(origin: try p.station("O"), destination: try p.station("D"), departure: .now)
+        guard case .accepted = owner.submit(intent) else { Issue.record("Expected acceptance"); return }
+        await owner.completionCheckpointForTesting()()
+        guard case let .failed(attempt, .dataUnavailable) = owner.state else { Issue.record("Expected dataUnavailable"); return }
+        let presentation = RouteSearchPresentation.map(.current(owner.state))
+        #expect(presentation.status == .dataUnavailable)
+        #expect(presentation.actions == [.retry(attempt.id), .edit, .search])
+        owner.dispose()
+    }
+
     @Test func provisionalMappingsArePinnedAtOnePoint() {
-        #expect(p.label(PreparedRouteSearchProvisionalMapping.windowOutsideViewValidity) == "unsupported")
+        #expect(p.label(PreparedRouteSearchProvisionalMapping.windowOutsideViewValidity) == "data") // DEC-088 D1
         #expect(p.label(PreparedRouteSearchProvisionalMapping.preparationResourceLimit) == "incomplete")
         #expect(p.label(PreparedRouteSearchFailureMapping.closure(.resourceLimit)) == "incomplete")
         #expect(p.label(PreparedRouteSearchFailureMapping.evidence(.resourceLimit)) == "incomplete")

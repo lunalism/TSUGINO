@@ -109,9 +109,10 @@ nonisolated struct PreparedRouteDeclarations: Sendable {
 /// non-profile station/line, and relations incident to an excluded occurrence. It uses
 /// declared profile/domain data only and never reads loaded slots. Projected-in members,
 /// including malformed ones, pass through unchanged so the published closure rejects them;
-/// projected-out members are dropped without structural checks. Relations between kept
-/// occurrences stay required even at a non-profile transfer station. Production
-/// requiredness (R1/R2/R3) remains an open owner decision.
+/// projected-out members are dropped without structural checks. A relation between kept
+/// occurrences at a non-profile alighting/boarding station is dropped only under DEC-088 D4
+/// (see `untraversableAtProfileBoundary`). Production requiredness (R1/R2/R3) remains an
+/// open owner decision.
 nonisolated enum PreparedRouteDeclarationProducer {
     static func declarations(view: PreparedRouteSearchView, scope: InternalSearchScope)
         throws(SearchInputClosureConstructionFailure) -> PreparedRouteDeclarations {
@@ -128,8 +129,21 @@ nonisolated enum PreparedRouteDeclarationProducer {
                 intervalAuthority: entry.intervalAuthority,
                 intervals: entry.intervals.filter { withinProfile($0, trip: trip, profile: profile) }))
         }
+        // D4 is applied only where the closure would accept the relation: kept occurrence
+        // addresses must be unique, and every copy of a duplicate key stays, so filtering never
+        // hides a declarationConflict or a duplicate-target connectionTargetConflict.
+        var kept: [TimetableOccurrenceAddress: Trip] = [:]
+        var uniqueAddresses = true
+        for requirement in required where kept.updateValue(requirement.binding.trip, forKey: requirement.binding.address) != nil {
+            uniqueAddresses = false
+        }
+        var keyCounts: [ConnectionRelationKey: Int] = [:]
+        for key in relations.targets where !excluded.contains(key.from) && !excluded.contains(key.to) {
+            keyCounts[key, default: 0] += 1
+        }
         let targets = relations.targets.compactMap { key -> SearchInputConnectionTarget? in
             if excluded.contains(key.from) || excluded.contains(key.to) { return nil }
+            if uniqueAddresses, keyCounts[key] == 1, untraversableAtProfileBoundary(key, kept: kept, scope: scope) { return nil }
             return .init(from: key.from, alightingIndex: key.alightingIndex, to: key.to,
                          boardingIndex: key.boardingIndex, applicabilityReference: relations.reference)
         }
@@ -141,6 +155,22 @@ nonisolated enum PreparedRouteDeclarationProducer {
             dependencies: .init(applicability: try .init(reference: view.dependencies.reference, scope: scope,
                                                          qualification: qualification),
                                 unresolved: view.dependencies.unresolved))
+    }
+
+    /// DEC-088 D4. True only for a relation passing exactly the closure's target checks
+    /// (view IDs, both addresses kept, `alightingIndex > 0` and in range, `boardingIndex >= 0`
+    /// and below the last index) whose alighting or boarding station is outside the profile.
+    /// Every prepared ride interval lies inside `profile.stations` (`withinProfile` and the
+    /// closure's `profileConflict`), so no ride can end or start there. Never reads lines,
+    /// permissions, times or loaded state.
+    static func untraversableAtProfileBoundary(_ key: ConnectionRelationKey, kept: [TimetableOccurrenceAddress: Trip],
+                                               scope: InternalSearchScope) -> Bool {
+        guard key.from.viewID == scope.viewID, key.to.viewID == scope.viewID,
+              let from = kept[key.from], let to = kept[key.to],
+              key.alightingIndex > 0, key.alightingIndex < from.stopSequence.count,
+              key.boardingIndex >= 0, key.boardingIndex < to.stopSequence.count - 1 else { return false }
+        return !scope.profile.stations.contains(from.stopSequence[key.alightingIndex])
+            || !scope.profile.stations.contains(to.stopSequence[key.boardingIndex])
     }
 
     /// Same membership predicate the closure enforces for active occurrences

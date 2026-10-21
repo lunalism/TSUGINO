@@ -1,5 +1,43 @@
 # TSUGINO — ROADMAP.md
 
+## DEC-088 D1/D4 invented implementation — 2026-10-21
+
+Bounded, invented-data-only source and test change, authorized separately after DEC-088's
+acceptance.
+
+**Changes.**
+
+- **D1:** `PreparedRouteSearcher` maps a constructible in-profile window outside the captured view's
+  validity to `dataUnavailable` (formerly provisional `unsupportedRequest`). An unconstructible
+  scope stays `unsupportedRequest`.
+- **D4:** `PreparedRouteDeclarationProducer` excludes only provably untraversable boundary relations
+  that pass the closure's target checks. Malformed, undeclared, wrong-view and duplicate relations
+  keep their exact closure rejections.
+- **D2 and D3:** unchanged.
+- **Not touched:** solver, admission, oracle, AppEnvironment and live routing.
+
+**Tests.** `PreparedRouteSearchCompositionTests` covers:
+
+- D1 stage-level precedence and Application presentation;
+- D4 alighting, boarding and walking exclusions, including with missing evidence;
+- relations at profile stations that stay required, including line-only and repeated-visit cases;
+- prior service dates;
+- exact closure errors for index-0, last-index, out-of-range, negative, wrong-view, undeclared and
+  duplicate cases;
+- the evidence relation limit applied to retained relations;
+- producer/closure predicate agreement.
+
+One historical expectation changed, as D4 intends: the projection test now expects the boundary
+relation to be dropped.
+
+**Validation (observed).** iPhone 17 Simulator, iOS 27.0, Debug. Targeted routing suites:
+190 functions / 518 cases passed, 0 failed, 0 skipped. One earlier attempt was a simulator launch
+failure with no assertions run. Invented data only; not Release or physical-device evidence.
+
+P3-T1 stays scope-incomplete; Phase 3 **In Progress**; readiness gate G1 **Not ready**;
+live/default routing unconfigured; production R2/R3 unapproved; ODPT rights and deployment gates
+unresolved.
+
 ## Phase 3 policy decisions DEC-088 and DEC-080 V3 extension — 2026-10-21
 
 Documentation-only. The owner accepted the following decisions.

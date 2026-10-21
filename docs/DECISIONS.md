@@ -9163,6 +9163,26 @@ Revisit if:
 - prepared-ride construction rules change, which would invalidate the D4 proof obligation;
 - real evidence shows option G2 is needed.
 
+## Implementation evidence — 2026-10-21 Asia/Seoul (invented only)
+
+The status line and the handoff above are historical: when this decision was accepted, implementation was not yet authorized. The owner later authorized a bounded, invented-data-only implementation of D1 and D4.
+
+- **D1:** `PreparedRouteSearcher` now maps a constructible in-profile window outside the captured view's validity to `dataUnavailable`. It no longer uses the earlier provisional `unsupportedRequest` mapping. An unconstructible scope stays `unsupportedRequest`, and preflight order is unchanged.
+- **D4:** `PreparedRouteDeclarationProducer` excludes a relation only when all of these hold:
+  - both occurrences are kept;
+  - the kept occurrence addresses are unique;
+  - the relation key occurs exactly once;
+  - it passes the closure's target checks term for term;
+  - its alighting or boarding station is outside `profile.stations`.
+
+  Malformed, undeclared, wrong-view and duplicate relations still reach the closure's existing rejections.
+- **D2 and D3:** no source change; behaviour unchanged.
+- Some invented searches that previously failed `dataUnavailable`, only because evidence was missing for an excluded relation, can now return scoped alternatives or a genuine scoped `noResults`.
+
+Validation was observed on 2026-10-21 on the explicit iPhone 17 Simulator (iOS 27.0), Debug configuration. The targeted routing suites passed: 190 test functions, 518 cases, 0 failures, 0 skipped. That run included exact closure-error assertions for malformed and duplicate relations at a boundary station, and a relation-limit boundary test. One earlier attempt was a simulator launch failure, with no assertions run.
+
+Limits: invented data only; Simulator only; no Release or physical-device run; no production enablement. This record and every other accepted decision are otherwise unchanged. See ROADMAP "DEC-088 D1/D4 invented implementation — 2026-10-21".
+
 ---
 
 ## 3. Decision Maintenance Rules
