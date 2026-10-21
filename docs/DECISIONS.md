@@ -7270,6 +7270,40 @@ batch order/accounting. No runtime producer, failure expansion, policy resolutio
 coverage/completion proof is implemented. P5 remains Proposed. Independent slice B
 implementation review approved local values only; slice A approval and accepted semantics are unchanged.
 
+## V3 acceptance extension — 2026-10-21 Asia/Seoul
+
+The owner additionally accepts **exactly one more paragraph**: the second paragraph of consumer
+§9.3, beginning "Service-date labels remain opaque". It joins V3's existing "Proposed minimum"
+selection. The status line above and the 2026-10-02 acceptance record are historical and
+unchanged. No other §9 paragraph, §9.3's alternatives table, or §9.9 deferral is newly
+accepted. P5 remains Proposed.
+
+The §9.9 deferral bullet for this same paragraph ("§9.3 paragraph 'Service-date labels remain
+opaque' is retained as evidence/design guidance … not acceptance of a concrete enumeration
+policy") is superseded only in that the paragraph is now an Accepted obligation. Its statement
+that no concrete enumeration policy is accepted remains true.
+
+The accepted paragraph's own text governs; the summary below does not narrow it. That includes
+the bans on enumerating only runs that depart their service origin inside the window, and the
+requirement that reviewed conversion profiles and source bounds or index coverage prove that no
+omitted service date can contribute. Summary of the accepted completeness obligation:
+
+- Every applicable dated occurrence whose possible ridden events intersect the effective window
+  `[L, U]` must be considered. That includes earlier service dates whose extended-hour events
+  can fall inside the requested civil-time window.
+- The producer must not assume that only the civil dates containing `L` or `U` matter, must not
+  parse service-date labels, and must not rely on a fixed previous-day lookback unless
+  source-specific evidence establishes that it is complete.
+- Missing required calendar or extended-hour coverage remains `dataUnavailable`. It never
+  silently produces an incomplete success.
+- Enumeration that cannot finish over usable inputs, for example because of resource bounds,
+  remains `searchIncomplete`.
+
+This accepts an obligation, not a production enumeration algorithm, conversion profile or
+requiredness rule. Actual feed conversion and date enumeration remain unimplemented and need
+source-specific evidence. R2 and R3 are not approved by this extension (see DEC-088). Existing
+P3-T1, rights and production gates are unchanged.
+
 ---
 
 # DEC-081 — Finite Synthetic Internal Routing Inputs and Execution
@@ -9046,6 +9080,88 @@ Data cancellation stay unchanged. Production optimizer ownership, limits and ado
 separate; this proposal does not select a provider, wire AppEnvironment or create a Journey.
 Revisit if a future consumer requests prior-result retention, background request ownership,
 automatic refresh/retry or persisted search state; none is silently included here.
+
+---
+
+# DEC-088 — Prepared Route-Search Failure Mapping, Connection-Evidence Burden and Profile-Boundary Relations
+
+**Status:** Accepted — D1–D4 policy only; implementation not yet authorized\
+**Date:** 2026-10-21 Asia/Seoul\
+**Related:** DEC-079 §3/§5, DEC-080 V1/V3, DEC-081 S1–S6, DEC-086; consumer amendment §§21.4, 27.5, 27.9, 28.3–28.4, 29.3–29.4
+
+DEC-088 was verified unused in repository Markdown, Swift, Python and JSON before this record.
+
+## Context
+
+The invented-only prepared route search (consumer §29) carries two user-visible failure mappings that were provisional, pending owner confirmation (§29.4). It also carries an open evidence-burden question (§28.4) and an open interpretation about relations at stations outside the profile (§29.3). The owner decided all four on 2026-10-21. This record adopts no production design.
+
+## Owner acceptance — 2026-10-21 Asia/Seoul
+
+**D1 — View-validity coverage.**
+
+- When a request is within the supported profile, intent and horizon, and its effective scope `[L, U]` is constructible, but `[L, U]` falls outside the captured prepared view's validity interval, the prepared route search fails with `dataUnavailable`.
+- `unsupportedRequest` stays reserved for requests outside the supported profile, intent or horizon, including an unconstructible scope (for example an endpoint outside the profile or an unrepresentable horizon).
+- Existing preflight precedence is unchanged.
+- This aligns the prepared path with Accepted DEC-079 §3: an expired or insufficiently covered input view is `dataUnavailable`.
+- The DEC-081 synthetic-only mapping for its configured support window is a separate contract and is not reinterpreted or changed.
+
+**D2 — Preparation resource limits.**
+
+- A preparation safeguard (`resourceLimit`) raised over otherwise consistent input maps to `searchIncomplete`. It is never reported as `dataUnavailable`, because no input is missing, or as `unsupportedRequest`, because the limit concerns the prepared domain, not the user's conditions.
+- No partial successful journey is returned.
+- Existing resource limits and cutoff semantics are unchanged.
+
+**D3 — Connection-evidence burden.**
+
+- Option G1 of consumer §28.4 is retained; option G2 is not adopted. (This option G1 is distinct from readiness gate G1 in consumer §26.2.)
+- A required connection target is resolved only by supplied qualified evidence: a positive qualified relation record, or a supplied qualified absence for the exact dated endpoint pair (consumer §21.4).
+- Qualified absence is never inferred merely from an inactive occurrence, a prohibited endpoint role, missing timing information or a missing relation record.
+- Existing evidence and admission checks are unchanged.
+
+**D4 — Profile-boundary relations (clarification of Accepted DEC-080 V1).**
+
+V1 states that the profile's station set describes represented passenger stops and transfer endpoints. A declared relation may be excluded from the per-request required relation domain **only** when all of the following hold:
+
+1. both endpoint occurrences are retained by the profile projection;
+2. the relation passes every existing closure target check: matching applicability reference
+   and view, both addresses declared, `alightingIndex > 0` and below the `from` stop count,
+   `boardingIndex >= 0` and below the `to` stop count minus one, and no duplicate target.
+   "Valid" never means mere array bounds;
+3. its alighting station (`from` trip, `alightingIndex`) or its boarding station (`to` trip, `boardingIndex`) lies outside `profile.stations`;
+4. existing prepared-ride construction rules make it provably untraversable.
+
+Any relation that fails condition 2 — malformed, undeclared, index-invalid (including `alightingIndex == 0` or a last-index boarding position) or duplicate — keeps its existing handling and passes through to the closure's `connectionTargetConflict` rejection, even when its station is outside the profile. No relation is excluded solely because of line membership, boarding or alighting permissions, timing, or loaded or inactive state. Solver, admission and evidence validation are unchanged.
+
+*Proof obligation.* A relation is traversable only if its endpoint rides exist: a ride alighting at the `from` occurrence's `alightingIndex` and a ride boarding at the `to` occurrence's `boardingIndex`. Every prepared ride interval must have its represented station sequence within `profile.stations`. Under condition 3, one of those rides cannot exist, so excluding the relation removes no route. Any implementation must keep the producer's membership predicate equivalent to the closure's.
+
+*Intended behavioural correction.* Some invented searches that currently fail `dataUnavailable`, only because evidence is missing for such an untraversable relation, may produce scoped alternatives or a genuine scoped `noResults` once this is implemented. This is a correctness correction, not a performance optimization.
+
+## Preserved boundaries
+
+- **Requiredness.** R1 applies only to the existing invented implementation. R2 is a possible production working direction, not Accepted. R3 is deferred.
+- **Gates unchanged.** P3-T1 coverage requirements, ODPT rights, bundling and entitlement gates, production supplier and deployment gates, and readiness gate G1 (**Not ready**) are all unchanged.
+- **Status unchanged.** DEC-004 remains Provisional. No numeric limit, production profile or production enumeration algorithm is selected.
+
+## Implementation handoff (not authorized by this record)
+
+- **D1:** change the provisional view-validity mapping in `PreparedRouteSearcher` to `dataUnavailable`. Update the affected composition-test expectations. Keep a meaningful preflight-precedence assertion, for example at stage level using the existing checkpoint hooks, because the window failure and an unresolved dependency will now share an outcome. The unconstructible-scope `unsupportedRequest` expectation stays.
+- **D4:** add station-boundary filtering to `PreparedRouteDeclarationProducer`, keeping malformed-relation rejection. Update the existing projection test that currently expects such a relation to remain required. Add invented regression tests for:
+  - excluded alighting and boarding endpoints;
+  - walking relations;
+  - malformed or invalid indices, including `alightingIndex == 0`, a last-index boarding position and duplicate targets at a non-profile station, all of which must still be rejected;
+  - relations made untraversable only by a non-profile line, which must stay required;
+  - a missing-evidence relation that now allows success;
+  - direct-solver, oracle and composition parity;
+  - producer/closure predicate equivalence.
+- **D2, D3:** no source change expected.
+
+## Revisit triggers
+
+Revisit if:
+
+- a production supplier, requiredness rule (R2/R3) or view-validity model changes what "outside the profile" or "view coverage" means;
+- prepared-ride construction rules change, which would invalidate the D4 proof obligation;
+- real evidence shows option G2 is needed.
 
 ---
 

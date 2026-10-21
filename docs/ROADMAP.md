@@ -1,5 +1,35 @@
 # TSUGINO — ROADMAP.md
 
+## Phase 3 policy decisions DEC-088 and DEC-080 V3 extension — 2026-10-21
+
+Documentation-only. The owner accepted the following decisions.
+
+**DEC-088.**
+
+- **D1:** a supported request whose scope lies outside the captured prepared view's validity is
+  `dataUnavailable`.
+- **D2:** preparation `resourceLimit` stays `searchIncomplete`.
+- **D3:** consumer §28.4 option G1 evidence burden is retained; G2 is not adopted.
+- **D4:** clarifies DEC-080 V1. Provably untraversable relations at stations outside the
+  profile are excluded under exact conditions; malformed-relation rejection is unchanged.
+
+**DEC-080 V3 extension.** Only the second paragraph of consumer §9.3 is added: the
+previous-service-day and extended-hour completeness obligation. It accepts an obligation, not
+an enumeration algorithm.
+
+**Not yet implemented.** D1 and D4 need a separately authorized invented-only source and test
+change. The handoff is in DEC-088. D2 and D3 need no source change.
+
+**Unchanged.**
+
+- R1 stays invented-only; R2 is a possible direction; R3 is deferred.
+- P3-T1 coverage, ODPT rights, bundling and entitlement, and supplier and deployment gates
+  remain open.
+- DEC-004 remains Provisional.
+- Readiness gate G1 stays **Not ready**.
+
+P3-T1 stays scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## ODPT correspondence reconciliation — 2026-10-21
 
 Documentation-only. The owner supplied original email exports of two ODPT Secretariat threads,

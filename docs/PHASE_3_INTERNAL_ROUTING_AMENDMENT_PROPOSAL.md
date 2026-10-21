@@ -649,6 +649,11 @@ calendar coverage yields dataUnavailable. Failure to finish enumeration with usa
 inputs yields searchIncomplete. Actual feed conversion and date enumeration remain
 unimplemented and require source-specific evidence; this is not a GTFS/ODPT rule.
 
+*Acceptance overlay (2026-10-21):* the paragraph immediately above ("Service-date labels remain
+opaque…") is now Accepted, as an extension of DEC-080 V3 (DECISIONS, "V3 acceptance extension —
+2026-10-21"). It accepts a completeness obligation, not an enumeration algorithm. The
+alternatives table above remains rationale only, and the rest of §9 keeps its existing status.
+
 ### 9.4 Itinerary forms and connection policy
 
 Recommend parameterized `maximumRailRides = M`, positive finite integer, with no
@@ -6275,6 +6280,26 @@ end-to-end tests:
 | `preparationResourceLimit` | `searchIncomplete` | §27.5/§27.9 Proposed; DEC-086 truthful cutoff |
 
 This implementation authorization is not production acceptance of either mapping.
+
+*Decision overlay (2026-10-21):* DEC-088 decides only the D1–D4 items below: the two
+provisional mappings above, the matching rows in §§27.5 and 27.9, the §28.4 evidence-burden
+question, and the §29.3 interpretation. Other open items in §§27.9 and 28.3 stay open:
+production profile, requiredness R1/R2/R3, view invalidation, R6 and the supplier API. The
+earlier text is preserved as history.
+
+- **D1:** `windowOutsideViewValidity` becomes `dataUnavailable` (aligned with DEC-079 §3).
+  An unconstructible scope stays `unsupportedRequest`.
+- **D2:** preparation `resourceLimit` stays `searchIncomplete`.
+- **D3:** §28.4 option G1 is retained; G2 is not adopted.
+- **D4:** clarifies DEC-080 V1. A relation between two retained occurrences that passes every
+  existing closure target check, and whose alighting or boarding station is outside
+  `profile.stations`, is excluded because it is provably untraversable. Relations failing
+  those checks are still rejected. This replaces §29.3's recorded reading for these relations
+  only.
+
+The code in this section still implements the earlier provisional D1 mapping and the earlier
+§29.3 reading. Changing it needs separate implementation authorization; see DEC-088's
+implementation handoff. R1 stays invented-only; R2 is a possible direction and R3 is deferred.
 
 ### 29.5 Invented verification (2026-10-15)
 
