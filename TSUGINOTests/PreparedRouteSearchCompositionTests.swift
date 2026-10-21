@@ -281,9 +281,13 @@ struct PreparedRouteSearchCompositionTests {
     }
 
     /// Relations the closure rejects keep that exact rejection even where a station is outside
-    /// the profile, so D4 never filters them away. Each `extra[0]` sits at the boundary
-    /// station X on at least one side. The closure's typed failure (its implemented constructor
-    /// contract) is asserted, and the composed call stays dataUnavailable (consumer §27.5).
+    /// the profile, so D4 never filters them away. In variants 0, 1, 4, 7, 8, 9 and 10, `extra[0]`
+    /// is the single malformed relation and sits at the boundary station X on at least one side.
+    /// Variants 2, 5 and 6 use the valid excludable relation (a@1 at H → e@0 at X): duplicated (2),
+    /// beside a duplicated occurrence address (5), or alone (6). Variant 3's `extra[0]` is the
+    /// in-profile H/H key, whose duplicate is what the closure rejects, followed by the excludable
+    /// relation. The closure's typed failure (its implemented constructor contract) is asserted,
+    /// and the composed call stays dataUnavailable (consumer §27.5).
     /// Cases: index-0 alighting (0); last-index boarding (1); duplicated excludable key (2);
     /// duplicated in-profile key beside an excludable one (3); undeclared address (4);
     /// duplicated occurrence address (5); valid excludable alone succeeds (6); out-of-range
@@ -378,6 +382,45 @@ struct PreparedRouteSearchCompositionTests {
             #expect(try requiredKeys(c).isEmpty)
             #expect(try await boundaryRoutes(c) == ["invented-direct/invented-day/0-1@1000.0-1020.0"])
         default: #expect(throws: SearchInputClosureConstructionFailure.connectionTargetConflict) { try self.closureOnly(c) }
+        }
+    }
+
+    /// NB-2: the closure's own relation-count limit (checked before any structural check) applies to
+    /// the retained, projected relations. More than `SearchInputClosureLimits.connections` retained
+    /// in-profile relations are still a D2 searchIncomplete (0). The same number of valid boundary-only
+    /// relations is excluded before that count, so the call succeeds (1); before D4 this was
+    /// searchIncomplete. A malformed relation among them is therefore no longer masked by the count
+    /// limit and reaches the closure's rejection, giving dataUnavailable (2). The byte budget is not
+    /// exercised: bounded tokens keep at most `connections` targets far below it, and the count check
+    /// fires first.
+    @Test(arguments: 0...2) func boundaryExclusionPrecedesClosureCountLimit(_ variant: Int) async throws {
+        let outside = (0..<72).map { "invented-x\($0)" }, inside = (0..<72).map { "invented-y\($0)" }
+        let u = train("invented-u", outside, departure: 1000, step: 1, rides: [])
+        let vs = (0..<5).map { train("invented-v\($0)", inside, departure: 1000, step: 1, rides: []) }
+        let w = train("invented-w", inside, departure: 1000, step: 1, rides: [])
+        var c = try restricted(try p.make([slowDirect(), u] + vs + [w]), stations: outside)
+        let address = c.world.bindings.map(\.address)   // 0 direct, 1 u, 2...6 v0...v4, 7 w
+        func keys(_ from: Int, _ to: Int) -> [ConnectionRelationKey] {
+            (1..<72).flatMap { alight in (0..<71).map { board in
+                ConnectionRelationKey(from: address[from], alightingIndex: alight, to: address[to], boardingIndex: board) } }
+        }
+        let boundary = (2...6).flatMap { keys(1, $0) }   // every key alights at a removed station
+        let retained = (2...6).flatMap { keys($0, 7) }   // every station in the profile
+        #expect(boundary.count > SearchInputClosureLimits.connections && retained.count > SearchInputClosureLimits.connections)
+        let extra: [ConnectionRelationKey] = switch variant {
+        case 0: retained
+        case 1: boundary
+        default: boundary + [.init(from: address[1], alightingIndex: 0, to: address[2], boardingIndex: 0)]
+        }
+        c.parts.relations = .init(reference: c.parts.relations.reference, completeness: .declaredComplete, targets: extra)
+        #expect(await run(c).0 == ["incomplete", "success", "data"][variant])
+        switch variant {
+        case 0: #expect(throws: SearchInputClosureConstructionFailure.resourceLimit) { try self.closureOnly(c) }
+        case 1:
+            #expect(try closureOnly(c).connections.required.isEmpty)
+            #expect(try await boundaryRoutes(c) == ["invented-direct/invented-day/0-1@1000.0-1020.0"])
+        default:
+            #expect(throws: SearchInputClosureConstructionFailure.connectionTargetConflict) { try self.closureOnly(c) }
         }
     }
 

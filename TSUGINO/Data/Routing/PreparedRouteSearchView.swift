@@ -157,11 +157,21 @@ nonisolated enum PreparedRouteDeclarationProducer {
                                 unresolved: view.dependencies.unresolved))
     }
 
-    /// DEC-088 D4. True only for a relation passing exactly the closure's target checks
-    /// (view IDs, both addresses kept, `alightingIndex > 0` and in range, `boardingIndex >= 0`
-    /// and below the last index) whose alighting or boarding station is outside the profile.
-    /// Every prepared ride interval lies inside `profile.stations` (`withinProfile` and the
-    /// closure's `profileConflict`), so no ride can end or start there. Never reads lines,
+    /// DEC-088 D4 boundary test for one relation.
+    ///
+    /// It mirrors the closure's view-ID, declared-address (through `kept`) and index-range target
+    /// checks (`alightingIndex > 0` and in range, `boardingIndex >= 0` and below the last index).
+    /// It is true only when those pass and the alighting or boarding station is outside the profile.
+    ///
+    /// It does not check applicability (the producer stamps every target with the declaration's own
+    /// reference) or duplicates. The caller applies it only to keys occurring once among relations
+    /// between kept occurrences, and only when kept occurrence addresses are unique.
+    ///
+    /// Anything not excluded here, including every malformed or duplicate relation, reaches
+    /// `RequestScopedSearchInputClosure`, which still owns validation and rejection.
+    ///
+    /// Every prepared ride interval lies inside `profile.stations` (`withinProfile` and the closure's
+    /// `profileConflict`), so no ride can end or start at an excluded station. Never reads lines,
     /// permissions, times or loaded state.
     static func untraversableAtProfileBoundary(_ key: ConnectionRelationKey, kept: [TimetableOccurrenceAddress: Trip],
                                                scope: InternalSearchScope) -> Bool {
