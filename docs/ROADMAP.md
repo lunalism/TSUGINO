@@ -1,5 +1,42 @@
 # TSUGINO — ROADMAP.md
 
+## Phase 3 policy decision DEC-089 (K1 same-TripID exclusion) — 2026-10-28
+
+Documentation-only. The owner accepted DEC-089 on 2026-10-27 and confirmed its validation-scope,
+failure-precedence and mandatory-exclusion wording on 2026-10-28.
+
+**Accepted.**
+
+- **Mandatory K1 exclusion:** once implemented, a declared relation must be excluded from the
+  per-request required relation domain when all four conditions hold: both occurrences retained; unique retained
+  addresses and a single key occurrence; the closure's structural target checks pass; identical
+  recurring TripID.
+- **D4 precedence:** where DEC-088 D4 also applies, D4's existing behaviour is unchanged.
+- **K1-only positive rejection:** every supplied `.positive` for a K1-only relation is rejected
+  as `trainChangeConflict`, published as `dataUnavailable`. K1 exclusion is never qualified
+  absence.
+- **Narrow DEC-088 supersession:** D4's "only when" exclusivity, and D3/D4's "unchanged"
+  evidence-check sentences for K1-only relations only. The DEC-088 text is preserved.
+- **Architecture direction:** a separate bounded K1 validator inside the existing
+  connection-evidence stage (consumer §27.3 S7; `PreparedRouteSearchStage.evidence`).
+
+**Open.** The validator's exact position, mixed-failure precedence and the other DEC-089
+implementation prerequisites. Proposed mechanisms (declaration fields, signatures, producer
+output) are not approved.
+
+**Not done.** No implementation, tests, build, operational integration or production readiness.
+Implementation, merge and push need separate authorization.
+
+**Unchanged.**
+
+- R2 and R3a production requiredness, Model C (draft §36) and K2–K9 exclusions remain
+  unapproved.
+- Published failure mappings and numeric limits are unchanged.
+- ODPT rights, bundling and entitlement, and supplier and deployment gates remain open.
+- Readiness gate G1 stays **Not ready**.
+
+P3-T1 stays scope-incomplete; Phase 3 **In Progress**; live/default routing unconfigured.
+
 ## DEC-088 D1/D4 invented implementation — 2026-10-21
 
 Bounded, invented-data-only source and test change, authorized separately after DEC-088's

@@ -9085,8 +9085,9 @@ automatic refresh/retry or persisted search state; none is silently included her
 
 # DEC-088 — Prepared Route-Search Failure Mapping, Connection-Evidence Burden and Profile-Boundary Relations
 
-**Status:** Accepted — D1–D4 policy only; implementation not yet authorized\
+**Status:** Accepted — D1–D4 policy only; implementation not yet authorized (D3/D4 partially superseded by DEC-089, narrowly; see below)\
 **Date:** 2026-10-21 Asia/Seoul\
+**Partially superseded by:** DEC-089 — only (a) the exclusivity of D4's "only when" clause, which now also admits the DEC-089 K1 ground; and (b) for K1-only excluded relations, D3's and D4's "unchanged" evidence-check sentences, solely to admit DEC-089's K1-only positive contradiction validation. The D3/D4 text below is preserved unchanged, and their remaining obligations stay in force. D1–D2 are unchanged.\
 **Related:** DEC-079 §3/§5, DEC-080 V1/V3, DEC-081 S1–S6, DEC-086; consumer amendment §§21.4, 27.5, 27.9, 28.3–28.4, 29.3–29.4
 
 DEC-088 was verified unused in repository Markdown, Swift, Python and JSON before this record.
@@ -9182,6 +9183,243 @@ The status line and the handoff above are historical: when this decision was acc
 Validation was observed on 2026-10-21 on the explicit iPhone 17 Simulator (iOS 27.0), Debug configuration. The targeted routing suites passed: 190 test functions, 518 cases, 0 failures, 0 skipped. That run included exact closure-error assertions for malformed and duplicate relations at a boundary station, and a relation-limit boundary test. One earlier attempt was a simulator launch failure, with no assertions run.
 
 Limits: invented data only; Simulator only; no Release or physical-device run; no production enablement. This record and every other accepted decision are otherwise unchanged. See ROADMAP "DEC-088 D1/D4 invented implementation — 2026-10-21".
+
+---
+
+# DEC-089 — Same-TripID Relations Excluded from the Prepared Required Relation Domain (K1)
+
+**Status:** Accepted — K1 exclusion, K1-only positive rejection, K1-VALIDATION-SCOPE and K1-FAILURE-PRECEDENCE policy, and validator stage direction; implementation mechanisms Proposed; implementation, merge and push require separate authorization\
+**Date:** 2026-10-27 Asia/Seoul; validation-scope, failure-precedence and mandatory-exclusion policy confirmed 2026-10-28 Asia/Seoul\
+**Supersedes:** DEC-088 in part — (a) the exclusivity of D4's "only when" clause; (b) for K1-only excluded relations only, D3's "Existing evidence and admission checks are unchanged" and D4's "Solver, admission and evidence validation are unchanged", solely to the extent needed to admit the additional K1-only positive contradiction validation (K1-VALIDATION-SCOPE). The DEC-088 body text is preserved verbatim and is not rewritten.\
+**Related:** DEC-060 A, DEC-079, DEC-080 V1/V4, DEC-081, DEC-086, DEC-088 D2–D4; consumer amendment §5, §9.4, §21.3, §27.3, §27.5, §28.3–28.4, §29.3
+
+DEC-089 was verified unused in repository Markdown, Swift, Python and JSON, and in the Git history of every local ref, before this record.
+
+## Status separation
+
+- **Accepted policy (owner, 2026-10-27; validation scope, failure precedence and mandatory exclusion confirmed 2026-10-28).**
+  - the mandatory K1 exclusion under its four conditions;
+  - DEC-088 D4 precedence where D4 and K1 both apply;
+  - rejection of every supplied `.positive` for a K1-only excluded relation as `trainChangeConflict`, with the existing published `dataUnavailable` mapping;
+  - K1-VALIDATION-SCOPE and K1-FAILURE-PRECEDENCE (below).
+- **Approved architecture direction (owner, 2026-10-27).** An independent, bounded K1 validator inside the existing connection-evidence stage (consumer §27.3 S7; implementation checkpoint `PreparedRouteSearchStage.evidence`). Stage ownership is approved. The validator's position within that stage is not decided.
+- **Proposed implementation mechanisms.** Listed under "Architecture direction". They are technical proposals, not owner-approved details, and each needs verification.
+- **Implementation prerequisites.** Listed under "Implementation prerequisites"; each must be specified and verified before implementation is accepted.
+- **Verification status.** None. No source has changed for K1. No test, build or device run has been performed for it. Nothing here claims that K1 is implemented, verified or integrated.
+- **Not authorized by this record.** Swift implementation, tests, builds, and any Git merge or push; each needs separate owner authorization. Policy acceptance is recorded by this record's content and does not depend on its version-control state.
+
+## Terms and provenance
+
+- **Provenance of working material.** Some labels below originate in non-authoritative, unintegrated working material: a 2026-10-27 requiredness decision-preparation memorandum (`phase-3-requiredness-model-c-decision-preparation.md`) and a draft consumer amendment §36. Neither is a decision record or an accepted document, and neither is a dependency of this record. They are named only as design provenance. DEC-089's authority rests on its own text and the Accepted decisions and consumer sections it cites.
+- **K1** is defined by this record: the four conditions below are the only K1 definition with Accepted status. The label, and the K2–K9 names for other candidate exclusion classes, come from the working memorandum. For example, K3 is an endpoint occurrence qualified inactive on the date, and K4 a known prohibited alighting or boarding role. None of K2–K9 is defined or adopted by any Accepted decision.
+- **R1, R2, R3** are the requiredness options of consumer §28.3 (decision class [O]). R1 applies only to the existing invented implementation; R2 is a possible production working direction, not Accepted; R3 is deferred (DEC-088 "Preserved boundaries"). **R3a** is a working-material label for R3 restricted to reviewed service-date rules with no event-time reads. It is not an Accepted term or option.
+- **Model C** is the hybrid transfer-evidence design in draft consumer amendment §36. It is a Proposed draft, not Accepted, and not a dependency of this record.
+- **Recurring TripID identity rule.** A `TripID` identifies one recurring canonical scheduled run definition, not a dated execution (DEC-060 A, with DEC-021 canonical IDs). No itinerary may contain the same matched recurring TripID twice, even across service dates (consumer §5; DEC-080 V4; DEC-081). K1 condition 4 and the proof below use exactly these two rules.
+
+## Context
+
+DEC-088 D4 allows a declared relation to leave the per-request required relation domain **only** when it is provably untraversable at the profile boundary. Every other declared relation between kept occurrences stays required (consumer §28.3 R1). Under DEC-086, a required relation without qualified evidence fails the whole call.
+
+That includes a relation whose two endpoint occurrences share one recurring TripID. No admissible itinerary can use such a relation (below). Missing evidence for it can therefore fail a call even though the evidence could never change any result.
+
+Supplied positive evidence for such a relation fails the call today (consumer §21.3). How it fails depends on the entry:
+
+- a positive with qualified premises, both instants and a valid allowance is rejected in the evidence view with `trainChangeConflict`;
+- a positive with a contradictory premise or an invalid allowance throws the corresponding existing `ConnectionEvidenceFailure`;
+- a positive with an unsupported or insufficient premise, or a missing instant, is held as unavailable evidence.
+
+These paths are evaluated in the existing code's order and can overlap. When no earlier failure pre-empts them, each ends in `dataUnavailable`. Excluding the relation without a further rule would leave the positive unread, silently discarding a contradiction.
+
+## Decision
+
+**K1 — same-TripID exclusion (mandatory).** Once implemented, a declared relation **must** be excluded from the per-request required relation domain whenever **all** of the following are established. The exclusion is not optional per request or per implementation. A relation that also meets the DEC-088 D4 conditions is excluded under D4 instead (see "D4 and K1 overlap"):
+
+1. both endpoint occurrences are retained by the applicable profile projection;
+2. the retained occurrence addresses are unique, and the relation key occurs exactly once among relations between retained occurrences, as in the implemented D4 producer;
+3. the relation passes the closure's structural target checks enumerated in DEC-088 D4 condition 2: both addresses declared, `alightingIndex > 0` and below the `from` stop count, `boardingIndex >= 0` and below the `to` stop count minus one, and no duplicate target. View identity and applicability follow the existing D4 producer pattern (see "Predicate equivalence");
+4. both endpoints have exactly the same `TripID` under the recurring TripID identity rule above, regardless of service date.
+
+The exclusion must not depend on:
+
+- inferred station proximity;
+- timetable gaps or times;
+- inactive or loaded state;
+- line membership or boarding/alighting permissions;
+- unqualified negative evidence.
+
+Relations with distinct TripIDs are never excluded by K1. This includes genuine through-running between distinct TripIDs and near-identical or aliased IDs.
+
+**D4 and K1 overlap.**
+
+- When a relation satisfies both DEC-088 D4 and K1, D4 takes precedence.
+- Such a relation is excluded under D4, and D4's existing behaviour for its supplied evidence is unchanged: the declaration producer drops it before any connection entry is read.
+- The K1-only positive rejection applies **only** to relations excluded on the K1 ground alone. A relation is "K1-only" when it meets K1 conditions 1–4 and does not meet DEC-088 D4.
+
+**Amended DEC-088 text (narrow).** DEC-088's body is preserved verbatim; DEC-089 records how it now applies.
+
+- D4's opening "may be excluded … **only** when all of the following hold" no longer excludes K1 as a second, independent ground.
+- For K1-only excluded relations only, D3's "Existing evidence and admission checks are unchanged" and D4's "Solver, admission and evidence validation are unchanged" do not forbid the additional K1-only positive contradiction validation. For every other purpose, including all relations that stay required, both sentences remain in force as written. Solver and canonical admission are unchanged.
+- Everything else in D4 stays in force unchanged: its four conditions and proof obligation; its rejection paragraph, including "No relation is excluded solely because of line membership, boarding or alighting permissions, timing, or loaded or inactive state"; and its implementation evidence.
+
+**Preserved decisions.**
+
+- These stay in force unchanged: DEC-060, DEC-079, DEC-080, DEC-081, DEC-086, DEC-087, and DEC-088 D1–D2.
+- DEC-088 D3 and D4 stay in force except as narrowly amended above. The D3 evidence burden is unchanged for every relation that stays required.
+
+*Proof obligation.* The recurring TripID identity rule forbids reusing one matched TripID anywhere in a single itinerary, even across service dates:
+
+- consumer §5 (amendment :432–433);
+- DEC-080 V4 (§9.4);
+- DEC-081 (DECISIONS :7450–7451).
+
+An itinerary uses a relation only between consecutive rides on its `from` and `to` occurrences. Under condition 4 those rides share one TripID, so every itinerary using the relation is inadmissible. Excluding it therefore removes no admissible itinerary and cannot change an optimum, an equal-optimum tie or the validity of a scoped `noResults`.
+
+The argument covers three cases equally:
+
+- both endpoints in the same occurrence;
+- two service dates of one recurring TripID;
+- one occurrence visiting a station twice.
+
+Continuing aboard one Trip is a single ride, not a relation. The proof depends only on the itinerary rule, never on times, stations or loaded state. It is invalid if that rule changes.
+
+**Relationship to consumer §21.3.** §21.3 (a technical recommendation; §21.1) rejects a positive that splits one Trip, and allows that "an unresolved same-Trip target may instead remain explicitly unsupported". It did not mandate excluding such targets. DEC-089 adds a narrower, qualified exclusion ground, K1, as an explicit owner-approved refinement. §21.3's fail-closed rule for known contradictory evidence is kept through the K1-only positive rejection below.
+
+**K1-VALIDATION-SCOPE (Accepted).** Three validation scopes are distinguished:
+
+1. *Relations that stay required.* The existing connection-evidence producer, `QualifiedConnectionEvidenceView` and `ResolvedSearchInputAssessment` keep their existing checks, order and semantics. The DEC-088 D3 burden applies unchanged.
+2. *K1-only excluded relations.* One additional validation applies: every supplied `.positive` entry for a K1-only key is rejected as a contradiction. It is independent of the existing checks in scope 1 and does not alter them.
+3. *Historical DEC-088 statements.* The D3/D4 "unchanged" sentences are not rewritten. They are narrowly amended as recorded above, only to admit scope 2.
+
+**Positive evidence for K1-only relations.**
+
+- Every supplied `.positive` connection entry for a K1-only relation is rejected. The outcome does not depend on whether the entry's premises, examined instants or allowance values would otherwise qualify.
+- Such an entry is an explicit contradiction. It is never silently ignored.
+- The rejection uses the existing `ConnectionEvidenceFailure.trainChangeConflict`. The existing published mapping turns this into `dataUnavailable`, per consumer §27.5 ("contradictory input") and §21.3 ("known contradictory evidence fails closed").
+- No new error case, user-visible mapping or partial result is introduced.
+- Supplied `absence` and `unavailable` entries for a K1-only relation are not positive contradictions.
+- DEC-089 does not decide validation of malformed non-positive entries for K1-only relations, such as an absence carrying a `contradictory` premise. That remains an implementation prerequisite (below).
+
+**K1-FAILURE-PRECEDENCE (Accepted).** Three concepts are distinguished:
+
+1. *Existing checks.* Existing closure and evidence checks keep their relative order and their semantics for relations that stay required.
+2. *Internal typed failures for K1-only positives.* All of them become `trainChangeConflict`, deliberately. This includes positives that today would be unqualified, held as unavailable, or rejected with a different typed failure, such as `qualificationConflict`, `allowanceConflict` (including an invalid allowance) or `applicabilityConflict`. This is an approved reclassification. It is **not** preservation of every earlier internal failure classification for those entries.
+3. *Published outcomes.* Published failure mappings are unchanged: `trainChangeConflict` and every other non-limit preparation failure map to `dataUnavailable` (consumer §27.5; implemented in `PreparedRouteSearchFailureMapping`, `PreparedRouteSearcher.swift:21–30`), and `resourceLimit` maps to `searchIncomplete` (DEC-088 D2). Numeric resource limits are unchanged.
+
+*Consequence of a smaller required set.* K1 changes which relations are required, so a previously observed outcome can change when the condition behind it disappears. For example, K1-excluded relations are no longer required connection targets, so they are not counted by the closure's connection limit or by `ConnectionEvidenceLimits.relations`. A call that reached a limit only because of them may proceed to later checks. Its outcome then follows those checks: it may still be `dataUnavailable` (for example, missing evidence for a required relation, or a K1-only positive) or `searchIncomplete` (another limit). It becomes scoped alternatives or a genuine scoped `noResults` only when every remaining required input is complete and qualified. Nothing turns `searchIncomplete` into success automatically.
+
+Mixed-failure precedence, for example a K1-only positive in the same call as a failing required-relation check, depends on the validator's position within the stage. It is an implementation prerequisite.
+
+**Not a negative assertion.**
+
+- A K1 exclusion is not a qualified absence. It is never accounted as `absentUnderCompleteAuthority`.
+- It does not satisfy or alter the DEC-088 D3 evidence burden for any other relation.
+- It is not reusable negative evidence. It asserts nothing about passenger transfer feasibility.
+- DEC-086 is unchanged: unknown evidence for a relation that stays required still fails the whole call.
+
+**Stage terminology.** Consumer §27.3 S7 is "connection evidence + assessment". The implementation splits it into two checkpoints, `PreparedRouteSearchStage.evidence` and then `.assessment` (`PreparedRouteSearcher.swift:131–143`). The connection-evidence checkpoint is `.evidence`. Consumer S8 is prepared input (`.preparedInput`), not evidence.
+
+**Architecture direction.**
+
+*Approved (owner):*
+
+- An independent, bounded K1 validator inside the existing connection-evidence stage (consumer §27.3 S7; `PreparedRouteSearchStage.evidence`).
+- Its rejection uses the existing evidence-failure mapping, so `trainChangeConflict` publishes as `dataUnavailable`.
+- No new search stage.
+- Solver and canonical admission are unchanged.
+
+*Proposed — not owner-approved, each requiring verification:*
+
+- a composition-internal field on `PreparedRouteDeclarations` identifying the K1-only excluded keys;
+- the exact declaration-producer output changes, with the producer keeping its evidence pass-through responsibility;
+- the validator's function signature, and whether it is pure;
+- its exact position before or after evidence production, and relative to the `.evidence` and `.assessment` checkpoints;
+- any claim that particular source files, such as `RequestScopedSearchInputClosure`, need no edits.
+
+**Predicate equivalence.**
+
+- The implemented D4 predicate (`untraversableAtProfileBoundary`, `PreparedRouteSearchView.swift:160–183`, documentation and code) mirrors the closure's view-ID, declared-address and index-range target checks. It leaves duplicate keys and non-unique addresses to the caller's preconditions, K1 condition 2.
+- It does not check a target's applicability reference. The producer does not validate an independently supplied reference; it stamps every target it emits with the declaration's own reference. The closure then checks that stamped reference against its connection applicability (`RequestScopedSearchInputClosure.swift:242`).
+- A K1 predicate must follow the same pattern and keep the unique-address, duplicate-key and structural obligations above. DEC-089 introduces no new applicability policy.
+- Its TripID comparison must match the identity used by:
+  - solver exploration and admission;
+  - evidence construction;
+  - the exhaustive test oracle.
+
+Read-only observation at `736ab7de`, to be re-verified before implementation authorization:
+
+- the solver compares `trip.id` (`InternalRouteSolver.swift:311`), as does admission (:516);
+- evidence construction compares `trip.id` (`QualifiedConnectionEvidence.swift:251`);
+- the closure keys snapshot representatives by `trip.id` across dates (`RequestScopedSearchInputClosure.swift:208–230`);
+- the oracle tracks `Set<TripID>` (`ExhaustivePreparedSolverOracle.swift:10–27`);
+- a binding requires `address.tripID == trip.id` (`TimetableOccurrenceBinding.swift:7–8`);
+- the existing evidence producer reads entries only for the closure's required targets (`PreparedRouteSearchView.swift:204`, read at :222). Today a same-TripID relation is still a required target, so its positive is read (see "Context"); once K1 is implemented, the producer would not read a positive for a K1-only excluded key.
+
+**Preserved rejection and limits.**
+
+- Duplicate relation keys, non-unique occurrence addresses and malformed, undeclared or wrong-view targets are never K1-excluded. They reach the closure's existing `declarationConflict` and `connectionTargetConflict` rejections.
+- If an implementation cannot keep the existing checks' relative order and published mappings, it must stop and request a separate owner decision.
+
+*Intended behavioural correction.* Some invented searches that fail today only because of missing evidence for, or the limit count of, a same-TripID relation may instead return scoped alternatives or a genuine scoped `noResults`, provided every remaining required input is complete and qualified. This is a correctness correction, not a performance optimization.
+
+## Implementation prerequisites
+
+Each item must be specified and verified before any K1 implementation is accepted:
+
+1. **Validator position.** Its position within the connection-evidence stage: before or after evidence production, and relative to the `.evidence` and `.assessment` checkpoints. Include mixed-failure precedence examples consistent with K1-FAILURE-PRECEDENCE, covering evidence `resourceLimit`, policy and qualification failures, closure failures, and a K1-only positive alongside a failing required relation.
+2. **Cancellation.** S6–S8 are synchronous and non-cancellable (consumer §27.5). The validator must keep cancellation observed only at the existing checkpoints, with no new stage.
+3. **Bounded resource accounting.** The validator's work is linear in the supplied relation domain, which the supplier owns. Its bound, and its relation to `ConnectionEvidenceLimits` and the payload budgets, must be stated without changing any numeric limit.
+4. **View and profile qualification.**
+   - The validator reads only entries for K1-only keys of the captured view under the request's profile and scope.
+   - It never reads evidence for D4-excluded or projected-out relations.
+   - It never makes any relation required.
+5. **Malformed non-positive entries.** How existing validation obligations for malformed `absence` entries on K1-only relations are preserved, or a separate owner decision requested.
+6. **Compatibility.** Compatibility with DEC-079, DEC-080, DEC-081, DEC-086 and DEC-088, as amended here, must be shown at the implementation baseline.
+7. **TripID identity.** The identity observation above must be re-confirmed at the implementation baseline.
+8. **Undeclared relation keys.** Positive entries for keys absent from the declared relation domain keep their existing handling. DEC-089 does not decide them.
+9. **Proposed mechanisms.** Each proposed mechanism under "Architecture direction" must be specified and verified, or replaced.
+
+## Required tests before any implementation is accepted (invented data only)
+
+Independent equivalence tests against the exhaustive oracle, plus regression tests for:
+
+- same-occurrence pairs;
+- cross-date same-TripID pairs;
+- repeated station visits within one occurrence;
+- duplicate relation keys and non-unique occurrence addresses, which must still be rejected;
+- invalid closure targets, which must still be rejected;
+- supplied positives on K1-only relations, all failing `trainChangeConflict` → `dataUnavailable`. These include positives with qualified, insufficient or contradictory premises, missing instants and invalid allowances;
+- relations meeting both D4 and K1, whose supplied positives keep D4's existing behaviour;
+- unknown versus qualified absence (`declaredComplete` versus `unknown` authority), on both excluded and still-required relations;
+- D4 profile-boundary behaviour;
+- resource-limit interactions at the relation-count boundary, including mixed-failure precedence and calls that newly pass a limit but still fail later checks;
+- cancellation at every existing stage boundary;
+- deterministic optimal-route parity across the direct solver, oracle and composition;
+- agreement between the K1 predicate, the validator's key set and the closure's target checks.
+
+Existing tests that expect a same-TripID relation to stay required must be identified and updated.
+
+## Not approved by this record
+
+- K2–K9 exclusion rules;
+- supplier-side K3/K4 omission, including consumer §28.4 option G1 supplier omission;
+- R2 or R3a production requiredness;
+- Model C or any part of draft §36;
+- new reusable positive or negative relation authorities;
+- any DEC-088 D3 amendment beyond K1-VALIDATION-SCOPE;
+- any change to published failure mappings or numeric limits;
+- real provider data access;
+- Swift implementation, tests or builds;
+- any Git merge or push;
+- changes to existing route-search algorithms.
+
+## Revisit triggers
+
+Revisit if:
+
+- the no-duplicate-TripID itinerary rule or the recurring TripID identity rule (DEC-060 A) changes, which would invalidate the proof;
+- production requiredness (R2/R3) changes what the required relation domain contains;
+- real evidence shows a same-TripID relation can carry a genuine passenger change;
+- an implementation cannot preserve existing check order, published mappings or malformed-entry validation within the approved validator direction.
 
 ---
 
