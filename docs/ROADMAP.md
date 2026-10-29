@@ -1,5 +1,77 @@
 # TSUGINO — ROADMAP.md
 
+## DEC-089 K1 invented implementation (uncommitted) — 2026-10-29
+
+Bounded, invented-data-only source and test change, separately authorized after DEC-089's
+acceptance. **It exists only in the uncommitted working tree; nothing is committed, pushed,
+merged or deployed.** The accepted DEC-089 policy is unchanged. The 2026-10-28 entry's "Open" and
+"Not done" lines are historical.
+
+**Changes.**
+
+- `PreparedRouteDeclarationProducer` applies D4 first and then the mandatory K1 exclusion, behind one
+  shared structural guard, with exact recurring `TripID` identity. The K1-only keys go into the
+  composition-internal `PreparedRouteDeclarations.k1OnlyExcluded`.
+- `PreparedRouteK1Validator` rejects any K1-only `.positive` as `trainChangeConflict`
+  (published `dataUnavailable`). It runs an absence through the existing `qualifyingAbsence`
+  premise validation without creating negative authority, and ignores unavailable or missing
+  entries.
+- `PreparedRouteSearcher` runs the validator after the evidence producer and before
+  `checkpoint(.evidence)`. No new stage, error case or mapping; limits unchanged.
+- **Measurement probe:** the structural pass now calls the same validator. When validation
+  fails it builds no oracle input. It still does not mirror `view.covers(scope)` or
+  `isTechnicallyQualified`, both pre-existing, so K1 parity is not full probe equivalence.
+- **Not touched:** solver, admission, closure, evidence view, assessment, prepared input, oracle,
+  AppEnvironment and live routing.
+
+**Tests.** `PreparedRouteK1ExclusionTests` (26 functions / 91 cases) covers every DEC-089 required
+test, including oracle parity on graphs feasible except for the no-repeated-TripID rule, ties and
+permutations. `PreparedRouteMeasurementK1Tests` has 7 functions / 22 cases.
+
+- **Exact boundaries:**
+  - 2,048 and 2,049 required relations, and 23,040 and 23,041 closure targets.
+  - Each runs with no K1 keys, ten K1-only keys, or ten with one K1-only positive.
+  - K1-only relations do not count toward either limit.
+  - At 23,040 the evidence producer's smaller 2,048 limit still applies.
+- **Eligibility independence:** not loaded, inactive, prohibited boarding and alighting, and
+  changed event times leave the K1-only set unchanged.
+
+**Resource limits (static analysis).** In the composed path, once the preceding guards have passed,
+neither the evidence view nor the assessment can independently reach `resourceLimit`. The only
+evidence-stage limit is the producer's count guard, which runs before the K1 validator. K1
+exclusion can remove an earlier count-limit failure, so a K1-only contradiction can then surface as
+`dataUnavailable` instead of `searchIncomplete`. Limits and mappings are unchanged. This is a
+reading of the current accounting, hold-generation and validation contracts, not an executed
+proof. It replaces an earlier, untested and incorrect hypothesis in DEC-089.
+
+**Validation (observed).** iPhone 17 Simulator, iOS 27.0, Debug.
+
+- Final routing regression: 40 suites, 498 functions (497 passed, 1 expected skip of the opt-in
+  measurement test), 1,167 cases, 0 failures. It includes both K1 suites and ran after the last test
+  change, a doc-comment correction; the separate targeted run (33 functions / 113 cases) passed just
+  before that change.
+- During the probe correction, with the probe's validator call temporarily removed, 6 of the then 17
+  measurement K1 cases failed. Every later run used the restored probe.
+- No performance measurement, full test suite, Release build, device run or provider-backed data.
+
+**Review.** Static non-author reviews in fresh contexts of the same model family, not external audits:
+no Critical findings. One Major oracle-parity test gap was closed. Minor test-strength and
+helper-refactoring items remain (see DEC-089 "Implementation evidence").
+
+**Open.**
+
+- Owner checkpoint review of the implementation and the prerequisite statuses.
+- Commit and push authorization.
+- Consumer amendment reconciliation: DEC-089 overlays for §§21.3, 27.3, 27.5, 28.3, 28.4 and 29.3
+  were prepared on 2026-10-29. As of that date they exist only in the uncommitted working tree
+  (not committed or pushed) and await the same checkpoint review. Draft §36 stays unapproved and
+  is excluded from the intended implementation checkpoint.
+- The unbounded supplier relation domain, an existing operational risk.
+
+R2/R3a production requiredness, Model C (draft §36) and K2–K9 stay unapproved.
+P3-T1 stays scope-incomplete; Phase 3 **In Progress**; readiness gate G1 **Not ready**;
+live/default routing unconfigured.
+
 ## Phase 3 policy decision DEC-089 (K1 same-TripID exclusion) — 2026-10-28
 
 Documentation-only. The owner accepted DEC-089 on 2026-10-27 and confirmed its validation-scope,

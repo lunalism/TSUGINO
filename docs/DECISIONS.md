@@ -9188,7 +9188,7 @@ Limits: invented data only; Simulator only; no Release or physical-device run; n
 
 # DEC-089 — Same-TripID Relations Excluded from the Prepared Required Relation Domain (K1)
 
-**Status:** Accepted — K1 exclusion, K1-only positive rejection, K1-VALIDATION-SCOPE and K1-FAILURE-PRECEDENCE policy, and validator stage direction; implementation mechanisms Proposed; implementation, merge and push require separate authorization\
+**Status:** Accepted — K1 exclusion, K1-only positive rejection, K1-VALIDATION-SCOPE and K1-FAILURE-PRECEDENCE policy, and validator stage direction; implementation mechanisms Proposed at acceptance, later owner-authorized for a bounded invented-data-only implementation, which exists only in the uncommitted working tree (see "Implementation evidence"); commit, merge and push require separate authorization\
 **Date:** 2026-10-27 Asia/Seoul; validation-scope, failure-precedence and mandatory-exclusion policy confirmed 2026-10-28 Asia/Seoul\
 **Supersedes:** DEC-088 in part — (a) the exclusivity of D4's "only when" clause; (b) for K1-only excluded relations only, D3's "Existing evidence and admission checks are unchanged" and D4's "Solver, admission and evidence validation are unchanged", solely to the extent needed to admit the additional K1-only positive contradiction validation (K1-VALIDATION-SCOPE). The DEC-088 body text is preserved verbatim and is not rewritten.\
 **Related:** DEC-060 A, DEC-079, DEC-080 V1/V4, DEC-081, DEC-086, DEC-088 D2–D4; consumer amendment §5, §9.4, §21.3, §27.3, §27.5, §28.3–28.4, §29.3
@@ -9202,11 +9202,11 @@ DEC-089 was verified unused in repository Markdown, Swift, Python and JSON, and 
   - DEC-088 D4 precedence where D4 and K1 both apply;
   - rejection of every supplied `.positive` for a K1-only excluded relation as `trainChangeConflict`, with the existing published `dataUnavailable` mapping;
   - K1-VALIDATION-SCOPE and K1-FAILURE-PRECEDENCE (below).
-- **Approved architecture direction (owner, 2026-10-27).** An independent, bounded K1 validator inside the existing connection-evidence stage (consumer §27.3 S7; implementation checkpoint `PreparedRouteSearchStage.evidence`). Stage ownership is approved. The validator's position within that stage is not decided.
-- **Proposed implementation mechanisms.** Listed under "Architecture direction". They are technical proposals, not owner-approved details, and each needs verification.
-- **Implementation prerequisites.** Listed under "Implementation prerequisites"; each must be specified and verified before implementation is accepted.
-- **Verification status.** None. No source has changed for K1. No test, build or device run has been performed for it. Nothing here claims that K1 is implemented, verified or integrated.
-- **Not authorized by this record.** Swift implementation, tests, builds, and any Git merge or push; each needs separate owner authorization. Policy acceptance is recorded by this record's content and does not depend on its version-control state.
+- **Approved architecture direction (owner, 2026-10-27).** An independent, bounded K1 validator inside the existing connection-evidence stage (consumer §27.3 S7; implementation checkpoint `PreparedRouteSearchStage.evidence`). Stage ownership is approved. The validator's position within that stage was not decided at acceptance; the owner later authorized "after the evidence producer, before `checkpoint(.evidence)`" for the invented implementation (see "Implementation evidence").
+- **Proposed implementation mechanisms.** Listed under "Architecture direction". At acceptance they were technical proposals, not owner-approved details. The owner later authorized the mechanisms actually implemented (see "Implementation evidence"); that authorization covers the invented implementation only.
+- **Implementation prerequisites.** Listed under "Implementation prerequisites"; each must be specified and verified before implementation is accepted. Their current status, item by item, is under "Implementation evidence". Acceptance of the implementation is for a separate owner checkpoint review.
+- **Verification status.** At acceptance: none. Now: an uncommitted, invented-data-only implementation with Simulator Debug test evidence and static non-author reviews (see "Implementation evidence"). Nothing here claims that K1 is committed, published, integrated with real data or production-ready.
+- **Not authorized by this record.** Swift implementation, tests, builds, and any Git merge or push; each needs separate owner authorization. The invented implementation, its tests and the measurement-probe correction were authorized separately; commit, merge and push are still not authorized. Policy acceptance is recorded by this record's content and does not depend on its version-control state.
 
 ## Terms and provenance
 
@@ -9420,6 +9420,132 @@ Revisit if:
 - production requiredness (R2/R3) changes what the required relation domain contains;
 - real evidence shows a same-TripID relation can carry a genuine passenger change;
 - an implementation cannot preserve existing check order, published mappings or malformed-entry validation within the approved validator direction.
+
+## Implementation evidence — 2026-10-29 Asia/Seoul (invented only; uncommitted)
+
+The "Verification status", "Proposed" and prerequisite wording above records the state at acceptance. After acceptance the owner authorized a bounded, invented-data-only implementation, its tests, non-author review and a narrow measurement-probe correction. This section records that work. **It exists only in the uncommitted working tree on `phase/03-route-search` (base `ffa141bc`); it is not committed, pushed, merged or deployed.** The accepted K1 policy above is unchanged.
+
+**Owner-authorized mechanisms.**
+
+- mandatory K1 exclusion, with D4 evaluated first;
+- K1-only contradiction validation;
+- a composition-internal excluded-key field;
+- a structural guard shared by D4 and K1;
+- reuse of the existing `qualifyingAbsence` premise validation;
+- validator execution after the existing evidence producer and before `checkpoint(.evidence)`;
+- invented-data tests, non-author review and the narrow measurement-probe correction.
+
+**Implemented source behaviour** (`TSUGINO/Data/Routing/PreparedRouteSearchView.swift`, `PreparedRouteSearcher.swift`):
+
+- `PreparedRouteDeclarations.k1OnlyExcluded` (:106) lists the K1-only keys in supplied order. It is composition-internal.
+- The declaration producer (:144–167) drops projected-out relations first. Then, only when the kept addresses are unique and the key occurs once, it applies D4 and only after that K1. Every other relation is emitted to the closure unchanged and stamped with the relation domain's reference.
+- One private structural guard, `closureTargetEndpoints` (:205), holds the view-ID, declared-address and index-range checks. D4 (`untraversableAtProfileBoundary`, :178) and K1 (`sameRecurringTrip`, :189) both use it.
+- `sameRecurringTrip` compares exact recurring `TripID` identity, whatever the service date.
+- `PreparedRouteK1Validator` (:284–297) is a separate pure function over the K1-only keys and the captured connection authority:
+  - a `.positive` throws `trainChangeConflict` whatever its contents;
+  - an `.absence` goes through the existing `ConnectionEvidenceState.qualifyingAbsence` premise validation, keeping its typed failures, and the result is discarded, so it never becomes negative authority;
+  - `.unavailable` and missing entries are ignored.
+- `PreparedRouteSearcher.swift:133–136` runs the validator inside the existing evidence `do` block, after `PreparedRouteConnectionEvidenceProducer.evidence(...)` and before `checkpoint(.evidence)`, under the existing evidence-failure mapping.
+- No new public routing stage, error case or published mapping. Numeric limits are unchanged. Solver, admission, closure, evidence view, assessment, prepared input and the exhaustive oracle are not edited.
+
+**Prerequisites 1–9.** "Direction" is the owner's authorization; "Source" is the implemented behaviour; "Tests" were executed (below); "Review" is static non-author reading; "Open" is what stays unverified.
+
+1. **Validator position.**
+   - *Direction:* after the evidence producer, before `checkpoint(.evidence)`.
+   - *Source:* `PreparedRouteSearcher.swift:133–136`.
+   - *Tests:* `existingFailuresPrecedeK1Rejection` (closure conflict, closure and evidence `resourceLimit` and a contradictory required positive each precede the K1 rejection; a missing required entry is an assessment hold, so there the K1 rejection is observed first) and `existingFailuresPrecedeTheK1CheckInTheStructuralPass`.
+   - *Review:* existing failures precede the validator; published mappings unchanged.
+   - *Open:* the contradictory-required-positive case publishes the same outcome either way, so only the typed-failure assertion shows its order.
+   - *Resource limits (static analysis, 2026-10-29; supersedes an earlier, untested and incorrect hypothesis in this section):*
+     - In the composed path, neither the evidence view nor the assessment can independently throw `resourceLimit` once the preceding guards have passed.
+     - The view is built inside the evidence producer (`PreparedRouteSearchView.swift:252`), after the producer's required-relation count guard (:233).
+     - The view's and the assessment's count checks repeat that guard.
+     - Their payload budgets (`QualifiedConnectionEvidence.swift:18–23`) are worst-case sums that inputs within the closure's token, stop, count and hold bounds cannot exceed. Reference values are bounded when they are created, and the inventory qualification requires 64-byte hash syntax.
+     - The only reachable evidence-stage `resourceLimit` is therefore the producer's count guard, which runs before the K1 validator.
+     - Because K1-only relations are no longer required, K1 exclusion can remove an earlier count-limit failure. A K1-only contradiction then surfaces as `dataUnavailable` instead of `searchIncomplete`.
+     - Numeric limits and published failure mappings are unchanged.
+     - This is a reading of the current accounting, hold-generation and validation contracts, not an executed proof. It must be re-checked if any of them changes.
+     - The executed counterpart is the exact-boundary tests under item 3.
+2. **Cancellation.**
+   - *Source:* no new checkpoint; the validator is synchronous.
+   - *Tests:* `cancellationAtEveryStageWithK1Exclusions`, `cancellationBeforeK1Rejection`.
+   - *Open:* the every-stage test supplies no connection entries for its K1-only keys.
+3. **Bounded resource accounting.**
+   - *Source:* one dictionary lookup per K1-only key, at most the size of the supplied relation domain. No limit of its own, and no copy of the entries.
+   - *Tests:* `k1ExclusionPrecedesCountLimits`: K1 keys no longer count toward `ConnectionEvidenceLimits.relations` or the closure's connection limit; numeric limits are unchanged.
+   - *Exact-boundary tests:* exactly N required relations, with no K1 keys, ten K1-only keys, or ten with one supplied K1-only positive.
+     - `evidenceRelationLimitBoundaryWithK1Keys`:
+       - At 2,048, the producer, view and assessment are built (2,047 holds) and the call is `dataUnavailable` after `.evidence`. With the positive, the K1 rejection makes it `dataUnavailable` before `.evidence`.
+       - At 2,049, the producer's count guard gives `searchIncomplete` before K1 validation, even with the positive.
+     - `closureConnectionLimitBoundaryWithK1Keys`:
+       - 23,040 targets pass the closure, but the producer's smaller 2,048 limit still applies: `searchIncomplete` at the evidence step.
+       - 23,041 are refused by the closure one checkpoint earlier.
+       - K1 validation is never reached at either count.
+     - In both tests, ten K1-only keys on top of an exact-limit required set do not trip the limit, so K1-only relations do not count toward it.
+     - `structuralPassAtExactRelationLimits` checks the same boundaries in the measurement structural pass.
+   - *Open:* the supplier-owned relation domain has no limit. This existed before K1: the producer was already linear in it. At 2,049 the producer's guard and the view's identical count check give the same result, so the tests do not show that the producer guard is the one that fires. The boundary fixtures use short tokens, so the payload-budget claim under item 1 rests on static analysis.
+4. **View and profile qualification.**
+   - *Source:* the validator reads only `k1OnlyExcluded` entries of the captured view, never D4-excluded, projected-out or undeclared entries, and makes no relation required.
+   - *Tests:* `d4TakesPrecedenceOverK1`, `unreadPositivesKeepExistingHandling`, `d4FirstRelationKeepsItsPositiveUnread`.
+   - *Review:* confirmed (static, same-family review only).
+   - *Independence:* `k1EligibilityIgnoresLoadedActiveEligibilityAndTimes` varies the loop and prior-date occurrences: not loaded, inactive, prohibited boarding and alighting, changed event times.
+     - The test confirms each change in the built inventory.
+     - It asserts the K1-only set equals the unchanged world's, the evidence stage still passes, and a K1-only positive is still rejected.
+     - Downstream holds and routes are not asserted.
+   - *Open:* the cross-date key's boarding endpoint (today's `invented-a`) is not varied. The time variant shifts absolute times but keeps each key's time order.
+5. **Malformed non-positive entries.**
+   - *Direction:* reuse `qualifyingAbsence`.
+   - *Source:* contradictory premises keep `qualificationConflict` or `applicabilityConflict` (published `dataUnavailable`). Qualified, insufficient and unsupported premises pass and are never counted as `absentUnderCompleteAuthority`.
+   - *Tests:* `k1OnlyAbsencesKeepOnlyExistingPremiseValidation`, `absenceAuthorityOnExcludedAndRequiredRelations` (`declaredComplete` versus `unknown`, on excluded and still-required relations), `k1OnlyContradictoryAbsenceKeepsItsTypedFailure`, `k1OnlyAcceptedAbsenceCreatesNoNegativeEvidence`.
+6. **Compatibility.**
+   - *Tests:* the 40-suite routing regression passed with unchanged published mappings, and DEC-086 holds for still-required relations.
+   - *Review:* found no conflict with DEC-079, DEC-080, DEC-081, DEC-086 or DEC-088 as amended.
+   - *Open:* shown only on invented data and the Simulator; no formal compatibility audit beyond these.
+7. **TripID identity.**
+   - *Review:* re-confirmed at base `ffa141bc`: solver (`InternalRouteSolver.swift:311`), admission (:516), evidence construction (`QualifiedConnectionEvidence.swift:251`) and the oracle all compare `trip.id`/`TripID`; `Trip` equality is ID-only.
+   - *Tests:* `crossDateRepeatedTripIDItineraryIsRejected`, `repeatedStationVisitThroughTheSameTripIsRejected`, `k1PredicateMatchesClosureTargetAcceptance`.
+8. **Undeclared relation keys.**
+   - *Source:* unread, as before.
+   - *Tests:* `unreadPositivesKeepExistingHandling`.
+9. **Proposed mechanisms.**
+   - *Direction:* authorized as implemented.
+   - *Source:* the excluded-key field; producer output; signature `validate(_:authority:) throws(ConnectionEvidenceFailure)`, pure; position as in item 1. `RequestScopedSearchInputClosure` needed no edit.
+   - *Review:* confirmed (static, same-family review only).
+
+**Required tests (invented data only).** `TSUGINOTests/PreparedRouteK1ExclusionTests.swift` (26 functions, 91 cases) covers every item in "Required tests before any implementation is accepted". That includes the exact relation-count boundaries (item 3) and eligibility independence (item 4).
+
+- Optimal-route parity is exercised independently of qualified absence: graphs that are feasible except for the no-repeated-TripID rule, cross-date and repeated-visit cases with renamed-TripID controls, tied arrivals with different ride counts, equal optima kept in canonical order, the same TripID on separate candidates, a K1-only `noResults` case, and permuted inputs. All are checked against hand-written winners, the exhaustive oracle, the direct solver and the composition.
+- `TSUGINOTests/Support/PreparedRouteSearchFixtures.swift` gained one line, so `prepareThroughProducers` also runs the validator.
+- No existing test expected a same-TripID relation between retained occurrences to stay required. The W6 workloads' same-TripID relations are all projected out (`existingWorkloadsHaveNoK1Exclusions`).
+
+**Measurement parity.**
+
+- `PRSHarness.structural` (`TSUGINOTests/Support/PreparedRouteMeasurementProbe.swift:259–263`) now calls the same `PreparedRouteK1Validator`, with the same arguments and in the same position as the composition.
+- When K1 validation fails, the structural pass records `failedAt` "evidence …" and builds no prepared input, so no exhaustive-oracle input is constructed.
+- No current workload has a K1-only key, so existing workloads keep their previous K1-related behaviour.
+- The timed calls already went through `PreparedRouteSearcher`.
+- The opt-in measurement suite (`PreparedRouteMeasurementTests.measure()`, `TSUGINO_PRS_MEASURE`) stayed skipped. No performance measurement was taken.
+- K1 parity does not make the probe equivalent to the composition. The structural pass still does not mirror `view.covers(scope)` or `assessment.isTechnicallyQualified`; both differences existed before K1 and remain tracked.
+- New tests: `TSUGINOTests/PreparedRouteMeasurementK1Tests.swift` (7 functions, 22 cases, including the exact-boundary structural check).
+
+**Validation (observed, 2026-10-28/29).** iPhone 17 Simulator, iOS 27.0, Debug.
+
+- Final routing regression: 40 suites, 498 test functions (497 passed, 1 expected skip: the opt-in measurement test), 1,167 test cases, 0 failures.
+- In that run the K1 suite passed 26 functions / 91 cases and the measurement K1 suite 7 functions / 22 cases.
+- A targeted run of both suites (33 functions / 113 cases) passed before the last test change, a doc-comment correction. After that change and a rebuild, the routing regression above, which includes both suites, passed again. No separate targeted-only run followed it.
+- Mutation-style check, during the probe correction: with the probe's validator call temporarily removed, 6 of the then 17 measurement K1 cases failed (K1-only positive ×3, contradictory absence ×3). The call was restored, and every later run used the restored probe.
+- Earlier attempts, as observed: one simulator launch failure with no assertions run; one run that executed no tests because of a shell argument error; one failure of an over-strict workload assertion, corrected in the test.
+- Not run: the full test suite, a Release build, any physical device, opt-in performance measurement, and any provider-backed data.
+
+**Review.** Several static non-author reviews, each in a fresh context of the same model family. They are not external audits, and they executed nothing beyond reading existing logs. No Critical findings remain. One Major test gap (oracle parity built against a qualified-absence baseline) was closed by the oracle tests above. Remaining Minor items:
+
+- weak or non-discriminating assertions in a few tests;
+- the boundary and independence limitations listed under items 3 and 4;
+- the measurement K1 tests reuse helpers from the K1 test suite, a deferred refactor;
+- the structural failure label `evidence trainChangeConflict` does not distinguish validator from producer origin;
+- the producer evaluates the shared guard twice per key.
+
+**Limits.** Invented data and Simulator only. No provider-backed K1 validation, no Release or physical-device run, and no production enablement. The unbounded supplier relation domain remains an existing operational risk. Model C (draft §36), R2/R3a production requiredness and K2–K9 remain unapproved. Phase 3 stays **In Progress** and readiness gate G1 **Not ready**. DEC-089 overlays for consumer amendment §§21.3, 27.3, 27.5, 28.3, 28.4 and 29.3 (insertions only) were prepared on 2026-10-29. As of that date they exist only in the uncommitted working tree and are not committed or pushed. They restate this record and change no policy. Draft §36 is excluded from the intended implementation checkpoint. DEC-089 policy is Accepted; the invented implementation awaits owner checkpoint acceptance. See ROADMAP "DEC-089 K1 invented implementation (uncommitted) — 2026-10-29".
 
 ---
 

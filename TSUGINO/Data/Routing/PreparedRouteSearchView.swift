@@ -101,18 +101,22 @@ nonisolated struct PreparedRouteDeclarations: Sendable {
     let occurrences: SearchInputOccurrenceDeclaration
     let connections: SearchInputConnectionDeclaration
     let dependencies: SearchInputDependencyDeclaration
+    /// Composition-internal: relations excluded on the DEC-089 K1 ground alone, in supplied
+    /// order. Read only by `PreparedRouteK1Validator`; never a qualified absence.
+    let k1OnlyExcluded: [ConnectionRelationKey]
 }
 
 /// Pure per-request declaration producer, INVENTED INTEGRATION ONLY (consumer §28.3 R1).
-/// Every supplied domain member is required regardless of date; the only exclusion is
-/// the Accepted DEC-080 profile projection: non-profile Trips, intervals touching a
+/// Every supplied domain member is required regardless of date, except as follows. The
+/// Accepted DEC-080 profile projection excludes non-profile Trips, intervals touching a
 /// non-profile station/line, and relations incident to an excluded occurrence. It uses
 /// declared profile/domain data only and never reads loaded slots. Projected-in members,
 /// including malformed ones, pass through unchanged so the published closure rejects them;
 /// projected-out members are dropped without structural checks. A relation between kept
-/// occurrences at a non-profile alighting/boarding station is dropped only under DEC-088 D4
-/// (see `untraversableAtProfileBoundary`). Production requiredness (R1/R2/R3) remains an
-/// open owner decision.
+/// occurrences is otherwise dropped only under DEC-088 D4 (`untraversableAtProfileBoundary`)
+/// or, when D4 does not apply, under DEC-089 K1 (`sameRecurringTrip`), which is mandatory
+/// and reported in `k1OnlyExcluded`. Production requiredness (R1/R2/R3) remains an open
+/// owner decision.
 nonisolated enum PreparedRouteDeclarationProducer {
     static func declarations(view: PreparedRouteSearchView, scope: InternalSearchScope)
         throws(SearchInputClosureConstructionFailure) -> PreparedRouteDeclarations {
@@ -129,7 +133,7 @@ nonisolated enum PreparedRouteDeclarationProducer {
                 intervalAuthority: entry.intervalAuthority,
                 intervals: entry.intervals.filter { withinProfile($0, trip: trip, profile: profile) }))
         }
-        // D4 is applied only where the closure would accept the relation: kept occurrence
+        // D4, then K1, is applied only where the closure would accept the relation: kept occurrence
         // addresses must be unique, and every copy of a duplicate key stays, so filtering never
         // hides a declarationConflict or a duplicate-target connectionTargetConflict.
         var kept: [TimetableOccurrenceAddress: Trip] = [:]
@@ -141,11 +145,16 @@ nonisolated enum PreparedRouteDeclarationProducer {
         for key in relations.targets where !excluded.contains(key.from) && !excluded.contains(key.to) {
             keyCounts[key, default: 0] += 1
         }
-        let targets = relations.targets.compactMap { key -> SearchInputConnectionTarget? in
-            if excluded.contains(key.from) || excluded.contains(key.to) { return nil }
-            if uniqueAddresses, keyCounts[key] == 1, untraversableAtProfileBoundary(key, kept: kept, scope: scope) { return nil }
-            return .init(from: key.from, alightingIndex: key.alightingIndex, to: key.to,
-                         boardingIndex: key.boardingIndex, applicabilityReference: relations.reference)
+        var targets: [SearchInputConnectionTarget] = []
+        var k1OnlyExcluded: [ConnectionRelationKey] = []
+        for key in relations.targets {
+            if excluded.contains(key.from) || excluded.contains(key.to) { continue }
+            if uniqueAddresses, keyCounts[key] == 1 {
+                if untraversableAtProfileBoundary(key, kept: kept, scope: scope) { continue }
+                if sameRecurringTrip(key, kept: kept, scope: scope) { k1OnlyExcluded.append(key); continue }
+            }
+            targets.append(.init(from: key.from, alightingIndex: key.alightingIndex, to: key.to,
+                                 boardingIndex: key.boardingIndex, applicabilityReference: relations.reference))
         }
         return .init(
             occurrences: .init(applicability: try .init(reference: domain.reference, scope: scope, qualification: qualification),
@@ -154,33 +163,52 @@ nonisolated enum PreparedRouteDeclarationProducer {
                                completeness: relations.completeness, required: targets),
             dependencies: .init(applicability: try .init(reference: view.dependencies.reference, scope: scope,
                                                          qualification: qualification),
-                                unresolved: view.dependencies.unresolved))
+                                unresolved: view.dependencies.unresolved),
+            k1OnlyExcluded: k1OnlyExcluded)
     }
 
     /// DEC-088 D4 boundary test for one relation.
     ///
-    /// It mirrors the closure's view-ID, declared-address (through `kept`) and index-range target
-    /// checks (`alightingIndex > 0` and in range, `boardingIndex >= 0` and below the last index).
-    /// It is true only when those pass and the alighting or boarding station is outside the profile.
-    ///
-    /// It does not check applicability (the producer stamps every target with the declaration's own
-    /// reference) or duplicates. The caller applies it only to keys occurring once among relations
-    /// between kept occurrences, and only when kept occurrence addresses are unique.
-    ///
-    /// Anything not excluded here, including every malformed or duplicate relation, reaches
-    /// `RequestScopedSearchInputClosure`, which still owns validation and rejection.
+    /// It is true only when the relation passes `closureTargetEndpoints` and the alighting or
+    /// boarding station is outside the profile.
     ///
     /// Every prepared ride interval lies inside `profile.stations` (`withinProfile` and the closure's
     /// `profileConflict`), so no ride can end or start at an excluded station. Never reads lines,
     /// permissions, times or loaded state.
     static func untraversableAtProfileBoundary(_ key: ConnectionRelationKey, kept: [TimetableOccurrenceAddress: Trip],
                                                scope: InternalSearchScope) -> Bool {
+        guard let (from, to) = closureTargetEndpoints(key, kept: kept, scope: scope) else { return false }
+        return !scope.profile.stations.contains(from.stopSequence[key.alightingIndex])
+            || !scope.profile.stations.contains(to.stopSequence[key.boardingIndex])
+    }
+
+    /// DEC-089 K1 test for one relation: it passes `closureTargetEndpoints` and both endpoint
+    /// occurrences have exactly the same recurring `TripID`, whatever their service dates. No
+    /// itinerary may use one TripID twice (consumer §5; DEC-080 V4), so no admissible itinerary
+    /// uses the relation. Compares TripID only; never names, lines, dates, times or loaded state.
+    static func sameRecurringTrip(_ key: ConnectionRelationKey, kept: [TimetableOccurrenceAddress: Trip],
+                                  scope: InternalSearchScope) -> Bool {
+        guard let (from, to) = closureTargetEndpoints(key, kept: kept, scope: scope) else { return false }
+        return from.id == to.id
+    }
+
+    /// Structural guard shared by D4 and K1, so the two cannot drift. It mirrors the closure's
+    /// view-ID, declared-address (through `kept`) and index-range target checks
+    /// (`alightingIndex > 0` and in range, `boardingIndex >= 0` and below the last index).
+    ///
+    /// It does not check applicability (the producer stamps every target with the declaration's own
+    /// reference) or duplicates. Callers apply it only to keys occurring once among relations
+    /// between kept occurrences, and only when kept occurrence addresses are unique.
+    ///
+    /// Anything not excluded, including every malformed or duplicate relation, reaches
+    /// `RequestScopedSearchInputClosure`, which still owns validation and rejection.
+    private static func closureTargetEndpoints(_ key: ConnectionRelationKey, kept: [TimetableOccurrenceAddress: Trip],
+                                               scope: InternalSearchScope) -> (from: Trip, to: Trip)? {
         guard key.from.viewID == scope.viewID, key.to.viewID == scope.viewID,
               let from = kept[key.from], let to = kept[key.to],
               key.alightingIndex > 0, key.alightingIndex < from.stopSequence.count,
-              key.boardingIndex >= 0, key.boardingIndex < to.stopSequence.count - 1 else { return false }
-        return !scope.profile.stations.contains(from.stopSequence[key.alightingIndex])
-            || !scope.profile.stations.contains(to.stopSequence[key.boardingIndex])
+              key.boardingIndex >= 0, key.boardingIndex < to.stopSequence.count - 1 else { return nil }
+        return (from, to)
     }
 
     /// Same membership predicate the closure enforces for active occurrences
@@ -243,6 +271,27 @@ nonisolated enum PreparedRouteConnectionEvidenceProducer {
                 fromArrival: fromArrival, toDeparture: toDeparture, relation: positive.relation,
                 genuineChange: positive.genuineChange, componentPartition: positive.componentPartition,
                 endpointWideContext: positive.endpointWideContext)
+        }
+    }
+}
+
+/// Pure DEC-089 K1 contradiction check, run in the connection-evidence stage only after the
+/// evidence producer has passed. Reads only the supplied entries for K1-only excluded keys, in
+/// their order; never D4-excluded, projected-out or undeclared entries. A supplied positive is a
+/// contradiction whatever its premises, instants or allowance. An absence keeps only its existing
+/// premise validation; the result is discarded and never counted as a qualified absence. One
+/// lookup per key over the supplier-owned domain; no limit of its own and no copy of the entries.
+nonisolated enum PreparedRouteK1Validator {
+    static func validate(_ keys: [ConnectionRelationKey], authority: PreparedRouteConnectionAuthority)
+        throws(ConnectionEvidenceFailure) {
+        for key in keys {
+            switch authority.entries[key] {
+            case .positive: throw .trainChangeConflict
+            case let .absence(relation, endpointWideContext, eventIndependent):
+                _ = try ConnectionEvidenceState.qualifyingAbsence(relation: relation,
+                    endpointWideContext: endpointWideContext, eventIndependent: eventIndependent)
+            case .unavailable, nil: continue
+            }
         }
     }
 }

@@ -115,6 +115,7 @@ struct PreparedRouteFixture {
         let closure = try RequestScopedSearchInputClosure(scope: scope, inventory: view.inventory, railway: view.railway,
             occurrences: d.occurrences, connections: d.connections, dependencies: d.dependencies)
         let evidence = try PreparedRouteConnectionEvidenceProducer.evidence(view: view, closure: closure)
+        try PreparedRouteK1Validator.validate(d.k1OnlyExcluded, authority: view.connections)
         let assessment = try ResolvedSearchInputAssessment(closure: closure, connections: evidence)
         return (closure, try PreparedInternalSearchInput(assessment: assessment, objective: .init(reference: objective)))
     }

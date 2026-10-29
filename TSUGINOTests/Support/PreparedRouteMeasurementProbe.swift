@@ -256,8 +256,11 @@ enum PRSHarness {
         } catch { s.failedAt = "closure \(error)"; s.fields["failedAt"] = s.failedAt; return s }
         s.fields["closureBytes"] = closure.logicalPayloadBytes
         let evidence: QualifiedConnectionEvidenceView
-        do { evidence = try PreparedRouteConnectionEvidenceProducer.evidence(view: view, closure: closure) }
-        catch { s.failedAt = "evidence \(error)"; s.fields["failedAt"] = s.failedAt; return s }
+        do {
+            evidence = try PreparedRouteConnectionEvidenceProducer.evidence(view: view, closure: closure)
+            // The composition's DEC-089 K1-only check, in the same position (after evidence).
+            try PreparedRouteK1Validator.validate(declarations.k1OnlyExcluded, authority: view.connections)
+        } catch { s.failedAt = "evidence \(error)"; s.fields["failedAt"] = s.failedAt; return s }
         let assessment: ResolvedSearchInputAssessment
         do { assessment = try ResolvedSearchInputAssessment(closure: closure, connections: evidence) }
         catch { s.failedAt = "assessment \(error)"; s.fields["failedAt"] = s.failedAt; return s }

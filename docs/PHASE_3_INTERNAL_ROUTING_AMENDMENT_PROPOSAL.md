@@ -4103,6 +4103,33 @@ mint a new ID or infer absence to bypass it. A line/operator change inside one s
 is one continuous ride when evidenced, never a passenger change. A must not stitch fragments
 or reinterpret uncertain continuity as transfer; known contradictory evidence fails closed.
 
+*Decision overlay (DEC-089, Accepted 2026-10-27; validation scope, failure precedence and
+mandatory exclusion confirmed 2026-10-28):* the paragraph above is preserved as history. For the
+prepared per-request required relation domain (§28.3), DEC-089 K1 refines "an unresolved same-Trip
+target may instead remain explicitly unsupported":
+
+- **K1 exclusion (mandatory).** A declared relation **must** leave the required relation domain
+  when all four hold: (1) both endpoint occurrences are retained by the profile projection;
+  (2) the retained occurrence addresses are unique and the relation key occurs exactly once among
+  relations between retained occurrences; (3) the relation passes the closure's structural target
+  checks (DEC-088 D4 condition 2); (4) both endpoints have exactly the same recurring `TripID`
+  (DEC-060 A), regardless of service date. It never depends on proximity, times, inactive or
+  loaded state, lines, permissions or unqualified negative evidence. Distinct TripIDs, including
+  through-running and near-identical or aliased IDs, are never K1-excluded.
+- **D4 precedence.** A relation that also meets DEC-088 D4 is excluded under D4, whose existing
+  handling of its supplied evidence is unchanged. "K1-only" means K1 applies and D4 does not.
+- **Basis.** No itinerary may use one recurring TripID twice, even across service dates (§5;
+  DEC-080 V4; DEC-081), so no admissible itinerary uses such a relation.
+- **Fail-closed kept.** Every supplied `.positive` for a K1-only relation is rejected as
+  `trainChangeConflict` (published `dataUnavailable`), whatever its premises, examined instants or
+  allowance.
+- **Not a negative assertion.** A K1 exclusion is not a qualified absence, is never
+  `absentUnderCompleteAuthority`, and asserts nothing about passenger transfer feasibility. The
+  positive-record rules above are unchanged for every relation that stays required.
+
+The implementation is invented-only (§29.3 overlay). K2–K9 and Model C (draft §36) are not
+approved.
+
 ### 21.4 Qualification, policy and applicability
 
 Recommend a finite `QualifiedConnectionEvidenceView` with a supplied immutable qualification
@@ -5773,6 +5800,18 @@ The conformer only sequences and maps. It does not reinterpret service dates, el
 continuity, allowances, gaps or requiredness; those remain owned by the existing constructors and
 by the producers named above. The solver keeps consuming only P (§24.1).
 
+*Decision overlay (DEC-089, Accepted):* S7 gains one bounded K1 validator inside the existing
+connection-evidence stage. There is no new stage. The implementation splits S7 into the `.evidence`
+and `.assessment` checkpoints, and the validator belongs to `.evidence`. It reads only the supplied
+connection entries for the K1-only keys reported by the S6 declaration producer (§28.3 overlay),
+and it makes no relation required. Stage ownership is Accepted. Its position was left open at
+acceptance; the owner later authorized, for the invented implementation, **after the evidence
+producer and before `checkpoint(.evidence)`**. Every existing S6 closure check and every S7
+evidence-producer check, including the producer's `ConnectionEvidenceLimits.relations` count
+guard, therefore runs first, and the assessment runs after. The conformer still derives no
+requiredness: the declaration producer applies D4 and then K1. Closure, assessment, S8 and S9
+semantics, including canonical admission, are unchanged.
+
 ### 27.4 Ownership, bindings and safeguards
 
 | Concern | Owner [P] unless marked | Basis |
@@ -5824,6 +5863,29 @@ Typed preparation failures are mapped **explicitly before** the generic catch, s
 `CancellationError` escapes; no partial, best-so-far or direct-only output exists at any stage.
 Preflight never emits `noResults`; empty declarations, zero rides or a missing direct route are not
 proof (§24.5).
+
+*Decision overlay (DEC-089 K1-FAILURE-PRECEDENCE, Accepted):* the rows above are unchanged.
+
+- **No new row or mapping.** A K1-only `.positive` throws `trainChangeConflict`, already in the
+  S6–S8 conflicts row → `dataUnavailable`. This is a deliberate reclassification: a K1-only
+  positive that would otherwise be held unavailable or throw a different typed failure (for example
+  `qualificationConflict`, `allowanceConflict` or `applicabilityConflict`) always becomes
+  `trainChangeConflict`. Published
+  mappings (`resourceLimit` → `searchIncomplete`, every other preparation failure →
+  `dataUnavailable`) and numeric limits are unchanged.
+- **Relative order (invented implementation, §27.3 overlay).** Earlier S1–S6 failures
+  (including declarations and closure), then every evidence-producer failure (including its
+  `resourceLimit` count guard, qualification and target failures, and failures on supplied entries
+  for required relations), then the K1 validator, then the assessment (its typed failures, or
+  `remainingHolds` → `dataUnavailable`). A K1-only positive alongside a missing required entry is therefore observed
+  as the K1 rejection; both publish `dataUnavailable`.
+- **Smaller required set.** K1-excluded keys are not required connection targets, so they are not
+  counted by the closure's connection limit or `ConnectionEvidenceLimits.relations`. A call that
+  reached `resourceLimit` only because of them proceeds to later checks and ends by them:
+  `dataUnavailable` (for example a K1-only positive or missing required evidence),
+  `searchIncomplete` (another limit), or scoped alternatives or scoped `noResults` only when every
+  remaining required input is complete and qualified.
+- **Cancellation.** Unchanged: the validator is synchronous inside S7 and adds no checkpoint.
 
 ### 27.6 Replacement, overlap and retry
 
@@ -6017,6 +6079,19 @@ present interval → `dataUnavailable` at P. Unknown domains hold. Identity stay
 address `(viewID, TripID, serviceDate)` plus original indices; repeated visits keep their own
 indices; no date parsing.
 
+*Decision overlay (DEC-089, Accepted):* for relations between kept occurrences, after the profile
+projection and only when the kept occurrence addresses are unique and the key occurs exactly once,
+two exclusion grounds now apply, in order: DEC-088 D4, then the mandatory DEC-089 K1 (exact recurring
+`TripID` identity across dates, §21.3 overlay). Every other projected relation, including every
+malformed or duplicate one and every one to an undeclared address, stays in the declaration for the closure to accept or reject.
+K1-only keys are reported separately to the S7 validator (§27.3 overlay) and are not required
+targets, so they do not count toward the closure's connection limit or
+`ConnectionEvidenceLimits.relations` (for example the 2,048 relations in the R1 row). K1 compares
+`TripID` only: the producer still reads no slot activation, facts, permissions or times. R1 is
+otherwise unchanged and stays invented-only; the R1 row now means every profile-projected entry
+except D4- and K1-excluded relations. K1 does not choose R2 or R3: production requiredness stays
+[O], and R2/R3a production requiredness and Model C (draft §36) are not approved.
+
 ### 28.4 Seam 2 — per-request connection evidence [P]
 
 **Inputs.** The closure's required targets (B order) and `V`'s connection authority: review
@@ -6068,6 +6143,24 @@ declared relation domain or a supplied dated-pair absence, else it blocks the re
 Smallest owner question, **not blocking the invented integration**: *"May resolution of a required
 connection target be derived from a qualified inactive endpoint occurrence or a known-prohibited
 endpoint role, without a supplied dated-pair absence?"*
+
+*Decision overlay (DEC-089, Accepted):* the producer still emits exactly one record per required
+target. K1-only keys are not required targets, so it emits no record and reads no entry for them,
+and the "no entry → `.unavailable(.insufficientEvidence)`" rule does not apply to them. Supplied
+entries for K1-only keys are read only by the K1 validator (§27.3 overlay):
+
+- `.positive` → `trainChangeConflict` (published `dataUnavailable`), whatever its contents;
+- `.absence` → the existing `qualifyingAbsence` premise validation, keeping its typed failures (a
+  contradictory premise throws `qualificationConflict` or `applicabilityConflict` →
+  `dataUnavailable`). The result is discarded: it never becomes `absentUnderCompleteAuthority` or
+  any other negative authority;
+- `.unavailable`, or no entry → ignored.
+
+Entries for D4-excluded or projected-out keys, and for keys outside the declared relation domain,
+stay unread. For every relation that stays
+required, DEC-088 D3 (G1 retained, G2 not adopted) and the rules above are unchanged. K1 is a
+consumer-side exclusion by TripID identity. It is neither G2 nor a supplier-side omission rule, and
+it creates no reusable positive or negative relation authority.
 
 ### 28.5 Seam 3 — dependency resolution [I]/[O]
 
@@ -6263,6 +6356,36 @@ constructor and no wall-time responsiveness is claimed.
 
 Dependencies: the invented fixtures declare an empty list as an explicit stipulation (§28.5). A
 nonempty list is passed through and stays unresolved (`dataUnavailable`); nothing resolves it.
+
+*Implementation overlay (DEC-089 K1, 2026-10-29 — invented data only, uncommitted at the time of
+writing on base `ffa141bc`):* the producer bullets above are historical where they name the profile
+projection as R1's only exclusion; DEC-088 D4 already changed that (§29.4 overlays). Under separate
+owner authorization, the invented-only code now implements the Accepted DEC-089 policy:
+
+- **`PreparedRouteDeclarationProducer`:** profile projection first. Then, only when kept
+  occurrence addresses are unique and the key occurs once, D4 (`untraversableAtProfileBoundary`)
+  and, when D4 does not apply, K1 (`sameRecurringTrip`, exact recurring `TripID` equality whatever
+  the service date). Both use one private structural guard (`closureTargetEndpoints`). K1-only
+  keys go, in supplied order, into the composition-internal `PreparedRouteDeclarations.k1OnlyExcluded`.
+  Malformed and duplicate relations, and relations to undeclared addresses, still pass through to
+  the closure.
+- **`PreparedRouteK1Validator`:** a pure check over the K1-only keys and the captured connection
+  authority, with the §28.4-overlay semantics. `PreparedRouteSearcher` runs it inside the existing
+  evidence block, after `PreparedRouteConnectionEvidenceProducer.evidence(...)` and before
+  `checkpoint(.evidence)`, under the existing evidence-failure mapping.
+- **Unchanged:** the evidence producer (count guard first, one record per required target),
+  closure, evidence view, assessment, prepared input, solver, admission, the exhaustive oracle,
+  public stages, error cases, published mappings and numeric limits.
+
+**Status.** DEC-089 policy is Accepted. This implementation is invented-only and awaits an owner
+checkpoint review; commit, merge and push are not authorized. Its evidence is Simulator Debug only
+(iPhone 17 Simulator, iOS 27.0): the routing regression ran 40 suites, 498 test functions (497 passed,
+1 expected opt-in skip) and 1,167 cases with 0 failures; see DEC-089 "Implementation evidence — 2026-10-29".
+No Release build, physical-device run, full test suite, performance measurement or provider-backed data
+was run for K1, and nothing here claims Release or device behaviour. Remaining gates are listed in
+§29.6, among them real data and rights (§26.2 G1) and the "View size" bound on the supplier-owned
+relation domain; K1 closes none of them. Model C (draft §36), R2/R3a
+production requiredness and K2–K9 remain unapproved.
 
 ### 29.4 Failure mapping and provisional mappings
 

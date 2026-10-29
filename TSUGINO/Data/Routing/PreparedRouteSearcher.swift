@@ -131,6 +131,8 @@ nonisolated struct PreparedRouteSearcher: RouteSearching {
         let evidence: QualifiedConnectionEvidenceView
         do throws(ConnectionEvidenceFailure) {
             evidence = try PreparedRouteConnectionEvidenceProducer.evidence(view: view, closure: closure)
+            // DEC-089 K1-only contradictions, after every existing closure and evidence check.
+            try PreparedRouteK1Validator.validate(declarations.k1OnlyExcluded, authority: view.connections)
         } catch { throw PreparedRouteSearchFailureMapping.evidence(error) }
         try await checkpoint(.evidence)
 
